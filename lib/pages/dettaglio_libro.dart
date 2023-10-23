@@ -1,0 +1,133 @@
+import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
+import 'package:books/features/libro/data/models/libro_view_model.dart';
+import 'package:books/utilities/dialog_utils.dart';
+import 'package:books/widgets/dettaglio_libro_web_view.dart';
+import 'package:books/widgets/dettaglio_libro_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:zoom_widget/zoom_widget.dart';
+
+
+class DettaglioLibro extends StatefulWidget {
+  static const String pagePath = '/HomeLibriLibreria/detailBook';
+  static const String pageEditPath = '/LibreriaListaLibriWidget/detailBook';
+
+  final LibroViewModel libroViewModel;
+  final bool showDelete;
+
+  const DettaglioLibro({Key? key, required this.libroViewModel, required this.showDelete}) : super(key: key);
+
+
+  @override
+  State<DettaglioLibro> createState() => _DettaglioLibro();
+}
+
+class _DettaglioLibro extends State<DettaglioLibro> {
+
+  @override
+  Widget build(BuildContext context) {
+    LibroViewModel libroViewModel = widget.libroViewModel;
+
+    returnToScreen(bool isDelete) async {
+      bool? isRemoveBook = false;
+      if (isDelete) {
+        isRemoveBook = await DialogUtils.showConfirmationSiNo(context, 'Vuoi rimuovere il libro dalla lista ?');
+      }
+      if (mounted) {
+        Navigator.pop(context, LibroDettaglioResult(libroViewModel, !isDelete, isDelete && (isRemoveBook != null && isRemoveBook))); 
+      }
+    }
+
+    IconButton iconCheckAddLibro = IconButton(
+      icon: const Icon(Icons.check),
+      onPressed: () => returnToScreen(false),
+      color: Colors.greenAccent,
+    );
+
+    IconButton iconDeleteLibro = IconButton(
+      icon: const Icon(Icons.delete),
+      onPressed: () => returnToScreen(true),
+      color: Colors.orangeAccent,
+    );
+
+    TabBar tabBar = const TabBar(
+      isScrollable: false,
+      labelColor: Colors.yellow,
+      indicatorPadding: EdgeInsets.zero,
+      automaticIndicatorColorAdjustment: true,
+      tabs: [
+        Tab(text: 'Dettaglio',),
+        Tab(text: 'Note',),
+        Tab(text: 'Preview',),
+      ],
+    );
+    
+    return SafeArea(
+        child: Scaffold(
+          body: DefaultTabController(
+            length: 3,
+            child: Scaffold(
+              appBar: AppBar(
+                bottom: PreferredSize(
+                  preferredSize: tabBar.preferredSize,
+                  child: Material(
+                    color: const Color.fromARGB(115, 0, 143, 88),
+                    child: tabBar,
+                  ),
+                ),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.pop(context),
+                  color: Colors.amber.shade50,
+                ),
+                actions: widget.showDelete 
+                  ? <Widget>[ iconDeleteLibro, iconCheckAddLibro ]
+                  : <Widget>[ iconCheckAddLibro ],
+                title: Text(libroViewModel.titolo),
+              ),
+              body: TabBarView(
+                physics: const NeverScrollableScrollPhysics(),
+                viewportFraction: 1,
+                children: [
+                  DettaglioLibroWidget(libroViewModel),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsetsDirectional.only(top: 20),
+                        child: Text(
+                          'Note ... \n\n${libroViewModel.titolo} ...\n\n ${libroViewModel.previewLink}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      )
+                    ]
+                  ),
+                  SizedBox(
+                    // width: MediaQuery.of(context).size.width*.8,
+                    // height: MediaQuery.of(context).size.height*.7,
+                    child: Zoom(
+                      maxZoomWidth: 1200,
+                      maxZoomHeight: 1800,
+                      canvasColor: Colors.grey,
+                      backgroundColor: Colors.orange,
+                      colorScrollBars: const Color.fromARGB(151, 39, 114, 176),
+                      opacityScrollBars: 0.9,
+                      scrollWeight: 10.0,
+                      centerOnScale: true,
+                      enableScroll: true,
+                      doubleTapZoom: true,
+                      zoomSensibility: 0.8,
+                      initTotalZoomOut: false,
+                      child: Center(
+                          child: DettaglioLibroWebView(libroViewModel.previewLink)
+                      ),
+                  )
+                  ),
+                ],
+              ),
+            ),
+          ),  
+        )
+    );
+  }
+}

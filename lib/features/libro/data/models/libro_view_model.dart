@@ -1,0 +1,145 @@
+import 'package:books/config/constant.dart';
+import 'package:books/features/libro/data/models/libro_search_model.dart';
+import 'package:hive/hive.dart';
+import 'dart:convert';
+part 'libro_view_model.g.dart';
+
+@HiveType(typeId: 3)
+class LibroViewModel extends LibroSearchModel {
+  
+  @HiveField(15)
+  int stars;
+
+  @HiveField(16)
+  String? pathImmagineCopertina;
+
+  @HiveField(17)
+  String siglaLibreria;  
+
+  static const String _strNullValue = '';
+
+  LibroViewModel(this.siglaLibreria, {super.googleBookId='', required super.isbn, super.titolo='', super.lstAutori=const [], super.editore='', 
+      super.descrizione='', super.immagineCopertina='', super.dataPubblicazione='', super.nrPagine=0, super.lstCategoria=const [], 
+      super.previewLink='', super.isEbook=false, super.country='', super.valuta='',  super.prezzo='', this.stars = 0, this.pathImmagineCopertina});
+
+  Map toJson() => {
+    'isbn': isbn.trim().isNotEmpty ? isbn : googleBookId,
+    'titolo': titolo, 
+    'autori': jsonEncode(lstAutori),
+    'editore': editore,
+    'descrizione': descrizione,
+    'immagineCopertina': immagineCopertina,
+    'dataPubblicazione': dataPubblicazione,
+    'nrPagine': nrPagine,
+    'lstCategoria': jsonEncode(lstCategoria),
+    'previewLink': previewLink,
+    'isEbook': isEbook,
+    'country': country, 
+    'valuta': valuta,
+    'prezzo': prezzo, 
+    'googleBookId': googleBookId,
+    'stars' : stars,
+    'pathImmagineCopertina': pathImmagineCopertina,
+    'siglaLibreria': siglaLibreria
+  };
+
+  LibroViewModel.fromMap(Map<String, dynamic> mappa, {this.stars = 0, this.siglaLibreria = ''}) {
+    isbn = mappa['isbn'];
+    titolo = mappa['titolo'];
+    lstAutori = List<String>.from(jsonDecode(mappa['autori']));
+    editore = mappa['editore'];
+    descrizione = mappa['descrizione'];
+    immagineCopertina = mappa['immagineCopertina'];
+    dataPubblicazione = mappa['dataPubblicazione'];
+    nrPagine = mappa['nrPagine'];
+    lstCategoria = List<String>.from(jsonDecode(mappa['lstCategoria']));
+    previewLink = mappa['previewLink'];
+    isEbook = mappa['isEbook'];
+    country = mappa['country'];
+    valuta = mappa['valuta'];
+    prezzo = mappa['prezzo'];
+    googleBookId = mappa['id'] ?? mappa['googleBookId'];
+    stars = mappa['stars'];
+    pathImmagineCopertina = mappa['pathImmagineCopertina'];
+    siglaLibreria = Constant.libreriaInUso!.sigla;
+  }
+
+  /// Al salvataggio del Libro, dalla lista dei libri cercati:
+  /// 
+  loadDataFromLibroViewModel(LibroViewModel libroViewModel) {
+    googleBookId = libroViewModel.googleBookId;
+    isbn = libroViewModel.isbn;
+    country = libroViewModel.country;
+    titolo = libroViewModel.titolo;
+    editore = libroViewModel.editore;
+    descrizione = libroViewModel.descrizione;
+    immagineCopertina = libroViewModel.immagineCopertina;
+    dataPubblicazione = libroViewModel.dataPubblicazione;
+    previewLink = libroViewModel.previewLink;
+    valuta = libroViewModel.valuta;
+    prezzo = libroViewModel.prezzo;
+    nrPagine = libroViewModel.nrPagine;
+    lstCategoria = libroViewModel.lstCategoria;
+    isEbook = libroViewModel.isEbook;
+    lstAutori = libroViewModel.lstAutori;
+    stars = libroViewModel.stars;
+  }
+
+  LibroViewModel.fromGoogleMap(Map<String, dynamic> mappa, {this.stars = 0, this.siglaLibreria = ''}) {
+    googleBookId = mappa['id'] ?? mappa['googleBookId'];
+
+    Map<String, dynamic> mapVolumeInfo = mappa['volumeInfo'];
+    titolo = mapVolumeInfo['title'];
+    if (mapVolumeInfo['authors'] != null) {
+      lstAutori = (mapVolumeInfo['authors'] as List).map((item) => item as String).toList();
+    } else {
+      lstAutori = ['<Autore da definire>'];
+    }
+    descrizione = mapVolumeInfo['description'] ?? _strNullValue; // '<Descrizione da definire>';
+    descrizione = descrizione.replaceAll('<i>', '');
+    descrizione = descrizione.replaceAll('<br>', '');
+    descrizione = descrizione.replaceAll('</i>', '');
+    descrizione = descrizione.replaceAll('<b>', '');
+    descrizione = descrizione.replaceAll('</b>', '');
+
+    editore = mapVolumeInfo['publisher'] ?? '<Editore da definire>'; // _strNullValue;
+
+    List industryIdentifiers = mapVolumeInfo['industryIdentifiers'] ?? [];
+    if (industryIdentifiers.isNotEmpty && industryIdentifiers.length > 1) {
+      isbn = industryIdentifiers.elementAt(industryIdentifiers.length - 1)['identifier'];
+    } else {
+      isbn = '';
+    }
+
+    dataPubblicazione = mapVolumeInfo['publishedDate'] ?? _strNullValue;
+    nrPagine = mapVolumeInfo['pageCount'] ?? 0;
+    
+    if (mapVolumeInfo['categories'] != null) {
+      lstCategoria = (mapVolumeInfo['categories'] as List).map((item) => item as String).toList();
+    } else {
+      lstCategoria = []; // mapVolumeInfo['categories'] ?? [];
+    }
+
+    previewLink = mapVolumeInfo['previewLink'] ?? _strNullValue;
+
+    try {
+      immagineCopertina = mapVolumeInfo['imageLinks']['smallThumbnail'] ?? _strNullValue;
+    }
+    catch (errore) {
+      immagineCopertina = _strNullValue;
+    }
+
+    Map<String, dynamic> saleInfo = mappa['saleInfo'] ?? {};
+    isEbook = saleInfo['isEbook'] ?? false;
+    country = saleInfo['country'] ?? _strNullValue;
+    
+    valuta = _strNullValue;
+    prezzo = _strNullValue;
+
+    if (isEbook) {
+      Map<String, dynamic> mapListPrice = saleInfo['listPrice'] ?? {};
+      valuta = mapListPrice['currencyCode'] ?? _strNullValue;
+      prezzo = (mapListPrice['amount'] != null) ? mapListPrice['amount'].toString() : "0";
+    }
+  }
+}
