@@ -10,12 +10,18 @@ import 'package:books/pages/import_export_file.dart';
 import 'package:books/pages/libreria_lista_libri_page.dart';
 import 'package:books/resources/action_result.dart';
 import 'package:books/services/libro_search_service.dart';
+import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/libro_utils.dart';
+import 'package:books/widgets/app_bar/app_bar_default.dart';
+import 'package:books/widgets/app_bar/home_libri_libreria_appbar_content.dart';
 import 'package:books/widgets/new_libro_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+///
+/// Pagina con la lista dei libri della libreria selezionata
+///
 enum MenuItemCode {
   deleteAllBooksInLibreria(0, "Elimina tutti i libri di {0}"),
   exportAllBooksLibreria(10, "Crea file backup"),
@@ -31,71 +37,41 @@ enum MenuItemCode {
 
 class HomeLibriLibreriaScreen extends StatelessWidget {
   static const String screenPath = "/HomeLibriLibreria";
-  
-  const HomeLibriLibreriaScreen({super.key});
+  late final LibroBloc libroBloc;
+
+  HomeLibriLibreriaScreen({super.key}) {
+    libroBloc = sl<LibroBloc>();
+  }
   
   @override
   Widget build(BuildContext context) {
-    final LibroBloc libroBloc = sl<LibroBloc>();
+    // final LibroBloc libroBloc = sl<LibroBloc>();
 
     return Scaffold(
-        appBar: _buildAppbar(context, libroBloc),
-        body: _blocBody(context, libroBloc),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(MdiIcons.barcodeScan),
-          onPressed: () => { _searchBookByBarcode(context, libroBloc) },
-        ),
-      );
+      appBar: _buildAppbar(context, libroBloc),
+      body: _blocBody(context, libroBloc),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(MdiIcons.barcodeScan),
+        onPressed: () => { _searchBookByBarcode(context, libroBloc) },
+      ),
+    );
   }
 
   _buildAppbar(BuildContext context, LibroBloc libroBloc) {
-    return AppBar(
-      title: Text('${Constant.titoloApp} - ${Constant.libreriaInUso!.nome}'),
-      automaticallyImplyLeading: false,
-      actions: [
-          PopupMenuButton(
-          // add icon, by default "3 dot" icon
-          // icon: Icon(Icons.book)
-          itemBuilder: (context){
-            return [
-                  PopupMenuItem<int>(value: MenuItemCode.deleteAllBooksInLibreria.cd, child: Text(MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', Constant.libreriaInUso!.nome))),
-                  PopupMenuItem<int>(value: MenuItemCode.exportAllBooksLibreria.cd, child: Text(MenuItemCode.exportAllBooksLibreria.label.replaceFirst('{0}', Constant.libreriaInUso!.nome))),
-                  // PopupMenuItem<int>(value: MenuItemCode.importaBooksInLibreria.cd, child: Text(MenuItemCode.importaBooksInLibreria.label)),
-                  PopupMenuItem<int>(value: MenuItemCode.restoreFileBackup.cd, child: Text(MenuItemCode.restoreFileBackup.label)),
-                  PopupMenuItem<int>(value: MenuItemCode.deleteAllBooksInAllLibrerie.cd, child: Text(MenuItemCode.deleteAllBooksInAllLibrerie.label)),
-              ];
-          },
-          onSelected:(value){
-            if (value == MenuItemCode.deleteAllBooksInLibreria.cd) {
-              libroBloc.add(DeleteAllLibriLibreriaEvent(Constant.libreriaInUso!));
-            } 
-            else if(value == MenuItemCode.exportAllBooksLibreria.cd) {
-              _exportLibriLibreria(context, libroBloc);
-            }
-            // else if(value == MenuItemCode.importaBooksInLibreria.cd) {
-            //   importaLibriInLibreria(context, libroBloc);
-            // }
-            else if(value == MenuItemCode.restoreFileBackup.cd) {
-              _restoreFileBackup(context, libroBloc);
-            }
-            else if(value == MenuItemCode.deleteAllBooksInAllLibrerie.cd) {
-              libroBloc.add(const DeleteAllLibriEvent());
-            }
-          }
-        ),
-      ]
+    return AppBarDefault(
+      context: context,
+      appBarContent: BlocProvider<LibroBloc>(
+        create: (context) => libroBloc,
+        child: HomeLibriLibreriaAppBarContent(libroBloc, _fnRestoreFileBackup),
+      ),
     );
-  } 
+  }
 
   Widget _blocBody(BuildContext context, LibroBloc libroBloc) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<LibroBloc>(
-          create: (BuildContext context) => libroBloc..add(InitLibroEvent()),
-        ),
-      ],
+    return BlocProvider<LibroBloc>(
+      create: (context) => libroBloc..add(InitLibroEvent()),
       child: BlocListener<LibroBloc, LibroState>(
-        listener: (BuildContext context, LibroState state) {
+        listener: (context, LibroState state) {
           if (state.actionResult != null && state.msg != null) {
             if (state is! LibreriaLoadedState && state is! LibroInitializedState) { // || state.actionResult != ActionResult.success) {
               // --------------------------------------------------------
@@ -118,10 +94,13 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
               state is LibroInitializedState || state is DeleteAllLibroState) {
             libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
           } else  if (state is ExportedFileState) {
-            _restoreFileBackup(context, libroBloc);
+            _fnRestoreFileBackup(context, libroBloc);
           }
         },
         child: BlocBuilder<LibroBloc, LibroState>(
+          // buildWhen: (context, state) {
+          //   return state is ListaLibroLoadedState;
+          // },
           builder: (context, state) {
             if (state is LibroWaitingState) {
               return const Center(
@@ -129,20 +108,9 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
               );
             }
 
-            // if (state is LibroInitializedState) {
-            //   print('=================== LibroInitializedState =================== ${state.toString()}');
-            //   _libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
-            //   return const Text('Hummm ... caso strano ....');
-            // } 
-
             if (state is ListaLibroLoadedState) {
               return widgetListaLibriDataBase(context, libroBloc, state.data);
             } 
-
-            // if (state is ListaLibroBarcodeScanLoadedState) {
-            //   print('=================== ListaLibroBarcodeScanLoadedState =================== ${state.toString()}');
-            //   return widgetListaLibriDataBase(state.dataState);
-            // } 
             
             if (state is LibroErrorState) {
               return Center(child:  Text("Error: ${state.msg}"));
@@ -150,17 +118,32 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
             debugPrint('=================== Hummm =================== ${state.toString()}');
             return const Text('Hummm ... caso imprevisto ....');
+
+            // return const Center(
+            //   child: CircularProgressIndicator(),
+            // );
           },
         )
       ),
     );
   }
 
+  /// Gestione Andata/Ritorno alla/dalla pagina di Gestione File di Backup
+  /// 
+  _fnRestoreFileBackup(BuildContext context, LibroBloc libroBloc) async {
+    // await Navigator.pushNamed<dynamic> (context, ImportExportFile.pagePath);
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ImportExportFile()),
+    );
+    if (context.mounted) {
+      // Navigator.pop(context);
+      libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
+    }
+  }
+
   Widget widgetListaLibriDataBase(BuildContext context, LibroBloc libroBloc, List<LibroViewModel> lstLibroViewModel) {
-    return LibreriaListaLibriWidget(context, libroBloc, lstLibroViewModel, _viewEditLibro);
-    // return Center(
-    //   child: Text('Nr. ${lstLibroViewModel.length}: libri appartenenti alla libreria in uso.'),
-    // );
+    return LibreriaListaLibriWidget(context, libroBloc, lstLibroViewModel, _viewEditLibro, _deleteLibro);
   }
 
   _searchBookByBarcode(BuildContext context, LibroBloc libroBloc) async {
@@ -196,6 +179,14 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
     if (libroDettaglioResult != null && libroDettaglioResult.isInsert) {
       libroBloc.add(AddLibroEvent(Constant.libreriaInUso!, libroDettaglioResult.libroViewModel));
+    }
+  }
+
+  _deleteLibro(BuildContext context, LibroBloc libroBloc, LibroViewModel libroViewModel) async {
+    bool? isDelete = await DialogUtils.showConfirmationSiNo(context, 'Vuoi eliminare il libro dalla libreria ?');
+    
+    if (isDelete != null && isDelete) {
+      libroBloc.add(DeleteLibroEvent(Constant.libreriaInUso!, libroViewModel));
     }
   }
 
@@ -238,47 +229,5 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       )
     );
   }
-  
-  /// * Va alla pagina di Gestione File di Backup
-  /// 
-  _restoreFileBackup(BuildContext context, LibroBloc libroBloc) async {
-    await Navigator.pushNamed<dynamic> (context, ImportExportFile.pagePath);
-
-    if (context.mounted) {
-      libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
-    }
-  }
-
-  Future<bool?> _exportLibriLibreria(BuildContext context, LibroBloc libroBloc) async {
-    if (context.mounted) {
-      return showDialog<bool>(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Procedo con l'esportazione di nr.${Constant.nrLibriInLibreriaInUso} libri di ${Constant.libreriaInUso!.nome} ?"),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Si'),
-                onPressed: () {
-                  libroBloc.add(ExportAllLibriLibreriaEvent(Constant.libreriaInUso!));
-                  Navigator.pop(context, true);
-                },
-              ),
-              TextButton(
-                child: const Text('No'),
-                onPressed: () {
-                  Navigator.pop(context, false);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-    
-    return false;
-  }
-
-
 }
+

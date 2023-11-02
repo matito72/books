@@ -38,34 +38,13 @@ abstract class LibroUtils {
     return out;
   }
 
-  //  Visualizza la pagina di dettaglio
-  //
-  // static Future<List<Object>?> viewDettaglioLibroFromSearch(BuildContext context, LibreriaModel libreriaDefault, LibroSearchModel item, bool showDelete) async {
-  //   List<Object>? ret = await Navigator.pushNamed(context, showDelete ? DettaglioLibro.pageEditPath : DettaglioLibro.pagePath, arguments: {
-  //       'libroViewModel': createLibroViewFromSearchModel(libreriaDefault, item)
-  //   }) as List<Object>?;
-
-  //   return ret;
-  // }
-
   static viewDettaglioLibro(BuildContext context, LibreriaModel libreriaDefault, LibroSearchModel libroViewModel, bool showDelete) async {
-    // List<Object>? libroDettaglioResult = await LibroUtils.viewDettaglioLibroFromSearch(context, libreriaDefault, libroViewModel, showDelete);
-    // execActionOnLibroDettaglioResult(libroDettaglioResult, entry);
-
     LibroDettaglioResult? ret = await Navigator.pushNamed(context, showDelete ? DettaglioLibro.pageEditPath : DettaglioLibro.pagePath, arguments: {
-        'libroViewModel': libroViewModel /*createLibroViewFromSearchModel(libreriaDefault, libroViewModel)*/
+        'libroViewModel': libroViewModel
     }) as LibroDettaglioResult?;
 
     return ret;
   }
-
-  ///  Visualizza la pagina di dettaglio
-  ///
-  // static Future<LibroViewModel?> viewDettaglioLibro(BuildContext context, LibroViewModel item, bool showDelete) async {
-  //   return await Navigator.pushNamed(context, DettaglioLibro.pagePath, arguments: {
-  //     'libroViewModel': cloneLibroViewModel(item), 
-  //     'askBeforeDelete': showDelete}) as LibroViewModel?;
-  // }
 
   static LibroViewModel createLibroViewFromSearchModel(LibreriaModel libreriaDefault, LibroSearchModel libroSearchModel) {
     LibroViewModel libroViewModel = LibroViewModel(libreriaDefault.sigla, 

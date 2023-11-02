@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:books/config/constant.dart';
 import 'package:books/features/import_export/data/repository/import_export_service.dart';
 import 'package:books/features/libreria/data/repository/db_libreria_service.dart';
 import 'package:books/features/libro/blocs/libro_events.dart';
@@ -10,8 +13,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class LibroBloc extends Bloc<LibroEvent, LibroState> {
   final DbLibroService _dbLibroService;
 
+  LibroState get libroBlocState => super.state;
+
   LibroBloc(this._dbLibroService) : super(const LibroWaitingState()) {
-    
+
     // ** INIT
     on<InitLibroEvent>((event, emit) async {
       emit(const LibroWaitingState());
@@ -35,6 +40,8 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         // }
 
         List<LibroViewModel> lstLibroView = await _dbLibroService.readLstLibroFromDb(event.libreriaModel);
+        sleep(const Duration(seconds:5));
+        
         String msg = lstLibroView.isEmpty ? 'Nessun Libro presente' : 'Nr. ${lstLibroView.length}, libri caricati correttamente';
         emit(ListaLibroLoadedState(lstLibroView, msg));
       } catch (e) {
@@ -54,7 +61,6 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         emit(LibroErrorState(e.toString()));
       }
     });
-
 
     // ** DELETE ALL LIBRI LIBRERIA
     on<DeleteAllLibriLibreriaEvent>((event, emit) async {
@@ -109,6 +115,8 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       try {
         await _dbLibroService.deleteLibroToDb(event.libroModelDelete);
         await sl<DbLibreriaService>().removeLibroFromLibreriaInUso();
+
+        print("=====> ${Constant.libreriaInUso!.nrLibriCaricati}");
         emit(DeletedLibroState('Libro ${event.libroModelDelete.titolo} eliminato.'));
       } catch (e) {
         emit(LibroErrorState(e.toString()));

@@ -18,7 +18,7 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<DbLibreriaService>(DbLibreriaService(appDocumentDir));
   sl.registerSingleton<DbLibroService>(DbLibroService());
 
-  // ** Service
+  // ** Service BL
   sl.registerSingleton<ImportExportService>(ImportExportService(appDocumentDir));
 
   // ** Blocs

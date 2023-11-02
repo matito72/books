@@ -5,12 +5,16 @@ import 'package:books/features/libreria/data/models/libreria_model.dart';
 import 'package:books/models/widget_desc_model.dart';
 import 'package:books/resources/action_result.dart';
 import 'package:books/utilities/dialog_utils.dart';
+import 'package:books/widgets/app_bar/app_bar_default.dart';
 import 'package:books/widgets/form_libreria_new.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../config/constant.dart';
 
+/// 
+/// Pagina con la lista delle librerie salvate
+/// 
 class HomeLibreriaScreen extends StatelessWidget {
   final Function? fn;
   
@@ -79,28 +83,33 @@ class HomeLibreriaScreen extends StatelessWidget {
   }
 
   _buildAppbar(BuildContext context) {
-    return AppBar(
-      title: const Text('${Constant.titoloApp} - Librerie'),
-      actions: [
+    return AppBarDefault(
+      context: context,
+      appBarContent: Row(
+        children: <Widget>[
+          const Padding(padding: EdgeInsets.only(left: 10)),
+          const Text('${Constant.titoloApp} - Librerie'),
+          const Spacer(),
           PopupMenuButton(
-          // add icon, by default "3 dot" icon
-          // icon: Icon(Icons.book)
-          itemBuilder: (context){
-            return [
-                  const PopupMenuItem<int>(value: 0, child: Text("Cancella Tutte le libreria !")),
-                  // PopupMenuItem<int>(value: 1, child: Text("Settings")),
-                  // PopupMenuItem<int>(value: 2,child: Text("Logout")),
-              ];
-          },
-          onSelected:(value){
-            if (value == 0) {
-              BlocProvider.of<LibreriaBloc>(context).add(DeleteAllLibreriaEvent());
-            } 
-            // else if(value == 1){print("Settings menu is selected.");}
-            // else if(value == 2){print("Logout menu is selected.");}
-          }
-        ),
-      ]
+            // add icon, by default "3 dot" icon
+            // icon: Icon(Icons.book)
+            itemBuilder: (context){
+              return [
+                    const PopupMenuItem<int>(value: 0, child: Text("Cancella tutte le librerie !")),
+                    // PopupMenuItem<int>(value: 1, child: Text("Settings")),
+                    // PopupMenuItem<int>(value: 2,child: Text("Logout")),
+                ];
+            },
+            onSelected:(value){
+              if (value == 0) {
+                BlocProvider.of<LibreriaBloc>(context).add(DeleteAllLibreriaEvent());
+              } 
+              // else if(value == 1){print("Settings menu is selected.");}
+              // else if(value == 2){print("Logout menu is selected.");}
+            }
+          ),
+        ],
+      )
     );
   }
 
@@ -109,7 +118,7 @@ class HomeLibreriaScreen extends StatelessWidget {
 
     if (libreriaInUso != null && lstLibreriaModel.isNotEmpty) {
       for (var libreria in lstLibreriaModel) {
-        debugPrint('==============================> ${libreriaInUso.nome}');
+        // debugPrint('==============================> ${libreriaInUso.nome}');
         if (libreria.sigla == libreriaInUso.sigla) {
           // libreria = libreriaInUso!;
           libreria.nrLibriCaricati = libreriaInUso.nrLibriCaricati;

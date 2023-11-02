@@ -1,8 +1,9 @@
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:books/features/libro/data/models/libro_view_model.dart';
 import 'package:books/utilities/dialog_utils.dart';
-import 'package:books/widgets/dettaglio_libro_web_view.dart';
-import 'package:books/widgets/dettaglio_libro_widget.dart';
+import 'package:books/widgets/app_bar/app_bar_default.dart';
+import 'package:books/widgets/dettaglio_libro/dettaglio_libro_web_view.dart';
+import 'package:books/widgets/dettaglio_libro/dettaglio_libro_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:zoom_widget/zoom_widget.dart';
 
@@ -66,63 +67,100 @@ class _DettaglioLibro extends State<DettaglioLibro> {
           body: DefaultTabController(
             length: 3,
             child: Scaffold(
-              appBar: AppBar(
-                bottom: PreferredSize(
-                  preferredSize: tabBar.preferredSize,
-                  child: Material(
-                    color: const Color.fromARGB(115, 0, 143, 88),
-                    child: tabBar,
-                  ),
+              appBar: AppBarDefault(
+                context: context,
+                percHeight: 7,
+                secondaryColor: const Color.fromARGB(115, 0, 143, 88),
+                appBarContent: Row(
+                  children: <Widget>[
+                    const Padding(padding: EdgeInsets.only(left: 10)),
+                    Expanded(
+                      flex: 9,
+                      child: Text(libroViewModel.titolo)
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: widget.showDelete 
+                        ? <Widget>[ iconDeleteLibro, iconCheckAddLibro ]
+                        : <Widget>[ iconCheckAddLibro ],
+                    )
+                  ],
                 ),
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.pop(context),
-                  color: Colors.amber.shade50,
-                ),
-                actions: widget.showDelete 
-                  ? <Widget>[ iconDeleteLibro, iconCheckAddLibro ]
-                  : <Widget>[ iconCheckAddLibro ],
-                title: Text(libroViewModel.titolo),
               ),
-              body: TabBarView(
-                physics: const NeverScrollableScrollPhysics(),
-                viewportFraction: 1,
+              // appBar: PreferredSize(
+              //   preferredSize: Size.fromHeight((MediaQuery.of(context).size.height * 7 / 100)),
+              //   child: Container(
+              //     decoration: const BoxDecoration(
+              //       gradient: LinearGradient(
+              //         colors: <Color>[Colors.blue, Colors.pink],
+              //       ),
+              //     ),
+              //     child: Row(
+              //       children: <Widget>[
+              //         const Padding(padding: EdgeInsets.only(left: 10)),
+              //         Expanded(
+              //           flex: 9,
+              //           child: Text(libroViewModel.titolo)
+              //         ),
+              //         const Spacer(),
+              //         Row(
+              //           children: widget.showDelete 
+              //             ? <Widget>[ iconDeleteLibro, iconCheckAddLibro ]
+              //             : <Widget>[ iconCheckAddLibro ],
+              //         )
+              //       ],
+              //     ),
+              //   )
+              // ),
+              body: Column(
                 children: [
-                  DettaglioLibroWidget(libroViewModel),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsetsDirectional.only(top: 20),
-                        child: Text(
-                          'Note ... \n\n${libroViewModel.titolo} ...\n\n ${libroViewModel.previewLink}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                  PreferredSize(
+                    // preferredSize: tabBar.preferredSize,
+                    preferredSize: Size.fromHeight((MediaQuery.of(context).size.height * 4 / 100)),
+                    child: Material(
+                      color: const Color.fromARGB(115, 0, 143, 88),
+                      child: tabBar,
+                    ),
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      viewportFraction: 1,
+                      children: [
+                        DettaglioLibroWidget(libroViewModel),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsetsDirectional.only(top: 20),
+                              child: Text(
+                                'Note ... \n\n${libroViewModel.titolo} ...\n\n ${libroViewModel.previewLink}',
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            )
+                          ]
                         ),
-                      )
-                    ]
-                  ),
-                  SizedBox(
-                    // width: MediaQuery.of(context).size.width*.8,
-                    // height: MediaQuery.of(context).size.height*.7,
-                    child: Zoom(
-                      maxZoomWidth: 1200,
-                      maxZoomHeight: 1800,
-                      canvasColor: Colors.grey,
-                      backgroundColor: Colors.orange,
-                      colorScrollBars: const Color.fromARGB(151, 39, 114, 176),
-                      opacityScrollBars: 0.9,
-                      scrollWeight: 10.0,
-                      centerOnScale: true,
-                      enableScroll: true,
-                      doubleTapZoom: true,
-                      zoomSensibility: 0.8,
-                      initTotalZoomOut: false,
-                      child: Center(
-                          child: DettaglioLibroWebView(libroViewModel.previewLink)
-                      ),
+                        Zoom(
+                          maxZoomWidth: 1200,
+                          maxZoomHeight: 1800,
+                          canvasColor: Colors.grey,
+                          backgroundColor: Colors.orange,
+                          colorScrollBars: const Color.fromARGB(151, 39, 114, 176),
+                          opacityScrollBars: 0.9,
+                          scrollWeight: 10.0,
+                          centerOnScale: true,
+                          enableScroll: true,
+                          doubleTapZoom: true,
+                          zoomSensibility: 0.8,
+                          initTotalZoomOut: false,
+                          child: Center(
+                              child: DettaglioLibroWebView(libroViewModel.previewLink)
+                          ),
+                        ),
+                      ],
+                    ),
                   )
-                  ),
                 ],
               ),
             ),

@@ -1,14 +1,9 @@
 import 'dart:io';
 
-import 'package:books/config/constant.dart';
 import 'package:books/features/import_export/blocs/import_export_events.dart';
 import 'package:books/features/import_export/blocs/import_export_state.dart';
 import 'package:books/features/import_export/data/models/file_backup.dart';
 import 'package:books/features/import_export/data/repository/import_export_service.dart';
-import 'package:books/features/libreria/data/repository/db_libreria_service.dart';
-import 'package:books/features/libro/data/models/libro_view_model.dart';
-import 'package:books/features/libro/data/repository/db_libro_service.dart';
-import 'package:books/injection_container.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
@@ -70,21 +65,8 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     on<ImportFileBackupEvent>((event, emit) async {
       emit(const ImportExportWaitingState());
       try {
-        List<LibroViewModel> lstLibroViewModel = await _importExportService.restoreFileBackup(event.pathFolderFile, event.fileBackupModel.fileName);
-        
-        if (lstLibroViewModel.isNotEmpty) {
-          DbLibroService dbLibroService = sl<DbLibroService>();
-          DbLibreriaService dbLibreriaService = sl<DbLibreriaService>();
-
-          String siglaLibreria = Constant.libreriaInUso!.sigla;
-          for (var libroModelNew in lstLibroViewModel) {
-            libroModelNew.siglaLibreria = siglaLibreria;
-            await dbLibroService.saveLibroToDb(libroModelNew, true);            
-            await dbLibreriaService.addLibriInLibreriaInUso(1);
-          }
-        }
-
-        emit(ImportedFileBackupState(lstLibroViewModel.length, 'Importati ${lstLibroViewModel.length} libri.'));
+        ImportedFileBackupState importedFileBackupState = await _importExportService.importIntoDbFileBackup(event.pathFolderFile, event.fileBackupModel.fileName);
+        emit(importedFileBackupState);
       } catch (e) {
         emit(ImportExportErrorState(e.toString()));
       }

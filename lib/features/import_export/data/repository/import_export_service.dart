@@ -1,7 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:books/config/constant.dart';
+import 'package:books/features/import_export/blocs/import_export_state.dart';
 import 'package:books/features/import_export/data/models/file_backup.dart';
+import 'package:books/features/libreria/data/repository/db_libreria_service.dart';
+import 'package:books/features/libro/data/repository/db_libro_service.dart';
+import 'package:books/injection_container.dart';
+import 'package:books/resources/item_exception.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
@@ -45,6 +50,9 @@ class ImportExportService {
     // await getListImportExportFile(printDebug: true);
   }
 
+  /// 
+  /// Restiruisce una lista di 'LibroViewModel' a fronte di un file json
+  ///
   Future<List<LibroViewModel>> restoreFileBackup(String? pathFolderFile, String nomeFile) async {
     List<LibroViewModel> lstLibriLibreria = [];
 
@@ -58,6 +66,41 @@ class ImportExportService {
     }
 
     return lstLibriLibreria;
+  }
+
+  Future<ImportedFileBackupState> importIntoDbFileBackup(String? pathFolderFile, String nomeFile) async {
+    List<LibroViewModel> lstLibroViewModel = await restoreFileBackup(pathFolderFile, nomeFile);
+    int nrLibriCaricati = 0;
+
+    if (lstLibroViewModel.isNotEmpty) {
+      DbLibroService dbLibroService = sl<DbLibroService>();
+      DbLibreriaService dbLibreriaService = sl<DbLibreriaService>();
+
+      String siglaLibreria = Constant.libreriaInUso!.sigla;
+      List<LibroViewModel> lstLibriGiaPresenti = [];
+      Object? errore;
+      for (var libroModelNew in lstLibroViewModel) {
+        libroModelNew.siglaLibreria = siglaLibreria;
+
+        try {
+          await dbLibroService.saveLibroToDb(libroModelNew, true);
+          nrLibriCaricati++;
+        } on ItemPresentException {
+          lstLibriGiaPresenti.add(libroModelNew);
+        } catch (e) {
+          errore = e;
+          break;
+        }
+      }
+
+      await dbLibreriaService.addLibriInLibreriaInUso(nrLibriCaricati);
+      if (errore != null) {
+        throw errore;
+      }
+      // print('lstLibriGiaPresenti: ${lstLibriGiaPresenti.length}');
+    }
+
+    return ImportedFileBackupState(lstLibroViewModel.length, 'Importati $nrLibriCaricati libri.');
   }
 
   Future<void> shareFileBackup(FileBackupModel fileBackupModel) async {

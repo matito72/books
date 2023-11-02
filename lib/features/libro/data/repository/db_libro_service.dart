@@ -1,6 +1,7 @@
 import 'package:books/config/constant.dart';
 import 'package:books/features/libreria/data/models/libreria_model.dart';
 import 'package:books/features/libro/data/models/libro_view_model.dart';
+import 'package:books/resources/item_exception.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 
@@ -79,9 +80,11 @@ class DbLibroService {
     LibroViewModel? libroViewModel = boxLibroView.get(keyLibro);
 
     if (isNew && libroViewModel != null) {
-      throw 'Libro ${libroToNewEdit.isbn}-${libroToNewEdit.titolo} già presente!';
+      await boxLibroView.close();
+      throw ItemPresentException(ItemType.libro, 'Libro ${libroToNewEdit.isbn}-${libroToNewEdit.titolo} già presente!');
     } else if (!isNew && libroViewModel == null) {
-      throw 'Libro ${libroToNewEdit.isbn}-${libroToNewEdit.titolo} non presente!';
+      await boxLibroView.close();
+      throw ItemNotPresentException(ItemType.libro, 'Libro ${libroToNewEdit.isbn}-${libroToNewEdit.titolo} non presente!');
     }
     
     await boxLibroView.put(keyLibro, libroToNewEdit);
@@ -94,6 +97,7 @@ class DbLibroService {
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
     LibroViewModel? libroViewModel = boxLibroView.get(keyLibro);
     if (libroViewModel == null) {
+      await boxLibroView.close();
       throw 'Libro ${libroToDelete.isbn}-${libroToDelete.titolo} non presente!';
     }
     
@@ -110,71 +114,6 @@ class DbLibroService {
 
     return nrRecordDeleted;
   }
-
-  // Future<int> exportAllLibriLibreria(LibreriaModel libreriaModel) async {
-  //   List<LibroViewModel> lstLibriLibreria = await readLstLibroFromDb(libreriaModel);
-
-  //   final String pathFolder = p.join(_appDocumentDir.path, Constant.jsonFilesPath);  // '${_appDocumentDir.path}/${Constant.jsonFilesPath}';
-  //   Directory directory =  Directory(pathFolder);
-  //   if (!await directory.exists()) {
-  //     Directory d = await directory.create(recursive: true);
-  //     print('${d.absolute} : ${d.path}');
-  //   }
-  //   String nomeFile = 'libreria.${libreriaModel.sigla}.json';
-  //   final File file = File(p.join(pathFolder, nomeFile));
-  //   file.writeAsString(json.encode(lstLibriLibreria));
-
-  //   print('WRITE FILE: >${file.path}<');
-    
-  //   final List<FileSystemEntity> entities = await Directory(pathFolder).list().toList();
-  //   entities.forEach((element) async {
-  //     // FileStat stat = await element.stat();
-  //     print('${element.absolute} : ${element.isAbsolute} : ${element.path} : ${await element.stat()}');
-  //   });
-
-  //   return lstLibriLibreria.length;
-  // }
-
-  // Future<int> importAllLibriLibreria(LibreriaModel libreriaModel) async {
-  //   ImportExportService importExportService = sl<ImportExportService>();
-  //   await importExportService.getListImportExportFile(printDebug: true);
-
-  //   String nomeFile = 'libreria.${libreriaModel.sigla}.json';
-  //   return (await importExportService.importLibriLibreria(nomeFile)).length;
-
-  //   // final String pathFolder = p.join(_appDocumentDir.path, Constant.jsonFilesPath);
-
-  //   // print('/data/user/0/com.example.books/app_flutter/');
-  //   // print(pathFolder);
-  //   // print(pathFolder == '/data/user/0/com.example.books/app_flutter/');
-    
-  //   // // FileSystemEntity fse = await File('/data/user/0/com.example.books/app_flutter/jsonFiles').delete();
-  //   // // FileSystemEntity fse = await File('/data/user/0/com.example.books/app_flutter/jsonFiles/libreria.${libreriaModel.sigla}.json').delete();
-
-  //   // final List<FileSystemEntity> entities = await Directory('/data/user/0/com.example.books/app_flutter/').list().toList();
-  //   // entities.forEach((element) async {
-  //   //   // FileStat stat = await element.stat();
-  //   //   print('${element.absolute} : ${element.isAbsolute} : ${element.path} : ${await element.stat()}');
-  //   // });
-
-  //   // Directory directory =  Directory(pathFolder);
-  //   // // final List<FileSystemEntity> entities = await directory.list().toList();
-  //   // if (!await directory.exists()) {
-  //   //   throw 'File non presente!';
-  //   // }
-    
-  //   // String nomeFile = 'libreria.${libreriaModel.sigla}.json';
-  //   // final File file = File('$pathFolder/$nomeFile');
-
-  //   // String jsonFile = await file.readAsString();
-  //   // List<LibroViewModel> lstLibriLibreria = [];
-  //   // List<dynamic> lstJsonEntities = await json.decode(jsonFile);
-  //   // for (var json in lstJsonEntities) {
-  //   //   lstLibriLibreria.add(LibroViewModel.fromMap(json));
-  //   // }
-
-  //   // return lstLibriLibreria.length;
-  // }
 
   Future<int> deleteAllLibriLibreria(LibreriaModel libreriaModel) async {
     int nrRecordDeleted = 0;

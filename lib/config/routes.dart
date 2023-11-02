@@ -19,7 +19,7 @@ class AppRoutes {
         return _materialRoute(const HomeLibreriaScreen());
 
       case HomeLibriLibreriaScreen.screenPath:
-        return _materialRoute(const HomeLibriLibreriaScreen()); 
+        return _materialRoute(HomeLibriLibreriaScreen()); 
 
       case SearchListBookPage.pagePath:
         final ParameterGoogleSearchModel googleSearchModel = arguments['googleSearchModel'];

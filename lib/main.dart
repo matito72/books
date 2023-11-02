@@ -55,6 +55,7 @@ class _MyAppState extends State<MyApp> {
     _pageController.dispose();
   }
 
+  // Inizializza/Apre una libreria 
   void _goToHomeLibriLibreria(LibreriaModel libreriaSel) async {
     if (Constant.libreriaInUso == null || libreriaSel.sigla != Constant.libreriaInUso!.sigla)   {
       await sl<DbLibreriaService>().changeLibreriaDefault(libreriaSel);
@@ -67,7 +68,7 @@ class _MyAppState extends State<MyApp> {
       }
 
       Constant.initApp = true;
-      widgetOptions.add(const HomeLibriLibreriaScreen());
+      widgetOptions.add(HomeLibriLibreriaScreen());
       
       _selectedIndex = 1;
       updBottomNavigationBar();
@@ -99,8 +100,7 @@ class _MyAppState extends State<MyApp> {
   void bottomTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      _pageController.animateToPage(index,
-          duration: const Duration(milliseconds: 500), curve: Curves.ease);
+      _pageController.animateToPage(index, duration: const Duration(milliseconds: 500), curve: Curves.ease);
       updBottomNavigationBar();
     });
   }

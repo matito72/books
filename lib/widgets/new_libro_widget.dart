@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:books/config/constant.dart';
 import 'package:books/features/libro/blocs/libro_bloc.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
@@ -35,8 +37,21 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
 
     Future<void> execSimpleGoogleBooksSearch(ParameterGoogleSearchModel googleSearchModel) async {
       if (googleSearchModel.title != null || googleSearchModel.author != null || googleSearchModel.isbn != null) {
-        List<LibroSearchModel> libri = await LibroSearchService.simpleGoogleBooksSearch(googleSearchModel);
-        // num totalFindedBooks = libri.length;
+        List<LibroSearchModel> libri = [];
+        try {
+          libri = await LibroSearchService.simpleGoogleBooksSearch(googleSearchModel);
+        } catch (errore) {
+          if (errore is HandshakeException && errore.type == "HandshakeException") {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Problemi di connessione, riprovare più tardi !')));
+            }
+          }
+          else {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Errore chiamata al Google !')));
+            }
+          }
+        }
         
         if (libri.isNotEmpty) {
           if (mounted) {

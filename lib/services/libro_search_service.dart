@@ -30,10 +30,8 @@ class LibroSearchService {
   }
 
   static Future<List<LibroViewModel>> simpleGoogleBooksSearch(ParameterGoogleSearchModel googleSearchModel) async {
-    final GooleApisBooksService gooleApisBooksService = GooleApisBooksService();
-    
-    return (googleSearchModel.title != null || googleSearchModel.author != null || googleSearchModel.isbn != null)
-      ? await gooleApisBooksService.cercaLibri(googleSearchModel, 0)
+    return (googleSearchModel.title != null || googleSearchModel.author != null || (googleSearchModel.isbn != null && googleSearchModel.isbn != "-1"))
+      ? await GooleApisBooksService.getLibri(googleSearchModel, 0, -1)
       : [];
   }
 

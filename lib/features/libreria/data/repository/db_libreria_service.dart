@@ -117,6 +117,7 @@ class DbLibreriaService {
 
     LibreriaModel? libreria = boxLibreria.get(libreriaToAdd.sigla);
     if (libreria != null) {
+      await boxLibreria.close();
       throw 'Libreria ${libreria.nome} già presente!';
     }
 
@@ -133,6 +134,7 @@ class DbLibreriaService {
 
     LibreriaModel? libreria = boxLibreria.get(libreriaNew.sigla);
     if (libreria == null) {
+      await boxLibreria.close();
       throw 'Libreria ${libreriaNew.nome} non presente!';
     }
 
@@ -148,6 +150,7 @@ class DbLibreriaService {
 
     LibreriaModel? libreria = boxLibreria.get(libreriaToDelete.sigla);
     if (libreria == null) {
+      await boxLibreria.close();
       throw 'Libreria ${libreriaToDelete.nome} non presente!';
     }
 

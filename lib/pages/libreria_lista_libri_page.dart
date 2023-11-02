@@ -4,29 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-// class LibreriaListaLibriWidget extends StatefulWidget { 
-//   final BuildContext parentContext; 
-//   final LibroBloc libroBloc;
-//   final List<LibroViewModel> listaLibri;
-//   final Function fnViewDettaglioLibro;
-//   final num nrTot;
-
-//   const LibreriaListaLibriWidget(this.parentContext, this.libroBloc, this.listaLibri, this.fnViewDettaglioLibro, {super.key}) : nrTot = listaLibri.length;
-
-//   @override
-//   State<LibreriaListaLibriWidaget> createState() => _LibreriaListaLibriWidget();
-// }
-
-// class _LibreriaListaLibriWidget extends State<LibreriaListaLibriWidget> {  
-  
+ 
 class LibreriaListaLibriWidget extends StatelessWidget {
   final BuildContext parentContext; 
   final LibroBloc libroBloc;
   final List<LibroViewModel> listaLibri;
   final Function fnViewDettaglioLibro;
+  final Function fnDeleteLibro;
   final num nrTot;
 
-  const LibreriaListaLibriWidget(this.parentContext, this.libroBloc, this.listaLibri, this.fnViewDettaglioLibro, {super.key}) : nrTot = listaLibri.length;
+  const LibreriaListaLibriWidget(
+    this.parentContext, 
+    this.libroBloc, 
+    this.listaLibri, 
+    this.fnViewDettaglioLibro, 
+    this.fnDeleteLibro,
+    {super.key}
+  ) : nrTot = listaLibri.length;
 
   @override
   Widget build(BuildContext context) {    
@@ -56,21 +50,11 @@ class LibreriaListaLibriWidget extends StatelessWidget {
                 children: [
                   const Divider(height: 5),
                   ListTile(
-                    tileColor: const Color.fromARGB(47, 0, 131, 143), // Colors.blueGrey.shade900,
+                    tileColor: const Color.fromARGB(47, 0, 131, 143), 
                     isThreeLine: false,
                     dense: false,
-                    // shape: RoundedRectangleBorder(
-                    //   side: const BorderSide(width: 2),
-                    //   borderRadius: BorderRadius.circular(50), //<-- SEE HERE
-                    // ),
-                    // shape: BeveledRectangleBorder( //<-- SEE HERE
-                    //   side: const BorderSide(width: 2),
-                    //   borderRadius: BorderRadius.circular(10),
-                    // ),
                     onTap: () async {
                       fnViewDettaglioLibro(parentContext, libroBloc, item);
-                      // LibroDettaglioResult? libroDettaglioResult = await LibroUtils.viewDettaglioLibro(context, item, true);
-                      // execActionOnLibroDettaglioResult(libroDettaglioResult, item); //, index);
                     },
                     leading: (item.immagineCopertina != '')
                         ? buildImage(index, item.immagineCopertina)
@@ -112,30 +96,31 @@ class LibreriaListaLibriWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    trailing: PopupMenuButton(
-                      elevation: 10,
-                      icon: const Icon(Icons.more_vert),
-                      surfaceTintColor: const Color.fromARGB(47, 0, 131, 143),
-                      itemBuilder: (context) {
-                        return [
-                          PopupMenuItem(
-                            value: 'edit',
-                            child: IconButton(
-                              icon: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
-                              onPressed: () => {} // actPopUpItemSelected('edit', item),
-                            ),                      
-                          ),
-                          PopupMenuItem(
-                            value: 'delete',
-                            child: IconButton(
-                              icon: Icon(Icons.delete, color: Colors.orange.shade800),
-                              onPressed: () => {} // actPopUpItemSelected('delete', item),
-                            )
-                          )
-                        ];
-                      },
-                      //onSelected: (String value) => actPopUpItemSelected(value, item),
-                    )
+                    trailing: MenuAnchor(
+                      builder: (BuildContext context, MenuController controller, Widget? child) {
+                      return IconButton(
+                        onPressed: () {
+                          if (controller.isOpen) {
+                            controller.close();
+                          } else {
+                            controller.open();
+                          }
+                        },
+                        icon: const Icon(Icons.more_vert),
+                        tooltip: 'Show menu',
+                      );
+                    },
+                    menuChildren: <MenuItemButton>[
+                      MenuItemButton(
+                        onPressed: () => fnViewDettaglioLibro(parentContext, libroBloc, item),
+                        child: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
+                      ),
+                      MenuItemButton(
+                        onPressed: () => fnDeleteLibro(parentContext, libroBloc, item),
+                        child: Icon(Icons.delete, color: Colors.orange.shade800),
+                      ),
+                    ],
+                  )
                   ),
                 ],
               );
