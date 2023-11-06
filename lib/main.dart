@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> {
       }
 
       Constant.initApp = true;
-      widgetOptions.add(HomeLibriLibreriaScreen());
+      widgetOptions.add(const HomeLibriLibreriaScreen());
       
       _selectedIndex = 1;
       updBottomNavigationBar();

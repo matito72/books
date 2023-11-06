@@ -36,7 +36,7 @@ class DbLibroService {
     debugPrint('DISPOSE - stop');
   }
 
-  Future<List<LibroViewModel>> readLstLibroFromDb(LibreriaModel libreriaSel) async {
+  Future<List<LibroViewModel>> readLstLibroFromDb(LibreriaModel libreriaSel, [String? querySearch]) async {
     List<LibroViewModel> lstLibroViewSaved = [];
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
 

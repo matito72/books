@@ -34,7 +34,6 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
 
   @override
   Widget build(BuildContext context) {
-
     Future<void> execSimpleGoogleBooksSearch(ParameterGoogleSearchModel googleSearchModel) async {
       if (googleSearchModel.title != null || googleSearchModel.author != null || googleSearchModel.isbn != null) {
         List<LibroSearchModel> libri = [];
@@ -55,6 +54,8 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
         
         if (libri.isNotEmpty) {
           if (mounted) {
+            Navigator.of(context).pop();
+
             LibroDettaglioResult? libroDettaglioResult = await Navigator.pushNamed<dynamic> (
               context, 
               SearchListBookPage.pagePath, 
@@ -72,6 +73,7 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
           }        
         } else {
           if (mounted) {
+            Navigator.of(context).pop();  
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Nessun libro trovato !')));
           }
         }
@@ -89,35 +91,10 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
       
       ParameterGoogleSearchModel googleSearchModel = ParameterGoogleSearchModel(title: enteredTitolo, author: enteredAutore, casaEditrice: enteredEditore);
       await execSimpleGoogleBooksSearch(googleSearchModel);
-      // if (googleSearchModel.title != null || googleSearchModel.author != null || googleSearchModel.isbn != null) {
-      //   List<LibroSearchModel> libri = await LibroSearchService.simpleGoogleBooksSearch(googleSearchModel);
-      //   // num totalFindedBooks = libri.length;
-        
-      //   if (libri.isNotEmpty) {
-      //     if (context.mounted) {
-      //       LibroViewModel? dynLibroDettaglioResult;
-            
-      //       dynLibroDettaglioResult = await Navigator.pushNamed<dynamic>(
-      //         context, 
-      //         SearchListBookPage.pagePath, 
-      //         arguments: {'googleSearchModel': googleSearchModel, 'libreriaSel': sl<DbLibreriaService>().libreriaInUso! /* 'libri': libri, 'nrTot': totalFindedBooks*/}
-      //       );
-            
-      //       if (dynLibroDettaglioResult != null) {
-      //         print("ssss");
-              
-      //       }
-      //     }        
-      //   } else {
-      //     if (context.mounted) {
-      //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Nessun libro trovato !')));
-      //     }
-      //   }
-      // }
 
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
+      // if (mounted) {
+      //   Navigator.of(context).pop();
+      // }
     }
 
     return Container(

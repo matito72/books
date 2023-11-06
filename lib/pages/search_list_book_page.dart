@@ -5,6 +5,7 @@ import 'package:books/models/parameter_google_search_model.dart';
 import 'package:books/services/goole_apis_books_service.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/libro_utils.dart';
+import 'package:books/widgets/app_bar/app_bar_default.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pagewise/flutter_pagewise.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -46,13 +47,10 @@ class SearchListBookPage extends StatelessWidget {
     
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Ricerca : $title'),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ), 
+        appBar: AppBarDefault(
+          context: context,
+          txtLabel: 'Ricerca : $title'
+        ),
         body: Padding(
           padding: const EdgeInsets.only(top: 10, left: 10, right: 5),
           child: PagewiseListViewExample(googleSearchModel, libreriaSel, title: title)

@@ -85,31 +85,27 @@ class HomeLibreriaScreen extends StatelessWidget {
   _buildAppbar(BuildContext context) {
     return AppBarDefault(
       context: context,
-      appBarContent: Row(
-        children: <Widget>[
-          const Padding(padding: EdgeInsets.only(left: 10)),
-          const Text('${Constant.titoloApp} - Librerie'),
-          const Spacer(),
-          PopupMenuButton(
-            // add icon, by default "3 dot" icon
-            // icon: Icon(Icons.book)
-            itemBuilder: (context){
-              return [
-                    const PopupMenuItem<int>(value: 0, child: Text("Cancella tutte le librerie !")),
-                    // PopupMenuItem<int>(value: 1, child: Text("Settings")),
-                    // PopupMenuItem<int>(value: 2,child: Text("Logout")),
-                ];
-            },
-            onSelected:(value){
-              if (value == 0) {
-                BlocProvider.of<LibreriaBloc>(context).add(DeleteAllLibreriaEvent());
-              } 
-              // else if(value == 1){print("Settings menu is selected.");}
-              // else if(value == 2){print("Logout menu is selected.");}
-            }
-          ),
-        ],
-      )
+      txtLabel: '${Constant.titoloApp} - Librerie',
+      showIconSx: false,
+      popupMenuButton: PopupMenuButton(
+        // add icon, by default "3 dot" icon
+        // icon: Icon(Icons.book)
+        padding: EdgeInsets.zero,
+        itemBuilder: (context){
+          return [
+                const PopupMenuItem<int>(value: 0, child: Text("Cancella tutte le librerie !")),
+                // PopupMenuItem<int>(value: 1, child: Text("Settings")),
+                // PopupMenuItem<int>(value: 2,child: Text("Logout")),
+            ];
+        },
+        onSelected:(value){
+          if (value == 0) {
+            BlocProvider.of<LibreriaBloc>(context).add(DeleteAllLibreriaEvent());
+          } 
+          // else if(value == 1){print("Settings menu is selected.");}
+          // else if(value == 2){print("Logout menu is selected.");}
+        }
+      ),
     );
   }
 

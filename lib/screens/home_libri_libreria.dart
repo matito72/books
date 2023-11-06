@@ -13,7 +13,7 @@ import 'package:books/services/libro_search_service.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/libro_utils.dart';
 import 'package:books/widgets/app_bar/app_bar_default.dart';
-import 'package:books/widgets/app_bar/home_libri_libreria_appbar_content.dart';
+// import 'package:books/widgets/app_bar/home_libri_libreria_appbar_content.dart';
 import 'package:books/widgets/new_libro_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,15 +37,12 @@ enum MenuItemCode {
 
 class HomeLibriLibreriaScreen extends StatelessWidget {
   static const String screenPath = "/HomeLibriLibreria";
-  late final LibroBloc libroBloc;
-
-  HomeLibriLibreriaScreen({super.key}) {
-    libroBloc = sl<LibroBloc>();
-  }
+  
+  const HomeLibriLibreriaScreen({super.key});
   
   @override
   Widget build(BuildContext context) {
-    // final LibroBloc libroBloc = sl<LibroBloc>();
+    final LibroBloc libroBloc = sl<LibroBloc>();
 
     return Scaffold(
       appBar: _buildAppbar(context, libroBloc),
@@ -60,11 +57,79 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   _buildAppbar(BuildContext context, LibroBloc libroBloc) {
     return AppBarDefault(
       context: context,
-      appBarContent: BlocProvider<LibroBloc>(
-        create: (context) => libroBloc,
-        child: HomeLibriLibreriaAppBarContent(libroBloc, _fnRestoreFileBackup),
+      txtLabel: 'Libreria ${Constant.libreriaInUso!.nome}: ${Constant.libreriaInUso!.nrLibriCaricati} libri',
+      iconSx: IconButton(
+        padding: EdgeInsets.zero,
+        icon: const Icon(Icons.menu),
+        onPressed: () { },
       ),
+      popupMenuButton: _createAppBarPopupMenuButton(context, libroBloc),
     );
+  }
+
+    PopupMenuButton _createAppBarPopupMenuButton(BuildContext context, LibroBloc libroBloc) {
+    return PopupMenuButton(
+      // add icon, by default "3 dot" icon
+      // icon: Icon(Icons.book)
+      padding: EdgeInsets.zero,
+      itemBuilder: (context) {
+        return [
+              PopupMenuItem<int>(value: MenuItemCode.exportAllBooksLibreria.cd, child: Text(MenuItemCode.exportAllBooksLibreria.label.replaceFirst('{0}', Constant.libreriaInUso!.nome))),
+              // PopupMenuItem<int>(value: MenuItemCode.importaBooksInLibreria.cd, child: Text(MenuItemCode.importaBooksInLibreria.label)),
+              PopupMenuItem<int>(value: MenuItemCode.restoreFileBackup.cd, child: Text(MenuItemCode.restoreFileBackup.label)),
+              PopupMenuItem<int>(value: MenuItemCode.deleteAllBooksInLibreria.cd, child: Text(MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', Constant.libreriaInUso!.nome))),
+              PopupMenuItem<int>(value: MenuItemCode.deleteAllBooksInAllLibrerie.cd, child: Text(MenuItemCode.deleteAllBooksInAllLibrerie.label)),
+          ];
+      },
+      onSelected: (value) {
+        if (value == MenuItemCode.deleteAllBooksInLibreria.cd) {
+          libroBloc.add(DeleteAllLibriLibreriaEvent(Constant.libreriaInUso!));
+        } 
+        else if(value == MenuItemCode.exportAllBooksLibreria.cd) {
+          _exportLibriLibreria(context, libroBloc);
+        }
+        // else if(value == MenuItemCode.importaBooksInLibreria.cd) {
+        //   importaLibriInLibreria(context, libroBloc);
+        // }
+        else if(value == MenuItemCode.restoreFileBackup.cd) {
+          _fnRestoreFileBackup(context, libroBloc);
+        }
+        else if(value == MenuItemCode.deleteAllBooksInAllLibrerie.cd) {
+          libroBloc.add(const DeleteAllLibriEvent());
+        }
+      }
+    );
+  }
+
+  Future<bool?> _exportLibriLibreria(BuildContext context, LibroBloc libroBloc) async {
+    if (context.mounted) {
+      return showDialog<bool>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Procedo con l'esportazione di nr.${Constant.nrLibriInLibreriaInUso} libri di ${Constant.libreriaInUso!.nome} ?"),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Si'),
+                onPressed: () {
+                  libroBloc.add(ExportAllLibriLibreriaEvent(Constant.libreriaInUso!));
+                  Navigator.pop(context, true);
+                },
+              ),
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+    
+    return false;
   }
 
   Widget _blocBody(BuildContext context, LibroBloc libroBloc) {
@@ -118,10 +183,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
             debugPrint('=================== Hummm =================== ${state.toString()}');
             return const Text('Hummm ... caso imprevisto ....');
-
-            // return const Center(
-            //   child: CircularProgressIndicator(),
-            // );
           },
         )
       ),
@@ -131,13 +192,9 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   /// Gestione Andata/Ritorno alla/dalla pagina di Gestione File di Backup
   /// 
   _fnRestoreFileBackup(BuildContext context, LibroBloc libroBloc) async {
-    // await Navigator.pushNamed<dynamic> (context, ImportExportFile.pagePath);
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ImportExportFile()),
-    );
+    await Navigator.pushNamed<dynamic> (context, ImportExportFile.pagePath);
+
     if (context.mounted) {
-      // Navigator.pop(context);
       libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
     }
   }
@@ -220,7 +277,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
                     child: GestureDetector(
                         onTap: () {},
                         behavior: HitTestBehavior.translucent,
-                        child: NewLibroWidget(_addNewLibro, libroBloc), //, _execSimpleGoogleBooksSearch),                      
+                        child: NewLibroWidget(_addNewLibro, libroBloc), 
                       ),
                     )
               ],

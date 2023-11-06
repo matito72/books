@@ -71,47 +71,11 @@ class _DettaglioLibro extends State<DettaglioLibro> {
                 context: context,
                 percHeight: 7,
                 secondaryColor: const Color.fromARGB(115, 0, 143, 88),
-                appBarContent: Row(
-                  children: <Widget>[
-                    const Padding(padding: EdgeInsets.only(left: 10)),
-                    Expanded(
-                      flex: 9,
-                      child: Text(libroViewModel.titolo)
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: widget.showDelete 
-                        ? <Widget>[ iconDeleteLibro, iconCheckAddLibro ]
-                        : <Widget>[ iconCheckAddLibro ],
-                    )
-                  ],
-                ),
+                txtLabel: libroViewModel.titolo,
+                lstIconButtonDx: widget.showDelete
+                  ? [ iconDeleteLibro, iconCheckAddLibro ]
+                  : [ iconCheckAddLibro ]
               ),
-              // appBar: PreferredSize(
-              //   preferredSize: Size.fromHeight((MediaQuery.of(context).size.height * 7 / 100)),
-              //   child: Container(
-              //     decoration: const BoxDecoration(
-              //       gradient: LinearGradient(
-              //         colors: <Color>[Colors.blue, Colors.pink],
-              //       ),
-              //     ),
-              //     child: Row(
-              //       children: <Widget>[
-              //         const Padding(padding: EdgeInsets.only(left: 10)),
-              //         Expanded(
-              //           flex: 9,
-              //           child: Text(libroViewModel.titolo)
-              //         ),
-              //         const Spacer(),
-              //         Row(
-              //           children: widget.showDelete 
-              //             ? <Widget>[ iconDeleteLibro, iconCheckAddLibro ]
-              //             : <Widget>[ iconCheckAddLibro ],
-              //         )
-              //       ],
-              //     ),
-              //   )
-              // ),
               body: Column(
                 children: [
                   PreferredSize(

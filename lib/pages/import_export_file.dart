@@ -7,6 +7,7 @@ import 'package:books/features/import_export/blocs/import_export_state.dart';
 import 'package:books/features/import_export/data/models/file_backup.dart';
 import 'package:books/injection_container.dart';
 import 'package:books/resources/action_result.dart';
+import 'package:books/widgets/app_bar/app_bar_default.dart';
 import 'package:books/widgets/lista_file_backup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,19 +27,22 @@ class ImportExportFile extends StatelessWidget {
     String siglaLibreriaSearch = siglaLibreria ?? Constant.libreriaInUso!.sigla;
     ImportExportBloc importExportBloc = sl<ImportExportBloc>();
     
-    return Scaffold(
-      appBar: _buildAppbar(context),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _importFile(context, importExportBloc),
-        child: const Icon(Icons.add),
+    return SafeArea(
+      child: Scaffold(
+        appBar: _buildAppbar(context),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _importFile(context, importExportBloc),
+          child: const Icon(Icons.add),
+        ),
+        body: _blocBody(context, importExportBloc, siglaLibreriaSearch),
       ),
-      body: _blocBody(context, importExportBloc, siglaLibreriaSearch),
     );
   }
   
   _buildAppbar(BuildContext context) {
-    return AppBar(
-      title: const Text('${Constant.titoloApp} - Restore file backup')
+    return AppBarDefault(
+      context: context,
+      txtLabel: '${Constant.titoloApp} - Restore file backup'
     );
   }
   
