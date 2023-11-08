@@ -130,6 +130,60 @@ class ImportExportFile extends StatelessWidget {
         )
       ),
     );
+    
+    // return MultiBlocProvider(
+    //   providers: [
+    //     BlocProvider<ImportExportBloc>(
+    //       create: (BuildContext context) => importExportBloc..add(InitImportExportEvent()),
+    //         // ..add(LoadFileBackupEvent(siglaLibreriaSearch)),
+    //     ),
+    //   ],
+    //   child: BlocListener<ImportExportBloc, ImportExportState>(
+    //     listener: (BuildContext context, ImportExportState state) {
+    //       if (state.actionResult != null && state.msg != null) {
+    //           // --------------------------------------------------------
+    //           // GESTIONE MESSAGGI OK e d'ERRORE
+    //           // --------------------------------------------------------
+    //           ScaffoldMessenger.of(context).showSnackBar(
+    //             SnackBar(
+    //               backgroundColor: (state.actionResult == ActionResult.success)
+    //                 ? Colors.green
+    //                 : Colors.red,
+    //               content: Text(state.msg!),
+    //               duration: (state.actionResult == ActionResult.success)
+    //                 ? const Duration(seconds: 1)
+    //                 : const Duration(seconds: 5),
+    //             )
+    //           );
+    //       }
+
+    //       if (state is ExportedFileBackupState || state is DeletedFileBackupState || state is DeleteAllFileBackupState ||
+    //           state is ImportExportInitializedState) {
+    //         importExportBloc.add(LoadFileBackupEvent(siglaLibreriaSearch));
+    //       } else if (state is ImportedFileBackupState) {
+    //           Navigator.pop(context, true);
+    //       }
+    //     },
+    //     child: BlocBuilder<ImportExportBloc, ImportExportState>(
+    //       builder: (context, state) {
+    //         if (state is ImportExportWaitingState) {
+    //           return const Center(
+    //             child: CircularProgressIndicator(),
+    //           );
+    //         } 
+    //         if (state is ListaFileBackupLoadedState) {
+    //           return _widgetListaFileBackup(context, importExportBloc, state.data);
+    //         } 
+    //         if (state is ImportExportErrorState) {
+    //           return Center(child:  Text("Error: ${state.msg}"));
+    //         }
+
+    //         debugPrint('=================== Hummm =================== ${state.toString()}');
+    //         return const Text('Hummm ... caso imprevisto ....');
+    //       },
+    //     )
+    //   ),
+    // );
   }
 
 }

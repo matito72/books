@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:books/features/appbar/blocs/app_bar_bloc.dart';
 import 'package:books/features/import_export/blocs/import_export_bloc.dart';
 import 'package:books/features/import_export/data/repository/import_export_service.dart';
 import 'package:books/features/libreria/blocs/libreria_bloc.dart';
@@ -23,14 +24,18 @@ Future<void> initializeDependencies() async {
 
   // ** Blocs
   sl.registerFactory<LibreriaBloc>(
-    ()=> LibreriaBloc(sl())
+    () => LibreriaBloc(sl())
   );
 
   sl.registerFactory<LibroBloc>(
-    ()=> LibroBloc(sl())
+    () => LibroBloc(sl())
   );
 
   sl.registerFactory<ImportExportBloc>(
     () => ImportExportBloc(sl())
+  );
+
+  sl.registerFactory<AppBarBloc>(
+    () => AppBarBloc()
   );
 }

@@ -6,12 +6,15 @@ class Constant {
   static const String googleapisPercorso = '/books/v1/volumes';
   static const String jsonFilesPath = "jsonFiles";
 
-  // static LibreriaModel libreriaInUso = LibreriaModel('Tito', 'T');
   static final LibreriaModel libreriaVuota = LibreriaModel(sigla: '', nome: '', nrLibriCaricati: 0);
-
   static bool initApp = false;
+
+  // -----------------------------------------------------------
+  // -------------------------- CACHE --------------------------
+  // -----------------------------------------------------------
   static LibreriaModel? _libreriaInUso;
   static int _nrLibriInLibreriaInUso = 0;
+  static String _bookToSearch = '';
 
   static LibreriaModel? get libreriaInUso {
     return _libreriaInUso;
@@ -28,4 +31,13 @@ class Constant {
   static void setNrLibriInLibreriaInUso(int nr) {
     _nrLibriInLibreriaInUso = nr;
   }
+
+  static String get bookToSearch {
+    return _bookToSearch;
+  }
+
+  static void setBookToSearch(String bookToSearch) {
+    _bookToSearch = bookToSearch;
+  }
+  // -----------------------------------------------------------
 }

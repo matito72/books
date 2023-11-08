@@ -9,7 +9,7 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
   final String? txtLabel;
   final PopupMenuButton? popupMenuButton;
   final List<IconButton> lstIconButtonDx;
-  // final Widget appBarContent;
+  final Widget? appBarContent;
   final BuildContext context;
 
   @override 
@@ -18,12 +18,12 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
   AppBarDefault({
       super.key, 
       required this.context,
-      // required this.appBarContent, 
       this.percHeight = 4,
       this.secondaryColor = Colors.pink,
       this.showIconSx = true,
       this.iconSx,
       this.txtLabel,
+      this.appBarContent, 
       this.iconDx,
       this.popupMenuButton,
       this.lstIconButtonDx = const []
@@ -32,15 +32,7 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Widget build(BuildContext context) {    
-    final goBackIconButton = IconButton(
-      padding: EdgeInsets.zero,
-      icon: const Icon(Icons.arrow_back),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-
+  Widget build(BuildContext context) {
     return PreferredSize(
       preferredSize: preferredSize,
       child: Container(
@@ -49,33 +41,42 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: <Color>[Colors.blue, secondaryColor],
+            tileMode: TileMode.clamp,
+            begin: Alignment.centerLeft,
             // colors: <Color>[Colors.blue, Color.fromARGB(115, 0, 143, 88)],
           ),
         ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              showIconSx
-                ? iconSx ?? goBackIconButton
-                : const Text('\t\t\t'),
-              Expanded(
-                child: Container(
-                  // color: Colors.white,
-                  child: (txtLabel != null)
-                    ? Text(txtLabel!)
-                    : const TextField(decoration: InputDecoration(hintText: "Search",contentPadding: EdgeInsets.all(10),),),
-                ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            showIconSx
+              ? iconSx ?? IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              : const Text('\t\t\t'),
+            Expanded(
+              child: Container(
+                child: (txtLabel != null && appBarContent == null)
+                  ? Text(txtLabel!)
+                  : (appBarContent != null)
+                    ? appBarContent!
+                    : const Text('')
               ),
-              iconDx ?? const Text(''),
-              popupMenuButton ?? const Text(''),
-              lstIconButtonDx.isNotEmpty 
-                ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: lstIconButtonDx,
-                ) 
-                : const Text(''),
-            ]
-          ),
+            ),
+            iconDx ?? const Text(''),
+            popupMenuButton ?? const Text(''),
+            lstIconButtonDx.isNotEmpty 
+              ? Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: lstIconButtonDx,
+              ) 
+              : const Text(''),
+          ]
+        ),
       )
     );
   }

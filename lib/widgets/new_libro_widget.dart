@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:books/config/constant.dart';
+import 'package:books/features/appbar/blocs/app_bar_bloc.dart';
+import 'package:books/features/appbar/blocs/app_bar_events.dart';
 import 'package:books/features/libro/blocs/libro_bloc.dart';
+import 'package:books/features/libro/blocs/libro_events.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:books/features/libro/data/models/libro_search_model.dart';
 import 'package:books/models/parameter_google_search_model.dart';
@@ -13,10 +16,11 @@ import 'package:flutter/material.dart';
 class NewLibroWidget extends StatefulWidget {
   // final BuildContext parentContext;
   // final Function addTx;
-  final Function addNewLibro;
+  // final Function addNewLibro;
   final LibroBloc libroBloc;
+  final AppBarBloc appBarBloc;
 
-  const NewLibroWidget(this.addNewLibro, this.libroBloc, {super.key});
+  const NewLibroWidget(this.libroBloc, this.appBarBloc, {super.key});
 
   @override
   State<NewLibroWidget> createState() => _NewLibroWidgetState();
@@ -63,12 +67,8 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
             );
             
             if (libroDettaglioResult != null) {
-              debugPrint('Salva.2 il libro ${libroDettaglioResult.libroViewModel.titolo}');
-              if (mounted) {
-                widget.addNewLibro(widget.libroBloc, libroDettaglioResult.libroViewModel);
-              }
-              // sl<DbLibroService>().saveLibroToDb(dynLibroDettaglioResult);
-              // sl<LibroBloc>().add(LoadLibroEvent(sl<DbLibroService>().dbLibreriaService.libreriaInUso!));
+              widget.libroBloc.add(AddLibroEvent(Constant.libreriaInUso!, libroDettaglioResult.libroViewModel));
+              widget.appBarBloc.add(SwithToTextAppBarEvent());
             }
           }        
         } else {

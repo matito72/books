@@ -63,13 +63,24 @@ class DbLibroService {
               pathImmagineCopertina: item.pathImmagineCopertina);
     })
     .where(
-      (libroViewModel) => libroViewModel.siglaLibreria == libreriaSel.sigla
+      (libroViewModel) => _filtro(libroViewModel, libreriaSel)
     )
     .toList());
 
     await boxLibroView.close();
 
     return lstLibroViewSaved;
+  }
+
+  bool _filtro(LibroViewModel libroViewModel, LibreriaModel libreriaSel) {
+    bool filtro = (Constant.bookToSearch.isNotEmpty)
+      ? (libroViewModel.descrizione.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
+          || libroViewModel.titolo.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
+          || libroViewModel.editore.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
+          || libroViewModel.prezzo.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
+        )
+      : true;
+    return (libroViewModel.siglaLibreria == libreriaSel.sigla) && filtro;
   }
 
   Future<void> saveLibroToDb(LibroViewModel libroToNewEdit, bool isNew) async {
