@@ -17,7 +17,6 @@ class DettaglioLibro extends StatefulWidget {
 
   const DettaglioLibro({Key? key, required this.libroViewModel, required this.showDelete}) : super(key: key);
 
-
   @override
   State<DettaglioLibro> createState() => _DettaglioLibro();
 }

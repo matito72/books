@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:books/features/libro/blocs/libro_bloc.dart';
 import 'package:books/features/libro/data/models/libro_view_model.dart';
 import 'package:flutter/material.dart';
@@ -131,20 +133,33 @@ class LibreriaListaLibriWidget extends StatelessWidget {
 
   Widget buildImage(int index, String urlImage) => ClipRRect(
     borderRadius: BorderRadius.circular(0),
-    child: CachedNetworkImage(
-      imageUrl: urlImage,
-      height: 120,
-      width: 40,
-      fit: BoxFit.cover,
-      placeholder: (context, url) => const CircularProgressIndicator(),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
-      cacheManager: CacheManager(
-        Config(
-          "googleBooks",
-          stalePeriod: const Duration(days: 30),
-        )
-    )
-    )
+    child: getImage(urlImage)
   );
+
+  Widget getImage(String urlImage) {
+    late Widget image;
+    File f = File(urlImage);
+
+    if (f.existsSync()) {
+      image = Image.file(File(urlImage), fit: BoxFit.fill,);
+    } else {
+      image = CachedNetworkImage(
+        imageUrl: urlImage,
+        height: 120,
+        width: 40,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => const CircularProgressIndicator(),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
+        cacheManager: CacheManager(
+          Config(
+            "googleBooks",
+            stalePeriod: const Duration(days: 30),
+          )
+        )
+      );
+    }
+
+    return image;
+  }
 
 }

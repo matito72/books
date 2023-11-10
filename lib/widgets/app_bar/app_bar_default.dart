@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
   final num percHeight;
-  final Color secondaryColor;
+  final Color? primaryColor;
+  final Color? secondaryColor;
   final bool showIconSx;
   final IconButton? iconSx;
   final IconButton? iconDx;
@@ -19,6 +20,7 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
       super.key, 
       required this.context,
       this.percHeight = 4,
+      this.primaryColor = Colors.blue,
       this.secondaryColor = Colors.pink,
       this.showIconSx = true,
       this.iconSx,
@@ -40,7 +42,7 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
         alignment: const Alignment(-0.9, 0.0),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: <Color>[Colors.blue, secondaryColor],
+            colors: <Color>[primaryColor!, secondaryColor!],
             tileMode: TileMode.clamp,
             begin: Alignment.centerLeft,
             // colors: <Color>[Colors.blue, Color.fromARGB(115, 0, 143, 88)],

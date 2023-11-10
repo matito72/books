@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:books/features/libro/data/models/libro_view_model.dart';
 import 'package:books/utilities/show_image_picker.dart';
+import 'package:books/utilities/utils.dart';
+import 'package:books/widgets/app_bar/app_bar_default.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -22,7 +24,8 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
   reloadImage(File? imageFile) {
       if (imageFile != null) {
         setState(() {
-          immagineCopertina = imageFile;          
+          immagineCopertina = imageFile;
+          widget.libroViewModel.immagineCopertina = imageFile.path;
         });
       }
     }
@@ -32,57 +35,58 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
     // final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
     // final LibroViewModel libroViewModel = arguments['libroViewModel'];
 
-    return Scaffold(
-      // backgroundColor: Colors.grey.shade400,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.pop(context),
-          color: Colors.greenAccent,
-        ),
+    return SafeArea(
+      child: Scaffold(
         // backgroundColor: Colors.grey.shade400,
-        title: Column(
-          children: [
-            Text(widget.libroViewModel.titolo, style: TextStyle(color: Colors.amber[100])),
-            Text(widget.libroViewModel.lstAutori.join(', '), style: TextStyle(color: Colors.amber[300]))
-          ],
-        ),
-        centerTitle: true,
-        actions: <Widget> [
-          IconButton(
-            icon: const Icon(Icons.menu_rounded),
-            onPressed: () async {
-                Map<Permission, PermissionStatus> statuses = await [
-                  Permission.storage, Permission.camera,
-                ].request();
-                if(statuses[Permission.storage]!.isGranted && statuses[Permission.camera]!.isGranted) {
-                  if (mounted) {
-                    showImagePickerUtil.showImagePicker(context, reloadImage);
+        appBar: AppBarDefault(
+          context: context,
+          percHeight: 7,
+          secondaryColor: const Color.fromARGB(115, 0, 143, 88),
+          // txtLabel: libroViewModel.titolo,
+          appBarContent: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(widget.libroViewModel.titolo),
+              Text(widget.libroViewModel.lstAutori.join(', '), style: TextStyle(color: Colors.amber[300]))
+            ],
+          ),
+          lstIconButtonDx: [
+            IconButton(
+              icon: const Icon(Icons.image_search_sharp),
+              onPressed: () async {
+                  Map<Permission, PermissionStatus> statuses = await [
+                    Permission.manageExternalStorage, Permission.camera,
+                  ].request();
+                  if(statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
+                    if (mounted) {
+                      showImagePickerUtil.showImagePicker(context, reloadImage);
+                    }
+                  } else {
+                    debugPrint('no permission provided');
                   }
-                } else {
-                  debugPrint('no permission provided');
-                }
-              },
-            color: Colors.greenAccent,
-          )
-        ]
-      ),
-      body: Center(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: GridTile(
-            child: (immagineCopertina == null) 
-              ? Image.network(
-                  widget.libroViewModel.immagineCopertina,
-                  fit: BoxFit.fill,
-                )
-              : Image.file(immagineCopertina!, fit: BoxFit.fill,)
+                },
+              color: Colors.greenAccent,
+            )
+          ]
+        ),
+        body: Center(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: GridTile(
+              // child: (immagineCopertina == null) 
+              //   ? Image.network(
+              //       widget.libroViewModel.immagineCopertina,
+              //       fit: BoxFit.fill,
+              //     )
+              //   : Image.file(immagineCopertina!, fit: BoxFit.fill,)
+              child: Utils.getImageFromUrlFile(widget.libroViewModel)
+            ),
           ),
         ),
       ),
     );
   }
-
   
 }

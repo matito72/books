@@ -1,7 +1,9 @@
-import 'package:books/config/constant.dart';
+import 'package:books/features/libro/data/repository/db_libro_service.dart';
+import 'package:books/injection_container.dart';
 import 'package:books/pages/immagine_copertina.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/libro_utils.dart';
+import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/dettaglio_libro/five_stars.dart';
 import 'package:flutter/material.dart';
 import 'package:books/features/libro/data/models/libro_view_model.dart';
@@ -22,10 +24,25 @@ class DettaglioLibroWidget extends StatefulWidget {
 class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
 
   void goToImageview(context, LibroViewModel libroViewModel) async {
-    Navigator.pushNamed(context, ImmagineCopertina.pagePath, arguments: {
-      'libroViewModel': LibroUtils.createLibroViewFromSearchModel(Constant.libreriaInUso!, libroViewModel),
+    String? immagineCopertinaPre = libroViewModel.immagineCopertina;
+
+    await Navigator.pushNamed(context, ImmagineCopertina.pagePath, arguments: {
+      // 'libroViewModel': LibroUtils.createLibroViewFromSearchModel(Constant.libreriaInUso!, libroViewModel),
+      'libroViewModel': libroViewModel,
       'askBeforeDelete': true
     });
+    String? immagineCopertinaPost = libroViewModel.immagineCopertina;
+    debugPrint("PRE: $immagineCopertinaPre   -   POST: $immagineCopertinaPost");
+
+    if (immagineCopertinaPre != immagineCopertinaPost) {
+      // UPDATE:
+      final DbLibroService dbLibroService = sl<DbLibroService>();
+      await dbLibroService.saveLibroToDb(libroViewModel, false);
+
+      setState(() {
+        widget.libroViewModel.immagineCopertina = immagineCopertinaPost;
+      });
+    }
   }
 
   void getYear(context, LibroViewModel libroViewModel) async {
@@ -103,7 +120,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                             goToImageview(context, widget.libroViewModel);
                           },
                           child: (widget.libroViewModel.immagineCopertina != '')
-                            ? Image.network(widget.libroViewModel.immagineCopertina, fit: BoxFit.cover)
+                            ? Utils.getImageFromUrlFile(widget.libroViewModel) // Image.network(widget.libroViewModel.immagineCopertina, fit: BoxFit.cover)
                             : Image.asset('assets/images/waiting.png', fit: BoxFit.cover,),
                         )
                       ),
@@ -242,7 +259,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.lightBlue.shade100,
-                                      ),                                          
+                                      ), 
                                     ),
                                   ),
                                 ],

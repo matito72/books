@@ -94,6 +94,12 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           }
         },
       ),
+      // primaryColor: (appBarBloc.state is TextAppBarState || appBarBloc.state is RefreshAppBarState)
+      //   ? Colors.blue
+      //   : Colors.blue[900],
+      // secondaryColor: (appBarBloc.state is TextAppBarState || appBarBloc.state is RefreshAppBarState)
+      //   ? Colors.pink
+      //   : Colors.black,
       appBarContent: BlocBuilder<LibroBloc, LibroState>(
         builder: (context, state) {
           if (appBarBloc.state is TextAppBarState || appBarBloc.state is RefreshAppBarState) {
@@ -110,11 +116,16 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
             controller: textController,
             textAlignVertical: TextAlignVertical.center,
             autofocus: true,
+            cursorColor: Colors.black,
+            style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
-              fillColor: Colors.white,
+              filled: true,
+              fillColor: const Color.fromARGB(255, 180, 218, 228),
               hintText: 'Search...',
+              hintStyle: const TextStyle(color: Colors.black),
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
+                color: Colors.black,
                 padding: EdgeInsets.zero,
                 icon: const Icon(Icons.search),
                 onPressed: () {
@@ -289,7 +300,9 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   _viewEditLibro(BuildContext context, LibroBloc libroBloc, LibroViewModel libroViewModel) async {
+    String immagineCopertinaPre = libroViewModel.immagineCopertina;
     LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, Constant.libreriaInUso!, libroViewModel, true);
+    String immagineCopertinaPost = libroViewModel.immagineCopertina;
 
     if (ret != null) {
       if (ret.isDelete) {
@@ -297,6 +310,8 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       } else if (ret.isInsert) {
         libroBloc.add(EditLibroEvent(Constant.libreriaInUso!, ret.libroViewModel));
       }
+    } else if (immagineCopertinaPre != immagineCopertinaPost) {
+      libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
     }
   }
 
