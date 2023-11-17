@@ -15,13 +15,15 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
 
   @override 
   late final Size preferredSize;
-
+  
   AppBarDefault({
       super.key, 
       required this.context,
       this.percHeight = 4,
-      this.primaryColor = Colors.blue,
-      this.secondaryColor = Colors.pink,
+      // this.primaryColor = Colors.blue,
+      // this.secondaryColor = Colors.pink,
+      this.primaryColor = const Color.fromARGB(255, 38, 50, 56),
+      this.secondaryColor = Colors.blue,
       this.showIconSx = true,
       this.iconSx,
       this.txtLabel,

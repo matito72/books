@@ -11,26 +11,6 @@ import 'package:flutter_pagewise/flutter_pagewise.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 
-// class SearchListBookPage extends StatefulWidget {
-//   static const String pagePath = '/HomeLibriLibreria/searchListBook';
-
-//   final LibreriaModel libreriaSel;
-//   final ParameterGoogleSearchModel googleSearchModel;
-//   // final List<LibroSearchModel> libri;
-//   // final num totalFindedBooks;
-//   final String title;
-
-//   const SearchListBookPage({
-//     Key? key, required this.title, required this.libreriaSel, required this.googleSearchModel, /*required this.libri, required this.totalFindedBooks */
-//   }) : super(key: key);
-
-
-//   @override
-//   State<SearchListBookPage> createState() => _SearchListBookPage();
-// }
-
-// class _SearchListBookPage extends State<SearchListBookPage> {
-
 class SearchListBookPage extends StatelessWidget {
   static const String pagePath = '/HomeLibriLibreria/searchListBook';
 

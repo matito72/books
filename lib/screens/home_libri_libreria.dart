@@ -150,13 +150,69 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
     return PopupMenuButton(
       padding: EdgeInsets.zero,
+      offset: const Offset(0, 35),
+      elevation: 20,
+      splashRadius: 200,
+      shadowColor: Colors.blueGrey[800],
+      surfaceTintColor: Colors.blueGrey[700],
+      // color: Color.fromARGB(223, 173, 173, 31),
+      color: Color.fromARGB(224, 88, 136, 182),
+      shape: RoundedRectangleBorder(
+        side: BorderSide.lerp(BorderSide.none, BorderSide.none, 12),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      icon: const Icon(Icons.more_vert, color: Colors.white),
       itemBuilder: (context) {
         return [
-              PopupMenuItem<int>(value: MenuItemCode.exportAllBooksLibreria.cd, child: Text(MenuItemCode.exportAllBooksLibreria.label.replaceFirst('{0}', Constant.libreriaInUso!.nome))),
+              PopupMenuItem<int>(
+                value: MenuItemCode.exportAllBooksLibreria.cd, 
+                child: Row(
+                  children: [
+                    Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.save_alt, color: Colors.green[100]),),
+                    Text(
+                      MenuItemCode.exportAllBooksLibreria.label.replaceFirst('{0}', Constant.libreriaInUso!.nome),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    )
+                  ],
+                )
+              ),
               // PopupMenuItem<int>(value: MenuItemCode.importaBooksInLibreria.cd, child: Text(MenuItemCode.importaBooksInLibreria.label)),
-              PopupMenuItem<int>(value: MenuItemCode.restoreFileBackup.cd, child: Text(MenuItemCode.restoreFileBackup.label)),
-              PopupMenuItem<int>(value: MenuItemCode.deleteAllBooksInLibreria.cd, child: Text(MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', Constant.libreriaInUso!.nome))),
-              PopupMenuItem<int>(value: MenuItemCode.deleteAllBooksInAllLibrerie.cd, child: Text(MenuItemCode.deleteAllBooksInAllLibrerie.label)),
+              PopupMenuItem<int>(
+                value: MenuItemCode.restoreFileBackup.cd, 
+                child: Row(
+                  children: [
+                    Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.restore_page, color: Colors.lightGreenAccent[100]),),
+                    Text(
+                      MenuItemCode.restoreFileBackup.label,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    )
+                  ],
+                )
+              ),
+              PopupMenuItem<int>(
+                value: MenuItemCode.deleteAllBooksInLibreria.cd, 
+                child: Row(
+                  children: [
+                    const Padding(padding: EdgeInsets.only(right: 10.0), child: Icon(Icons.delete, color: Colors.red),),
+                    Text(
+                      MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', Constant.libreriaInUso!.nome),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    )
+                  ],
+                )
+              ),
+              PopupMenuItem<int>(
+                value: MenuItemCode.deleteAllBooksInAllLibrerie.cd, 
+                child: Row(
+                  children: [
+                    const Padding(padding: EdgeInsets.only(right: 10.0), child:  Icon(Icons.sentiment_very_dissatisfied_outlined, color: Color.fromARGB(255, 245, 28, 28),),),
+                    Text(
+                      MenuItemCode.deleteAllBooksInAllLibrerie.label,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    )
+                  ],
+                )
+              ),
           ];
       },
       onSelected: (value) {

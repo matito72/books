@@ -93,9 +93,18 @@ class HomeLibreriaScreen extends StatelessWidget {
         padding: EdgeInsets.zero,
         itemBuilder: (context){
           return [
-                const PopupMenuItem<int>(value: 0, child: Text("Cancella tutte le librerie !")),
                 // PopupMenuItem<int>(value: 1, child: Text("Settings")),
                 // PopupMenuItem<int>(value: 2,child: Text("Logout")),
+                const PopupMenuItem<int>(
+                  value: 0, 
+                  child: Row(
+                    children: [
+                      Icon(Icons.sentiment_very_dissatisfied_outlined),
+                      Padding(padding: EdgeInsets.only(right: 15.0)),
+                      Text("Cancella tutte le librerie !")
+                    ],
+                  )
+                ),
             ];
         },
         onSelected:(value){

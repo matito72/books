@@ -30,19 +30,19 @@ class LibreriaListaLibriWidget extends StatelessWidget {
     return SafeArea(
       child: listaLibri.isEmpty
         ? Center(
-          child: Column(
-              children: <Widget>[
-                const SizedBox(height: 20,),
-                SizedBox(
-                  height: 200,
-                  child: Image.asset('assets/images/waiting.png',fit: BoxFit.cover,)
-                ),
-                const Padding(
-                  padding: EdgeInsets.all(40.0),
-                ),
-              ],
-          ),
-        )
+            child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 20,),
+                  SizedBox(
+                    height: 200,
+                    child: Image.asset('assets/images/waiting.png',fit: BoxFit.cover,)
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(40.0),
+                  ),
+                ],
+            ),
+          )
         : ListView.builder(
             itemCount: listaLibri.length,
 
@@ -52,7 +52,7 @@ class LibreriaListaLibriWidget extends StatelessWidget {
                 children: [
                   const Divider(height: 5),
                   ListTile(
-                    tileColor: const Color.fromARGB(47, 0, 131, 143), 
+                    tileColor: Colors.blueGrey[900],
                     isThreeLine: false,
                     dense: false,
                     onTap: () async {
@@ -99,30 +99,51 @@ class LibreriaListaLibriWidget extends StatelessWidget {
                       ],
                     ),
                     trailing: MenuAnchor(
+                      style: const MenuStyle(
+                        backgroundColor: MaterialStatePropertyAll<Color>(Color.fromARGB(225, 24, 134, 134)),
+                      ),
                       builder: (BuildContext context, MenuController controller, Widget? child) {
-                      return IconButton(
-                        onPressed: () {
-                          if (controller.isOpen) {
-                            controller.close();
-                          } else {
-                            controller.open();
-                          }
-                        },
-                        icon: const Icon(Icons.more_vert),
-                        tooltip: 'Show menu',
-                      );
-                    },
-                    menuChildren: <MenuItemButton>[
-                      MenuItemButton(
-                        onPressed: () => fnViewDettaglioLibro(parentContext, libroBloc, item),
-                        child: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
-                      ),
-                      MenuItemButton(
-                        onPressed: () => fnDeleteLibro(parentContext, libroBloc, item),
-                        child: Icon(Icons.delete, color: Colors.orange.shade800),
-                      ),
-                    ],
-                  )
+                        return IconButton(
+                          onPressed: () {
+                            if (controller.isOpen) {
+                              controller.close();
+                            } else {
+                              controller.open();
+                            }
+                          },
+                          icon: const Icon(Icons.more_vert),
+                          tooltip: 'Show menu',
+                        );
+                      },
+                      menuChildren: <MenuItemButton>[
+                        MenuItemButton(
+                          trailingIcon: Text(
+                            "Dettaglio/Modifica",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.amber[200],
+                            ),
+                          ),
+                          onPressed: () => fnViewDettaglioLibro(parentContext, libroBloc, item),
+                          child: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
+                        ),
+                        MenuItemButton(
+                          trailingIcon: const Text(
+                            "Elimina libro",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 235, 193, 180)
+                            ),
+                          ),
+                          onPressed: () => fnDeleteLibro(parentContext, libroBloc, item),
+                          child: Icon(Icons.delete, color: Colors.orange.shade800),
+                        ),
+                      ],
+                    )
                   ),
                 ],
               );
@@ -143,20 +164,24 @@ class LibreriaListaLibriWidget extends StatelessWidget {
     if (f.existsSync()) {
       image = Image.file(File(urlImage), fit: BoxFit.fill,);
     } else {
-      image = CachedNetworkImage(
-        imageUrl: urlImage,
-        height: 120,
-        width: 40,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => const CircularProgressIndicator(),
-        errorWidget: (context, url, error) => const Icon(Icons.error),
-        cacheManager: CacheManager(
-          Config(
-            "googleBooks",
-            stalePeriod: const Duration(days: 30),
+      if (urlImage.toLowerCase().startsWith("http")) {
+        image = CachedNetworkImage(
+          imageUrl: urlImage,
+          height: 120,
+          width: 40,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => const CircularProgressIndicator(),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+          cacheManager: CacheManager(
+            Config(
+              "googleBooks",
+              stalePeriod: const Duration(days: 30),
+            )
           )
-        )
-      );
+        );
+      } else {
+        image = Image.asset('assets/images/waiting.png',fit: BoxFit.fill);
+      }
     }
 
     return image;

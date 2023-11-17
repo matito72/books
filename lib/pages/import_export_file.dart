@@ -32,7 +32,7 @@ class ImportExportFile extends StatelessWidget {
         appBar: _buildAppbar(context),
         floatingActionButton: FloatingActionButton(
           onPressed: () => _importFile(context, importExportBloc),
-          child: const Icon(Icons.add),
+          child: const Icon(Icons.file_download),
         ),
         body: _blocBody(context, importExportBloc, siglaLibreriaSearch),
       ),
