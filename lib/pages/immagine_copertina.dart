@@ -52,7 +52,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  flex: 3,
+                  flex: 2,
                   child: Text(widget.libroViewModel.titolo)
                 ),
                 // const Padding(padding: EdgeInsets.only(bottom: 5)),

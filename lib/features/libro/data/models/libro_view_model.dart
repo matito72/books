@@ -20,7 +20,7 @@ class LibroViewModel extends LibroSearchModel {
 
   LibroViewModel(this.siglaLibreria, {super.googleBookId='', required super.isbn, super.titolo='', super.lstAutori=const [], super.editore='', 
       super.descrizione='', super.immagineCopertina='', super.dataPubblicazione='', super.nrPagine=0, super.lstCategoria=const [], 
-      super.previewLink='', super.isEbook=false, super.country='', super.valuta='',  super.prezzo='', this.stars = 0, this.pathImmagineCopertina});
+      super.previewLink='', super.isEbook=false, super.country='', super.valuta='',  super.prezzo='', this.stars = 0, this.pathImmagineCopertina}) ;
 
   Map toJson() => {
     'isbn': isbn.trim().isNotEmpty ? isbn : googleBookId,
@@ -63,6 +63,68 @@ class LibroViewModel extends LibroSearchModel {
     pathImmagineCopertina = mappa['pathImmagineCopertina'];
     siglaLibreria = Constant.libreriaInUso!.sigla;
   }
+
+  LibroViewModel copyWith({
+      String? siglaLibreria,
+      String? googleBookId,
+      String? isbn,
+      String? titolo,
+      List<String>? lstAutori,
+      String? editore,
+      String? descrizione,
+      String? immagineCopertina,
+      String? dataPubblicazione,
+      int? nrPagine,
+      List<String>? lstCategoria,
+      String? previewLink,
+      bool? isEbook,
+      String? country,
+      String? valuta,
+      String? prezzo,  
+      int? stars,
+      String? pathImmagineCopertina
+  }) => 
+    LibroViewModel(
+        siglaLibreria ?? this.siglaLibreria,
+        googleBookId: googleBookId ?? this.googleBookId,
+        isbn: isbn ?? this.isbn, 
+        titolo: titolo ?? this.titolo,
+        lstAutori: lstAutori ?? this.lstAutori,
+        editore: editore ?? this.editore,
+        descrizione: descrizione ?? this.descrizione,
+        immagineCopertina: immagineCopertina ?? this.immagineCopertina,
+        dataPubblicazione: dataPubblicazione ?? this.dataPubblicazione,
+        nrPagine: nrPagine ?? this.nrPagine,
+        lstCategoria: lstCategoria ?? this.lstCategoria,
+        previewLink: previewLink ?? this.previewLink,
+        isEbook: isEbook ?? this.isEbook,
+        country: country ?? this.country,
+        valuta: valuta ?? this.valuta,
+        prezzo: prezzo ?? this.prezzo,
+        stars: stars ?? this.stars,
+        pathImmagineCopertina: pathImmagineCopertina ?? this.pathImmagineCopertina,
+    );
+
+   LibroViewModel clonaLibro() => LibroViewModel(
+        siglaLibreria,
+        googleBookId: googleBookId,
+        isbn: isbn, 
+        titolo: titolo,
+        lstAutori: lstAutori,
+        editore: editore,
+        descrizione: descrizione,
+        immagineCopertina: immagineCopertina,
+        dataPubblicazione: dataPubblicazione,
+        nrPagine: nrPagine,
+        lstCategoria: lstCategoria,
+        previewLink: previewLink,
+        isEbook: isEbook,
+        country: country,
+        valuta: valuta,
+        prezzo: prezzo,
+        stars: stars,
+        pathImmagineCopertina: pathImmagineCopertina,
+    );
 
   /// Al salvataggio del Libro, dalla lista dei libri cercati:
   /// 

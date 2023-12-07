@@ -52,7 +52,7 @@ class LibroSearchModel extends HiveObject {
   late String valuta;
 
   @HiveField(14)
-  late String prezzo;  
+  late String prezzo;
 
 
   LibroSearchModel({this.googleBookId='', this.isbn='', this.titolo='', this.lstAutori=const [], this.editore='', this.descrizione='', this.immagineCopertina='',

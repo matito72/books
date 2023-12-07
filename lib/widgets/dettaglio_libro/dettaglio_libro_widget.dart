@@ -17,12 +17,12 @@ class DettaglioLibroWidget extends StatefulWidget {
   
   const DettaglioLibroWidget(this.libroViewModel, this.isNewDettaglio, {Key? key}) : super(key: key);
 
-
   @override
   State<DettaglioLibroWidget> createState() => _DettaglioLibroWidget();
 }
 
 class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
+  final DbLibroService dbLibroService = sl<DbLibroService>();
 
   void goToImageview(context, LibroViewModel libroViewModel) async {
     String? immagineCopertinaPre = libroViewModel.immagineCopertina;
@@ -34,9 +34,8 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     });
     String? immagineCopertinaPost = libroViewModel.immagineCopertina;
 
-    if (immagineCopertinaPre != immagineCopertinaPost) {
+    if (!widget.isNewDettaglio && (immagineCopertinaPre != immagineCopertinaPost)) {
       // UPDATE:
-      final DbLibroService dbLibroService = sl<DbLibroService>();
       await dbLibroService.saveLibroToDb(libroViewModel, false);
 
       setState(() {

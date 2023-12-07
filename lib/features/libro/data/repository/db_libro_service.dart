@@ -36,6 +36,13 @@ class DbLibroService {
     debugPrint('DISPOSE - stop');
   }
 
+  Future<LibroViewModel?> getLibroFromDb(String key) async {
+    Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+    final LibroViewModel? item = boxLibroView.get(key);
+    await boxLibroView.close();
+    return item; 
+  }
+
   Future<List<LibroViewModel>> readLstLibroFromDb(LibreriaModel libreriaSel, [String? querySearch]) async {
     List<LibroViewModel> lstLibroViewSaved = [];
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
@@ -43,24 +50,26 @@ class DbLibroService {
     lstLibroViewSaved.addAll(boxLibroView.keys.map((key) {
       final item = boxLibroView.get(key);
 
-      return LibroViewModel(item!.siglaLibreria,
-              isbn: item.isbn,
-              googleBookId: item.googleBookId,
-              titolo: item.titolo,
-              lstAutori: item.lstAutori,
-              editore: item.editore,
-              descrizione: item.descrizione,
-              immagineCopertina: item.immagineCopertina,
-              dataPubblicazione: item.dataPubblicazione,
-              nrPagine: item.nrPagine,
-              lstCategoria: item.lstCategoria,
-              previewLink: item.previewLink,
-              isEbook: item.isEbook,
-              country: item.country,
-              valuta: item.valuta,
-              prezzo: item.prezzo,
-              stars: item.stars,
-              pathImmagineCopertina: item.pathImmagineCopertina);
+      return LibroViewModel(
+        item!.siglaLibreria,
+        isbn: item.isbn,
+        googleBookId: item.googleBookId,
+        titolo: item.titolo,
+        lstAutori: item.lstAutori,
+        editore: item.editore,
+        descrizione: item.descrizione,
+        immagineCopertina: item.immagineCopertina,
+        dataPubblicazione: item.dataPubblicazione,
+        nrPagine: item.nrPagine,
+        lstCategoria: item.lstCategoria,
+        previewLink: item.previewLink,
+        isEbook: item.isEbook,
+        country: item.country,
+        valuta: item.valuta,
+        prezzo: item.prezzo,
+        stars: item.stars,
+        pathImmagineCopertina: item.pathImmagineCopertina
+      );
     })
     .where(
       (libroViewModel) => _filtro(libroViewModel, libreriaSel)
@@ -99,7 +108,7 @@ class DbLibroService {
       throw ItemNotPresentException(ItemType.libro, 'Libro ${libroToNewEdit.isbn}-${libroToNewEdit.titolo} non presente!');
     }
     
-    await boxLibroView.put(keyLibro, libroToNewEdit);
+    await boxLibroView.put(keyLibro, libroToNewEdit.clonaLibro());
     await boxLibroView.close();
   }
 
