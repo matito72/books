@@ -102,7 +102,7 @@ class LibroViewModel extends LibroSearchModel {
     descrizione = descrizione.replaceAll('<b>', '');
     descrizione = descrizione.replaceAll('</b>', '');
 
-    editore = mapVolumeInfo['publisher'] ?? '<Editore da definire>'; // _strNullValue;
+    editore = mapVolumeInfo['publisher'] ?? Constant.editoreDaDefinire; // _strNullValue;
 
     List industryIdentifiers = mapVolumeInfo['industryIdentifiers'] ?? [];
     if (industryIdentifiers.isNotEmpty && industryIdentifiers.length > 1) {
@@ -124,6 +124,18 @@ class LibroViewModel extends LibroSearchModel {
 
     try {
       immagineCopertina = mapVolumeInfo['imageLinks']['smallThumbnail'] ?? _strNullValue;
+      // immagineCopertina = "https://books.google.com/books/publisher/content/images/frontcover/${googleBookId}?fife=w400-h600&source=gbs_api";
+      
+      // if (immagineCopertina != '') {
+      //   if (immagineCopertina.contains('zoom=1')) {
+      //     immagineCopertina = immagineCopertina.replaceFirst('zoom=1', 'zoom=0');
+      //   } else if (immagineCopertina.contains('zoom=5')) {
+      //     immagineCopertina = immagineCopertina.replaceFirst('zoom=5', 'zoom=0');
+      //   } else {
+      //     immagineCopertina = immagineCopertina.replaceFirst('zoom=5', 'zoom=0');
+      //   }
+      // }
+      // print("---------------------------------->$immagineCopertina");
     }
     catch (errore) {
       immagineCopertina = _strNullValue;

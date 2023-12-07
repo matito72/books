@@ -5,6 +5,7 @@ class Constant {
   static const String googleapisDominio = 'www.googleapis.com';
   static const String googleapisPercorso = '/books/v1/volumes';
   static const String jsonFilesPath = "jsonFiles";
+  static const String editoreDaDefinire = '<Editore da definire>';
 
   static final LibreriaModel libreriaVuota = LibreriaModel(sigla: '', nome: '', nrLibriCaricati: 0);
   static bool initApp = false;

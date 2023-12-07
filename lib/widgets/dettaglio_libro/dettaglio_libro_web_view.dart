@@ -28,6 +28,17 @@ class DettaglioLibroWebView extends StatelessWidget {
           },
           onPageFinished: (String url) {
             debugPrint('Page finished loading: $url');
+            controller.runJavaScript('''
+              document.querySelector('[id=volume-left]').remove();
+              document.querySelector('[id=search_bar]').remove();
+              document.querySelector('[id=gba]').remove();
+              document.getElementsByClassName("gb_rd")[0].remove();
+              document.getElementsByTagName('header')[0].style.display='none';
+              document.getElementsByTagName('footer')[0].style.display='none';
+              document.getElementsByClassName('gb_Tf gb_if')[0].remove();
+            ''')
+          .then((value) => debugPrint('Page finished loading Javascript'))
+          .catchError((onError) => debugPrint('$onError'));
           },
           onWebResourceError: (WebResourceError error) {
             debugPrint('''

@@ -1,4 +1,3 @@
-import 'package:books/config/constant.dart';
 import 'package:books/features/import_export/data/repository/import_export_service.dart';
 import 'package:books/features/libreria/data/repository/db_libreria_service.dart';
 import 'package:books/features/libro/blocs/libro_events.dart';
@@ -113,7 +112,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         await _dbLibroService.deleteLibroToDb(event.libroModelDelete);
         await sl<DbLibreriaService>().removeLibroFromLibreriaInUso();
 
-        print("=====> ${Constant.libreriaInUso!.nrLibriCaricati}");
+        // print("=====> ${Constant.libreriaInUso!.nrLibriCaricati}");
         emit(DeletedLibroState('Libro ${event.libroModelDelete.titolo} eliminato.'));
       } catch (e) {
         emit(LibroErrorState(e.toString()));

@@ -38,6 +38,7 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
 
   @override
   Widget build(BuildContext context) {
+    
     Future<void> execSimpleGoogleBooksSearch(ParameterGoogleSearchModel googleSearchModel) async {
       if (googleSearchModel.title != null || googleSearchModel.author != null || googleSearchModel.isbn != null) {
         List<LibroSearchModel> libri = [];
@@ -86,6 +87,7 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
       final enteredEditore = editoreController.text;
 
       if (enteredTitolo.isEmpty && enteredAutore.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserire anche il Titolo e/o l'Autore !")));
         return;
       }
       

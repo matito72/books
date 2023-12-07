@@ -56,7 +56,7 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
             showIconSx
               ? iconSx ?? IconButton(
                   padding: EdgeInsets.zero,
-                  icon: const Icon(Icons.arrow_back),
+                  icon: const Icon(Icons.arrow_back_ios_new),
                   onPressed: () {
                     Navigator.pop(context);
                   },

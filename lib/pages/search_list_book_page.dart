@@ -147,15 +147,40 @@ class PagewiseListViewExample extends StatelessWidget  {
                   elevation: 5,
                   margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
                   child: ListTile(
+                    dense: true,
+                    visualDensity: const VisualDensity(vertical: 3), // to expand
                     onTap: () async {
                       viewDettaglioLibro();
                       // Valore restituito via POP al widget padre
                       // LibroDettaglioResult? libroDettaglioResult = await LibroUtils.viewDettaglioLibroFromSearch(context, dbLibreriaService.libreriaInUso, entry, false);
                       // execActionOnLibroDettaglioResult(libroDettaglioResult, entry);
                     },
-                    leading: (entry.immagineCopertina != '')
-                        ? Image.network(entry.immagineCopertina, height: 200, width: 40, fit: BoxFit.cover)
-                        : const Text(''),
+                    leading: SizedBox(
+                      height: 300,
+                      width: 40,
+                      child: ColoredBox(
+                        color: Colors.transparent,
+                        // child:  (entry.immagineCopertina != '')
+                        //   ? getImageNetwork(entry, height: 400, width: 80, fit: BoxFit.cover)
+                        //   : const Text('') ,
+                        child: FutureBuilder<Widget>(
+                          future: getImageNetwork(entry, height: 400, width: 80, fit: BoxFit.cover),
+                          builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                            if (!snapshot.hasData) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              // final widImage = snapshot.data;
+                              // return Center(
+                              //   child: widImage,
+                              // );
+                              return snapshot.data as Widget;
+                            }
+                          }
+                        ),
+                      ),
+                    ),
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,5 +244,13 @@ class PagewiseListViewExample extends StatelessWidget  {
         )
       ],
     );
+  }
+  
+  Future<Widget> getImageNetwork(LibroSearchModel libroSearchModel, {required int height, required int width, required BoxFit fit}) async {
+    if (libroSearchModel.immagineCopertina == '') {
+      return const Text("");
+    }
+
+    return Image.network(libroSearchModel.immagineCopertina, height: 200, width: 40, fit: BoxFit.cover);
   }
 }

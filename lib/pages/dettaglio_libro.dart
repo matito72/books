@@ -90,7 +90,7 @@ class _DettaglioLibro extends State<DettaglioLibro> {
                       physics: const NeverScrollableScrollPhysics(),
                       viewportFraction: 1,
                       children: [
-                        DettaglioLibroWidget(libroViewModel),
+                        DettaglioLibroWidget(libroViewModel, !widget.showDelete),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,6 +119,7 @@ class _DettaglioLibro extends State<DettaglioLibro> {
                           initTotalZoomOut: false,
                           child: Center(
                               child: DettaglioLibroWebView(libroViewModel.previewLink)
+                              // #v=onepage&q=isbn=${libroViewModel.isbn}&f=true
                           ),
                         ),
                       ],

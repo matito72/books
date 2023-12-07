@@ -78,6 +78,7 @@ class DbLibroService {
           || libroViewModel.titolo.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
           || libroViewModel.editore.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
           || libroViewModel.prezzo.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
+          || libroViewModel.lstAutori.toString().toUpperCase().contains(Constant.bookToSearch.toUpperCase())
         )
       : true;
     return (libroViewModel.siglaLibreria == libreriaSel.sigla) && filtro;

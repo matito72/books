@@ -13,8 +13,9 @@ import 'package:read_more_text/read_more_text.dart';
 
 class DettaglioLibroWidget extends StatefulWidget {
   final LibroViewModel libroViewModel;
+  final bool isNewDettaglio;
   
-  const DettaglioLibroWidget(this.libroViewModel, {Key? key}) : super(key: key);
+  const DettaglioLibroWidget(this.libroViewModel, this.isNewDettaglio, {Key? key}) : super(key: key);
 
 
   @override
@@ -32,7 +33,6 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
       'askBeforeDelete': true
     });
     String? immagineCopertinaPost = libroViewModel.immagineCopertina;
-    debugPrint("PRE: $immagineCopertinaPre   -   POST: $immagineCopertinaPost");
 
     if (immagineCopertinaPre != immagineCopertinaPost) {
       // UPDATE:
@@ -114,14 +114,17 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                       child: SizedBox(
                         width: 125,
                         height: 200,
-                        child: InkWell(
-                          splashColor: Colors.red,
-                          onTap: () {
-                            goToImageview(context, widget.libroViewModel);
-                          },
-                          child: (widget.libroViewModel.immagineCopertina != '')
-                            ? Utils.getImageFromUrlFile(widget.libroViewModel) // Image.network(widget.libroViewModel.immagineCopertina, fit: BoxFit.cover)
-                            : Image.asset('assets/images/waiting.png', fit: BoxFit.cover,),
+                        child: FutureBuilder<Widget>(
+                          future: getImageNetwork(context, widget.libroViewModel),
+                          builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                            if (!snapshot.hasData) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              return snapshot.data as Widget;
+                            }
+                          }
                         )
                       ),
                     ),
@@ -251,7 +254,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                   ),
                                   InkWell(
                                     splashColor: Colors.red,
-                                    onTap: () {
+                                    onDoubleTap: () {
                                       getYear(context, widget.libroViewModel);
                                     },
                                     child: Text(
@@ -280,7 +283,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                   ),
                                   InkWell(
                                     splashColor: Colors.red,
-                                    onTap: () async {
+                                    onDoubleTap: () async {
                                       String? strNr = await DialogUtils.getNumero(context, 'Inserisci il numero pagine', widget.libroViewModel.nrPagine.toString(), true);
                                       if (strNr != null) {
                                         setState(() {                                                
@@ -315,7 +318,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                   ),
                                   InkWell(
                                     splashColor: Colors.red,
-                                    onTap: () async {
+                                    onDoubleTap: () async {
                                       String? strNr = await DialogUtils.getNumero(context, 'Inserisci il prezzo', widget.libroViewModel.prezzo.toString(), false);
                                       if (strNr != null) {
                                         setState(() {                                                
@@ -343,6 +346,13 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
               ],
             ),
             // const SizedBox(height: 8,),
+            const Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: 15),
+                ),
+              ],
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -357,7 +367,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                 )
               ],
             ),
-            // const SizedBox(height: 10,),
+            const SizedBox(height: 5,),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -374,7 +384,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                             // Text('Descrizione', style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.lightBlue.shade100),),
                             InkWell(
                               splashColor: Colors.red,
-                              onTap: () async {
+                              onDoubleTap: () async {
                                 String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget.libroViewModel.descrizione);
                                 if (strDesc != null) {
                                   setState(() {
@@ -418,6 +428,23 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
       ),
     );
   }
+  
+  Future<InkWell> getImageNetwork(BuildContext context, LibroViewModel libroViewModel) async {
+    if (widget.isNewDettaglio) {
+      await Utils.integrazioneDatiIncompleti(libroViewModel);
+    } else {
+      await Future.delayed(const Duration(milliseconds: 500));
+    }
 
+    return InkWell(
+      splashColor: Colors.red,
+      onDoubleTap: () {
+        goToImageview(context, widget.libroViewModel);
+      },
+      child: (widget.libroViewModel.immagineCopertina != '')
+        ? await Utils.getImageFromUrlFile(widget.libroViewModel)
+        : Image.asset('assets/images/waiting.png', fit: BoxFit.cover,),
+    );
+  }
 
 }

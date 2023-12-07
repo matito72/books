@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:books/features/libreria/blocs/libreria_bloc.dart';
 import 'package:books/features/libreria/blocs/libreria_events.dart';
 import 'package:books/features/libreria/blocs/libreria_state.dart';
@@ -7,10 +9,12 @@ import 'package:books/resources/action_result.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/widgets/app_bar/app_bar_default.dart';
 import 'package:books/widgets/form_libreria_new.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../config/constant.dart';
+import 'dart:convert' show utf8;
 
 /// 
 /// Pagina con la lista delle librerie salvate
@@ -94,7 +98,6 @@ class HomeLibreriaScreen extends StatelessWidget {
         itemBuilder: (context){
           return [
                 // PopupMenuItem<int>(value: 1, child: Text("Settings")),
-                // PopupMenuItem<int>(value: 2,child: Text("Logout")),
                 const PopupMenuItem<int>(
                   value: 0, 
                   child: Row(
@@ -105,17 +108,51 @@ class HomeLibreriaScreen extends StatelessWidget {
                     ],
                   )
                 ),
+                const PopupMenuItem<int>(
+                  value: 1, 
+                  child: Row(
+                    children: [
+                      Icon(Icons.sentiment_very_dissatisfied_outlined),
+                      Padding(padding: EdgeInsets.only(right: 15.0)),
+                      Text("TEST....")
+                    ],
+                  )
+                ),
             ];
         },
         onSelected:(value){
           if (value == 0) {
             BlocProvider.of<LibreriaBloc>(context).add(DeleteAllLibreriaEvent());
           } 
-          // else if(value == 1){print("Settings menu is selected.");}
+          else if(value == 1) {
+            _test();
+          }
           // else if(value == 2){print("Logout menu is selected.");}
         }
       ),
     );
+  }
+
+  _test() async {
+    // https://drive.google.com/file/d/1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT/view?usp=sharing
+    // https://drive.google.com/file/d/1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT/view?usp=sharing
+    // https://drive.google.com/uc?export=download&id=1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT
+
+    // https://drive.google.com/file/d/1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT/view%3Fusp=sharing
+    // debugPrint(await http.read(Uri.https('drive.google.com', '/file/d/1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT/view', { 'usp' : 'sharing' })));
+
+    String url = 'https://drive.google.com/uc?export=download&id=1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT';
+    var httpClient = HttpClient();
+
+    var request = await httpClient.getUrl(Uri.parse(url));
+    var response = await request.close();
+    
+    var bytes = await consolidateHttpClientResponseBytes(response);
+    var decoded = utf8.decode(bytes);
+    // String dir = (await getApplicationDocumentsDirectory()).path;
+    // File file = new File('$dir/$filename');
+    // await file.writeAsBytes(bytes);
+    debugPrint(decoded);
   }
 
   Widget _widgetListaLibrerie(BuildContext context, List<LibreriaModel> lstLibreriaModel) {

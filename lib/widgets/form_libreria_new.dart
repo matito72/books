@@ -71,11 +71,12 @@ class FormLibreriaNew {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          contentTextStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-            fontStyle: FontStyle.italic,
-            color: Colors.black,
-            backgroundColor: Colors.blueAccent,
-          ),
+          // contentTextStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+          //   fontStyle: FontStyle.italic,
+          //   color: Colors.black,
+          //   backgroundColor: Colors.blueAccent,
+          // ),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(30))),
           shadowColor: Colors.blueAccent,
           content: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -83,6 +84,7 @@ class FormLibreriaNew {
               children: lstWidget,
             )
           ),
+          clipBehavior: Clip.hardEdge,
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),

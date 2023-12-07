@@ -16,6 +16,7 @@ import 'package:books/resources/action_result.dart';
 import 'package:books/services/libro_search_service.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/libro_utils.dart';
+import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/app_bar/app_bar_default.dart';
 import 'package:books/widgets/new_libro_widget.dart';
 import 'package:flutter/material.dart';
@@ -113,11 +114,17 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           }
 
           return TextField(
+            textInputAction: TextInputAction.search,
             controller: textController,
             textAlignVertical: TextAlignVertical.center,
             autofocus: true,
             cursorColor: Colors.black,
             style: const TextStyle(color: Colors.black),
+            onSubmitted: (value) {
+              Constant.setBookToSearch(textController.text);
+              libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
+              FocusScope.of(context).unfocus();
+            },
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color.fromARGB(255, 180, 218, 228),
@@ -156,7 +163,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       shadowColor: Colors.blueGrey[800],
       surfaceTintColor: Colors.blueGrey[700],
       // color: Color.fromARGB(223, 173, 173, 31),
-      color: Color.fromARGB(224, 88, 136, 182),
+      color: const Color.fromARGB(224, 88, 136, 182),
       shape: RoundedRectangleBorder(
         side: BorderSide.lerp(BorderSide.none, BorderSide.none, 12),
         borderRadius: BorderRadius.circular(12),
@@ -341,8 +348,10 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     AppBarBloc appBarBloc = context.read<AppBarBloc>();
 
     List<LibroViewModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode( await LibroSearchService.scanBarcodeNormal()); //** OK */
-    // List<LibroViewModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode('9788804680604'); // !!! TEST !!!
-    // List<LibroViewModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode('PIPPO'); // !!! TEST !!!
+    // List<LibroViewModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode('9788807033247'); //('9788807014956') // ('9788804680604'); // !!! TEST !!!
+    // List<LibroViewModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode('8852023372'); // !!! TEST !!!
+    // List<LibroViewModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode('8852071938');
+    // 8852071938, 8852071938
 
     if (lstLibroViewModel.isEmpty) {
       if (context.mounted) {
@@ -350,7 +359,13 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       }
     } else {
       if (context.mounted) {
-        _viewDettaglioLibro(context, libroBloc, lstLibroViewModel.first);
+        LibroViewModel libroViewModelDett = lstLibroViewModel.first;
+        
+        await Utils.integrazioneDatiIncompleti(libroViewModelDett);
+
+        if (context.mounted) {
+          _viewDettaglioLibro(context, libroBloc, libroViewModelDett);
+        }
       }
     }
   }

@@ -28,7 +28,7 @@ abstract class LibroUtils {
         strData = strData.substring(0, 4);
       }
 
-      if (strData.length == 4) {
+      if (strData.length >= 4) {
         out = dfY.format(dfY.parse(strData));
       }
     } catch (e) {

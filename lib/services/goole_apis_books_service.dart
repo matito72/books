@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:books/config/constant.dart';
-// import 'package:books/features/libro/data/models/libro_search_model.dart';
 import 'package:books/features/libro/data/models/libro_view_model.dart';
 import 'package:books/models/parameter_google_search_model.dart';
 import 'package:flutter/foundation.dart';
@@ -17,7 +16,6 @@ class GooleApisBooksService {
   }
 
   Future<List<LibroViewModel>> cercaLibri(ParameterGoogleSearchModel googleSearchModel, int offset) async {
-        // {String? id, String? barcode, List<String>? filters, String? title, String? author, String? genericParam, int startIndex = -1}) async {
     List<LibroViewModel> libri = [];
     String percorso = Constant.googleapisPercorso;
     
@@ -60,7 +58,7 @@ class GooleApisBooksService {
     try {
         // print('URL: ${url.toString()}');
 
-      await http.get(url).then((res) {
+      await http.get(url).then((res) async {
         final resJson = json.decode(res.body);
         final libriMap = resJson['items'] ?? resJson;
         int nrLibriTrovati = resJson['totalItems'] ?? (resJson['volumeInfo'] != null ? 1 : 0);
@@ -71,9 +69,16 @@ class GooleApisBooksService {
           // }
 
           if (libriMap == resJson) {
-            libri.add(LibroViewModel.fromGoogleMap(libriMap));
+            LibroViewModel libroViewModel = LibroViewModel.fromGoogleMap(libriMap);
+            //await Utils.checkImage(libroViewModel);
+            libri.add(libroViewModel);
           } else {
-            libri.addAll(libriMap.map<LibroViewModel>((mappa) => LibroViewModel.fromGoogleMap(mappa)).toList()); 
+            for (var map in libriMap) {
+              LibroViewModel libroViewModel = LibroViewModel.fromGoogleMap(map);
+              //await Utils.checkImage(libroViewModel);
+              libri.add(libroViewModel);
+            }
+            // libri.addAll(libriMap.map<LibroViewModel>((mappa) => LibroViewModel.fromGoogleMap(mappa)).toList()); 
           }
           
           // print('================================================================================================');
@@ -90,4 +95,47 @@ class GooleApisBooksService {
 
     return libri;
   }
+
+  // readImageFromAmazon(LibroViewModel libroViewModel) async {
+  //   if (libroViewModel.isbn.isEmpty) {
+  //     return;
+  //   }
+    
+  //   final Uri url = Uri.https(
+  //     "https://covers.openlibrary.org", "/b/isbn/${libroViewModel.isbn}-L.jpg"
+  //   );
+
+    
+    
+  //   // UserAgentClient u = UserAgentClient(
+  //   //   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36", 
+  //   //   http.BaseClient)
+    
+  //   try {
+  //     final client = UserAgentClient("Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome", http.Client());
+  //     // await http.get(url).then((res) {
+  //     await client.get(url).then((res) {
+  //       String html = res.body;
+
+  //       int i = html.indexOf("https://m.media-amazon.com/images/I/");
+        
+  //       debugPrint(html);
+  //     });
+  //   } catch (errore) {
+  //     debugPrint("ERRORE: ${errore.toString()}");
+  //     rethrow;
+  //   } 
+  // }
 }
+
+// class UserAgentClient extends http.BaseClient {
+//   final String userAgent;
+//   final http.Client _inner;
+
+//   UserAgentClient(this.userAgent, this._inner);
+
+//   Future<http.StreamedResponse> send(http.BaseRequest request) {
+//     request.headers['user-agent'] = userAgent;
+//     return _inner.send(request);
+//   }
+// }
