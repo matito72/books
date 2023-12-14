@@ -209,8 +209,8 @@ class HomeLibreriaScreen extends StatelessWidget {
                     children: [
                       IconButton(
                         icon: (Constant.initApp && libreriaInUso != null && libreriaInUso.sigla == libreria.sigla) 
-                          ? const Icon(MdiIcons.doorOpen, color: Colors.green,)
-                          : const Icon(MdiIcons.doorClosed, color: Colors.green,),
+                          ? Icon(MdiIcons.doorOpen, color: Colors.green,)
+                          : Icon(MdiIcons.doorClosed, color: Colors.green,),
                         onPressed: () => {_goToHomeLibriLibreria(context, libreria)},
                       ),
                       IconButton(

@@ -60,7 +60,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
             appBar: _buildAppbar(context), 
             body: _blocBody(context),
             floatingActionButton: FloatingActionButton(
-              child: const Icon(MdiIcons.barcodeScan),
+              child: Icon(MdiIcons.barcodeScan),
               onPressed: () => _searchBookByBarcode(context)
             ),
           );

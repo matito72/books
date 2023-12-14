@@ -17,7 +17,7 @@ abstract class LibreriaState<T> extends Equatable {
 
 //* SUCCESS
 abstract class LibreriaSuccessState<T> extends LibreriaState {
-  const LibreriaSuccessState({T? data, String? msg}) : super(data: data, msg: msg, actionResult: ActionResult.success);
+  const LibreriaSuccessState({T? super.data, super.msg}) : super(actionResult: ActionResult.success);
 }
 
 //* WAIT

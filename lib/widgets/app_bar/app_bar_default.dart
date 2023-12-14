@@ -9,7 +9,7 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
   final IconButton? iconDx;
   final String? txtLabel;
   final PopupMenuButton? popupMenuButton;
-  final List<IconButton> lstIconButtonDx;
+  final List<Widget> lstWidgetDx;
   final Widget? appBarContent;
   final BuildContext context;
 
@@ -30,7 +30,7 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
       this.appBarContent, 
       this.iconDx,
       this.popupMenuButton,
-      this.lstIconButtonDx = const []
+      this.lstWidgetDx = const []
   }) {
     preferredSize = Size.fromHeight((MediaQuery.of(context).size.height * percHeight / 100));
   }
@@ -65,7 +65,10 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
             Expanded(
               child: Container(
                 child: (txtLabel != null && appBarContent == null)
-                  ? Text(txtLabel!)
+                  ? Text(
+                    txtLabel!,
+                    overflow: TextOverflow.ellipsis,
+                  )
                   : (appBarContent != null)
                     ? appBarContent!
                     : const Text('')
@@ -73,10 +76,10 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
             ),
             iconDx ?? const Text(''),
             popupMenuButton ?? const Text(''),
-            lstIconButtonDx.isNotEmpty 
+            lstWidgetDx.isNotEmpty 
               ? Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: lstIconButtonDx,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: lstWidgetDx,
               ) 
               : const Text(''),
           ]

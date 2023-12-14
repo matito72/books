@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'package:books/config/constant.dart';
 import 'package:books/features/import_export/blocs/import_export_bloc.dart';
 import 'package:books/features/import_export/blocs/import_export_events.dart';
 import 'package:books/features/import_export/data/models/file_backup.dart';
@@ -46,7 +47,7 @@ class ListaFileBakcup extends StatelessWidget {
                 const SizedBox(height: 20,),
                 SizedBox(
                   height: 200,
-                  child: Image.asset('assets/images/waiting.png',fit: BoxFit.cover,)
+                  child: Image.asset(Constant.assetImageDefault, fit: BoxFit.cover,)
                 ),
                 const Padding(
                   padding: EdgeInsets.all(40.0),

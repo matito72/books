@@ -11,7 +11,7 @@ class LibroViewModel extends LibroSearchModel {
   int stars;
 
   @HiveField(16)
-  String? pathImmagineCopertina;
+  String? pathImmagineCopertina;  // Campo usato come 'backup' del campo 'immagineCopertina' originale
 
   @HiveField(17)
   String siglaLibreria;  

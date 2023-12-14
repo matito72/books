@@ -3,14 +3,10 @@
 import 'dart:io';
 
 import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/libro_search_model.dart';
 import 'package:books/features/libro/data/models/libro_view_model.dart';
 import 'package:books/models/parameter_google_search_model.dart';
 import 'package:books/services/libro_search_service.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:path_provider/path_provider.dart';
 
 class Utils {
 
@@ -20,7 +16,15 @@ class Utils {
     if (libroViewModel.immagineCopertina.isNotEmpty) {
       File f = File(libroViewModel.immagineCopertina);
       if (f.existsSync()) {
-        image = Image.file(File(libroViewModel.immagineCopertina), fit: BoxFit.fill,);
+        if (w != null && h != null) {
+          image = Image.file(
+            height: h, 
+            width: w,
+            File(libroViewModel.immagineCopertina), fit: BoxFit.fill
+          );
+        } else {
+          image = Image.file(File(libroViewModel.immagineCopertina), fit: BoxFit.fill,);
+        }
       } else {
         if (libroViewModel.immagineCopertina.toLowerCase().startsWith("http")) {
           if (w != null && h != null) {
@@ -30,14 +34,14 @@ class Utils {
           }
         } else {
           if (w != null && h != null) {
-            image = Image.asset('assets/images/waiting.png', height: h, width: w, fit: BoxFit.fill);
+            image = Image.asset(Constant.assetImageDefault, height: h, width: w, fit: BoxFit.fill);
           } else {
-            image = Image.asset('assets/images/waiting.png',fit: BoxFit.fill);
+            image = Image.asset(Constant.assetImageDefault,fit: BoxFit.fill);
           }
         }
       }
     } else {
-      image = Image.asset('assets/images/waiting.png',fit: BoxFit.fill);
+      image = Image.asset(Constant.assetImageDefault,fit: BoxFit.fill);
     }
     debugPrint('image.hashCode: ${image.hashCode}');
     return image;
@@ -103,84 +107,109 @@ class Utils {
     }
   }
 
-  static checkImage(LibroSearchModel libroViewModel) async {
-    String immagineCopertina = libroViewModel.immagineCopertina;
-    if (immagineCopertina != '') {
-      String textImgOrig = await getTextFromUrlImage(immagineCopertina);
-      String textImgNew = textImgOrig;
+  static Future<List<String>> simpleGoogleCoverBookSearch(LibroViewModel libroViewModelDett, int nrMax) async {
+    List<String> lstCoverBookUrl = [];
+    List<String> lstCoverBookUrlLowResolution = [];
+    ParameterGoogleSearchModel googleSearchModel = ParameterGoogleSearchModel(
+      title: libroViewModelDett.titolo, 
+      author: libroViewModelDett.lstAutori.first, 
+      casaEditrice: libroViewModelDett.editore
+    );
 
-      if (immagineCopertina.contains('zoom=1')) {
-        immagineCopertina = '${immagineCopertina.replaceFirst('zoom=1', 'zoom=0')}&fife=w400-h600';
-        textImgNew = await getTextFromUrlImage(immagineCopertina);
-      } else if (immagineCopertina.contains('zoom=5')) {
-        immagineCopertina = '${immagineCopertina.replaceFirst('zoom=5', 'zoom=0')}&fife=w400-h600';
-        textImgNew = await getTextFromUrlImage(immagineCopertina);
-      } 
+    bool stop = false;
 
-      if (textImgNew != textImgOrig) {
-        immagineCopertina = libroViewModel.immagineCopertina.replaceFirst('zoom=0', 'zoom=5');
+    while (!stop) {
+      List<LibroViewModel> lstLibri = await LibroSearchService.simpleGoogleBooksSearch(googleSearchModel);
+      if (lstLibri.isNotEmpty) {
+        _loadCoverBook(lstCoverBookUrlLowResolution, lstCoverBookUrl, lstLibri, (nrMax - lstCoverBookUrl.length));
       }
 
+      if (lstCoverBookUrl.length >= nrMax) {
+        stop = true;
+      } else {
+        if (googleSearchModel.casaEditrice != null) {
+          googleSearchModel.casaEditrice = null;
+        } else if (googleSearchModel.author != null) {
+          googleSearchModel.author = null;
+        } else if (googleSearchModel.title != null) {
+          googleSearchModel.title = null;
+          googleSearchModel.author = libroViewModelDett.lstAutori.first;
+        } else {
+          stop = true;
+        }
+      }
+    }
 
-      // NetworkAssetBundle net = NetworkAssetBundle(Uri.parse(immagineCopertina));
-      // var data = await net.load(immagineCopertina);
-      // Uint8List bytes = data.buffer.asUint8List();
+    if (libroViewModelDett.pathImmagineCopertina != null && libroViewModelDett.pathImmagineCopertina!.trim().isNotEmpty) {
+      _loadHttpUrl(lstCoverBookUrl, libroViewModelDett.pathImmagineCopertina!);
+    }
 
-      // bool isText = false;
-      // try {
-      //   var buffer = bytes.buffer;
-      //   ByteData byteData = ByteData.view(buffer);
-      //   var tempDir = await getTemporaryDirectory();
-      //   File imageFile = await File('${tempDir.path}/img').writeAsBytes(buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));      
+    int i = 0;
+    while (lstCoverBookUrl.length < 3) {
+      if (lstCoverBookUrlLowResolution.isNotEmpty && lstCoverBookUrlLowResolution.length > i) {
+        _loadHttpUrl(lstCoverBookUrl, lstCoverBookUrlLowResolution[i++]);
+      } else {
+        _loadHttpUrl(lstCoverBookUrl, libroViewModelDett.immagineCopertina);
+      }
+    }
 
-      //   final inputImage = InputImage.fromFile(imageFile);
-      //   final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-      //   final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
-      //   String text = recognizedText.text;
-      //   textRecognizer.close();
-      //   isText = text.replaceAll('\n', '') == "imagenotavailable";
-      //   // imageFile.delete();
-      // } catch(e) {
-      //   // print('Errore=$e'); 
-      // }     
-      
-      // if (isText) {
-      //   immagineCopertina = libroViewModel.immagineCopertina.replaceFirst('zoom=0', 'zoom=5');
-      //   // libroViewModel.immagineCopertina = "https://covers.openlibrary.org/b/isbn/${libroViewModel.isbn}-L.jpg";
-      // } 
+    return lstCoverBookUrl;
+  }
 
-      // else {
-      //   debugPrint("Titolo: ${libroViewModel.titolo} => URL:${libroViewModel.immagineCopertina}");
-      //   debugPrint("LENGTH: ${bytes.length}");
-      //   debugPrint("....");
-      // }
-      
-
-      libroViewModel.immagineCopertina = immagineCopertina;
+  static _loadHttpUrl(List<String> lstCoverBookHttpUrl, String url) {
+    if (url.toLowerCase().startsWith('http') && !lstCoverBookHttpUrl.contains(url)) {
+      lstCoverBookHttpUrl.add(url);
     }
   }
 
-  static Future<String> getTextFromUrlImage(String immagineCopertina) async {
-    NetworkAssetBundle net = NetworkAssetBundle(Uri.parse(immagineCopertina));
-    var data = await net.load(immagineCopertina);
-    Uint8List bytes = data.buffer.asUint8List();
+  static _loadCoverBook(List<String> lstCoverBookUrlLowResolution, List<String> lstCoverBookUrl, List<LibroViewModel> lstLibri, int nrMax) {
+    if (lstLibri.isNotEmpty) {
+      for (LibroViewModel libroViewModelResult in lstLibri) {
+        String immagineCopertina = libroViewModelResult.immagineCopertina;
+        if (immagineCopertina.trim().isEmpty) {
+          continue;
+        }
+        if (!lstCoverBookUrlLowResolution.contains(immagineCopertina)) {
+          _loadHttpUrl(lstCoverBookUrlLowResolution, immagineCopertina);
+        }
 
-    String text = '';
-    try {
-      var buffer = bytes.buffer;
-      ByteData byteData = ByteData.view(buffer);
-      var tempDir = await getTemporaryDirectory();
-      File imageFile = await File('${tempDir.path}/img').writeAsBytes(buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));      
+        if (lstCoverBookUrl.length < nrMax) {
+          if (immagineCopertina.contains('zoom=1')) {
+            immagineCopertina = '${immagineCopertina.replaceFirst('zoom=1', 'zoom=0')}&fife=w400-h600';
+          } else if (libroViewModelResult.immagineCopertina.contains('zoom=5')) {
+            immagineCopertina = '${immagineCopertina.replaceFirst('zoom=5', 'zoom=0')}&fife=w400-h600';
+          } else {
+            debugPrint('immagineCopertina: $immagineCopertina');
+          }
 
-      final inputImage = InputImage.fromFile(imageFile);
-      final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
-      text = recognizedText.text;
-      textRecognizer.close();
-    } catch(e) {
-      text = '';
+          if (!lstCoverBookUrl.contains(immagineCopertina)) {
+            _loadHttpUrl(lstCoverBookUrl, immagineCopertina);
+          }
+        }
+      }
     }
-
-    return text;
   }
+
+  // static checkImage(LibroSearchModel libroViewModel) async {
+  //   String immagineCopertina = libroViewModel.immagineCopertina;
+  //   if (immagineCopertina != '') {
+  //     String textImgOrig = await getTextFromUrlImage(immagineCopertina);
+  //     String textImgNew = textImgOrig;
+
+  //     if (immagineCopertina.contains('zoom=1')) {
+  //       immagineCopertina = '${immagineCopertina.replaceFirst('zoom=1', 'zoom=0')}&fife=w400-h600';
+  //       textImgNew = await getTextFromUrlImage(immagineCopertina);
+  //     } else if (immagineCopertina.contains('zoom=5')) {
+  //       immagineCopertina = '${immagineCopertina.replaceFirst('zoom=5', 'zoom=0')}&fife=w400-h600';
+  //       textImgNew = await getTextFromUrlImage(immagineCopertina);
+  //     } 
+
+  //     if (textImgNew != textImgOrig) {
+  //       immagineCopertina = libroViewModel.immagineCopertina.replaceFirst('zoom=0', 'zoom=5');
+  //     }      
+
+  //     libroViewModel.immagineCopertina = immagineCopertina;
+  //   }
+  // }
+
 }

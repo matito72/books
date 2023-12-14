@@ -17,7 +17,7 @@ abstract class ImportExportState<T> extends Equatable {
 
 //* SUCCESS
 abstract class ImportExportSuccessState<T> extends ImportExportState {
-  const ImportExportSuccessState({T? data, String? msg}) : super(data: data, msg: msg, actionResult: ActionResult.success);
+  const ImportExportSuccessState({T? super.data, super.msg}) : super(actionResult: ActionResult.success);
 }
 
 //* ERRORE

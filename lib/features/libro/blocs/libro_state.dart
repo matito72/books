@@ -17,7 +17,7 @@ abstract class LibroState<T> extends Equatable {
 
 //* SUCCESS
 abstract class LibroSuccessState<T> extends LibroState {
-  const LibroSuccessState({T? data, String? msg}) : super(data: data, msg: msg, actionResult: ActionResult.success);
+  const LibroSuccessState({T? super.data, super.msg}) : super(actionResult: ActionResult.success);
 }
 
 //* WAIT

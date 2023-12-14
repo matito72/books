@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'package:books/config/constant.dart';
 import 'package:books/features/libro/data/models/libro_view_model.dart';
 import 'package:books/utilities/show_image_picker.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/app_bar/app_bar_default.dart';
+import 'package:books/widgets/list_cover_book.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 
@@ -13,7 +16,9 @@ class ImmagineCopertina extends StatefulWidget {
   // late final bool light;
   late final bool isImmaginePresent;
 
-  ImmagineCopertina({Key? key, required this.libroViewModel}) : super(key: key) {
+  ImmagineCopertina({super.key, required this.libroViewModel}) {
+    libroViewModel.pathImmagineCopertina ??= libroViewModel.immagineCopertina;
+
     isImmaginePresent = libroViewModel.immagineCopertina.isNotEmpty 
       && libroViewModel.immagineCopertina.contains('zoom=');
   }
@@ -23,39 +28,84 @@ class ImmagineCopertina extends StatefulWidget {
 }
 
 class _ImmagineCopertinaState extends State<ImmagineCopertina> {
-  bool light = false; //widget.libroViewModel.immagineCopertina.contains('zoom=0');
-  File? immagineCopertina;
+  // INIT:
+  String immagineCopertinaBackup = '';
+  List<String> lstCoverBookUrl = [];
+  bool swMiSentoFortunato = false;
+  bool swSearchWeb = false;
+  // File? immagineCopertina;
   ShowImagePickerUtil showImagePickerUtil = ShowImagePickerUtil();
 
-  reloadImage(File? imageFile) {
+  _updateWidget({File? imageFile, String? urlImage, bool? isMiSentoFortunato}) {
     if (imageFile != null) {
       setState(() {
-        immagineCopertina = imageFile;
+        // immagineCopertina = imageFile;
         widget.libroViewModel.immagineCopertina = imageFile.path;
+      });
+    } else if (urlImage != null) {
+      setState(() {
+        swSearchWeb = false;
+        if (urlImage.isNotEmpty) {
+          widget.libroViewModel.immagineCopertina = urlImage;
+        }
+      });
+    } else if (isMiSentoFortunato != null) {
+      setState(() {
+        swMiSentoFortunato = isMiSentoFortunato;
+
+        if (swMiSentoFortunato) {
+          immagineCopertinaBackup = widget.libroViewModel.immagineCopertina;
+
+          if (widget.libroViewModel.immagineCopertina.contains('zoom=1')) {
+            widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=1', 'zoom=0');
+          } else if (widget.libroViewModel.immagineCopertina.contains('zoom=5')) {
+            widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=5', 'zoom=0');
+          } else if (widget.libroViewModel.pathImmagineCopertina != null && widget.libroViewModel.pathImmagineCopertina!.trim().isNotEmpty) {
+            if (widget.libroViewModel.pathImmagineCopertina!.contains('zoom=1')) {
+              widget.libroViewModel.immagineCopertina = widget.libroViewModel.pathImmagineCopertina!.replaceFirst('zoom=1', 'zoom=0');
+            } else if (widget.libroViewModel.pathImmagineCopertina!.contains('zoom=5')) {
+              widget.libroViewModel.immagineCopertina = widget.libroViewModel.pathImmagineCopertina!.replaceFirst('zoom=5', 'zoom=0');
+            }
+          } 
+        } else {
+          // if (widget.libroViewModel.pathImmagineCopertina != null && widget.libroViewModel.pathImmagineCopertina!.trim().isNotEmpty) {
+          //   widget.libroViewModel.immagineCopertina = widget.libroViewModel.pathImmagineCopertina!;
+          // } else {
+          //   widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=0', 'zoom=5');
+          // }
+          widget.libroViewModel.immagineCopertina = immagineCopertinaBackup.replaceFirst('zoom=0', 'zoom=5');
+        }
       });
     }
   }
 
+  _reloadImage(File? imageFile) {
+    _updateWidget(imageFile: imageFile);
+  }
+
+  _selectImage(String urlImage) {
+    _updateWidget(urlImage: urlImage);
+  }
+
   @override
   Widget build(BuildContext context) {
-    light = widget.libroViewModel.immagineCopertina.contains('zoom=0');
+    swMiSentoFortunato = widget.libroViewModel.immagineCopertina.contains('zoom=0');
 
     return SafeArea(
       child: Scaffold(
         appBar: AppBarDefault(
           context: context,
-          percHeight: 10,
+          percHeight: 7,
           secondaryColor: const Color.fromARGB(115, 0, 143, 88),
           appBarContent: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: Text(widget.libroViewModel.titolo)
                 ),
-                // const Padding(padding: EdgeInsets.only(bottom: 5)),
                 Expanded(
                   flex: 1,
                   child: Text(widget.libroViewModel.lstAutori.join(', '), style: TextStyle(color: Colors.amber[300]))
@@ -63,77 +113,150 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
               ],
             ),
           ),
-          lstIconButtonDx: [
-            IconButton(
-              icon: const Icon(Icons.image_search_sharp),
-              onPressed: () async {
-                  Map<Permission, PermissionStatus> statuses = await [
-                    Permission.manageExternalStorage, Permission.camera,
-                  ].request();
-                  if(statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
-                    if (mounted) {
-                      showImagePickerUtil.showImagePicker(context, reloadImage);
-                    }
-                  } else {
-                    debugPrint('no permission provided');
-                  }
-                },
-              color: Colors.greenAccent,
-            )
+          lstWidgetDx: [
+            _getSwithSearchPhoneWeb(),
+            // swSearchWeb ? _getIconSearchImageFromWeb() : _getIconSearchImageFromPhone()
+            swSearchWeb 
+            ? const SizedBox(
+                width: 50,
+                height: 20,
+               child: Text(' ')
+              ) 
+            : _getIconSearchImageFromPhone()
           ]
         ),
-        body: getWidgetImageCopertina(),
+        body: _getWidgetImageCopertina(),
       ),
     );
   }
+
+  Widget _getSwithSearchPhoneWeb() {
+    return Switch(
+      value: swSearchWeb,
+      trackColor: MaterialStateProperty.all(Colors.black38),
+      activeColor: Colors.greenAccent[400],
+      inactiveThumbColor: Colors.yellowAccent[700],
+      // when the switch is on, this image will be displayed
+      // activeThumbImage: const AssetImage('assets/happy_emoji.png'),
+      activeThumbImage: const AssetImage('assets/images/searchWeb.png'),
+      // when the switch is off, this image will be displayed
+      inactiveThumbImage: const AssetImage('assets/images/searchPhotoLibrary.png'),
+      onChanged: (value) => setState(
+        () => swSearchWeb = value
+      )
+    );
+  }
+
+  Widget _getIconSearchImageFromPhone() {
+    return IconButton(
+      icon: Icon(MdiIcons.imageSearch),
+      onPressed: () async {
+        Map<Permission, PermissionStatus> statuses = await [
+          Permission.manageExternalStorage, Permission.camera,
+        ].request();
+        if(statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
+          if (mounted) {
+            // _updateWidget(swithSearchPhone: true);
+            showImagePickerUtil.showImagePicker(context, _reloadImage);
+          }
+        } else {
+          debugPrint('no permission provided');
+        }
+      },
+      color: Colors.yellowAccent[700],
+    );
+  }
+
+  // Widget _getIconSearchImageFromWeb() {
+  //   return IconButton(
+  //     icon: Icon(MdiIcons.web),
+  //     onPressed: () => {}, // _updateWidget(swithSearchWeb: true), 
+  //     color: Colors.greenAccent[400],
+  //   );
+  // }
   
-  Widget getWidgetImageCopertina() {
-    bool isImageOk = widget.isImmaginePresent; // widget.libroViewModel.immagineCopertina.contains('zoom=0');
-    double heightPerc = (isImageOk) ? 78 : 80;
-    List<Widget> lstWidget = [getFutureImage(heightPerc)];
+  Widget _getWidgetImageCopertina() {
+    // bool isImageOk = widget.isImmaginePresent; 
+    double heightPerc = 80; // (widget.isImmaginePresent) ? 80 : 80;
+    // List<Widget> lstWidget = [_getFutureImage(heightPerc)];
 
-    if (isImageOk) {
-      lstWidget.add(Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            'Immagine migliore', 
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.amber[300]),
-            textAlign: TextAlign.left,
-          ),
-          Switch(
-            value: light,
-            activeColor: Colors.lightBlueAccent,
-            onChanged: (bool value) {
-              setState(() {
-                light = value;
-
-                if (light) {
-                  if (widget.libroViewModel.immagineCopertina.contains('zoom=1')) {
-                    widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=1', 'zoom=0');
-                  } else if (widget.libroViewModel.immagineCopertina.contains('zoom=5')) {
-                    widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=5', 'zoom=0');
-                  } 
-                } else {
-                  widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=0', 'zoom=5');
-                }
-              });
-            },
-          )
-        ],
-      ));
-    }
+    // if (isImageOk) {
+    //   lstWidget.add(
+    //     _widgetMiSentoFortunato()
+    //   );
+    // }
     
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: lstWidget,
+      // children: lstWidget,
+      children: !swSearchWeb 
+        ? widget.isImmaginePresent ? [_getFutureImage(heightPerc), _widgetMiSentoFortunato()] : [_getFutureImage(heightPerc)]
+        : [_getGoogleSearchImage()],
     );
   }
 
-  Widget getFutureImage(double heightPerc) {
-    return FutureBuilder<Image>(
+  Widget _getGoogleSearchImage() {
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      child: Column(
+        children: [
+          // buildItemGoogleSearch("demo01", const Demo01())
+          Container(
+            width: (MediaQuery.of(context).size.width * 100 / 100),
+            height: (MediaQuery.of(context).size.height * 85 / 100),
+            padding: const EdgeInsets.all(1),
+            child: Center(
+              child: lstCoverBookUrl.isNotEmpty
+                ? ListCoverBook(lstCoverBookUrl: lstCoverBookUrl, fn: _selectImage)
+                : FutureBuilder<List<String>>(
+                  future: Utils.simpleGoogleCoverBookSearch(widget.libroViewModel, 20),
+                  builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else {
+                      if (snapshot.data != null) {
+                        lstCoverBookUrl = snapshot.data!;
+                        return ListCoverBook(lstCoverBookUrl: lstCoverBookUrl, fn: _selectImage);
+                      }
+                      return const Text("...");
+                    }
+                  }
+                )
+              // child: ListCoverBook()
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _widgetMiSentoFortunato() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'Mi sento fortunato', 
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.amber[300]),
+          textAlign: TextAlign.left,
+        ),
+        Switch(
+          value: swMiSentoFortunato,
+          activeColor: Colors.lightBlueAccent,
+          onChanged: (bool value) {
+            _updateWidget(isMiSentoFortunato: value);
+          },
+        )
+      ],
+    );
+  }
+
+  Widget _getFutureImage(double heightPerc) {
+    return widget.libroViewModel.immagineCopertina.isNotEmpty
+    ? FutureBuilder<Image>(
       future: Utils.getImageFromUrlFile(
         widget.libroViewModel,
         w: MediaQuery.of(context).size.width,
@@ -153,6 +276,15 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
           );
         }
       }
+    )
+    : Center(
+      heightFactor: 0.8,
+      child: SizedBox(
+        // height: 200,
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Image.asset(Constant.assetImageDefault, fit: BoxFit.none)
+      ),
     );
   }
 

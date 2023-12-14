@@ -1,3 +1,4 @@
+import 'package:books/config/constant.dart';
 import 'package:books/features/libro/data/repository/db_libro_service.dart';
 import 'package:books/injection_container.dart';
 import 'package:books/pages/immagine_copertina.dart';
@@ -15,7 +16,7 @@ class DettaglioLibroWidget extends StatefulWidget {
   final LibroViewModel libroViewModel;
   final bool isNewDettaglio;
   
-  const DettaglioLibroWidget(this.libroViewModel, this.isNewDettaglio, {Key? key}) : super(key: key);
+  const DettaglioLibroWidget(this.libroViewModel, this.isNewDettaglio, {super.key});
 
   @override
   State<DettaglioLibroWidget> createState() => _DettaglioLibroWidget();
@@ -154,7 +155,6 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                 widget.libroViewModel.titolo,
                                 numLines: 4,
                                 style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white),
-                                // readMoreTextStyle: TextStyle(Colors.amber.shade200),
                                 readMoreTextStyle: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
@@ -442,7 +442,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
       },
       child: (widget.libroViewModel.immagineCopertina != '')
         ? await Utils.getImageFromUrlFile(widget.libroViewModel)
-        : Image.asset('assets/images/waiting.png', fit: BoxFit.cover,),
+        : Image.asset(Constant.assetImageDefault, fit: BoxFit.cover,),
     );
   }
 

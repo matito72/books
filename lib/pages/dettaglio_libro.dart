@@ -15,7 +15,7 @@ class DettaglioLibro extends StatefulWidget {
   final LibroViewModel libroViewModel;
   final bool showDelete;
 
-  const DettaglioLibro({Key? key, required this.libroViewModel, required this.showDelete}) : super(key: key);
+  const DettaglioLibro({super.key, required this.libroViewModel, required this.showDelete});
 
   @override
   State<DettaglioLibro> createState() => _DettaglioLibro();
@@ -68,10 +68,10 @@ class _DettaglioLibro extends State<DettaglioLibro> {
             child: Scaffold(
               appBar: AppBarDefault(
                 context: context,
-                percHeight: 7,
+                percHeight: 4,
                 secondaryColor: const Color.fromARGB(115, 0, 143, 88),
                 txtLabel: libroViewModel.titolo,
-                lstIconButtonDx: widget.showDelete
+                lstWidgetDx: widget.showDelete
                   ? [ iconDeleteLibro, iconCheckAddLibro ]
                   : [ iconCheckAddLibro ]
               ),

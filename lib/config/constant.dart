@@ -6,6 +6,7 @@ class Constant {
   static const String googleapisPercorso = '/books/v1/volumes';
   static const String jsonFilesPath = "jsonFiles";
   static const String editoreDaDefinire = '<Editore da definire>';
+  static const String assetImageDefault = 'assets/images/waiting.png';
 
   static final LibreriaModel libreriaVuota = LibreriaModel(sigla: '', nome: '', nrLibriCaricati: 0);
   static bool initApp = false;

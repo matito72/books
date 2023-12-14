@@ -19,8 +19,8 @@ class SearchListBookPage extends StatelessWidget {
   final String title;
 
   const SearchListBookPage({
-    Key? key, required this.title, required this.libreriaSel, required this.googleSearchModel, /*required this.libri, required this.totalFindedBooks */
-  }) : super(key: key);
+    super.key, required this.title, required this.libreriaSel, required this.googleSearchModel, /*required this.libri, required this.totalFindedBooks */
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class PagewiseListViewExample extends StatelessWidget  {
   final ParameterGoogleSearchModel googleSearchModel;
   final LibreriaModel libreriaSel;
 
-  const PagewiseListViewExample(this.googleSearchModel, this.libreriaSel, {Key? key, required this.title}) : super(key: key);
+  const PagewiseListViewExample(this.googleSearchModel, this.libreriaSel, {super.key, required this.title});
 
 
   @override
@@ -121,11 +121,11 @@ class PagewiseListViewExample extends StatelessWidget  {
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   color: Colors.red,
                   alignment: Alignment.centerLeft,
-                  child: const Text.rich(
+                  child: Text.rich(
                     TextSpan(
                       children: [
                         WidgetSpan(child: Icon(MdiIcons.deleteForever)),
-                        TextSpan(text: ' Elimina'),
+                        const TextSpan(text: ' Elimina'),
                       ],
                     ),
                   ),
@@ -134,10 +134,10 @@ class PagewiseListViewExample extends StatelessWidget  {
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   color: Colors.green,
                   alignment: Alignment.centerRight,
-                  child: const Text.rich(
+                  child: Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(text: 'Dettaglio '),
+                        const TextSpan(text: 'Dettaglio '),
                         WidgetSpan(child: Icon(MdiIcons.book)),
                       ],
                     ),

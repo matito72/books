@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:books/config/constant.dart';
 import 'package:books/features/libro/blocs/libro_bloc.dart';
 import 'package:books/features/libro/data/models/libro_view_model.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ class LibreriaListaLibriWidget extends StatelessWidget {
             )
           );
         } else {
-          image = Image.asset('assets/images/waiting.png',fit: BoxFit.fill);
+          image = Image.asset(Constant.assetImageDefault, fit: BoxFit.fill);
         }
       }
 
@@ -80,7 +81,7 @@ class LibreriaListaLibriWidget extends StatelessWidget {
                   SizedBox(
                     // height: 200,
                     height: (MediaQuery.of(context).size.height * 50 / 100),
-                    child: Image.asset('assets/images/waiting.png',fit: BoxFit.cover,)
+                    child: Image.asset(Constant.assetImageDefault, fit: BoxFit.cover,)
                   ),
                   const Padding(
                     padding: EdgeInsets.all(40.0),
@@ -149,8 +150,8 @@ class LibreriaListaLibriWidget extends StatelessWidget {
                                         // flex: 2,
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
                                           children: <Widget>[
                                             Expanded(
                                               flex: 9,
@@ -162,6 +163,8 @@ class LibreriaListaLibriWidget extends StatelessWidget {
                                                   ? Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white)
                                                   : Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.white),
                                                 textAlign: TextAlign.left,
+                                                maxLines: 4,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
                                             Expanded(
@@ -178,7 +181,7 @@ class LibreriaListaLibriWidget extends StatelessWidget {
                                       Expanded(
                                         // flex: 2,
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           crossAxisAlignment: CrossAxisAlignment.center,
                                           children: <Widget>[
                                             Expanded(
@@ -188,6 +191,8 @@ class LibreriaListaLibriWidget extends StatelessWidget {
                                                   fontStyle: FontStyle.italic,
                                                   color: Colors.white70
                                                 ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
                                             MenuAnchor(
