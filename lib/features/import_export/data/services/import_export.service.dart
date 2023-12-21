@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
 import 'package:books/features/import_export/bloc/import_export_state.bloc.dart';
 import 'package:books/features/import_export/data/models/file_backup.module.dart';
@@ -76,7 +77,7 @@ class ImportExportService {
       DbLibroService dbLibroService = sl<DbLibroService>();
       DbLibreriaService dbLibreriaService = sl<DbLibreriaService>();
 
-      String siglaLibreria = Constant.libreriaInUso!.sigla;
+      String siglaLibreria = ComArea.libreriaInUso!.sigla;
       List<LibroViewModel> lstLibriGiaPresenti = [];
       Object? errore;
       for (var libroModelNew in lstLibroViewModel) {

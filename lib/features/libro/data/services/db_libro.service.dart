@@ -1,4 +1,4 @@
-import 'package:books/config/constant.dart';
+import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/resources/item_exception.dart';
@@ -44,9 +44,10 @@ class DbLibroService {
     return item; 
   }
 
-  Future<List<LibroViewModel>> readLstLibroFromDb(LibreriaModel libreriaSel, List<OrdinamentoLibri> lstOrdinamentoLibri) async {
+  Future<List<LibroViewModel>> readLstLibroFromDb(LibreriaModel libreriaSel) async {
     List<LibroViewModel> lstLibroViewSaved = [];
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+    List<OrdinamentoLibri> lstOrdinamentoLibri = ComArea.lstBookOrderBy;
 
     lstLibroViewSaved.addAll(boxLibroView.keys.map((key) {
       final item = boxLibroView.get(key);
@@ -85,12 +86,12 @@ class DbLibroService {
   }
 
   bool _filtro(LibroViewModel libroViewModel, LibreriaModel libreriaSel) {
-    bool filtro = (Constant.bookToSearch.isNotEmpty)
-      ? (libroViewModel.descrizione.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
-          || libroViewModel.titolo.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
-          || libroViewModel.editore.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
-          || libroViewModel.prezzo.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
-          || libroViewModel.lstAutori.toString().toUpperCase().contains(Constant.bookToSearch.toUpperCase())
+    bool filtro = (ComArea.bookToSearch.isNotEmpty)
+      ? (libroViewModel.descrizione.toUpperCase().contains(ComArea.bookToSearch.toUpperCase())
+          || libroViewModel.titolo.toUpperCase().contains(ComArea.bookToSearch.toUpperCase())
+          || libroViewModel.editore.toUpperCase().contains(ComArea.bookToSearch.toUpperCase())
+          || libroViewModel.prezzo.toUpperCase().contains(ComArea.bookToSearch.toUpperCase())
+          || libroViewModel.lstAutori.toString().toUpperCase().contains(ComArea.bookToSearch.toUpperCase())
         )
       : true;
     return (libroViewModel.siglaLibreria == libreriaSel.sigla) && filtro;
@@ -130,8 +131,8 @@ class DbLibroService {
   }
 
   Future<void> saveLibroToDb(LibroViewModel libroToNewEdit, bool isNew) async {
-    libroToNewEdit.siglaLibreria = Constant.libreriaInUso!.sigla;
-    String keyLibro = Constant.libreriaInUso!.sigla + libroToNewEdit.isbn;
+    libroToNewEdit.siglaLibreria = ComArea.libreriaInUso!.sigla;
+    String keyLibro = ComArea.libreriaInUso!.sigla + libroToNewEdit.isbn;
     
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
     LibroViewModel? libroViewModel = boxLibroView.get(keyLibro);
@@ -149,7 +150,7 @@ class DbLibroService {
   }
 
   Future<void> deleteLibroToDb(LibroViewModel libroToDelete) async {
-    String keyLibro = Constant.libreriaInUso!.sigla + libroToDelete.isbn;
+    String keyLibro = ComArea.libreriaInUso!.sigla + libroToDelete.isbn;
 
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
     LibroViewModel? libroViewModel = boxLibroView.get(keyLibro);

@@ -1,4 +1,3 @@
-import 'package:books/config/constant.dart';
 import 'package:books/features/import_export/data/services/import_export.service.dart';
 import 'package:books/features/libreria/data/services/db_libreria.service.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
@@ -33,7 +32,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
     on<LoadLibroEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
-        final List<LibroViewModel> lstLibroView = await _dbLibroService.readLstLibroFromDb(event.libreriaModel, event.lstOrdinamentoLibri);
+        final List<LibroViewModel> lstLibroView = await _dbLibroService.readLstLibroFromDb(event.libreriaModel);
         
         String msg = lstLibroView.isEmpty ? 'Nessun Libro presente' : 'Nr. ${lstLibroView.length}, libri caricati correttamente';
         emit(ListaLibroLoadedState(lstLibroView, msg));
@@ -46,7 +45,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
     on<ExportAllLibriLibreriaEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
-        final List<LibroViewModel> lstLibroView = await _dbLibroService.readLstLibroFromDb(event.libreriaModel, Constant.lstBookOrderBy);
+        final List<LibroViewModel> lstLibroView = await _dbLibroService.readLstLibroFromDb(event.libreriaModel);
         int nrRecordExported = await sl<ImportExportService>().exportLibriLibreria('libreria', event.libreriaModel.sigla, lstLibroView);
 
         emit(ExportedFileState(nrRecordExported, 'Nr. $nrRecordExported: libri esportati.'));

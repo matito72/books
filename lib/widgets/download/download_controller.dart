@@ -1,5 +1,5 @@
 
-import 'package:books/config/constant.dart';
+import 'package:books/config/com_area.dart';
 import 'package:books/features/import_export/data/models/file_backup.module.dart';
 import 'package:books/features/import_export/data/services/import_export.service.dart';
 import 'package:books/features/libreria/data/services/db_libreria.service.dart';
@@ -110,7 +110,7 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
       DbLibreriaService dbLibreriaService = sl<DbLibreriaService>();
 
       List downloadProgressStops =  List.generate(nrRecordTot, (i) => (i * 100/(nrRecordTot - 1)).roundToDouble() / 100);
-      String siglaLibreria = Constant.libreriaInUso!.sigla;
+      String siglaLibreria = ComArea.libreriaInUso!.sigla;
       int i = 0;
       for (var libroModelNew in lstLibroViewModel) {
         libroModelNew.siglaLibreria = siglaLibreria;

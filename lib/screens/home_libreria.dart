@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/bloc/libreria.bloc.dart';
 import 'package:books/features/libreria/bloc/libreria_events.bloc.dart';
 import 'package:books/features/libreria/bloc/libreria_state.bloc.dart';
@@ -156,7 +157,7 @@ class HomeLibreriaScreen extends StatelessWidget {
   }
 
   Widget _widgetListaLibrerie(BuildContext context, List<LibreriaModel> lstLibreriaModel) {
-    LibreriaModel? libreriaInUso = Constant.libreriaInUso;
+    LibreriaModel? libreriaInUso = ComArea.libreriaInUso;
 
     if (libreriaInUso != null && lstLibreriaModel.isNotEmpty) {
       for (var libreria in lstLibreriaModel) {
@@ -197,7 +198,7 @@ class HomeLibreriaScreen extends StatelessWidget {
                         ),
                       )
                     ),
-                  title: (!Constant.initApp) 
+                  title: (!ComArea.initApp) 
                     ? Text(libreria.nome)
                     : (libreriaInUso != null && libreriaInUso.sigla == libreria.sigla) ? Text('[ ${libreria.nome} ]') : Text(libreria.nome),
                   // title: Text(libreria.nome),
@@ -209,7 +210,7 @@ class HomeLibreriaScreen extends StatelessWidget {
                     // spacing: 0,
                     children: [
                       IconButton(
-                        icon: (Constant.initApp && libreriaInUso != null && libreriaInUso.sigla == libreria.sigla) 
+                        icon: (ComArea.initApp && libreriaInUso != null && libreriaInUso.sigla == libreria.sigla) 
                           ? Icon(MdiIcons.doorOpen, color: Colors.green,)
                           : Icon(MdiIcons.doorClosed, color: Colors.green,),
                         onPressed: () => {_goToHomeLibriLibreria(context, libreria)},

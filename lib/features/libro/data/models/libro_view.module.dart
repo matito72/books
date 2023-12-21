@@ -1,3 +1,4 @@
+import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
 import 'package:books/features/libro/data/models/libro_search.module.dart';
 import 'package:hive/hive.dart';
@@ -61,7 +62,7 @@ class LibroViewModel extends LibroSearchModel {
     googleBookId = mappa['id'] ?? mappa['googleBookId'];
     stars = mappa['stars'];
     pathImmagineCopertina = mappa['pathImmagineCopertina'];
-    siglaLibreria = Constant.libreriaInUso!.sigla;
+    siglaLibreria = ComArea.libreriaInUso!.sigla;
   }
 
   LibroViewModel copyWith({

@@ -1,4 +1,4 @@
-import 'package:books/config/constant.dart';
+import 'package:books/config/com_area.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
 import 'package:books/resources/ordinamento_libri.dart';
@@ -72,7 +72,8 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
               _items.insert(newIndex, item);
             });
 
-            widget.libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, _items));
+            ComArea.setLstBookOrderBy(_items);
+            widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
           },
         ),
       ),

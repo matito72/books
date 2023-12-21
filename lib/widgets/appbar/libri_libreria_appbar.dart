@@ -1,4 +1,4 @@
-import 'package:books/config/constant.dart';
+import 'package:books/config/com_area.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
 import 'package:books/widgets/appbar/backdrop_appbar_default.dart';
@@ -44,10 +44,10 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
   Widget _createTextTitle(BuildContext context, TextEditingController textCtrlSearch) {
     // LABEL : default
     textCtrlSearch.clear();
-    if (Constant.bookToSearch.isNotEmpty) {
-      widget.libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderByDefault));
+    if (ComArea.bookToSearch.isNotEmpty) {
+      widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
     }
-    Constant.setBookToSearch('');
+    ComArea.setBookToSearch('');
     return InkWell(
       onTap:() {
         setState(() {
@@ -60,7 +60,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
         // }
       },
       child: Text(
-        'Libreria ${Constant.libreriaInUso!.nome}: ${Constant.libreriaInUso!.nrLibriCaricati} libri',
+        'Libreria ${ComArea.libreriaInUso!.nome}: ${ComArea.libreriaInUso!.nrLibriCaricati} libri',
         style: const TextStyle(
           color: Colors.white, fontSize: 16
         ),
@@ -77,8 +77,8 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
       cursorColor: Colors.black,
       style: const TextStyle(color: Colors.black),
       onSubmitted: (value) {
-        Constant.setBookToSearch(textCtrlSearch.text);
-        widget.libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderBy));
+        ComArea.setBookToSearch(textCtrlSearch.text);
+        widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
         FocusScope.of(context).unfocus();
       },
       decoration: InputDecoration(
@@ -93,8 +93,8 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
           icon: const Icon(Icons.close),
           onPressed: () {                  
             textCtrlSearch.clear();
-            Constant.setBookToSearch('');
-            widget.libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderBy));
+            ComArea.setBookToSearch('');
+            widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
             FocusScope.of(context).unfocus();
             setState(() {
               appBarStateText = true;

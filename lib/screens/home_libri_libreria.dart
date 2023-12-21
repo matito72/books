@@ -1,5 +1,5 @@
 import 'package:backdrop/backdrop.dart';
-import 'package:books/config/constant.dart';
+import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/bloc/libreria_state.bloc.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
@@ -174,7 +174,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
                   children: [
                     Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.save_alt, color: Colors.green[100]),),
                     Text(
-                      MenuItemCode.exportAllBooksLibreria.label.replaceFirst('{0}', Constant.libreriaInUso!.nome),
+                      MenuItemCode.exportAllBooksLibreria.label.replaceFirst('{0}', ComArea.libreriaInUso!.nome),
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     )
                   ],
@@ -199,7 +199,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
                   children: [
                     const Padding(padding: EdgeInsets.only(right: 10.0), child: Icon(Icons.delete, color: Colors.red),),
                     Text(
-                      MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', Constant.libreriaInUso!.nome),
+                      MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', ComArea.libreriaInUso!.nome),
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     )
                   ],
@@ -221,7 +221,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       },
       onSelected: (value) {
         if (value == MenuItemCode.deleteAllBooksInLibreria.cd) {
-          libroBloc.add(DeleteAllLibriLibreriaEvent(Constant.libreriaInUso!));
+          libroBloc.add(DeleteAllLibriLibreriaEvent(ComArea.libreriaInUso!));
         } 
         else if(value == MenuItemCode.exportAllBooksLibreria.cd) {
           _exportLibriLibreria(context, libroBloc);
@@ -246,12 +246,12 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         barrierDismissible: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Procedo con l'esportazione di nr.${Constant.nrLibriInLibreriaInUso} libri di ${Constant.libreriaInUso!.nome} ?"),
+            title: Text("Procedo con l'esportazione di nr.${ComArea.nrLibriInLibreriaInUso} libri di ${ComArea.libreriaInUso!.nome} ?"),
             actions: <Widget>[
               TextButton(
                 child: const Text('Si'),
                 onPressed: () {
-                  libroBloc.add(ExportAllLibriLibreriaEvent(Constant.libreriaInUso!));
+                  libroBloc.add(ExportAllLibriLibreriaEvent(ComArea.libreriaInUso!));
                   Navigator.pop(context, true);
                 },
               ),
@@ -295,7 +295,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         }
         if (state is AddedNewLibroState || state is EditLibroState || state is DeletedLibroState ||
             state is LibroInitializedState || state is DeleteAllLibroState) {
-          libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderBy));
+          libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
         } else  if (state is ExportedFileState) {
           _fnRestoreFileBackup(context, libroBloc);
         }
@@ -332,7 +332,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     await Navigator.pushNamed<dynamic> (context, ImportExportFile.pagePath);
 
     if (context.mounted) {
-      libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderBy));
+      libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
     }
   }
 
@@ -368,25 +368,25 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
   _viewEditLibro(BuildContext context, LibroBloc libroBloc, LibroViewModel libroViewModel) async {
     String immagineCopertinaPre = libroViewModel.immagineCopertina;
-    LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, Constant.libreriaInUso!, libroViewModel, true);
+    LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModel, true);
     String immagineCopertinaPost = libroViewModel.immagineCopertina;
 
     if (ret != null) {
       if (ret.isDelete) {
-        libroBloc.add(DeleteLibroEvent(Constant.libreriaInUso!, ret.libroViewModel));
+        libroBloc.add(DeleteLibroEvent(ComArea.libreriaInUso!, ret.libroViewModel));
       } else if (ret.isInsert) {
-        libroBloc.add(EditLibroEvent(Constant.libreriaInUso!, ret.libroViewModel));
+        libroBloc.add(EditLibroEvent(ComArea.libreriaInUso!, ret.libroViewModel));
       }
     } else if (immagineCopertinaPre != immagineCopertinaPost) {
-      libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderBy));
+      libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
     }
   }
 
   _viewDettaglioLibro(BuildContext context, LibroBloc libroBloc, LibroViewModel libroViewModel) async {
-    LibroDettaglioResult? libroDettaglioResult = await LibroUtils.viewDettaglioLibro(context, Constant.libreriaInUso!, libroViewModel, false);
+    LibroDettaglioResult? libroDettaglioResult = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModel, false);
 
     if (libroDettaglioResult != null && libroDettaglioResult.isInsert) {
-      libroBloc.add(AddLibroEvent(Constant.libreriaInUso!, libroDettaglioResult.libroViewModel));
+      libroBloc.add(AddLibroEvent(ComArea.libreriaInUso!, libroDettaglioResult.libroViewModel));
     }
   }
 
@@ -394,7 +394,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     bool? isDelete = await DialogUtils.showConfirmationSiNo(context, 'Vuoi eliminare il libro dalla libreria ?');
     
     if (isDelete != null && isDelete) {
-      libroBloc.add(DeleteLibroEvent(Constant.libreriaInUso!, libroViewModel));
+      libroBloc.add(DeleteLibroEvent(ComArea.libreriaInUso!, libroViewModel));
     }
   }
 

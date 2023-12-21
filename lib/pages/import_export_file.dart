@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
 import 'package:books/features/import_export/bloc/import_export.bloc.dart';
 import 'package:books/features/import_export/bloc/import_export_events.bloc.dart';
@@ -24,7 +25,7 @@ class ImportExportFile extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    String siglaLibreriaSearch = siglaLibreria ?? Constant.libreriaInUso!.sigla;
+    String siglaLibreriaSearch = siglaLibreria ?? ComArea.libreriaInUso!.sigla;
     ImportExportBloc importExportBloc = sl<ImportExportBloc>();
     
     return SafeArea(
@@ -55,7 +56,7 @@ class ImportExportFile extends StatelessWidget {
       var path = file.path;
       int pathFileIdx = path.lastIndexOf(Platform.pathSeparator);
       FileBackupModel fileBackupModel = FileBackupModel(
-        siglaLibreria: Constant.libreriaInUso!.sigla, 
+        siglaLibreria: ComArea.libreriaInUso!.sigla, 
         fileName: path.substring(pathFileIdx + 1), 
         nrRecord: 1
       );

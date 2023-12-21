@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:books/config/constant.dart';
+import 'package:books/config/com_area.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
@@ -58,11 +58,11 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
             LibroDettaglioResult? libroDettaglioResult = await Navigator.pushNamed<dynamic> (
               context, 
               SearchListBookPage.pagePath, 
-              arguments: {'googleSearchModel': googleSearchModel, 'libreriaSel': Constant.libreriaInUso! /* 'libri': libri, 'nrTot': totalFindedBooks*/}
+              arguments: {'googleSearchModel': googleSearchModel, 'libreriaSel': ComArea.libreriaInUso! /* 'libri': libri, 'nrTot': totalFindedBooks*/}
             );
             
             if (libroDettaglioResult != null) {
-              widget.libroBloc.add(AddLibroEvent(Constant.libreriaInUso!, libroDettaglioResult.libroViewModel));
+              widget.libroBloc.add(AddLibroEvent(ComArea.libreriaInUso!, libroDettaglioResult.libroViewModel));
               // widget.appBarBloc.add(SwithToTextAppBarEvent());
             }
           }        

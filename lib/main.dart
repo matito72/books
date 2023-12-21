@@ -1,4 +1,4 @@
-import 'package:books/config/constant.dart';
+import 'package:books/config/com_area.dart';
 import 'package:books/config/routes.dart';
 import 'package:books/config/theme/books_style.dart';
 import 'package:books/features/libreria/bloc/libreria.bloc.dart';
@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     sl<LibreriaBloc>().add(InitLibreriaEvent());
-    Constant.initApp = false;
+    ComArea.initApp = false;
   }
 
   @override
@@ -57,9 +57,9 @@ class _MyAppState extends State<MyApp> {
 
   // Inizializza/Apre una libreria 
   void _goToHomeLibriLibreria(LibreriaModel libreriaSel) async {
-    if (Constant.libreriaInUso == null || libreriaSel.sigla != Constant.libreriaInUso!.sigla)   {
+    if (ComArea.libreriaInUso == null || libreriaSel.sigla != ComArea.libreriaInUso!.sigla)   {
       await sl<DbLibreriaService>().changeLibreriaDefault(libreriaSel);
-      Constant.setLibreriaInUso(libreriaSel);     
+      ComArea.setLibreriaInUso(libreriaSel);     
     }
 
     setState(() {
@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
         widgetOptions.removeAt(1);
       }
 
-      Constant.initApp = true;
+      ComArea.initApp = true;
       widgetOptions.add(const HomeLibriLibreriaScreen());
       
       _selectedIndex = 1;
