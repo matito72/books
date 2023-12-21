@@ -1,7 +1,7 @@
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
-import 'package:books/features/libro/data/models/libro_view_model.dart';
+import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/utilities/dialog_utils.dart';
-import 'package:books/widgets/app_bar/app_bar_default.dart';
+import 'package:books/widgets/appbar/appbar_default.dart';
 import 'package:books/widgets/dettaglio_libro/dettaglio_libro_web_view.dart';
 import 'package:books/widgets/dettaglio_libro/dettaglio_libro_widget.dart';
 import 'package:flutter/material.dart';

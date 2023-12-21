@@ -1,14 +1,18 @@
+import 'package:backdrop/backdrop.dart';
 import 'package:books/config/constant.dart';
-import 'package:books/features/appbar/blocs/app_bar_bloc.dart';
-import 'package:books/features/appbar/blocs/app_bar_events.dart';
-import 'package:books/features/appbar/blocs/app_bar_state.dart';
-import 'package:books/features/libreria/blocs/libreria_state.dart';
-import 'package:books/features/libro/blocs/libro_bloc.dart';
-import 'package:books/features/libro/blocs/libro_events.dart';
-import 'package:books/features/libro/blocs/libro_state.dart';
+import 'package:books/features/appbar/bloc/appbar.bloc.dart';
+import 'package:books/features/appbar/bloc/appbar_events.bloc.dart';
+import 'package:books/features/appbar/bloc/appbar_state.bloc.dart';
+import 'package:books/features/filtro_libri/bloc/filtro_libri.bloc.dart';
+import 'package:books/features/filtro_libri/bloc/filtro_libri_events.bloc.dart';
+import 'package:books/features/filtro_libri/bloc/filtro_libri_state.bloc.dart';
+import 'package:books/features/libreria/bloc/libreria_state.bloc.dart';
+import 'package:books/features/libro/bloc/libro.bloc.dart';
+import 'package:books/features/libro/bloc/libro_events.bloc.dart';
+import 'package:books/features/libro/bloc/libro_state.bloc.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
-import 'package:books/features/libro/data/models/libro_view_model.dart';
-import 'package:books/features/libro/data/repository/db_libro_service.dart';
+import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
 import 'package:books/pages/import_export_file.dart';
 import 'package:books/pages/libreria_lista_libri_page.dart';
@@ -17,8 +21,9 @@ import 'package:books/services/libro_search_service.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/libro_utils.dart';
 import 'package:books/utilities/utils.dart';
-import 'package:books/widgets/app_bar/app_bar_default.dart';
+import 'package:books/widgets/appbar/backdrop_appbar_default.dart';
 import 'package:books/widgets/new_libro_widget.dart';
+import 'package:books/widgets/reorderable_order_by.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -38,6 +43,7 @@ enum MenuItemCode {
   const MenuItemCode(this.cd, this.label);
 }
 
+
 class HomeLibriLibreriaScreen extends StatelessWidget {
   static const String screenPath = "/HomeLibriLibreria";
   
@@ -53,107 +59,195 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         BlocProvider<AppBarBloc>(
           create: (_) => AppBarBloc()..add(SwithToTextAppBarEvent()),
         ),
+        BlocProvider<FiltroLibriBloc>(
+          create: (_) => FiltroLibriBloc()..add(FiltroLibriInitEvent()),
+        ),
       ],
       child: BlocBuilder<AppBarBloc, AppBarState>(
         builder: (context, state) {
-          return Scaffold(
-            appBar: _buildAppbar(context), 
-            body: _blocBody(context),
-            floatingActionButton: FloatingActionButton(
-              child: Icon(MdiIcons.barcodeScan),
-              onPressed: () => _searchBookByBarcode(context)
-            ),
-          );
+          return _getMainScaffold(context);
         }
       )
     );
   }
 
-  _buildAppbar(BuildContext context) {
-    AppBarBloc appBarBloc = context.read<AppBarBloc>();
-    LibroBloc libroBloc = context.read<LibroBloc>();
-    // --- SEARCH    
-    TextEditingController textController = TextEditingController();
-
-    return AppBarDefault(
-      context: context,
-      iconSx: IconButton(
-        padding: EdgeInsets.zero,
-        icon: BlocBuilder<LibroBloc, LibroState>(
-          builder: (context, state) {
-            if (appBarBloc.state is TextAppBarState || appBarBloc.state is RefreshAppBarState) {
-              return const Icon(Icons.menu);
-            }
-            return const Icon(Icons.close);
-          }
-        ),
-        onPressed: () {
-          if (appBarBloc.state is SearchAppBarState) {
-            appBarBloc.add(SwithToTextAppBarEvent());
-          } else {
-            appBarBloc.add(SwithToSearchAppBarEvent());            
-          }
-        },
+  _getMainScaffold(BuildContext context) {
+    return BackdropScaffold(
+      headerHeight: 40,
+      resizeToAvoidBottomInset: true,
+      frontLayerShape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(0), 
+          topRight: Radius.circular(0)
+        )
       ),
-      // primaryColor: (appBarBloc.state is TextAppBarState || appBarBloc.state is RefreshAppBarState)
-      //   ? Colors.blue
-      //   : Colors.blue[900],
-      // secondaryColor: (appBarBloc.state is TextAppBarState || appBarBloc.state is RefreshAppBarState)
-      //   ? Colors.pink
-      //   : Colors.black,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(35.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: BackdropAppBar(
+                title: _buildBackdropAppbar(context),
+                toolbarHeight: 35,
+                leadingWidth: (MediaQuery.of(context).size.width * 7 / 100),
+                actions: [ _createAppBarPopupMenuButton(context) ],
+                flexibleSpace: Container(
+                  alignment: Alignment.topLeft,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: <Color>[Color.fromARGB(255, 33, 44, 49), Colors.blue],
+                      tileMode: TileMode.clamp,
+                      begin: Alignment.centerLeft,
+                    ),
+                  ),
+                )
+              ),
+            ),
+          ]
+        ),
+      ),
+      backLayer: BlocBuilder<FiltroLibriBloc, FiltroLibriState>(
+        builder: (context, state) {
+          return _createBackLayer(context);
+        }
+      ),
+      // subHeader: const BackdropSubHeader(
+      //   title: Text("-BackdropSubHeader-"),
+      // ),
+      frontLayer: _blocBody(context),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(MdiIcons.barcodeScan),
+        onPressed: () => _searchBookByBarcode(context)
+      ),
+      stickyFrontLayer: true,
+    );
+  }
+
+    _createBackLayer(BuildContext context) {
+    // AppBarBloc appBarBloc = context.read<AppBarBloc>();
+    LibroBloc libroBloc = context.read<LibroBloc>();
+    FiltroLibriBloc filtroLibriBloc = context.read<FiltroLibriBloc>();
+
+    return SizedBox(
+      width: (MediaQuery.of(context).size.width * 100 / 100),
+      height: (MediaQuery.of(context).size.height * 40 / 100),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: []
+        ..insert(0, Text(
+            'Ordinamento Libri:',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.normal,
+              decoration: TextDecoration.underline,
+              decorationStyle: TextDecorationStyle.wavy,
+              fontSize: 16,
+            )
+          )
+        )
+        ..add(ReorderableOrderBy(filtroLibriBloc, libroBloc)
+        )
+      ),
+    );
+  }
+
+  _buildBackdropAppbar(BuildContext context) {
+    AppBarBloc appBarBloc = BlocProvider.of<AppBarBloc>(context);
+    // LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
+
+    // --- SEARCH    
+    TextEditingController textCtrlSearch = TextEditingController();
+
+    return BackdropAppbarDefault(
+      context: context,
+      showIconSx: false,
       appBarContent: BlocBuilder<LibroBloc, LibroState>(
         builder: (context, state) {
-          if (appBarBloc.state is TextAppBarState || appBarBloc.state is RefreshAppBarState) {
-            // LABEL : default
-            textController.clear();
-            if (Constant.bookToSearch.isNotEmpty) {
-              libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
-            }
-            Constant.setBookToSearch('');
-            return Text('Libreria ${Constant.libreriaInUso!.nome}: ${Constant.libreriaInUso!.nrLibriCaricati} libri');
+          if (appBarBloc.state is TextAppBarState) {
+            return _createTextTitle(context, textCtrlSearch);
           }
-
-          return TextField(
-            textInputAction: TextInputAction.search,
-            controller: textController,
-            textAlignVertical: TextAlignVertical.center,
-            autofocus: true,
-            cursorColor: Colors.black,
-            style: const TextStyle(color: Colors.black),
-            onSubmitted: (value) {
-              Constant.setBookToSearch(textController.text);
-              libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
-              FocusScope.of(context).unfocus();
-            },
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color.fromARGB(255, 180, 218, 228),
-              hintText: 'Search...',
-              hintStyle: const TextStyle(color: Colors.black),
-              border: const OutlineInputBorder(),
-              suffixIcon: IconButton(
-                color: Colors.black,
-                padding: EdgeInsets.zero,
-                icon: const Icon(Icons.search),
-                onPressed: () {
-                  Constant.setBookToSearch(textController.text);
-                  libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
-                  FocusScope.of(context).unfocus();
-                  // textController.clear();
-                },
-              ),
-              isCollapsed: true,
-              isDense: true
-            ),
-          );
+          return _createTextSearch(context, textCtrlSearch);
         }      
       ),
-      popupMenuButton: _createAppBarPopupMenuButton(context),
+    );
+  }
+
+  Widget _createTextTitle(BuildContext context, TextEditingController textCtrlSearch) {
+    AppBarBloc appBarBloc = BlocProvider.of<AppBarBloc>(context);
+    LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
+
+    // LABEL : default
+    textCtrlSearch.clear();
+    if (Constant.bookToSearch.isNotEmpty) {
+      libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderByDefault));
+    }
+    Constant.setBookToSearch('');
+    return InkWell(
+      onTap:() {
+        if (appBarBloc.state is SearchAppBarState) {
+          appBarBloc.add(SwithToTextAppBarEvent());
+        } else if (appBarBloc.state is TextAppBarState) {
+          appBarBloc.add(SwithToSearchAppBarEvent());
+        }
+      },
+      child: Text(
+        'Libreria ${Constant.libreriaInUso!.nome}: ${Constant.libreriaInUso!.nrLibriCaricati} libri',
+        style: const TextStyle(
+          color: Colors.white, fontSize: 16
+        ),
+      )
+    );
+  }
+
+  Widget _createTextSearch(BuildContext context, TextEditingController textCtrlSearch) {
+    AppBarBloc appBarBloc = BlocProvider.of<AppBarBloc>(context);
+    LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
+
+    return TextField(
+      textInputAction: TextInputAction.search,
+      controller: textCtrlSearch,
+      textAlignVertical: TextAlignVertical.center,
+      autofocus: true,
+      cursorColor: Colors.black,
+      style: const TextStyle(color: Colors.black),
+      onSubmitted: (value) {
+        Constant.setBookToSearch(textCtrlSearch.text);
+        libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderBy));
+        FocusScope.of(context).unfocus();
+      },
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: const Color.fromARGB(255, 180, 218, 228),
+        hintText: 'Search...',
+        hintStyle: const TextStyle(color: Colors.black),
+        border: const OutlineInputBorder(),
+        suffixIcon: IconButton(
+          color: Colors.black,
+          padding: EdgeInsets.zero,
+          icon: const Icon(Icons.close),
+          onPressed: () {                  
+            textCtrlSearch.clear();
+            Constant.setBookToSearch('');
+            appBarBloc.add(SwithToTextAppBarEvent());
+            libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderBy));
+            FocusScope.of(context).unfocus();
+          },
+        ),
+        isCollapsed: true,
+        isDense: true
+      ),
     );
   }
 
   PopupMenuButton _createAppBarPopupMenuButton(BuildContext context) {
-    LibroBloc libroBloc = context.read<LibroBloc>();
+    LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
 
     return PopupMenuButton(
       padding: EdgeInsets.zero,
@@ -274,7 +368,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   Widget _blocBody(BuildContext context) {
-    LibroBloc libroBloc = context.read<LibroBloc>();
+    LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
     
     return BlocListener<LibroBloc, LibroState> (
       listener: (context, LibroState state) {
@@ -298,7 +392,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         }
         if (state is AddedNewLibroState || state is EditLibroState || state is DeletedLibroState ||
             state is LibroInitializedState || state is DeleteAllLibroState) {
-          libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
+          libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderBy));
         } else  if (state is ExportedFileState) {
           _fnRestoreFileBackup(context, libroBloc);
         }
@@ -315,7 +409,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           }
 
           if (state is ListaLibroLoadedState) {
-            return widgetListaLibriDataBase(context, libroBloc, state.data);
+            return _widgetListaLibriDataBase(context, libroBloc, state.data);
           } 
           
           if (state is LibroErrorState) {
@@ -335,17 +429,17 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     await Navigator.pushNamed<dynamic> (context, ImportExportFile.pagePath);
 
     if (context.mounted) {
-      libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
+      libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderBy));
     }
   }
 
-  Widget widgetListaLibriDataBase(BuildContext context, LibroBloc libroBloc, List<LibroViewModel> lstLibroViewModel) {
+  Widget _widgetListaLibriDataBase(BuildContext context, LibroBloc libroBloc, List<LibroViewModel> lstLibroViewModel) {
     return LibreriaListaLibriWidget(context, libroBloc, lstLibroViewModel, _viewEditLibro, _deleteLibro);
   }
 
   _searchBookByBarcode(BuildContext context) async {
-    LibroBloc libroBloc = context.read<LibroBloc>();
-    AppBarBloc appBarBloc = context.read<AppBarBloc>();
+    AppBarBloc appBarBloc = BlocProvider.of<AppBarBloc>(context);
+    LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
 
     List<LibroViewModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode( await LibroSearchService.scanBarcodeNormal()); //** OK */
     // List<LibroViewModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode('9788807033247'); //('9788807014956') // ('9788804680604'); // !!! TEST !!!
@@ -382,7 +476,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         libroBloc.add(EditLibroEvent(Constant.libreriaInUso!, ret.libroViewModel));
       }
     } else if (immagineCopertinaPre != immagineCopertinaPost) {
-      libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!));
+      libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderBy));
     }
   }
 

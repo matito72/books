@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class BookStyle {
   static final bookStyleTheme = ThemeData(
     brightness: Brightness.dark,
-    primaryColor: Colors.yellow.shade400,
+    // primaryColor: Colors.yellow.shade400,
+    primaryColor: Colors.blueGrey,
     // fontFamily: 'Georgia',
     fontFamily: 'Muli',
     textTheme: const TextTheme(
@@ -19,7 +20,7 @@ class BookStyle {
       error: Colors.red.shade500,
       onBackground: Colors.yellow.shade200,
       onError: Colors.red.shade300,
-      onPrimary: Colors.black,
+      onPrimary: Colors.blueGrey[700]!,
       onSecondary: Colors.yellow.shade50,
       onSurface: Colors.yellow.shade500,
       primary: Colors.yellow.shade100,

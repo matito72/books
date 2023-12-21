@@ -1,10 +1,10 @@
 
 import 'package:books/config/constant.dart';
-import 'package:books/features/import_export/data/models/file_backup.dart';
-import 'package:books/features/import_export/data/repository/import_export_service.dart';
-import 'package:books/features/libreria/data/repository/db_libreria_service.dart';
-import 'package:books/features/libro/data/models/libro_view_model.dart';
-import 'package:books/features/libro/data/repository/db_libro_service.dart';
+import 'package:books/features/import_export/data/models/file_backup.module.dart';
+import 'package:books/features/import_export/data/services/import_export.service.dart';
+import 'package:books/features/libreria/data/services/db_libreria.service.dart';
+import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
 import 'package:books/resources/item_exception.dart';
 import 'package:books/widgets/download/download_button.dart';

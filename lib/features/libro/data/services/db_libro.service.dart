@@ -1,0 +1,187 @@
+import 'package:books/config/constant.dart';
+import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/resources/item_exception.dart';
+import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
+
+class DbLibroService {
+  
+  DbLibroService();
+
+  Future<bool> init() async {
+    Hive.registerAdapter(LibroViewModelAdapter());
+
+    debugPrint('_boxLibroView - INIZIALIZZATO !!');
+    return true;
+  }
+
+  bool isServiceInitialized() {
+    // return _boxLibroView != null && _boxLibroView!.isOpen;
+    return Hive.isAdapterRegistered(LibroViewModelAdapter().typeId);
+  }
+
+  Future<Box<LibroViewModel>> _openBoxLibroView() async {
+     return await Hive.openBox<LibroViewModel>('boxLibroView');
+  }
+
+  Future<void> dispose() async {
+    debugPrint('DISPOSE - ....');
+    
+    Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+    await boxLibroView.compact();
+    await boxLibroView.close();
+    await Hive.close();
+
+    debugPrint('DISPOSE - stop');
+  }
+
+  Future<LibroViewModel?> getLibroFromDb(String key) async {
+    Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+    final LibroViewModel? item = boxLibroView.get(key);
+    await boxLibroView.close();
+    return item; 
+  }
+
+  Future<List<LibroViewModel>> readLstLibroFromDb(LibreriaModel libreriaSel, List<OrdinamentoLibri> lstOrdinamentoLibri) async {
+    List<LibroViewModel> lstLibroViewSaved = [];
+    Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+
+    lstLibroViewSaved.addAll(boxLibroView.keys.map((key) {
+      final item = boxLibroView.get(key);
+
+      return LibroViewModel(
+        item!.siglaLibreria,
+        isbn: item.isbn,
+        googleBookId: item.googleBookId,
+        titolo: item.titolo,
+        lstAutori: item.lstAutori,
+        editore: item.editore,
+        descrizione: item.descrizione,
+        immagineCopertina: item.immagineCopertina,
+        dataPubblicazione: item.dataPubblicazione,
+        nrPagine: item.nrPagine,
+        lstCategoria: item.lstCategoria,
+        previewLink: item.previewLink,
+        isEbook: item.isEbook,
+        country: item.country,
+        valuta: item.valuta,
+        prezzo: item.prezzo,
+        stars: item.stars,
+        pathImmagineCopertina: item.pathImmagineCopertina
+      );
+    })
+    .where(
+      (libroViewModel) => _filtro(libroViewModel, libreriaSel)
+    )
+    .toList());
+
+    lstLibroViewSaved.sort((a, b) => _libroViewModelSort(a, b, lstOrdinamentoLibri));
+
+    await boxLibroView.close();
+
+    return lstLibroViewSaved;
+  }
+
+  bool _filtro(LibroViewModel libroViewModel, LibreriaModel libreriaSel) {
+    bool filtro = (Constant.bookToSearch.isNotEmpty)
+      ? (libroViewModel.descrizione.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
+          || libroViewModel.titolo.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
+          || libroViewModel.editore.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
+          || libroViewModel.prezzo.toUpperCase().contains(Constant.bookToSearch.toUpperCase())
+          || libroViewModel.lstAutori.toString().toUpperCase().contains(Constant.bookToSearch.toUpperCase())
+        )
+      : true;
+    return (libroViewModel.siglaLibreria == libreriaSel.sigla) && filtro;
+  }
+
+  int _libroViewModelSort(LibroViewModel a, LibroViewModel b, List<OrdinamentoLibri> lstOrdinamentoLibri) {
+    int ret = 0;
+    bool stop = false;
+
+    int i = 0;
+    while (!stop) {
+      OrdinamentoLibri ordinamentoLibri = lstOrdinamentoLibri[i];
+      ret = getLibroViewModelValue(a, ordinamentoLibri).compareTo(getLibroViewModelValue(b, ordinamentoLibri));
+      if (ret != 0) {
+        stop = true;
+      } 
+      i++;
+    }
+
+    return ret;
+  }
+
+  String getLibroViewModelValue(LibroViewModel libroViewModel, OrdinamentoLibri ordinamentoLibri) {
+    if (ordinamentoLibri == OrdinamentoLibri.titolo) {
+      return libroViewModel.titolo;
+    } else if (ordinamentoLibri == OrdinamentoLibri.autore) {
+      return libroViewModel.lstAutori[0];
+    } else if (ordinamentoLibri == OrdinamentoLibri.editore) {
+      return libroViewModel.editore;
+    } else if (ordinamentoLibri == OrdinamentoLibri.dtPubblicazione) {
+      return libroViewModel.dataPubblicazione;
+    } else if (ordinamentoLibri == OrdinamentoLibri.prezzo) {
+      return libroViewModel.prezzo;
+    }
+
+    return "";
+  }
+
+  Future<void> saveLibroToDb(LibroViewModel libroToNewEdit, bool isNew) async {
+    libroToNewEdit.siglaLibreria = Constant.libreriaInUso!.sigla;
+    String keyLibro = Constant.libreriaInUso!.sigla + libroToNewEdit.isbn;
+    
+    Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+    LibroViewModel? libroViewModel = boxLibroView.get(keyLibro);
+
+    if (isNew && libroViewModel != null) {
+      await boxLibroView.close();
+      throw ItemPresentException(ItemType.libro, 'Libro ${libroToNewEdit.isbn}-${libroToNewEdit.titolo} già presente!');
+    } else if (!isNew && libroViewModel == null) {
+      await boxLibroView.close();
+      throw ItemNotPresentException(ItemType.libro, 'Libro ${libroToNewEdit.isbn}-${libroToNewEdit.titolo} non presente!');
+    }
+    
+    await boxLibroView.put(keyLibro, libroToNewEdit.clonaLibro());
+    await boxLibroView.close();
+  }
+
+  Future<void> deleteLibroToDb(LibroViewModel libroToDelete) async {
+    String keyLibro = Constant.libreriaInUso!.sigla + libroToDelete.isbn;
+
+    Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+    LibroViewModel? libroViewModel = boxLibroView.get(keyLibro);
+    if (libroViewModel == null) {
+      await boxLibroView.close();
+      throw 'Libro ${libroToDelete.isbn}-${libroToDelete.titolo} non presente!';
+    }
+    
+    await boxLibroView.delete(keyLibro);
+    await boxLibroView.close();
+  }
+
+  Future<int> deleteAllLibri() async {
+    Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+
+    int nrRecordDeleted = await boxLibroView.clear();
+    await boxLibroView.compact();
+    await boxLibroView.close();
+
+    return nrRecordDeleted;
+  }
+
+  Future<int> deleteAllLibriLibreria(LibreriaModel libreriaModel) async {
+    int nrRecordDeleted = 0;
+    Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+
+    Iterator<LibroViewModel> it = boxLibroView.values.where((lv) => lv.siglaLibreria.toLowerCase().contains(libreriaModel.sigla.toLowerCase())).toList().iterator;
+    while (it.moveNext()) {
+      await it.current.delete();
+    }
+    await boxLibroView.compact();
+    await boxLibroView.close();
+
+    return nrRecordDeleted;
+  }
+}

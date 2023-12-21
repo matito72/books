@@ -1,6 +1,6 @@
 // import 'package:books/features/libro/data/models/libro_search_model.dart';
-import 'package:books/features/libro/data/models/libro_view_model.dart';
-import 'package:books/models/parameter_google_search_model.dart';
+import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/services/goole_apis_books_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';

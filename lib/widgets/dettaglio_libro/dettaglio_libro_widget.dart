@@ -1,5 +1,5 @@
 import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/repository/db_libro_service.dart';
+import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
 import 'package:books/pages/immagine_copertina.dart';
 import 'package:books/utilities/dialog_utils.dart';
@@ -7,7 +7,7 @@ import 'package:books/utilities/libro_utils.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/dettaglio_libro/five_stars.dart';
 import 'package:flutter/material.dart';
-import 'package:books/features/libro/data/models/libro_view_model.dart';
+import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:intl/intl.dart';
 import 'package:read_more_text/read_more_text.dart';
 

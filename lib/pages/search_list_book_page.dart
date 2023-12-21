@@ -1,11 +1,11 @@
-import 'package:books/features/libreria/data/models/libreria_model.dart';
+import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
-import 'package:books/features/libro/data/models/libro_search_model.dart';
-import 'package:books/models/parameter_google_search_model.dart';
+import 'package:books/features/libro/data/models/libro_search.module.dart';
+import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/services/goole_apis_books_service.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/libro_utils.dart';
-import 'package:books/widgets/app_bar/app_bar_default.dart';
+import 'package:books/widgets/appbar/appbar_default.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pagewise/flutter_pagewise.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

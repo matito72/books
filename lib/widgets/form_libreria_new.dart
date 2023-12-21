@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:books/models/widget_desc_model.dart';
+import 'package:books/models/widget_desc.module.dart';
 
 class FormLibreriaNew {
 

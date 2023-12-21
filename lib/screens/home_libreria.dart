@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:books/features/libreria/blocs/libreria_bloc.dart';
-import 'package:books/features/libreria/blocs/libreria_events.dart';
-import 'package:books/features/libreria/blocs/libreria_state.dart';
-import 'package:books/features/libreria/data/models/libreria_model.dart';
-import 'package:books/models/widget_desc_model.dart';
+import 'package:books/features/libreria/bloc/libreria.bloc.dart';
+import 'package:books/features/libreria/bloc/libreria_events.bloc.dart';
+import 'package:books/features/libreria/bloc/libreria_state.bloc.dart';
+import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/models/widget_desc.module.dart';
 import 'package:books/resources/action_result.dart';
 import 'package:books/utilities/dialog_utils.dart';
-import 'package:books/widgets/app_bar/app_bar_default.dart';
+import 'package:books/widgets/appbar/appbar_default.dart';
 import 'package:books/widgets/form_libreria_new.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -177,7 +177,7 @@ class HomeLibreriaScreen extends StatelessWidget {
                 shadowColor: const Color.fromARGB(139, 48, 63, 159),
                 surfaceTintColor: libreria.isLibreriaDefault ? Colors.green.shade100 : Colors.transparent,
                 // color: (dbLibreriaService.libreriaInUso.nome == libreria.nome) ? Colors.cyan.shade800 : Colors.transparent,
-                color: libreria.isLibreriaDefault ? const Color.fromARGB(103, 0, 131, 143) : Colors.transparent,
+                color: libreria.isLibreriaDefault ? const Color.fromARGB(103, 0, 131, 143) : const Color.fromARGB(0, 119, 18, 18),
                 // color: Colors.transparent,
                 elevation: 5,
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
@@ -188,6 +188,7 @@ class HomeLibreriaScreen extends StatelessWidget {
                       child: FittedBox(
                         child: CircleAvatar(
                           radius: 30,
+                          backgroundColor: Colors.green[100],
                           child: Text(libreria.sigla,
                               style: Theme.of(context).textTheme.titleLarge!.copyWith(
                                 color: Colors.blue.shade900,

@@ -1,4 +1,28 @@
-import 'package:books/features/libreria/data/models/libreria_model.dart';
+import 'package:books/features/libreria/data/models/libreria.module.dart';
+
+  // -----------------------------------------------------------
+  // ------------------------ ENUMERTORS -----------------------
+  // -----------------------------------------------------------
+  enum OrdinamentoLibri { 
+    titolo("Titolo"), 
+    autore("Autore"),
+    editore("Editore"), 
+    dtPubblicazione("Data Pubblicazione"), 
+    prezzo("Prezzo")
+    ;
+
+    final String label;
+    const OrdinamentoLibri(this.label);
+  }
+
+  // enum OrdinamentoLibriRidotto { 
+  //   titolo("Titolo"), 
+  //   autore("Autore")
+  //   ;
+
+  //   final String label;
+  //   const OrdinamentoLibriRidotto(this.label);
+  // }
 
 class Constant {
   static const String titoloApp = "BOOKs";
@@ -10,6 +34,7 @@ class Constant {
 
   static final LibreriaModel libreriaVuota = LibreriaModel(sigla: '', nome: '', nrLibriCaricati: 0);
   static bool initApp = false;
+  static List<OrdinamentoLibri> lstBookOrderByDefault = OrdinamentoLibri.values.map((e) => e).toList();
 
   // -----------------------------------------------------------
   // -------------------------- CACHE --------------------------
@@ -17,6 +42,7 @@ class Constant {
   static LibreriaModel? _libreriaInUso;
   static int _nrLibriInLibreriaInUso = 0;
   static String _bookToSearch = '';
+  static List<OrdinamentoLibri> _lstBookOrderBy = OrdinamentoLibri.values.map((e) => e).toList();
 
   static LibreriaModel? get libreriaInUso {
     return _libreriaInUso;
@@ -41,5 +67,14 @@ class Constant {
   static void setBookToSearch(String bookToSearch) {
     _bookToSearch = bookToSearch;
   }
+
+  static List<OrdinamentoLibri> get lstBookOrderBy {
+    return _lstBookOrderBy;
+  }
+
+  static void setLstBookOrderBy(List<OrdinamentoLibri> bookOrderBy) {
+    _lstBookOrderBy = bookOrderBy;
+  }
+
   // -----------------------------------------------------------
 }

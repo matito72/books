@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:books/features/appbar/blocs/app_bar_bloc.dart';
-import 'package:books/features/import_export/blocs/import_export_bloc.dart';
-import 'package:books/features/import_export/data/repository/import_export_service.dart';
-import 'package:books/features/libreria/blocs/libreria_bloc.dart';
-import 'package:books/features/libreria/data/repository/db_libreria_service.dart';
-import 'package:books/features/libro/blocs/libro_bloc.dart';
-import 'package:books/features/libro/data/repository/db_libro_service.dart';
+import 'package:books/features/appbar/bloc/appbar.bloc.dart';
+import 'package:books/features/import_export/bloc/import_export.bloc.dart';
+import 'package:books/features/import_export/data/services/import_export.service.dart';
+import 'package:books/features/libreria/bloc/libreria.bloc.dart';
+import 'package:books/features/libreria/data/services/db_libreria.service.dart';
+import 'package:books/features/libro/bloc/libro.bloc.dart';
+import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 

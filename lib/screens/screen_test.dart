@@ -1,4 +1,4 @@
-import 'package:books/features/libreria/data/models/libreria_model.dart';
+import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:flutter/material.dart';
 
 class TestScreen extends StatelessWidget {

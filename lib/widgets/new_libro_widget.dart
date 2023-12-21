@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:books/config/constant.dart';
-import 'package:books/features/appbar/blocs/app_bar_bloc.dart';
-import 'package:books/features/appbar/blocs/app_bar_events.dart';
-import 'package:books/features/libro/blocs/libro_bloc.dart';
-import 'package:books/features/libro/blocs/libro_events.dart';
+import 'package:books/features/appbar/bloc/appbar.bloc.dart';
+import 'package:books/features/appbar/bloc/appbar_events.bloc.dart';
+import 'package:books/features/libro/bloc/libro.bloc.dart';
+import 'package:books/features/libro/bloc/libro_events.bloc.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
-import 'package:books/features/libro/data/models/libro_search_model.dart';
-import 'package:books/models/parameter_google_search_model.dart';
+import 'package:books/features/libro/data/models/libro_search.module.dart';
+import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/pages/search_list_book_page.dart';
 import 'package:books/services/libro_search_service.dart';
 import 'package:flutter/material.dart';

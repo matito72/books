@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:books/config/constant.dart';
-import 'package:books/features/libro/blocs/libro_bloc.dart';
-import 'package:books/features/libro/data/models/libro_view_model.dart';
+import 'package:books/features/libro/bloc/libro.bloc.dart';
+import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';

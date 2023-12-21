@@ -1,6 +1,6 @@
 
 
-import 'package:books/features/libro/data/models/libro_view_model.dart';
+import 'package:books/features/libro/data/models/libro_view.module.dart';
 
 class LibroDettaglioResult {
   LibroViewModel libroViewModel;

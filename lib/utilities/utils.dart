@@ -3,8 +3,8 @@
 import 'dart:io';
 
 import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/libro_view_model.dart';
-import 'package:books/models/parameter_google_search_model.dart';
+import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/services/libro_search_service.dart';
 import 'package:flutter/widgets.dart';
 

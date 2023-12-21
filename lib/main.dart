@@ -1,10 +1,10 @@
 import 'package:books/config/constant.dart';
 import 'package:books/config/routes.dart';
 import 'package:books/config/theme/books_style.dart';
-import 'package:books/features/libreria/blocs/libreria_bloc.dart';
-import 'package:books/features/libreria/blocs/libreria_events.dart';
-import 'package:books/features/libreria/data/models/libreria_model.dart';
-import 'package:books/features/libreria/data/repository/db_libreria_service.dart';
+import 'package:books/features/libreria/bloc/libreria.bloc.dart';
+import 'package:books/features/libreria/bloc/libreria_events.bloc.dart';
+import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/services/db_libreria.service.dart';
 import 'package:books/screens/home_libreria.dart';
 import 'package:books/screens/home_libri_libreria.dart';
 import 'package:flutter/material.dart';

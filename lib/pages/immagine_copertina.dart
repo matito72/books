@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/libro_view_model.dart';
+import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/utilities/show_image_picker.dart';
 import 'package:books/utilities/utils.dart';
-import 'package:books/widgets/app_bar/app_bar_default.dart';
+import 'package:books/widgets/appbar/appbar_default.dart';
 import 'package:books/widgets/list_cover_book.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -73,7 +73,11 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
           // } else {
           //   widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=0', 'zoom=5');
           // }
-          widget.libroViewModel.immagineCopertina = immagineCopertinaBackup.replaceFirst('zoom=0', 'zoom=5');
+          if (immagineCopertinaBackup.trim().isNotEmpty) {
+            widget.libroViewModel.immagineCopertina = immagineCopertinaBackup.replaceFirst('zoom=0', 'zoom=5');
+          } else {
+            widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=0', 'zoom=5');
+          }
         }
       });
     }

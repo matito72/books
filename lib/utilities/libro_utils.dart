@@ -1,7 +1,7 @@
-import 'package:books/features/libreria/data/models/libreria_model.dart';
+import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
-import 'package:books/features/libro/data/models/libro_search_model.dart';
-import 'package:books/features/libro/data/models/libro_view_model.dart';
+import 'package:books/features/libro/data/models/libro_search.module.dart';
+import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/pages/dettaglio_libro.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

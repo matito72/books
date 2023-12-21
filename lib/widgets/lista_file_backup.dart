@@ -1,10 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'package:books/config/constant.dart';
-import 'package:books/features/import_export/blocs/import_export_bloc.dart';
-import 'package:books/features/import_export/blocs/import_export_events.dart';
-import 'package:books/features/import_export/data/models/file_backup.dart';
-import 'package:books/features/import_export/data/repository/import_export_service.dart';
+import 'package:books/features/import_export/bloc/import_export.bloc.dart';
+import 'package:books/features/import_export/bloc/import_export_events.bloc.dart';
+import 'package:books/features/import_export/data/models/file_backup.module.dart';
+import 'package:books/features/import_export/data/services/import_export.service.dart';
 import 'package:books/injection_container.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/widgets/file_backup_widget.dart';
