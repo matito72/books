@@ -33,10 +33,6 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
     on<LoadLibroEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
-        // while (!_dbLibroService.isServiceInitialized()) {
-        //     await Future.delayed(const Duration(seconds: 1));
-        // }
-
         final List<LibroViewModel> lstLibroView = await _dbLibroService.readLstLibroFromDb(event.libreriaModel, event.lstOrdinamentoLibri);
         
         String msg = lstLibroView.isEmpty ? 'Nessun Libro presente' : 'Nr. ${lstLibroView.length}, libri caricati correttamente';

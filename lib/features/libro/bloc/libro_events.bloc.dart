@@ -1,6 +1,6 @@
-import 'package:books/config/constant.dart';
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/resources/ordinamento_libri.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 

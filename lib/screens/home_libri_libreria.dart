@@ -1,11 +1,5 @@
 import 'package:backdrop/backdrop.dart';
 import 'package:books/config/constant.dart';
-import 'package:books/features/appbar/bloc/appbar.bloc.dart';
-import 'package:books/features/appbar/bloc/appbar_events.bloc.dart';
-import 'package:books/features/appbar/bloc/appbar_state.bloc.dart';
-import 'package:books/features/filtro_libri/bloc/filtro_libri.bloc.dart';
-import 'package:books/features/filtro_libri/bloc/filtro_libri_events.bloc.dart';
-import 'package:books/features/filtro_libri/bloc/filtro_libri_state.bloc.dart';
 import 'package:books/features/libreria/bloc/libreria_state.bloc.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
@@ -21,7 +15,7 @@ import 'package:books/services/libro_search_service.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/libro_utils.dart';
 import 'package:books/utilities/utils.dart';
-import 'package:books/widgets/appbar/backdrop_appbar_default.dart';
+import 'package:books/widgets/appbar/libri_libreria_appbar.dart';
 import 'package:books/widgets/new_libro_widget.dart';
 import 'package:books/widgets/reorderable_order_by.dart';
 import 'package:flutter/material.dart';
@@ -56,14 +50,8 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         BlocProvider<LibroBloc>(
           create: (_) => LibroBloc(sl<DbLibroService>())..add(InitLibroEvent()),
         ),
-        BlocProvider<AppBarBloc>(
-          create: (_) => AppBarBloc()..add(SwithToTextAppBarEvent()),
-        ),
-        BlocProvider<FiltroLibriBloc>(
-          create: (_) => FiltroLibriBloc()..add(FiltroLibriInitEvent()),
-        ),
       ],
-      child: BlocBuilder<AppBarBloc, AppBarState>(
+      child: BlocBuilder<LibroBloc, LibroState>(
         builder: (context, state) {
           return _getMainScaffold(context);
         }
@@ -72,6 +60,8 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   _getMainScaffold(BuildContext context) {
+    LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
+
     return BackdropScaffold(
       headerHeight: 40,
       resizeToAvoidBottomInset: true,
@@ -90,7 +80,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           children: [
             Expanded(
               child: BackdropAppBar(
-                title: _buildBackdropAppbar(context),
+                title: LibriLibreriaAppBar(libroBloc), // _buildBackdropAppbar(context),
                 toolbarHeight: 35,
                 leadingWidth: (MediaQuery.of(context).size.width * 7 / 100),
                 actions: [ _createAppBarPopupMenuButton(context) ],
@@ -109,11 +99,12 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           ]
         ),
       ),
-      backLayer: BlocBuilder<FiltroLibriBloc, FiltroLibriState>(
-        builder: (context, state) {
-          return _createBackLayer(context);
-        }
-      ),
+      backLayer: _createBackLayer(context),
+      // backLayer: BlocBuilder<FiltroLibriBloc, FiltroLibriState>(
+      //   builder: (context, state) {
+      //     return _createBackLayer(context);
+      //   }
+      // ),
       // subHeader: const BackdropSubHeader(
       //   title: Text("-BackdropSubHeader-"),
       // ),
@@ -129,7 +120,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     _createBackLayer(BuildContext context) {
     // AppBarBloc appBarBloc = context.read<AppBarBloc>();
     LibroBloc libroBloc = context.read<LibroBloc>();
-    FiltroLibriBloc filtroLibriBloc = context.read<FiltroLibriBloc>();
+    // FiltroLibriBloc filtroLibriBloc = context.read<FiltroLibriBloc>();
 
     return SizedBox(
       width: (MediaQuery.of(context).size.width * 100 / 100),
@@ -143,7 +134,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
             'Ordinamento Libri:',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.primary,
+              color: Colors.lightGreenAccent[100], // Theme.of(context).colorScheme.onTertiaryContainer,
               fontWeight: FontWeight.bold,
               fontStyle: FontStyle.normal,
               decoration: TextDecoration.underline,
@@ -152,96 +143,8 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
             )
           )
         )
-        ..add(ReorderableOrderBy(filtroLibriBloc, libroBloc)
+        ..add(ReorderableOrderBy(libroBloc)
         )
-      ),
-    );
-  }
-
-  _buildBackdropAppbar(BuildContext context) {
-    AppBarBloc appBarBloc = BlocProvider.of<AppBarBloc>(context);
-    // LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
-
-    // --- SEARCH    
-    TextEditingController textCtrlSearch = TextEditingController();
-
-    return BackdropAppbarDefault(
-      context: context,
-      showIconSx: false,
-      appBarContent: BlocBuilder<LibroBloc, LibroState>(
-        builder: (context, state) {
-          if (appBarBloc.state is TextAppBarState) {
-            return _createTextTitle(context, textCtrlSearch);
-          }
-          return _createTextSearch(context, textCtrlSearch);
-        }      
-      ),
-    );
-  }
-
-  Widget _createTextTitle(BuildContext context, TextEditingController textCtrlSearch) {
-    AppBarBloc appBarBloc = BlocProvider.of<AppBarBloc>(context);
-    LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
-
-    // LABEL : default
-    textCtrlSearch.clear();
-    if (Constant.bookToSearch.isNotEmpty) {
-      libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderByDefault));
-    }
-    Constant.setBookToSearch('');
-    return InkWell(
-      onTap:() {
-        if (appBarBloc.state is SearchAppBarState) {
-          appBarBloc.add(SwithToTextAppBarEvent());
-        } else if (appBarBloc.state is TextAppBarState) {
-          appBarBloc.add(SwithToSearchAppBarEvent());
-        }
-      },
-      child: Text(
-        'Libreria ${Constant.libreriaInUso!.nome}: ${Constant.libreriaInUso!.nrLibriCaricati} libri',
-        style: const TextStyle(
-          color: Colors.white, fontSize: 16
-        ),
-      )
-    );
-  }
-
-  Widget _createTextSearch(BuildContext context, TextEditingController textCtrlSearch) {
-    AppBarBloc appBarBloc = BlocProvider.of<AppBarBloc>(context);
-    LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
-
-    return TextField(
-      textInputAction: TextInputAction.search,
-      controller: textCtrlSearch,
-      textAlignVertical: TextAlignVertical.center,
-      autofocus: true,
-      cursorColor: Colors.black,
-      style: const TextStyle(color: Colors.black),
-      onSubmitted: (value) {
-        Constant.setBookToSearch(textCtrlSearch.text);
-        libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderBy));
-        FocusScope.of(context).unfocus();
-      },
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color.fromARGB(255, 180, 218, 228),
-        hintText: 'Search...',
-        hintStyle: const TextStyle(color: Colors.black),
-        border: const OutlineInputBorder(),
-        suffixIcon: IconButton(
-          color: Colors.black,
-          padding: EdgeInsets.zero,
-          icon: const Icon(Icons.close),
-          onPressed: () {                  
-            textCtrlSearch.clear();
-            Constant.setBookToSearch('');
-            appBarBloc.add(SwithToTextAppBarEvent());
-            libroBloc.add(LoadLibroEvent(Constant.libreriaInUso!, Constant.lstBookOrderBy));
-            FocusScope.of(context).unfocus();
-          },
-        ),
-        isCollapsed: true,
-        isDense: true
       ),
     );
   }
@@ -438,7 +341,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   _searchBookByBarcode(BuildContext context) async {
-    AppBarBloc appBarBloc = BlocProvider.of<AppBarBloc>(context);
     LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
 
     List<LibroViewModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode( await LibroSearchService.scanBarcodeNormal()); //** OK */
@@ -449,7 +351,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
     if (lstLibroViewModel.isEmpty) {
       if (context.mounted) {
-        _openModalBottomSheet(context, libroBloc, appBarBloc);
+        _openModalBottomSheet(context, libroBloc);
       }
     } else {
       if (context.mounted) {
@@ -496,7 +398,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     }
   }
 
-  void _openModalBottomSheet(BuildContext context, LibroBloc libroBloc, AppBarBloc appBarBloc) {
+  void _openModalBottomSheet(BuildContext context, LibroBloc libroBloc) {
     showModalBottomSheet(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
@@ -517,7 +419,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
                     child: GestureDetector(
                         onTap: () {},
                         behavior: HitTestBehavior.translucent,
-                        child: NewLibroWidget(libroBloc, appBarBloc), 
+                        child: NewLibroWidget(libroBloc), 
                       ),
                     )
               ],

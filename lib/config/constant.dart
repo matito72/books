@@ -1,28 +1,6 @@
 import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/resources/ordinamento_libri.dart';
 
-  // -----------------------------------------------------------
-  // ------------------------ ENUMERTORS -----------------------
-  // -----------------------------------------------------------
-  enum OrdinamentoLibri { 
-    titolo("Titolo"), 
-    autore("Autore"),
-    editore("Editore"), 
-    dtPubblicazione("Data Pubblicazione"), 
-    prezzo("Prezzo")
-    ;
-
-    final String label;
-    const OrdinamentoLibri(this.label);
-  }
-
-  // enum OrdinamentoLibriRidotto { 
-  //   titolo("Titolo"), 
-  //   autore("Autore")
-  //   ;
-
-  //   final String label;
-  //   const OrdinamentoLibriRidotto(this.label);
-  // }
 
 class Constant {
   static const String titoloApp = "BOOKs";

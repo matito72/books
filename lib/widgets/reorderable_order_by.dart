@@ -1,16 +1,14 @@
-// import 'dart:js_util';
-
 import 'package:books/config/constant.dart';
-import 'package:books/features/filtro_libri/bloc/filtro_libri.bloc.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
+import 'package:books/resources/ordinamento_libri.dart';
 import 'package:flutter/material.dart';
 
 class ReorderableOrderBy extends StatefulWidget {
-  final FiltroLibriBloc filtroLibriBloc;
+  // final FiltroLibriBloc filtroLibriBloc;
   final LibroBloc libroBloc;
   
-  const ReorderableOrderBy(this.filtroLibriBloc, this.libroBloc, {super.key});
+  const ReorderableOrderBy(this.libroBloc, {super.key});
 
   @override
   State<ReorderableOrderBy> createState() => _ReorderableOrderByState();

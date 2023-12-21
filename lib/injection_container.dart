@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:books/features/appbar/bloc/appbar.bloc.dart';
 import 'package:books/features/import_export/bloc/import_export.bloc.dart';
 import 'package:books/features/import_export/data/services/import_export.service.dart';
 import 'package:books/features/libreria/bloc/libreria.bloc.dart';
@@ -35,7 +34,4 @@ Future<void> initializeDependencies() async {
     () => ImportExportBloc(sl())
   );
 
-  sl.registerFactory<AppBarBloc>(
-    () => AppBarBloc()
-  );
 }
