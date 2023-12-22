@@ -1,3 +1,4 @@
+import 'package:books/config/com_area.dart';
 import 'package:books/features/import_export/data/services/import_export.service.dart';
 import 'package:books/features/libreria/data/services/db_libreria.service.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
@@ -60,6 +61,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       try {
         int nrRecordDeleted = await _dbLibroService.deleteAllLibriLibreria(event.libreriaModel);
         await sl<DbLibreriaService>().setNrLibriInLibreriaInUso(0);
+        ComArea.nrLibriVisibiliInLista = 0;
         emit(DeleteAllLibroState(nrRecordDeleted, 'Nr. $nrRecordDeleted: libri eliminati.'));
       } catch (e) {
         emit(LibroErrorState(e.toString()));
@@ -72,6 +74,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       try {
         int nrRecordDeleted = await _dbLibroService.deleteAllLibri();
         await sl<DbLibreriaService>().setNrLibriInLibreriaInUso(0);
+        ComArea.nrLibriVisibiliInLista = 0;
         emit(DeleteAllLibroState(nrRecordDeleted, 'Nr. $nrRecordDeleted: libri eliminati.'));
       } catch (e) {
         emit(LibroErrorState(e.toString()));

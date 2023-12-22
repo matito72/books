@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:books/config/constant.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/widgets/single_list_book.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -100,161 +101,15 @@ class LibreriaListaLibriWidget extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     final item = listaLibri[index];
-                    return Card(
-                      elevation: 5,
-                      shadowColor: Colors.blueGrey,
-                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20.0),
-                          bottomRight: Radius.circular(20.0),
-                        ),
-                      ),
-                      child: SizedBox(
-                        height: cardBookHeight-5,
-                        child: InkWell(
-                          splashColor: Colors.red,
-                          onTap: () async {
-                            fnViewDettaglioLibro(parentContext, libroBloc, item);
-                          },
-                          child: Row(
-                            children: <Widget>[
-                              const Padding(
-                                padding: EdgeInsetsDirectional.only(start: 5)
-                              ),
-                              SizedBox(
-                                width: bookWith,
-                                height: bookHeight,
-                                child: FutureBuilder<Widget>(
-                                  future: getItemImage(index, item),
-                                  builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-                                    if (!snapshot.hasData) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    } else {
-                                      return snapshot.data as Widget;
-                                    }
-                                  }
-                                )
-                              ),
-                              SizedBox(
-                                width: (MediaQuery.of(context).size.width * 70 / 100),
-                                height: cardBookHeight,
-                                child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Expanded(
-                                        // flex: 2,
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: <Widget>[
-                                            Expanded(
-                                              flex: 9,
-                                              child: Text(
-                                                item.titolo,
-                                                style: item.titolo.length <= 50 
-                                                ? Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white) 
-                                                : item.titolo.length <= 100
-                                                  ? Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white)
-                                                  : Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.white),
-                                                textAlign: TextAlign.left,
-                                                maxLines: 4,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 2,
-                                              child: Text(
-                                                  '${index+1}/$nrTot',
-                                                  style: Theme.of(context).textTheme.labelSmall,
-                                                  textAlign: TextAlign.right,
-                                              ),
-                                            )
-                                          ]
-                                        )
-                                      ),
-                                      Expanded(
-                                        // flex: 2,
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: <Widget>[
-                                            Expanded(
-                                              child: Text(
-                                                item.lstAutori.join(', '),
-                                                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                                  fontStyle: FontStyle.italic,
-                                                  color: Colors.white70
-                                                ),
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                            MenuAnchor(
-                                              alignmentOffset: Offset.fromDirection(-100.1, -200),
-                                              style: const MenuStyle(
-                                                // backgroundColor: MaterialStatePropertyAll<Color>(Color.fromARGB(225, 24, 134, 134)),
-                                                backgroundColor: MaterialStatePropertyAll<Color>(Color.fromARGB(224, 88, 136, 182)),
-                                              ),
-                                              clipBehavior: Clip.none,
-                                              builder: (BuildContext context, MenuController controller, Widget? child) {
-                                                return IconButton(
-                                                  onPressed: () {
-                                                    if (controller.isOpen) {
-                                                      controller.close();
-                                                    } else {
-                                                      controller.open();
-                                                    }
-                                                  },
-                                                  icon: const Icon(Icons.more_vert),
-                                                  tooltip: 'Show menu',
-                                                );
-                                              },
-                                              menuChildren: <MenuItemButton>[
-                                                MenuItemButton(
-                                                  trailingIcon: Text(
-                                                    "Dettaglio/Modifica",
-                                                    textAlign: TextAlign.left,
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.amber[200],
-                                                    ),
-                                                  ),
-                                                  onPressed: () => fnViewDettaglioLibro(parentContext, libroBloc, item),
-                                                  child: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
-                                                ),
-                                                MenuItemButton(
-                                                  trailingIcon: const Text(
-                                                    "Elimina libro",
-                                                    textAlign: TextAlign.left,
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Color.fromARGB(255, 235, 193, 180)
-                                                    ),
-                                                  ),
-                                                  onPressed: () => fnDeleteLibro(parentContext, libroBloc, item),
-                                                  child: Icon(Icons.delete, color: Colors.orange.shade800),
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    ]
-                                  )
-                                )
-                              )
-                            ]
-                          ),
-                        )
-                      )
+                    return SingleListBook(
+                      libroBloc, 
+                      parentContext, 
+                      fnViewDettaglioLibro, 
+                      fnDeleteLibro, 
+                      getItemImage, 
+                      item, 
+                      index, 
+                      nrTot
                     );
                   },
                 ),

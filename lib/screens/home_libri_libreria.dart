@@ -45,17 +45,20 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
    @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<LibroBloc>(
-          create: (_) => LibroBloc(sl<DbLibroService>())..add(InitLibroEvent()),
-        ),
-      ],
-      child: BlocBuilder<LibroBloc, LibroState>(
-        builder: (context, state) {
-          return _getMainScaffold(context);
-        }
-      )
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<LibroBloc>(
+            create: (_) => LibroBloc(sl<DbLibroService>())..add(InitLibroEvent()),
+          ),
+        ],
+        child: BlocBuilder<LibroBloc, LibroState>(
+          builder: (context, state) {
+            return _getMainScaffold(context);
+          }
+        )
+      ),
     );
   }
 
@@ -72,7 +75,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         )
       ),
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(35.0),
+        preferredSize: const Size.fromHeight(30.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +103,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         ),
       ),
       backLayer: _createBackLayer(context),
-        frontLayer: _blocBody(context),
+      frontLayer: _blocBody(context),
       floatingActionButton: FloatingActionButton(
         child: Icon(MdiIcons.barcodeScan),
         onPressed: () => _searchBookByBarcode(context)
@@ -110,10 +113,77 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   _createBackLayer(BuildContext context) {
+    // LibroBloc libroBloc = context.read<LibroBloc>();
+    // return ReorderableOrderBy(libroBloc);
+
+    return SizedBox(
+      width: (MediaQuery.of(context).size.width * 100 / 100),
+      height: (MediaQuery.of(context).size.height * 35 / 100),
+      child : ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.all(6.0),
+        itemBuilder: (context,item)=> buildCardHorizontal(context, item+1),
+        separatorBuilder: (context,item)=> const SizedBox(height: 5,),
+        itemCount: 2
+      ),
+    );
+  }
+
+  Widget buildCardHorizontal(BuildContext context, int nr) {    
     LibroBloc libroBloc = context.read<LibroBloc>();
 
-    return ReorderableOrderBy(libroBloc);
+    if (nr == 1) {
+      return SizedBox(
+        width: (MediaQuery.of(context).size.width * 100 / 100),
+        height: (MediaQuery.of(context).size.height * 35 / 100),
+        child : ReorderableOrderBy(libroBloc),
+      );
+    } 
+    
+    return SizedBox(
+      width: (MediaQuery.of(context).size.width * 100 / 100),
+      height: (MediaQuery.of(context).size.height * 35 / 100),
+      child: Container(
+        color: Colors.teal[900],
+        child: RichText(
+          text: TextSpan(
+            style: TextStyle(color: Colors.grey[200], fontSize: 24),
+            children: const <TextSpan>[
+              TextSpan(text: 'Ricerca avanzata ... '),
+            ],
+          ),
+        ),
+      )
+    );
   }
+
+  // Widget buildCardVertical(BuildContext context, int nr) {    
+  //   LibroBloc libroBloc = context.read<LibroBloc>();;
+
+  //   if (nr == 1) {
+  //     return SizedBox(
+  //       width: (MediaQuery.of(context).size.width * 100 / 100),
+  //       height: (MediaQuery.of(context).size.height * 35 / 100),
+  //       child : ReorderableOrderBy(libroBloc)
+  //     );
+  //   } 
+    
+  //   return SizedBox(
+  //       width: (MediaQuery.of(context).size.width * 100 / 100),
+  //       height: (MediaQuery.of(context).size.height * 35 / 100),
+  //       child: Container(
+  //         color: Colors.teal[900],
+  //         child: RichText(
+  //           text: TextSpan(
+  //             style: TextStyle(color: Colors.grey[200], fontSize: 24),
+  //             children: const <TextSpan>[
+  //               TextSpan(text: 'Raggruppamento libri  ... '),
+  //             ],
+  //           ),
+  //         ),
+  //       )
+  //     );
+  // }
 
   PopupMenuButton _createAppBarPopupMenuButton(BuildContext context) {
     LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);

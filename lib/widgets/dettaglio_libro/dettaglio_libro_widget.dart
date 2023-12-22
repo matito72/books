@@ -380,7 +380,6 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Text('Descrizione', style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.lightBlue.shade100),),
                             InkWell(
                               splashColor: Colors.red,
                               onDoubleTap: () async {

@@ -21,7 +21,7 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: (MediaQuery.of(context).size.width * 100 / 100),
-      height: (MediaQuery.of(context).size.height * 35 / 100),
+      height: (MediaQuery.of(context).size.height * 40 / 100),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -41,7 +41,7 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
           const Padding(
             padding: EdgeInsets.only(top: 5),
           ),
-          lstOrderBy(context)
+          lstOrderBy(context),
         ]
       ),
     );

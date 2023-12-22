@@ -124,7 +124,7 @@ class DbLibroService {
     return ret;
   }
 
-  String getLibroViewModelValue(LibroViewModel libroViewModel, OrdinamentoLibri ordinamentoLibri) {
+  dynamic getLibroViewModelValue(LibroViewModel libroViewModel, OrdinamentoLibri ordinamentoLibri) {
     if (ordinamentoLibri.label == OrdinamentoLibri.titolo().label) {
       return libroViewModel.titolo;
     } else if (ordinamentoLibri.label == OrdinamentoLibri.autore().label) {
@@ -134,7 +134,15 @@ class DbLibroService {
     } else if (ordinamentoLibri.label == OrdinamentoLibri.dtPubblicazione().label) {
       return libroViewModel.dataPubblicazione;
     } else if (ordinamentoLibri.label == OrdinamentoLibri.prezzo().label) {
-      return libroViewModel.prezzo;
+      double prezzo = 0;
+      if (libroViewModel.prezzo.isNotEmpty) {
+        try {
+          prezzo = double.parse(libroViewModel.prezzo);
+        } on Exception catch (e) {
+          debugPrint('--->${libroViewModel.prezzo}<--- : $e');
+        }
+      }
+      return prezzo;
     }
 
     return "";

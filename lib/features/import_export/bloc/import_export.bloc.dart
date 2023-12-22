@@ -37,18 +37,6 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
       }
     });
 
-    // // ** EXPORT: add file backup
-    // on<AddFileBackupEvent>((event, emit) async {
-    //   emit(const ImportExportWaitingState());
-    //   try {
-    //     await _importExportService.exportLibriLibreria(event.prefixNomeBackup, event.siglaLibreria, event.lstLibriLibreria);
-        
-    //     emit(ExportedFileBackupState(event.lstLibriLibreria.length, 'Esportati ${event.lstLibriLibreria.length} libri.'));
-    //   } catch (e) {
-    //     emit(ImportExportErrorState(e.toString()));
-    //   }
-    // });
-
     // ** DELETE:  file backup
     on<DeleteFileBackupEvent>((event, emit) async {
       emit(const ImportExportWaitingState());

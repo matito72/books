@@ -10,7 +10,7 @@ class BookStyle {
     textTheme: const TextTheme(
       titleLarge: TextStyle(fontSize: 18.0, fontStyle: FontStyle.normal),
       titleMedium: TextStyle(fontSize: 16.0, fontStyle: FontStyle.normal),
-      titleSmall: TextStyle(fontSize: 10.0, fontStyle: FontStyle.italic),
+      titleSmall: TextStyle(fontSize: 15.0, fontStyle: FontStyle.normal),
       bodyMedium: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
     ),
     // dialogBackgroundColor: Colors.red,
