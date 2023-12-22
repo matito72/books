@@ -100,15 +100,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         ),
       ),
       backLayer: _createBackLayer(context),
-      // backLayer: BlocBuilder<FiltroLibriBloc, FiltroLibriState>(
-      //   builder: (context, state) {
-      //     return _createBackLayer(context);
-      //   }
-      // ),
-      // subHeader: const BackdropSubHeader(
-      //   title: Text("-BackdropSubHeader-"),
-      // ),
-      frontLayer: _blocBody(context),
+        frontLayer: _blocBody(context),
       floatingActionButton: FloatingActionButton(
         child: Icon(MdiIcons.barcodeScan),
         onPressed: () => _searchBookByBarcode(context)
@@ -117,36 +109,10 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     );
   }
 
-    _createBackLayer(BuildContext context) {
-    // AppBarBloc appBarBloc = context.read<AppBarBloc>();
+  _createBackLayer(BuildContext context) {
     LibroBloc libroBloc = context.read<LibroBloc>();
-    // FiltroLibriBloc filtroLibriBloc = context.read<FiltroLibriBloc>();
 
-    return SizedBox(
-      width: (MediaQuery.of(context).size.width * 100 / 100),
-      height: (MediaQuery.of(context).size.height * 40 / 100),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: []
-        ..insert(0, Text(
-            'Ordinamento Libri:',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.lightGreenAccent[100], // Theme.of(context).colorScheme.onTertiaryContainer,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.normal,
-              decoration: TextDecoration.underline,
-              decorationStyle: TextDecorationStyle.wavy,
-              fontSize: 16,
-            )
-          )
-        )
-        ..add(ReorderableOrderBy(libroBloc)
-        )
-      ),
-    );
+    return ReorderableOrderBy(libroBloc);
   }
 
   PopupMenuButton _createAppBarPopupMenuButton(BuildContext context) {
@@ -180,7 +146,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
                   ],
                 )
               ),
-              // PopupMenuItem<int>(value: MenuItemCode.importaBooksInLibreria.cd, child: Text(MenuItemCode.importaBooksInLibreria.label)),
               PopupMenuItem<int>(
                 value: MenuItemCode.restoreFileBackup.cd, 
                 child: Row(
@@ -246,7 +211,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         barrierDismissible: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Procedo con l'esportazione di nr.${ComArea.nrLibriInLibreriaInUso} libri di ${ComArea.libreriaInUso!.nome} ?"),
+            title: Text("Procedo con l'esportazione di nr.${ComArea.nrLibriVisibiliInLista} libri di ${ComArea.libreriaInUso!.nome} ?"),
             actions: <Widget>[
               TextButton(
                 child: const Text('Si'),

@@ -1,11 +1,22 @@
-enum OrdinamentoLibri { 
-  titolo("Titolo"), 
-  autore("Autore"),
-  editore("Editore"), 
-  dtPubblicazione("Data Pubblicazione"), 
-  prezzo("Prezzo")
-  ;
+class OrdinamentoLibri { 
+  String label;
+  bool isSelected;
 
-  final String label;
-  const OrdinamentoLibri(this.label);
+  OrdinamentoLibri(this.label, {this.isSelected = true} );
+
+  factory OrdinamentoLibri.titolo() => OrdinamentoLibri('Titolo');
+  factory OrdinamentoLibri.autore() => OrdinamentoLibri('Autore');
+  factory OrdinamentoLibri.editore() => OrdinamentoLibri('Editore', isSelected: false);
+  factory OrdinamentoLibri.dtPubblicazione() => OrdinamentoLibri('Data Pubblicazione', isSelected: false);
+  factory OrdinamentoLibri.prezzo() => OrdinamentoLibri('Prezzo', isSelected: false);
+
+  static List<OrdinamentoLibri> values() {
+    return [
+      OrdinamentoLibri.titolo(),
+      OrdinamentoLibri.autore(),
+      OrdinamentoLibri.editore(),
+      OrdinamentoLibri.dtPubblicazione(),
+      OrdinamentoLibri.prezzo(),
+    ];
+  } 
 }

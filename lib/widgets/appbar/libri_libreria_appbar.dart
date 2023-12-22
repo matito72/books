@@ -47,7 +47,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
     if (ComArea.bookToSearch.isNotEmpty) {
       widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
     }
-    ComArea.setBookToSearch('');
+    ComArea.bookToSearch = '';
     return InkWell(
       onTap:() {
         setState(() {
@@ -77,7 +77,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
       cursorColor: Colors.black,
       style: const TextStyle(color: Colors.black),
       onSubmitted: (value) {
-        ComArea.setBookToSearch(textCtrlSearch.text);
+        ComArea.bookToSearch = textCtrlSearch.text;
         widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
         FocusScope.of(context).unfocus();
       },
@@ -93,7 +93,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
           icon: const Icon(Icons.close),
           onPressed: () {                  
             textCtrlSearch.clear();
-            ComArea.setBookToSearch('');
+            ComArea.bookToSearch = '';
             widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
             FocusScope.of(context).unfocus();
             setState(() {

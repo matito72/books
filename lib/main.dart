@@ -59,7 +59,7 @@ class _MyAppState extends State<MyApp> {
   void _goToHomeLibriLibreria(LibreriaModel libreriaSel) async {
     if (ComArea.libreriaInUso == null || libreriaSel.sigla != ComArea.libreriaInUso!.sigla)   {
       await sl<DbLibreriaService>().changeLibreriaDefault(libreriaSel);
-      ComArea.setLibreriaInUso(libreriaSel);     
+      ComArea.libreriaInUso = libreriaSel;
     }
 
     setState(() {

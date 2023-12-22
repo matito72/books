@@ -45,11 +45,10 @@ class DbLibroService {
   }
 
   Future<List<LibroViewModel>> readLstLibroFromDb(LibreriaModel libreriaSel) async {
-    List<LibroViewModel> lstLibroViewSaved = [];
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
     List<OrdinamentoLibri> lstOrdinamentoLibri = ComArea.lstBookOrderBy;
 
-    lstLibroViewSaved.addAll(boxLibroView.keys.map((key) {
+    List<LibroViewModel> lstLibroViewSaved = boxLibroView.keys.map((key) {
       final item = boxLibroView.get(key);
 
       return LibroViewModel(
@@ -76,11 +75,18 @@ class DbLibroService {
     .where(
       (libroViewModel) => _filtro(libroViewModel, libreriaSel)
     )
-    .toList());
+    .toList();
 
+    // ORDER BY
     lstLibroViewSaved.sort((a, b) => _libroViewModelSort(a, b, lstOrdinamentoLibri));
 
+    // ASC - DESC
+    if (!ComArea.orderByAsc) {
+      lstLibroViewSaved = lstLibroViewSaved.reversed.toList();
+    }
+
     await boxLibroView.close();
+    ComArea.nrLibriVisibiliInLista = lstLibroViewSaved.length;
 
     return lstLibroViewSaved;
   }
@@ -102,8 +108,12 @@ class DbLibroService {
     bool stop = false;
 
     int i = 0;
-    while (!stop) {
+    while (!stop && (i < lstOrdinamentoLibri.length)) {
       OrdinamentoLibri ordinamentoLibri = lstOrdinamentoLibri[i];
+      if (!ordinamentoLibri.isSelected) {
+        i++;
+        continue;
+      }
       ret = getLibroViewModelValue(a, ordinamentoLibri).compareTo(getLibroViewModelValue(b, ordinamentoLibri));
       if (ret != 0) {
         stop = true;
@@ -115,15 +125,15 @@ class DbLibroService {
   }
 
   String getLibroViewModelValue(LibroViewModel libroViewModel, OrdinamentoLibri ordinamentoLibri) {
-    if (ordinamentoLibri == OrdinamentoLibri.titolo) {
+    if (ordinamentoLibri.label == OrdinamentoLibri.titolo().label) {
       return libroViewModel.titolo;
-    } else if (ordinamentoLibri == OrdinamentoLibri.autore) {
+    } else if (ordinamentoLibri.label == OrdinamentoLibri.autore().label) {
       return libroViewModel.lstAutori[0];
-    } else if (ordinamentoLibri == OrdinamentoLibri.editore) {
+    } else if (ordinamentoLibri.label == OrdinamentoLibri.editore().label) {
       return libroViewModel.editore;
-    } else if (ordinamentoLibri == OrdinamentoLibri.dtPubblicazione) {
+    } else if (ordinamentoLibri.label == OrdinamentoLibri.dtPubblicazione().label) {
       return libroViewModel.dataPubblicazione;
-    } else if (ordinamentoLibri == OrdinamentoLibri.prezzo) {
+    } else if (ordinamentoLibri.label == OrdinamentoLibri.prezzo().label) {
       return libroViewModel.prezzo;
     }
 

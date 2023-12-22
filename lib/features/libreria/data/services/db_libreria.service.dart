@@ -51,8 +51,8 @@ class DbLibreriaService {
       final item = boxLibreria.get(key);
       LibreriaModel libreriaToAdd = LibreriaModel(sigla: item!.sigla, nome: item.nome,  nrLibriCaricati: item.nrLibriCaricati, isLibreriaDefault: item.isLibreriaDefault);
       if (libreriaToAdd.isLibreriaDefault) {
-        ComArea.setLibreriaInUso(libreriaToAdd);
-        ComArea.setNrLibriInLibreriaInUso(libreriaToAdd.nrLibriCaricati);
+        ComArea.libreriaInUso = libreriaToAdd;
+        ComArea.nrLibriInLibreriaInUso = libreriaToAdd.nrLibriCaricati;
       }
       return libreriaToAdd;
     }).toList());
@@ -84,8 +84,8 @@ class DbLibreriaService {
     await libreria.save();
     await boxLibreria.close();
 
-    ComArea.setLibreriaInUso(libreria);
-    ComArea.setNrLibriInLibreriaInUso(libreria.nrLibriCaricati);
+    ComArea.libreriaInUso = libreria;
+    ComArea.nrLibriInLibreriaInUso = libreria.nrLibriCaricati;
   }
 
   Future<void> removeLibroFromLibreriaInUso() async {
@@ -96,8 +96,8 @@ class DbLibreriaService {
     await libreria.save();
     await boxLibreria.close();
 
-    ComArea.setLibreriaInUso(libreria);
-    ComArea.setNrLibriInLibreriaInUso(libreria.nrLibriCaricati);
+    ComArea.libreriaInUso = libreria;
+    ComArea.nrLibriInLibreriaInUso = libreria.nrLibriCaricati;
   }
 
   Future<void> setNrLibriInLibreriaInUso(int nr) async {
@@ -108,8 +108,8 @@ class DbLibreriaService {
     await libreria.save();
     await boxLibreria.close();
     
-    ComArea.setLibreriaInUso(libreria);
-    ComArea.setNrLibriInLibreriaInUso(libreria.nrLibriCaricati);
+    ComArea.libreriaInUso = libreria;
+    ComArea.nrLibriInLibreriaInUso = libreria.nrLibriCaricati;
   }
 
   Future<void> insertLibreria(LibreriaModel libreriaToAdd) async {

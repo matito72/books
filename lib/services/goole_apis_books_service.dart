@@ -33,7 +33,7 @@ class GooleApisBooksService {
         qParams.add('intitle:${googleSearchModel.title}');
       }
       if (googleSearchModel.author != null && googleSearchModel.author!.trim().isNotEmpty) {
-        qParams.add('inauthor:${googleSearchModel.author}');
+        qParams.add('inauthor:${getStrSearchAutore(googleSearchModel.author!)}');
       }
       if (googleSearchModel.genericParam != null && googleSearchModel.genericParam!.trim().isNotEmpty) {
         qParams.add(googleSearchModel.genericParam!);
@@ -94,6 +94,14 @@ class GooleApisBooksService {
     }  
 
     return libri;
+  }
+
+  String getStrSearchAutore(String author) {
+    if (!author.contains(" ")) {
+      return '"$author"';
+    }
+
+    return '"${author.split(' ').map((s) => s.trim()).join('+')}"';
   }
 
   // readImageFromAmazon(LibroViewModel libroViewModel) async {
