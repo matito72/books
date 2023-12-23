@@ -13,10 +13,10 @@ import 'package:read_more_text/read_more_text.dart';
 
 
 class DettaglioLibroWidget extends StatefulWidget {
-  final LibroViewModel libroViewModel;
-  final bool isNewDettaglio;
+  final LibroViewModel _libroViewModel;
+  final bool _isNewDettaglio;
   
-  const DettaglioLibroWidget(this.libroViewModel, this.isNewDettaglio, {super.key});
+  const DettaglioLibroWidget(this._libroViewModel, this._isNewDettaglio, {super.key});
 
   @override
   State<DettaglioLibroWidget> createState() => _DettaglioLibroWidget();
@@ -35,12 +35,12 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     });
     String? immagineCopertinaPost = libroViewModel.immagineCopertina;
 
-    if (!widget.isNewDettaglio && (immagineCopertinaPre != immagineCopertinaPost)) {
+    if (!widget._isNewDettaglio && (immagineCopertinaPre != immagineCopertinaPost)) {
       // UPDATE:
       await dbLibroService.saveLibroToDb(libroViewModel, false);
 
       setState(() {
-        widget.libroViewModel.immagineCopertina = immagineCopertinaPost;
+        widget._libroViewModel.immagineCopertina = immagineCopertinaPost;
       });
     }
   }
@@ -115,7 +115,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                         width: 125,
                         height: 200,
                         child: FutureBuilder<Widget>(
-                          future: getImageNetwork(context, widget.libroViewModel),
+                          future: getImageNetwork(context, widget._libroViewModel),
                           builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
                             if (!snapshot.hasData) {
                               return const Center(
@@ -144,15 +144,15 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                             InkWell(
                               splashColor: Colors.red,
                               onDoubleTap: () async {
-                                String? strDesc = await DialogUtils.getDescrizione(context, 'Titolo:', widget.libroViewModel.titolo, maxLines: 3);
+                                String? strDesc = await DialogUtils.getDescrizione(context, 'Titolo:', widget._libroViewModel.titolo, maxLines: 3);
                                 if (strDesc != null) {
                                   setState(() {
-                                    widget.libroViewModel.titolo = strDesc;
+                                    widget._libroViewModel.titolo = strDesc;
                                   });
                                 }
                               },
                               child: ReadMoreText.selectable(
-                                widget.libroViewModel.titolo,
+                                widget._libroViewModel.titolo,
                                 numLines: 4,
                                 style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white),
                                 readMoreTextStyle: TextStyle(
@@ -170,17 +170,17 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                             InkWell(
                               splashColor: Colors.red,
                               onDoubleTap: () async {
-                                String? strDesc = await DialogUtils.getDescrizione(context, 'Autore:', widget.libroViewModel.lstAutori[0], maxLines: 3);
+                                String? strDesc = await DialogUtils.getDescrizione(context, 'Autore:', widget._libroViewModel.lstAutori[0], maxLines: 3);
                                 if (strDesc != null) {
                                   setState(() {
-                                    widget.libroViewModel.lstAutori.clear();
-                                    widget.libroViewModel.lstAutori.add(strDesc);
+                                    widget._libroViewModel.lstAutori.clear();
+                                    widget._libroViewModel.lstAutori.add(strDesc);
                                     // widget.libroViewModel.lstAutori[0] = strDesc;
                                   });
                                 }
                               },
                               child: ReadMoreText.selectable(
-                                widget.libroViewModel.lstAutori.join(', '),
+                                widget._libroViewModel.lstAutori.join(', '),
                                 numLines: 2,
                                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                                   fontStyle: FontStyle.italic,
@@ -197,15 +197,15 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                               InkWell(
                                 splashColor: Colors.red,
                                 onDoubleTap: () async {
-                                  String? strDesc = await DialogUtils.getDescrizione(context, 'Editore:', widget.libroViewModel.editore, maxLines: 2);
+                                  String? strDesc = await DialogUtils.getDescrizione(context, 'Editore:', widget._libroViewModel.editore, maxLines: 2);
                                   if (strDesc != null) {
                                     setState(() {
-                                      widget.libroViewModel.editore = strDesc;
+                                      widget._libroViewModel.editore = strDesc;
                                     });
                                   }
                                 },
                                 child: ReadMoreText.selectable(
-                                  widget.libroViewModel.editore,
+                                  widget._libroViewModel.editore,
                                   numLines: 1,
                                   style: const TextStyle(
                                     fontSize: 14,
@@ -226,10 +226,10 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                       Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: FiveStars(
-                          value: widget.libroViewModel.stars,
+                          value: widget._libroViewModel.stars,
                           onPressed: (value) {
                             setState(() {
-                              widget.libroViewModel.stars = value;
+                              widget._libroViewModel.stars = value;
                             });
                           },
                         ),
@@ -245,7 +245,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                   Text(
-                                    LibroUtils.getDataFormattata(widget.libroViewModel.dataPubblicazione),
+                                    LibroUtils.getDataFormattata(widget._libroViewModel.dataPubblicazione),
                                     style: const TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
@@ -254,7 +254,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                   InkWell(
                                     splashColor: Colors.red,
                                     onDoubleTap: () {
-                                      getYear(context, widget.libroViewModel);
+                                      getYear(context, widget._libroViewModel);
                                     },
                                     child: Text(
                                       'Data',
@@ -274,7 +274,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    widget.libroViewModel.nrPagine.toString(),
+                                    widget._libroViewModel.nrPagine.toString(),
                                     style: const TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
@@ -283,11 +283,11 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                   InkWell(
                                     splashColor: Colors.red,
                                     onDoubleTap: () async {
-                                      String? strNr = await DialogUtils.getNumero(context, 'Inserisci il numero pagine', widget.libroViewModel.nrPagine.toString(), true);
+                                      String? strNr = await DialogUtils.getNumero(context, 'Inserisci il numero pagine', widget._libroViewModel.nrPagine.toString(), true);
                                       if (strNr != null) {
                                         setState(() {                                                
                                           int? nr = int.tryParse(strNr);
-                                          widget.libroViewModel.nrPagine = (nr != null) ? nr : 0;
+                                          widget._libroViewModel.nrPagine = (nr != null) ? nr : 0;
                                         });
                                       }
                                     },
@@ -309,7 +309,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    widget.libroViewModel.prezzo.toString(),
+                                    widget._libroViewModel.prezzo.toString(),
                                     style: const TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
@@ -318,11 +318,11 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                   InkWell(
                                     splashColor: Colors.red,
                                     onDoubleTap: () async {
-                                      String? strNr = await DialogUtils.getNumero(context, 'Inserisci il prezzo', widget.libroViewModel.prezzo.toString(), false);
+                                      String? strNr = await DialogUtils.getNumero(context, 'Inserisci il prezzo', widget._libroViewModel.prezzo.toString(), false);
                                       if (strNr != null) {
                                         setState(() {                                                
                                           double? nr = double.tryParse(strNr);
-                                          widget.libroViewModel.prezzo = (nr != null) ? nr.toString() : '';
+                                          widget._libroViewModel.prezzo = (nr != null) ? nr.toString() : '';
                                         });
                                       }
                                     },
@@ -362,7 +362,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.lightBlue.shade100),
                 ),
                 SelectableText(
-                  widget.libroViewModel.isbn
+                  widget._libroViewModel.isbn
                 )
               ],
             ),
@@ -383,10 +383,10 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                             InkWell(
                               splashColor: Colors.red,
                               onDoubleTap: () async {
-                                String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget.libroViewModel.descrizione);
+                                String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget._libroViewModel.descrizione);
                                 if (strDesc != null) {
                                   setState(() {
-                                    widget.libroViewModel.descrizione = strDesc;
+                                    widget._libroViewModel.descrizione = strDesc;
                                   });
                                 }
                               },
@@ -399,7 +399,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                               ),
                             ),
                             ReadMoreText.selectable(
-                              widget.libroViewModel.descrizione,
+                              widget._libroViewModel.descrizione,
                               numLines: 10,
                               style: const TextStyle(
                                 fontSize: 14,
@@ -428,7 +428,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
   }
   
   Future<InkWell> getImageNetwork(BuildContext context, LibroViewModel libroViewModel) async {
-    if (widget.isNewDettaglio) {
+    if (widget._isNewDettaglio) {
       await Utils.integrazioneDatiIncompleti(libroViewModel);
     } else {
       await Future.delayed(const Duration(milliseconds: 500));
@@ -437,10 +437,10 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     return InkWell(
       splashColor: Colors.red,
       onDoubleTap: () {
-        goToImageview(context, widget.libroViewModel);
+        goToImageview(context, widget._libroViewModel);
       },
-      child: (widget.libroViewModel.immagineCopertina != '')
-        ? await Utils.getImageFromUrlFile(widget.libroViewModel)
+      child: (widget._libroViewModel.immagineCopertina != '')
+        ? await Utils.getImageFromUrlFile(widget._libroViewModel)
         : Image.asset(Constant.assetImageDefault, fit: BoxFit.cover,),
     );
   }

@@ -14,14 +14,13 @@ import 'package:flutter/material.dart';
 /// Widget
 ///
 class ListaFileBakcup extends StatelessWidget {
-  final BuildContext parentContext; 
-  final ImportExportBloc importExportBloc;
-  final List<FileBackupModel> lstFileBackupModel;
-  final num nrTot;
+  final ImportExportBloc _importExportBloc;
+  final List<FileBackupModel> _lstFileBackupModel;
+  final num _nrTot;
   
   const ListaFileBakcup(
-    this.parentContext, this.importExportBloc, this.lstFileBackupModel, {super.key}
-  ) : nrTot = lstFileBackupModel.length;
+    this._importExportBloc, this._lstFileBackupModel, {super.key}
+  ) : _nrTot = _lstFileBackupModel.length;
 
   _shareFileBackup(BuildContext context, FileBackupModel fileBackupModel) async {
     sl<ImportExportService>().shareFileBackup(fileBackupModel);
@@ -32,7 +31,7 @@ class ListaFileBakcup extends StatelessWidget {
       context, "Vuoi eliminare il file:\n\n '${fileBackupModel.fileName} contente '${fileBackupModel.nrRecord}' libri ?"
     );
     if (context.mounted && isDeleteFileBackup != null && isDeleteFileBackup) {
-      importExportBloc.add(DeleteFileBackupEvent(fileBackupModel));
+      _importExportBloc.add(DeleteFileBackupEvent(fileBackupModel));
     }
   }
 
@@ -40,7 +39,7 @@ class ListaFileBakcup extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return SafeArea(
-      child: lstFileBackupModel.isEmpty
+      child: _lstFileBackupModel.isEmpty
         ? Center(
           child: Column(
               children: <Widget>[
@@ -56,11 +55,11 @@ class ListaFileBakcup extends StatelessWidget {
           ),
         )
         : ListView.builder(
-          itemCount: lstFileBackupModel.length,
+          itemCount: _lstFileBackupModel.length,
           itemBuilder: (context, index) {
-            final item = lstFileBackupModel[index];
+            final item = _lstFileBackupModel[index];
 
-            return FileBackupWidget(item: item, index: index, nrTot: nrTot, shareFileBackup: _shareFileBackup, deleteFileBackup: _deleteFileBackup);
+            return FileBackupWidget(item: item, index: index, nrTot: _nrTot, shareFileBackup: _shareFileBackup, deleteFileBackup: _deleteFileBackup);
           },
         )
     );

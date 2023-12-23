@@ -21,9 +21,9 @@ import 'dart:convert' show utf8;
 /// Pagina con la lista delle librerie salvate
 /// 
 class HomeLibreriaScreen extends StatelessWidget {
-  final Function? fn;
+  final Function? _fn;
   
-  const HomeLibreriaScreen({this.fn, super.key});
+  const HomeLibreriaScreen({Function? fn, super.key}) : _fn = fn;
   
   _addNewLibreria(BuildContext context) async {
     FormLibreriaNew f = FormLibreriaNew(WidgetDescModel('Nome libreria:', '', maxLines:1), WidgetDescModel('Sigla libreria:', '', maxLines:1));
@@ -67,8 +67,8 @@ class HomeLibreriaScreen extends StatelessWidget {
   }
 
   void _goToHomeLibriLibreria(BuildContext context, LibreriaModel libreria) async {
-    if (fn != null) {
-      await fn!(libreria);
+    if (_fn != null) {
+      await _fn!(libreria);
       if (context.mounted) {
         BlocProvider.of<LibreriaBloc>(context).add(const LoadLibreriaEvent());
       }

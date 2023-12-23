@@ -10,7 +10,7 @@ import 'package:zoom_widget/zoom_widget.dart';
 
 class DettaglioLibro extends StatefulWidget {
   static const String pagePath = '/HomeLibriLibreria/detailBook';
-  static const String pageEditPath = '/LibreriaListaLibriWidget/detailBook';
+  static const String pageEditPath = '/LibreriaListaLibriPage/detailBook';
 
   final LibroViewModel libroViewModel;
   final bool showDelete;

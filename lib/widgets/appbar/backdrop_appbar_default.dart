@@ -1,38 +1,38 @@
 import 'package:flutter/material.dart';
 
 class BackdropAppbarDefault extends StatelessWidget implements PreferredSizeWidget {
-  final num percHeight;
+  final num _percHeight;
   // final Color? primaryColor;
   // final Color? secondaryColor;
-  final bool showIconSx;
-  final IconButton? iconSx;
-  final IconButton? iconDx;
-  final String? txtLabel;
-  final PopupMenuButton? popupMenuButton;
-  final List<Widget> lstWidgetDx;
-  final Widget? appBarContent;
-  final BuildContext context;
+  final bool _showIconSx;
+  final IconButton? _iconSx;
+  final IconButton? _iconDx;
+  final String? _txtLabel;
+  final PopupMenuButton? _popupMenuButton;
+  final List<Widget> _lstWidgetDx;
+  final Widget? _appBarContent;
+  final BuildContext _context;
 
   @override 
   late final Size preferredSize;
   
   BackdropAppbarDefault({
       super.key, 
-      required this.context,
-      this.percHeight = 4,
+      required BuildContext context,
+      num percHeight = 4,
       // this.primaryColor = Colors.blue,
       // this.secondaryColor = Colors.pink,
       // this.primaryColor = const Color.fromARGB(0, 38, 50, 56),
       // this.secondaryColor = const Color.fromARGB(0, 33, 149, 243),
-      this.showIconSx = true,
-      this.iconSx,
-      this.txtLabel,
-      this.appBarContent, 
-      this.iconDx,
-      this.popupMenuButton,
-      this.lstWidgetDx = const []
-  }) {
-    preferredSize = Size.fromHeight((MediaQuery.of(context).size.height * percHeight / 100));
+      bool showIconSx = true,
+      IconButton? iconSx,
+      String? txtLabel,
+      Widget? appBarContent, 
+      IconButton? iconDx,
+      PopupMenuButton<dynamic>? popupMenuButton,
+      List<Widget> lstWidgetDx = const []
+  }) : _context = context, _appBarContent = appBarContent, _lstWidgetDx = lstWidgetDx, _popupMenuButton = popupMenuButton, _txtLabel = txtLabel, _iconDx = iconDx, _iconSx = iconSx, _showIconSx = showIconSx, _percHeight = percHeight {
+    preferredSize = Size.fromHeight((MediaQuery.of(_context).size.height * _percHeight / 100));
   }
 
   @override
@@ -58,8 +58,8 @@ class BackdropAppbarDefault extends StatelessWidget implements PreferredSizeWidg
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
-            showIconSx
-              ? iconSx ?? IconButton(
+            _showIconSx
+              ? _iconSx ?? IconButton(
                   padding: EdgeInsets.zero,
                   icon: const Icon(Icons.arrow_back_ios_new),
                   onPressed: () {
@@ -69,22 +69,22 @@ class BackdropAppbarDefault extends StatelessWidget implements PreferredSizeWidg
               : const Text('\t\t\t'),
             Expanded(
               child: Container(
-                child: (txtLabel != null && appBarContent == null)
+                child: (_txtLabel != null && _appBarContent == null)
                   ? Text(
-                    txtLabel!,
+                    _txtLabel!,
                     overflow: TextOverflow.ellipsis,
                   )
-                  : (appBarContent != null)
-                    ? appBarContent!
+                  : (_appBarContent != null)
+                    ? _appBarContent!
                     : const Text('')
               ),
             ),
-            iconDx ?? const Text(''),
-            popupMenuButton ?? const Text(''),
-            lstWidgetDx.isNotEmpty 
+            _iconDx ?? const Text(''),
+            _popupMenuButton ?? const Text(''),
+            _lstWidgetDx.isNotEmpty 
               ? Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: lstWidgetDx,
+                children: _lstWidgetDx,
               ) 
               : const Text(''),
           ]

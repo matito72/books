@@ -12,15 +12,15 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ImmagineCopertina extends StatefulWidget {
   static const String pagePath = '/detailImage';
-  final LibroViewModel libroViewModel;
+  final LibroViewModel _libroViewModel;
   // late final bool light;
-  late final bool isImmaginePresent;
+  late final bool _isImmaginePresent;
 
-  ImmagineCopertina({super.key, required this.libroViewModel}) {
-    libroViewModel.pathImmagineCopertina ??= libroViewModel.immagineCopertina;
+  ImmagineCopertina({super.key, required LibroViewModel libroViewModel}) : _libroViewModel = libroViewModel {
+    _libroViewModel.pathImmagineCopertina ??= _libroViewModel.immagineCopertina;
 
-    isImmaginePresent = libroViewModel.immagineCopertina.isNotEmpty 
-      && libroViewModel.immagineCopertina.contains('zoom=');
+    _isImmaginePresent = _libroViewModel.immagineCopertina.isNotEmpty 
+      && _libroViewModel.immagineCopertina.contains('zoom=');
   }
 
   @override
@@ -40,13 +40,13 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
     if (imageFile != null) {
       setState(() {
         // immagineCopertina = imageFile;
-        widget.libroViewModel.immagineCopertina = imageFile.path;
+        widget._libroViewModel.immagineCopertina = imageFile.path;
       });
     } else if (urlImage != null) {
       setState(() {
         swSearchWeb = false;
         if (urlImage.isNotEmpty) {
-          widget.libroViewModel.immagineCopertina = urlImage;
+          widget._libroViewModel.immagineCopertina = urlImage;
         }
       });
     } else if (isMiSentoFortunato != null) {
@@ -54,17 +54,17 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
         swMiSentoFortunato = isMiSentoFortunato;
 
         if (swMiSentoFortunato) {
-          immagineCopertinaBackup = widget.libroViewModel.immagineCopertina;
+          immagineCopertinaBackup = widget._libroViewModel.immagineCopertina;
 
-          if (widget.libroViewModel.immagineCopertina.contains('zoom=1')) {
-            widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=1', 'zoom=0');
-          } else if (widget.libroViewModel.immagineCopertina.contains('zoom=5')) {
-            widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=5', 'zoom=0');
-          } else if (widget.libroViewModel.pathImmagineCopertina != null && widget.libroViewModel.pathImmagineCopertina!.trim().isNotEmpty) {
-            if (widget.libroViewModel.pathImmagineCopertina!.contains('zoom=1')) {
-              widget.libroViewModel.immagineCopertina = widget.libroViewModel.pathImmagineCopertina!.replaceFirst('zoom=1', 'zoom=0');
-            } else if (widget.libroViewModel.pathImmagineCopertina!.contains('zoom=5')) {
-              widget.libroViewModel.immagineCopertina = widget.libroViewModel.pathImmagineCopertina!.replaceFirst('zoom=5', 'zoom=0');
+          if (widget._libroViewModel.immagineCopertina.contains('zoom=1')) {
+            widget._libroViewModel.immagineCopertina = widget._libroViewModel.immagineCopertina.replaceFirst('zoom=1', 'zoom=0');
+          } else if (widget._libroViewModel.immagineCopertina.contains('zoom=5')) {
+            widget._libroViewModel.immagineCopertina = widget._libroViewModel.immagineCopertina.replaceFirst('zoom=5', 'zoom=0');
+          } else if (widget._libroViewModel.pathImmagineCopertina != null && widget._libroViewModel.pathImmagineCopertina!.trim().isNotEmpty) {
+            if (widget._libroViewModel.pathImmagineCopertina!.contains('zoom=1')) {
+              widget._libroViewModel.immagineCopertina = widget._libroViewModel.pathImmagineCopertina!.replaceFirst('zoom=1', 'zoom=0');
+            } else if (widget._libroViewModel.pathImmagineCopertina!.contains('zoom=5')) {
+              widget._libroViewModel.immagineCopertina = widget._libroViewModel.pathImmagineCopertina!.replaceFirst('zoom=5', 'zoom=0');
             }
           } 
         } else {
@@ -74,9 +74,9 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
           //   widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=0', 'zoom=5');
           // }
           if (immagineCopertinaBackup.trim().isNotEmpty) {
-            widget.libroViewModel.immagineCopertina = immagineCopertinaBackup.replaceFirst('zoom=0', 'zoom=5');
+            widget._libroViewModel.immagineCopertina = immagineCopertinaBackup.replaceFirst('zoom=0', 'zoom=5');
           } else {
-            widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=0', 'zoom=5');
+            widget._libroViewModel.immagineCopertina = widget._libroViewModel.immagineCopertina.replaceFirst('zoom=0', 'zoom=5');
           }
         }
       });
@@ -93,7 +93,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
 
   @override
   Widget build(BuildContext context) {
-    swMiSentoFortunato = widget.libroViewModel.immagineCopertina.contains('zoom=0');
+    swMiSentoFortunato = widget._libroViewModel.immagineCopertina.contains('zoom=0');
 
     return SafeArea(
       child: Scaffold(
@@ -108,11 +108,11 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: Text(widget.libroViewModel.titolo)
+                  child: Text(widget._libroViewModel.titolo)
                 ),
                 Expanded(
                   flex: 1,
-                  child: Text(widget.libroViewModel.lstAutori.join(', '), style: TextStyle(color: Colors.amber[300]))
+                  child: Text(widget._libroViewModel.lstAutori.join(', '), style: TextStyle(color: Colors.amber[300]))
                 )
               ],
             ),
@@ -196,7 +196,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
       crossAxisAlignment: CrossAxisAlignment.start,
       // children: lstWidget,
       children: !swSearchWeb 
-        ? widget.isImmaginePresent ? [_getFutureImage(heightPerc), _widgetMiSentoFortunato()] : [_getFutureImage(heightPerc)]
+        ? widget._isImmaginePresent ? [_getFutureImage(heightPerc), _widgetMiSentoFortunato()] : [_getFutureImage(heightPerc)]
         : [_getGoogleSearchImage()],
     );
   }
@@ -215,7 +215,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
               child: lstCoverBookUrl.isNotEmpty
                 ? ListCoverBook(lstCoverBookUrl: lstCoverBookUrl, fn: _selectImage)
                 : FutureBuilder<List<String>>(
-                  future: Utils.simpleGoogleCoverBookSearch(widget.libroViewModel, 20),
+                  future: Utils.simpleGoogleCoverBookSearch(widget._libroViewModel, 20),
                   builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
                     if (!snapshot.hasData) {
                       return const Center(
@@ -259,10 +259,10 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
   }
 
   Widget _getFutureImage(double heightPerc) {
-    return widget.libroViewModel.immagineCopertina.isNotEmpty
+    return widget._libroViewModel.immagineCopertina.isNotEmpty
     ? FutureBuilder<Image>(
       future: Utils.getImageFromUrlFile(
-        widget.libroViewModel,
+        widget._libroViewModel,
         w: MediaQuery.of(context).size.width,
         h: MediaQuery.of(context).size.height * heightPerc/100
       ),

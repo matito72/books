@@ -12,5 +12,9 @@ class ComArea {
   
   static String bookToSearch = '';
   static List<OrdinamentoLibri> lstBookOrderBy = OrdinamentoLibri.values();
+  static bool showOrderBy = true;
   static bool orderByAsc = true;
+
+  static OrdinamentoLibri groupComparatorField = OrdinamentoLibri.autore(); 
+  static OrdinamentoLibri itemComparatorField = OrdinamentoLibri.titolo(); 
 }

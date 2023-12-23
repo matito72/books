@@ -3,6 +3,7 @@ import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/resources/item_exception.dart';
 import 'package:books/resources/ordinamento_libri.dart';
+import 'package:books/utilities/ordinamento_libri_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 
@@ -78,7 +79,7 @@ class DbLibroService {
     .toList();
 
     // ORDER BY
-    lstLibroViewSaved.sort((a, b) => _libroViewModelSort(a, b, lstOrdinamentoLibri));
+    lstLibroViewSaved.sort((a, b) => libroViewModelSort(a, b, lstOrdinamentoLibri));
 
     // ASC - DESC
     if (!ComArea.orderByAsc) {
@@ -93,17 +94,17 @@ class DbLibroService {
 
   bool _filtro(LibroViewModel libroViewModel, LibreriaModel libreriaSel) {
     bool filtro = (ComArea.bookToSearch.isNotEmpty)
-      ? (libroViewModel.descrizione.toUpperCase().contains(ComArea.bookToSearch.toUpperCase())
-          || libroViewModel.titolo.toUpperCase().contains(ComArea.bookToSearch.toUpperCase())
-          || libroViewModel.editore.toUpperCase().contains(ComArea.bookToSearch.toUpperCase())
-          || libroViewModel.prezzo.toUpperCase().contains(ComArea.bookToSearch.toUpperCase())
-          || libroViewModel.lstAutori.toString().toUpperCase().contains(ComArea.bookToSearch.toUpperCase())
+      ? (libroViewModel.descrizione.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
+          || libroViewModel.titolo.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
+          || libroViewModel.editore.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
+          || libroViewModel.prezzo.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
+          || libroViewModel.lstAutori.toString().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
         )
       : true;
     return (libroViewModel.siglaLibreria == libreriaSel.sigla) && filtro;
   }
 
-  int _libroViewModelSort(LibroViewModel a, LibroViewModel b, List<OrdinamentoLibri> lstOrdinamentoLibri) {
+  int libroViewModelSort(LibroViewModel a, LibroViewModel b, List<OrdinamentoLibri> lstOrdinamentoLibri) {
     int ret = 0;
     bool stop = false;
 
@@ -114,7 +115,7 @@ class DbLibroService {
         i++;
         continue;
       }
-      ret = getLibroViewModelValue(a, ordinamentoLibri).compareTo(getLibroViewModelValue(b, ordinamentoLibri));
+      ret = OrdinamentoLibriUtils.getLibroViewModelValue(a, ordinamentoLibri).compareTo(OrdinamentoLibriUtils.getLibroViewModelValue(b, ordinamentoLibri));
       if (ret != 0) {
         stop = true;
       } 
@@ -124,29 +125,33 @@ class DbLibroService {
     return ret;
   }
 
-  dynamic getLibroViewModelValue(LibroViewModel libroViewModel, OrdinamentoLibri ordinamentoLibri) {
-    if (ordinamentoLibri.label == OrdinamentoLibri.titolo().label) {
-      return libroViewModel.titolo;
-    } else if (ordinamentoLibri.label == OrdinamentoLibri.autore().label) {
-      return libroViewModel.lstAutori[0];
-    } else if (ordinamentoLibri.label == OrdinamentoLibri.editore().label) {
-      return libroViewModel.editore;
-    } else if (ordinamentoLibri.label == OrdinamentoLibri.dtPubblicazione().label) {
-      return libroViewModel.dataPubblicazione;
-    } else if (ordinamentoLibri.label == OrdinamentoLibri.prezzo().label) {
-      double prezzo = 0;
-      if (libroViewModel.prezzo.isNotEmpty) {
-        try {
-          prezzo = double.parse(libroViewModel.prezzo);
-        } on Exception catch (e) {
-          debugPrint('--->${libroViewModel.prezzo}<--- : $e');
-        }
-      }
-      return prezzo;
-    }
+  // dynamic getLibroViewModelValue(LibroViewModel libroViewModel, OrdinamentoLibri ordinamentoLibri) {
+  //   return getLibroViewModelValueByLabel(libroViewModel, ordinamentoLibri.label);
+  // }
 
-    return "";
-  }
+  // dynamic getLibroViewModelValueByLabel(LibroViewModel libroViewModel, String label) {
+  //   if (label == OrdinamentoLibri.titolo().label) {
+  //     return libroViewModel.titolo;
+  //   } else if (label == OrdinamentoLibri.autore().label) {
+  //     return libroViewModel.lstAutori[0];
+  //   } else if (label == OrdinamentoLibri.editore().label) {
+  //     return libroViewModel.editore;
+  //   } else if (label == OrdinamentoLibri.dtPubblicazione().label) {
+  //     return libroViewModel.dataPubblicazione;
+  //   } else if (label == OrdinamentoLibri.prezzo().label) {
+  //     double prezzo = 0;
+  //     if (libroViewModel.prezzo.isNotEmpty) {
+  //       try {
+  //         prezzo = double.parse(libroViewModel.prezzo);
+  //       } on Exception catch (e) {
+  //         debugPrint('--->${libroViewModel.prezzo}<--- : $e');
+  //       }
+  //     }
+  //     return prezzo;
+  //   }
+
+  //   return "";
+  // }
 
   Future<void> saveLibroToDb(LibroViewModel libroToNewEdit, bool isNew) async {
     libroToNewEdit.siglaLibreria = ComArea.libreriaInUso!.sigla;

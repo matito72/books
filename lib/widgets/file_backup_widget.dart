@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class FileBackupWidget extends StatelessWidget {
-  final FileBackupModel item;
-  final int index;
-  final num nrTot;
+  final FileBackupModel _item;
+  final int _index;
+  final num _nrTot;
   final void Function(BuildContext context, FileBackupModel fileBackupModel) shareFileBackup;
   final void Function(BuildContext context, FileBackupModel fileBackupModel) deleteFileBackup;
 
-  const FileBackupWidget({super.key, required this.item, required this.index, required this.nrTot, 
-    required this.shareFileBackup, required this.deleteFileBackup});
+  const FileBackupWidget({super.key, required FileBackupModel item, required int index, required num nrTot, 
+    required this.shareFileBackup, required this.deleteFileBackup}) : _nrTot = nrTot, _index = index, _item = item;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class FileBackupWidget extends StatelessWidget {
     }
 
     final downloadController = FileLibreriaDownloadController(
-      fileBackupModel: item,
+      fileBackupModel: _item,
       onOpenDownload: openDownload
     );
 
@@ -37,7 +37,7 @@ class FileBackupWidget extends StatelessWidget {
         width: (MediaQuery.of(context).size.width * 85 / 100),
         animation: true,
         lineHeight: 5.0,
-        trailing: Text("${ctrl.nrRecordCaricati}/${item.nrRecord}"),
+        trailing: Text("${ctrl.nrRecordCaricati}/${_item.nrRecord}"),
         progressColor: Colors.greenAccent,
         percent: ctrl.progress
       );
@@ -54,13 +54,13 @@ class FileBackupWidget extends StatelessWidget {
                 Expanded(
                   flex: 9,
                   child: Text(
-                    '${item.fileName.substring(0, item.fileName.indexOf('_'))} - ${item.nrRecord} libri',
+                    '${_item.fileName.substring(0, _item.fileName.indexOf('_'))} - ${_item.nrRecord} libri',
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white) ,
                     textAlign: TextAlign.left,
                   ),
                 ),
                 Text(
-                  '${index+1}/$nrTot',
+                  '${_index+1}/$_nrTot',
                   style: Theme.of(context).textTheme.labelSmall,
                   textAlign: TextAlign.right,
                 )
@@ -71,7 +71,7 @@ class FileBackupWidget extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    '${item.dtUltimaModifica.toString()}\t\t ${item.fileSize} KB',
+                    '${_item.dtUltimaModifica.toString()}\t\t ${_item.fileSize} KB',
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       fontStyle: FontStyle.italic,
                       color: Colors.white70
@@ -99,7 +99,7 @@ class FileBackupWidget extends StatelessWidget {
                           onCancel: downloadController.stopDownload,
                           onOpen: downloadController.openDownload,
                           lstLibriGiaPresenti: downloadController.lstLibriGiaPresenti,
-                          fileBackupModel: item
+                          fileBackupModel: _item
                         );
                       },
                     ),
@@ -107,11 +107,11 @@ class FileBackupWidget extends StatelessWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.share, color:Color.fromARGB(202, 176, 235, 158),),
-                  onPressed: () => {shareFileBackup(context, item)},
+                  onPressed: () => {shareFileBackup(context, _item)},
                 ),
                 IconButton(
                   icon: Icon(Icons.delete, color: Colors.orange.shade800),
-                  onPressed: () => {deleteFileBackup(context, item)},
+                  onPressed: () => {deleteFileBackup(context, _item)},
                 ),
               ], 
             ),

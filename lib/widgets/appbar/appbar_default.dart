@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
-  final num percHeight;
-  final Color? primaryColor;
-  final Color? secondaryColor;
-  final bool showIconSx;
-  final IconButton? iconSx;
-  final IconButton? iconDx;
-  final String? txtLabel;
-  final PopupMenuButton? popupMenuButton;
-  final List<Widget> lstWidgetDx;
-  final Widget? appBarContent;
+  final num _percHeight;
+  final Color? _primaryColor;
+  final Color? _secondaryColor;
+  final bool _showIconSx;
+  final IconButton? _iconSx;
+  final IconButton? _iconDx;
+  final String? _txtLabel;
+  final PopupMenuButton? _popupMenuButton;
+  final List<Widget> _lstWidgetDx;
+  final Widget? _appBarContent;
   final BuildContext context;
 
   @override 
@@ -19,20 +19,20 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
   AppBarDefault({
       super.key, 
       required this.context,
-      this.percHeight = 4,
+      num percHeight = 4,
       // this.primaryColor = Colors.blue,
       // this.secondaryColor = Colors.pink,
-      this.primaryColor = const Color.fromARGB(255, 38, 50, 56),
-      this.secondaryColor = Colors.blue,
-      this.showIconSx = true,
-      this.iconSx,
-      this.txtLabel,
-      this.appBarContent, 
-      this.iconDx,
-      this.popupMenuButton,
-      this.lstWidgetDx = const []
-  }) {
-    preferredSize = Size.fromHeight((MediaQuery.of(context).size.height * percHeight / 100));
+      Color? primaryColor = const Color.fromARGB(255, 38, 50, 56),
+      Color? secondaryColor = Colors.blue,
+      bool showIconSx = true,
+      IconButton? iconSx,
+      String? txtLabel,
+      Widget? appBarContent, 
+      IconButton? iconDx,
+      PopupMenuButton<dynamic>? popupMenuButton,
+      List<Widget> lstWidgetDx = const []
+  }) : _appBarContent = appBarContent, _lstWidgetDx = lstWidgetDx, _popupMenuButton = popupMenuButton, _txtLabel = txtLabel, _iconDx = iconDx, _iconSx = iconSx, _showIconSx = showIconSx, _secondaryColor = secondaryColor, _primaryColor = primaryColor, _percHeight = percHeight {
+    preferredSize = Size.fromHeight((MediaQuery.of(context).size.height * _percHeight / 100));
   }
 
   @override
@@ -40,11 +40,11 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
     return PreferredSize(
       preferredSize: preferredSize,
       child: Container(
-        height: MediaQuery.of(context).size.height * percHeight / 100,
+        height: MediaQuery.of(context).size.height * _percHeight / 100,
         alignment: const Alignment(-0.9, 0.0),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: <Color>[primaryColor!, secondaryColor!],
+            colors: <Color>[_primaryColor!, _secondaryColor!],
             tileMode: TileMode.clamp,
             begin: Alignment.centerLeft,
             // colors: <Color>[Colors.blue, Color.fromARGB(115, 0, 143, 88)],
@@ -53,8 +53,8 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            showIconSx
-              ? iconSx ?? IconButton(
+            _showIconSx
+              ? _iconSx ?? IconButton(
                   padding: EdgeInsets.zero,
                   icon: const Icon(Icons.arrow_back_ios_new),
                   onPressed: () {
@@ -64,22 +64,22 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
               : const Text('\t\t\t'),
             Expanded(
               child: Container(
-                child: (txtLabel != null && appBarContent == null)
+                child: (_txtLabel != null && _appBarContent == null)
                   ? Text(
-                    txtLabel!,
+                    _txtLabel!,
                     overflow: TextOverflow.ellipsis,
                   )
-                  : (appBarContent != null)
-                    ? appBarContent!
+                  : (_appBarContent != null)
+                    ? _appBarContent!
                     : const Text('')
               ),
             ),
-            iconDx ?? const Text(''),
-            popupMenuButton ?? const Text(''),
-            lstWidgetDx.isNotEmpty 
+            _iconDx ?? const Text(''),
+            _popupMenuButton ?? const Text(''),
+            _lstWidgetDx.isNotEmpty 
               ? Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: lstWidgetDx,
+                children: _lstWidgetDx,
               ) 
               : const Text(''),
           ]

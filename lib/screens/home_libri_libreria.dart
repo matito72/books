@@ -8,8 +8,10 @@ import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
+import 'package:books/pages/back_drop_lista_libri.dart';
 import 'package:books/pages/import_export_file.dart';
 import 'package:books/pages/libreria_lista_libri_page.dart';
+import 'package:books/pages/lista_libri_groupby.dart';
 import 'package:books/resources/action_result.dart';
 import 'package:books/services/libro_search_service.dart';
 import 'package:books/utilities/dialog_utils.dart';
@@ -17,7 +19,6 @@ import 'package:books/utilities/libro_utils.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/appbar/libri_libreria_appbar.dart';
 import 'package:books/widgets/new_libro_widget.dart';
-import 'package:books/widgets/reorderable_order_by.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -36,7 +37,6 @@ enum MenuItemCode {
   final String label;
   const MenuItemCode(this.cd, this.label);
 }
-
 
 class HomeLibriLibreriaScreen extends StatelessWidget {
   static const String screenPath = "/HomeLibriLibreria";
@@ -83,7 +83,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           children: [
             Expanded(
               child: BackdropAppBar(
-                title: LibriLibreriaAppBar(libroBloc), // _buildBackdropAppbar(context),
+                title: LibriLibreriaAppBar(libroBloc), 
                 toolbarHeight: 35,
                 leadingWidth: (MediaQuery.of(context).size.width * 7 / 100),
                 actions: [ _createAppBarPopupMenuButton(context) ],
@@ -113,9 +113,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   _createBackLayer(BuildContext context) {
-    // LibroBloc libroBloc = context.read<LibroBloc>();
-    // return ReorderableOrderBy(libroBloc);
-
     return SizedBox(
       width: (MediaQuery.of(context).size.width * 100 / 100),
       height: (MediaQuery.of(context).size.height * 35 / 100),
@@ -130,14 +127,9 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   Widget buildCardHorizontal(BuildContext context, int nr) {    
-    LibroBloc libroBloc = context.read<LibroBloc>();
-
     if (nr == 1) {
-      return SizedBox(
-        width: (MediaQuery.of(context).size.width * 100 / 100),
-        height: (MediaQuery.of(context).size.height * 35 / 100),
-        child : ReorderableOrderBy(libroBloc),
-      );
+      LibroBloc libroBloc = context.read<LibroBloc>();
+      return BackDropListaLibri(libroBloc);
     } 
     
     return SizedBox(
@@ -372,7 +364,11 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   Widget _widgetListaLibriDataBase(BuildContext context, LibroBloc libroBloc, List<LibroViewModel> lstLibroViewModel) {
-    return LibreriaListaLibriWidget(context, libroBloc, lstLibroViewModel, _viewEditLibro, _deleteLibro);
+    if (ComArea.showOrderBy) {
+      return LibreriaListaLibriPage(context, libroBloc, lstLibroViewModel, _viewEditLibro, _deleteLibro);
+    } else {
+      return ListaLibriGroupBy(context, libroBloc, lstLibroViewModel, _viewEditLibro, _deleteLibro);
+    }
   }
 
   _searchBookByBarcode(BuildContext context) async {

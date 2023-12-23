@@ -3,10 +3,10 @@ import 'package:books/models/widget_desc.module.dart';
 
 class FormLibreriaNew {
 
-  WidgetDescModel nomeLibreriaWid;
-  WidgetDescModel siglaLibreriaWid;
+  final WidgetDescModel _nomeLibreriaWid;
+  final WidgetDescModel _siglaLibreriaWid;
 
-  FormLibreriaNew(this.nomeLibreriaWid, this.siglaLibreriaWid); 
+  FormLibreriaNew(this._nomeLibreriaWid, this._siglaLibreriaWid); 
 
 
   Future<String?>  getMultiDescrizione(BuildContext context) {
@@ -17,13 +17,13 @@ class FormLibreriaNew {
 
     TextField txtSigla = TextField(
       textCapitalization: TextCapitalization.characters,
-      maxLines: siglaLibreriaWid.maxLines,
+      maxLines: _siglaLibreriaWid.maxLines,
       maxLength: 3,
       autofocus: true,
-      readOnly: siglaLibreriaWid.readOnly,
+      readOnly: _siglaLibreriaWid.readOnly,
       keyboardType: TextInputType.multiline,
       decoration: InputDecoration(
-        hintText: siglaLibreriaWid.strHintText,
+        hintText: _siglaLibreriaWid.strHintText,
         // border: OutlineInputBorder(
         //   borderRadius: BorderRadius.circular(10),
         // ),
@@ -31,23 +31,23 @@ class FormLibreriaNew {
         // filled: widgetDescModel.readOnly
       ),
       style: TextStyle(
-        color: siglaLibreriaWid.readOnly 
+        color: _siglaLibreriaWid.readOnly 
           ? Theme.of(context).primaryColor.withOpacity(0.4) 
           : Theme.of(context).primaryColor,
-        fontStyle: siglaLibreriaWid.readOnly ? FontStyle.italic : FontStyle.normal
+        fontStyle: _siglaLibreriaWid.readOnly ? FontStyle.italic : FontStyle.normal
       ),
-      controller: siglaLibreriaWid.textController
+      controller: _siglaLibreriaWid.textController
     );
 
     TextField txtDescrizione = TextField(
       textCapitalization: TextCapitalization.words,
-      maxLines: nomeLibreriaWid.maxLines,
+      maxLines: _nomeLibreriaWid.maxLines,
       autofocus: true,
-      readOnly: nomeLibreriaWid.readOnly,
+      readOnly: _nomeLibreriaWid.readOnly,
       keyboardType: TextInputType.multiline,
-      onChanged: (value) => { siglaLibreriaWid.textController.text = value.toLowerCase().replaceAll(RegExp('[aeiou]'),'').toUpperCase() },
+      onChanged: (value) => { _siglaLibreriaWid.textController.text = value.toLowerCase().replaceAll(RegExp('[aeiou]'),'').toUpperCase() },
       decoration: InputDecoration(
-        hintText: nomeLibreriaWid.strHintText,
+        hintText: _nomeLibreriaWid.strHintText,
         // border: OutlineInputBorder(
         //   borderRadius: BorderRadius.circular(10),
         // ),
@@ -55,12 +55,12 @@ class FormLibreriaNew {
         // filled: widgetDescModel.readOnly
       ),
       style: TextStyle(
-        color: nomeLibreriaWid.readOnly 
+        color: _nomeLibreriaWid.readOnly 
           ? Theme.of(context).primaryColor.withOpacity(0.4) 
           : Theme.of(context).primaryColor,
-        fontStyle: nomeLibreriaWid.readOnly ? FontStyle.italic : FontStyle.normal
+        fontStyle: _nomeLibreriaWid.readOnly ? FontStyle.italic : FontStyle.normal
       ),
-      controller: nomeLibreriaWid.textController
+      controller: _nomeLibreriaWid.textController
     );
 
     lstWidget.add(txtDescrizione);
@@ -92,7 +92,7 @@ class FormLibreriaNew {
             ),
             TextButton(
               onPressed: () => {
-                Navigator.of(context).pop('${nomeLibreriaWid.textController.text};${siglaLibreriaWid.textController.text}')
+                Navigator.of(context).pop('${_nomeLibreriaWid.textController.text};${_siglaLibreriaWid.textController.text}')
               },
               child: const Text('OK')
             ),

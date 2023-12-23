@@ -15,42 +15,41 @@ enum DownloadStatus {
 class DownloadButton extends StatelessWidget {
   const DownloadButton({
     super.key,
-    required this.status,
-    this.downloadProgress = 0.0,
-    required this.onDownload,
-    required this.onCancel,
-    required this.onOpen,
-    required this.fileBackupModel,
-    required this.lstLibriGiaPresenti,
+    required DownloadStatus status,
+    double downloadProgress = 0.0,
+    required void Function() onDownload,
+    required void Function() onCancel,
+    required Function onOpen,
+    required FileBackupModel fileBackupModel,
+    required List<LibroViewModel> lstLibriGiaPresenti,
     this.transitionDuration = const Duration(milliseconds: 500),
-  });
+  }) : _lstLibriGiaPresenti = lstLibriGiaPresenti, _onOpen = onOpen, _onCancel = onCancel, _onDownload = onDownload, _downloadProgress = downloadProgress, _status = status;
 
-  final DownloadStatus status;
-  final double downloadProgress;
-  final VoidCallback onDownload;
-  final VoidCallback onCancel;
-  final Function onOpen;
-  final FileBackupModel fileBackupModel;
-  final List<LibroViewModel> lstLibriGiaPresenti;
+  final DownloadStatus _status;
+  final double _downloadProgress;
+  final VoidCallback _onDownload;
+  final VoidCallback _onCancel;
+  final Function _onOpen;
+  final List<LibroViewModel> _lstLibriGiaPresenti;
   final Duration transitionDuration;
 
-  bool get _isDownloading => status == DownloadStatus.downloading;
+  bool get _isDownloading => _status == DownloadStatus.downloading;
 
-  bool get _isFetching => status == DownloadStatus.fetchingDownload;
+  bool get _isFetching => _status == DownloadStatus.fetchingDownload;
 
-  bool get _isDownloaded => status == DownloadStatus.downloaded;
+  bool get _isDownloaded => _status == DownloadStatus.downloaded;
 
   void _onPressed() {
-    switch (status) {
+    switch (_status) {
       case DownloadStatus.notDownloaded:
-        onDownload();
+        _onDownload();
       case DownloadStatus.fetchingDownload:
         // do nothing.
         break;
       case DownloadStatus.downloading:
-        onCancel();
+        _onCancel();
       case DownloadStatus.downloaded:
-        onOpen(lstLibriGiaPresenti.isEmpty);
+        _onOpen(_lstLibriGiaPresenti.isEmpty);
     }
   }
 
@@ -65,7 +64,7 @@ class DownloadButton extends StatelessWidget {
             isDownloaded: _isDownloaded,
             isDownloading: _isDownloading,
             isFetching: _isFetching,
-            lstLibriGiaPresenti: lstLibriGiaPresenti
+            lstLibriGiaPresenti: _lstLibriGiaPresenti
           ),
           Positioned.fill(
             child: AnimatedOpacity(
@@ -76,7 +75,7 @@ class DownloadButton extends StatelessWidget {
                 alignment: Alignment.center,
                 children: [
                   ProgressIndicatorWidget(
-                    downloadProgress: downloadProgress,
+                    downloadProgress: _downloadProgress,
                     isDownloading: _isDownloading,
                     isFetching: _isFetching,
                   ),

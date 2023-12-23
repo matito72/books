@@ -12,18 +12,18 @@ import 'package:flutter/material.dart';
 
 
 class NewLibroWidget extends StatefulWidget {
-  final LibroBloc libroBloc;
+  final LibroBloc _libroBloc;
 
-  const NewLibroWidget(this.libroBloc, {super.key});
+  const NewLibroWidget(this._libroBloc, {super.key});
 
   @override
   State<NewLibroWidget> createState() => _NewLibroWidgetState();
 }
 
 class _NewLibroWidgetState extends State<NewLibroWidget> {
-  final titoloController = TextEditingController();
-  final autoreController = TextEditingController();
-  final editoreController = TextEditingController();
+  final _titoloController = TextEditingController();
+  final _autoreController = TextEditingController();
+  final _editoreController = TextEditingController();
 
   @override
   void initState() {
@@ -62,7 +62,7 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
             );
             
             if (libroDettaglioResult != null) {
-              widget.libroBloc.add(AddLibroEvent(ComArea.libreriaInUso!, libroDettaglioResult.libroViewModel));
+              widget._libroBloc.add(AddLibroEvent(ComArea.libreriaInUso!, libroDettaglioResult.libroViewModel));
               // widget.appBarBloc.add(SwithToTextAppBarEvent());
             }
           }        
@@ -76,9 +76,9 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
     }
 
     Future<void> submitData(BuildContext context) async {
-      final enteredTitolo = titoloController.text;
-      final enteredAutore = autoreController.text;
-      final enteredEditore = editoreController.text;
+      final enteredTitolo = _titoloController.text;
+      final enteredAutore = _autoreController.text;
+      final enteredEditore = _editoreController.text;
 
       if (enteredTitolo.isEmpty && enteredAutore.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Inserire anche il Titolo e/o l'Autore !")));
@@ -100,14 +100,14 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
         children: <Widget>[
           TextField(
             decoration: const InputDecoration(labelText: 'Titolo'),
-            controller: titoloController,
+            controller: _titoloController,
             textCapitalization: TextCapitalization.sentences,
             style: TextStyle(color: Colors.amber.shade700, fontSize: 16),
             onSubmitted: (_) => submitData(context),
           ),
           TextField(
             decoration: const InputDecoration(labelText: 'Autore'),
-            controller: autoreController,
+            controller: _autoreController,
             textCapitalization: TextCapitalization.words,
             style: TextStyle(color: Colors.deepOrange.shade300, fontSize: 16),
             keyboardType: TextInputType.name,
@@ -115,7 +115,7 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
           ),
           TextField(
             decoration: const InputDecoration(labelText: 'Casa Editrice'),
-            controller: editoreController,
+            controller: _editoreController,
             textCapitalization: TextCapitalization.words,
             style: TextStyle(color: Colors.deepOrange.shade400, fontSize: 16),
             keyboardType: TextInputType.text,

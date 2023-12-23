@@ -5,9 +5,9 @@ import 'package:books/widgets/appbar/backdrop_appbar_default.dart';
 import 'package:flutter/material.dart';
 
 class LibriLibreriaAppBar extends StatefulWidget {
-  final LibroBloc libroBloc;
+  final LibroBloc _libroBloc;
   
-  const LibriLibreriaAppBar(this.libroBloc, {super.key});
+  const LibriLibreriaAppBar(this._libroBloc, {super.key});
 
   @override
   State<LibriLibreriaAppBar> createState() => _LibriLibreriaAppbarState();
@@ -45,7 +45,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
     // LABEL : default
     textCtrlSearch.clear();
     if (ComArea.bookToSearch.isNotEmpty) {
-      widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+      widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
     }
     ComArea.bookToSearch = '';
     return InkWell(
@@ -78,7 +78,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
       style: const TextStyle(color: Colors.black),
       onSubmitted: (value) {
         ComArea.bookToSearch = textCtrlSearch.text;
-        widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+        widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
         FocusScope.of(context).unfocus();
       },
       decoration: InputDecoration(
@@ -94,7 +94,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
           onPressed: () {                  
             textCtrlSearch.clear();
             ComArea.bookToSearch = '';
-            widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+            widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
             FocusScope.of(context).unfocus();
             setState(() {
               appBarStateText = true;

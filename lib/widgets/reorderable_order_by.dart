@@ -2,13 +2,12 @@ import 'package:books/config/com_area.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
 import 'package:books/resources/ordinamento_libri.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class ReorderableOrderBy extends StatefulWidget {
-  final LibroBloc libroBloc;
+  final LibroBloc _libroBloc;
   
-  const ReorderableOrderBy(this.libroBloc, {super.key});
+  const ReorderableOrderBy(this._libroBloc, {super.key});
 
   @override
   State<ReorderableOrderBy> createState() => _ReorderableOrderByState();
@@ -17,75 +16,21 @@ class ReorderableOrderBy extends StatefulWidget {
 class _ReorderableOrderByState extends State<ReorderableOrderBy> {
   final List<OrdinamentoLibri> _items = ComArea.lstBookOrderBy;
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: (MediaQuery.of(context).size.width * 100 / 100),
-      height: (MediaQuery.of(context).size.height * 40 / 100),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 5),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              getTextOrdinamentoLista(),
-              // const Text(' ')
-            ],
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 5),
-          ),
-          lstOrderBy(context),
-        ]
-      ),
-    );
-  }
-
-  Widget getTextOrdinamentoLista() {
-    TextStyle defaultStyle = TextStyle(color: Colors.grey[200], fontSize: 18);
-    TextStyle linkStyle = TextStyle(color: Colors.lightGreen[100]);
-
-    return RichText(
-      text: TextSpan(
-        style: defaultStyle,
-        children: <TextSpan>[
-          const TextSpan(text: 'Ordinamento Libri '),
-          TextSpan(
-            text: ComArea.orderByAsc ? 'Ascendente' : 'Discendente',
-            style: linkStyle,
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                setState(() {
-                  ComArea.orderByAsc = !ComArea.orderByAsc;
-                  widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
-                });  
-              }
-          ),
-        ],
-      ),
-    );
-  }
-
   String getLabelOrdinemantoLibri() {
     if (ComArea.orderByAsc) {
       return 'Ordinamento Libri -> Ascendente';
     }
-
     return 'Ordinamento Libri -> Discendente';
   }
 
-  Widget lstOrderBy(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
     final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
     
     return Expanded(
+      flex: 10,
       child: SizedBox(
         height: 150.0,
         child: ReorderableListView(
@@ -151,7 +96,7 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
                                 onChanged: (bool? newValue) {
                                   setState(() {
                                     _items[index].isSelected = newValue!;
-                                    widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+                                    widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
                                   });
                                 },
                               )
@@ -174,10 +119,15 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
             });
 
             ComArea.lstBookOrderBy = _items;
-            widget.libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+            widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
           },
         ),
       ),
     );
   }
+
+
+  // Widget lstOrderBy(BuildContext context) {
+    
+  // }
 }

@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class DettaglioLibroWebView extends StatelessWidget {
-  final String pageUrl;
-  const DettaglioLibroWebView(this.pageUrl, {super.key});
+  final String _pageUrl;
+  const DettaglioLibroWebView(this._pageUrl, {super.key});
 
   @override
   Widget build(BuildContext context) {
     const PlatformWebViewControllerCreationParams params = PlatformWebViewControllerCreationParams();
     final WebViewController controller = WebViewController.fromPlatformCreationParams(params);
 
-    String pageUrlHttps = pageUrl;
-    if (!pageUrl.contains('https')) {
-      pageUrlHttps = pageUrl.replaceFirst('http', 'https');
+    String pageUrlHttps = _pageUrl;
+    if (!_pageUrl.contains('https')) {
+      pageUrlHttps = _pageUrl.replaceFirst('http', 'https');
     }
     
     controller

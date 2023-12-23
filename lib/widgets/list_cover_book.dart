@@ -4,23 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gallery_3d/gallery3d.dart';
 
 class ListCoverBook extends StatefulWidget {
-  final List<String> lstCoverBookUrl;
-  final Function fn;
+  final List<String> _lstCoverBookUrl;
+  final Function _fn;
   
-  const ListCoverBook({super.key, required this.lstCoverBookUrl, required this.fn});
+  const ListCoverBook({super.key, required List<String> lstCoverBookUrl, required Function fn}) : _fn = fn, _lstCoverBookUrl = lstCoverBookUrl;
 
   @override
   State<ListCoverBook> createState() => _ListCoverBookState();
 }
 
 class _ListCoverBookState extends State<ListCoverBook> {
-  int currentIndex = 0;
-  late Gallery3DController controller;
+  int _currentIndex = 0;
+  late Gallery3DController _controller;
 
   @override
   void initState() {
-    controller = Gallery3DController(
-      itemCount: widget.lstCoverBookUrl.length,
+    _controller = Gallery3DController(
+      itemCount: widget._lstCoverBookUrl.length,
       autoLoop: false,
       // ellipseHeight: 0,
       // minScale: 0.8
@@ -32,7 +32,7 @@ class _ListCoverBookState extends State<ListCoverBook> {
 
   Widget buildGallery3D() {
     return Gallery3D(
-      controller: controller,
+      controller: _controller,
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
       itemConfig: GalleryItemConfig(
         width: MediaQuery.of(context).size.width * 90 / 100,
@@ -51,17 +51,17 @@ class _ListCoverBookState extends State<ListCoverBook> {
       // currentIndex: currentIndex,
       onItemChanged: (index) {
         setState(() {
-          currentIndex = index;
+          _currentIndex = index;
         });
       },
       onClickItem: (index) => {
         //debugPrint("--------------------->${widget.lstCoverBookUrl[index]}"),
-        widget.fn(widget.lstCoverBookUrl[index])
+        widget._fn(widget._lstCoverBookUrl[index])
         // Navigator.pop(context, widget.lstCoverBookUrl[index])
       },
       itemBuilder: (context, index) {
         return Image.network(
-          widget.lstCoverBookUrl[index],
+          widget._lstCoverBookUrl[index],
           fit: BoxFit.fill,
         );
       }
@@ -81,7 +81,7 @@ class _ListCoverBookState extends State<ListCoverBook> {
             Stack(
               children: [
                 BackgrounBlurView(
-                  imageUrl: widget.lstCoverBookUrl[currentIndex],
+                  imageUrl: widget._lstCoverBookUrl[_currentIndex],
                 ),
                 Container(
                   padding: const EdgeInsets.only(top: 0),
@@ -96,7 +96,7 @@ class _ListCoverBookState extends State<ListCoverBook> {
                 ElevatedButton(
                   onPressed: () {
                     // if (currentIndex >= 1) {
-                      controller.jumpTo(--currentIndex);
+                      _controller.jumpTo(--_currentIndex);
                     // } 
                     // else {
                     //   currentIndex = widget.lstCoverBookUrl.length;
@@ -112,7 +112,7 @@ class _ListCoverBookState extends State<ListCoverBook> {
                 ElevatedButton(
                   onPressed: () {
                     // if (currentIndex <= widget.lstCoverBookUrl.length) {
-                      controller.animateTo(++currentIndex);
+                      _controller.animateTo(++_currentIndex);
                     // }
                     // controller.animateTo(currentIndex <= widget.lstCoverBookUrl.length ? ++currentIndex : widget.lstCoverBookUrl.length);
                   },
@@ -135,8 +135,8 @@ class _ListCoverBookState extends State<ListCoverBook> {
 }
 
 class BackgrounBlurView extends StatelessWidget {
-  final String imageUrl;
-  const BackgrounBlurView({super.key, required this.imageUrl});
+  final String _imageUrl;
+  const BackgrounBlurView({super.key, required String imageUrl}) : _imageUrl = imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +146,7 @@ class BackgrounBlurView extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         child: InkWell(
           child: Image.network(
-            imageUrl,
+            _imageUrl,
             fit: BoxFit.cover,
           ),
         ),

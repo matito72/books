@@ -19,13 +19,13 @@ import 'package:file_picker/file_picker.dart';
 ///
 class ImportExportFile extends StatelessWidget {
   static const String pagePath = '/HomeLibriLibreria/importExportFile';
-  final String? siglaLibreria;
+  final String? _siglaLibreria;
 
-  const ImportExportFile({super.key, this.siglaLibreria});
+  const ImportExportFile({super.key, String? siglaLibreria}) : _siglaLibreria = siglaLibreria;
   
   @override
   Widget build(BuildContext context) {
-    String siglaLibreriaSearch = siglaLibreria ?? ComArea.libreriaInUso!.sigla;
+    String siglaLibreriaSearch = _siglaLibreria ?? ComArea.libreriaInUso!.sigla;
     ImportExportBloc importExportBloc = sl<ImportExportBloc>();
     
     return SafeArea(
@@ -73,7 +73,7 @@ class ImportExportFile extends StatelessWidget {
         child: Text('Nessun file di backup presente.'),
       );
     } else {
-      return ListaFileBakcup(context, importExportBloc, lstFileBackupModel);
+      return ListaFileBakcup(importExportBloc, lstFileBackupModel);
     }
   }
   

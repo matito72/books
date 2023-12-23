@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  backdrop: 0.9.1
   cached_network_image: 3.3.0
   equatable: 2.0.5
   file_picker: 6.1.1
@@ -39,6 +40,7 @@ dependencies:
   flutter_pagewise: 2.0.4
   flutter_cache_manager: 3.3.1
   get_it: 7.6.4
+  grouped_list: ^5.1.2
   http: 1.1.0
   hive: 2.2.3
   hive_flutter: 1.1.0
@@ -56,7 +58,6 @@ dependencies:
   webview_flutter_android: 3.13.0
   zoom_widget: 2.0.1
   flutter_gallery_3d: 1.1.1
-  backdrop: 0.9.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

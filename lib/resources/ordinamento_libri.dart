@@ -19,4 +19,17 @@ class OrdinamentoLibri {
       OrdinamentoLibri.prezzo(),
     ];
   } 
+
+  factory OrdinamentoLibri.byName(String name) {
+    OrdinamentoLibri ret = OrdinamentoLibri.titolo();
+
+    for (OrdinamentoLibri ordinamentoLibri in values()) {
+      if (name == ordinamentoLibri.label) {
+        ret = ordinamentoLibri;
+        break;
+      }
+    }
+    
+    return ret;
+  }
 }

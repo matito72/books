@@ -14,13 +14,13 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 class SearchListBookPage extends StatelessWidget {
   static const String pagePath = '/HomeLibriLibreria/searchListBook';
 
-  final LibreriaModel libreriaSel;
-  final ParameterGoogleSearchModel googleSearchModel;
-  final String title;
+  final LibreriaModel _libreriaSel;
+  final ParameterGoogleSearchModel _googleSearchModel;
+  final String _title;
 
   const SearchListBookPage({
-    super.key, required this.title, required this.libreriaSel, required this.googleSearchModel, /*required this.libri, required this.totalFindedBooks */
-  });
+    super.key, required String title, required LibreriaModel libreriaSel, required ParameterGoogleSearchModel googleSearchModel, /*required this.libri, required this.totalFindedBooks */
+  }) : _title = title, _googleSearchModel = googleSearchModel, _libreriaSel = libreriaSel;
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +29,11 @@ class SearchListBookPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBarDefault(
           context: context,
-          txtLabel: 'Ricerca : $title'
+          txtLabel: 'Ricerca : $_title'
         ),
         body: Padding(
           padding: const EdgeInsets.only(top: 10, left: 10, right: 5),
-          child: PagewiseListViewExample(googleSearchModel, libreriaSel, title: title)
+          child: PagewiseListViewExample(_googleSearchModel, _libreriaSel, title: _title)
         )
       )
     );

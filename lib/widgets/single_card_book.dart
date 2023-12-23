@@ -1,26 +1,27 @@
+import 'package:books/config/constant.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:flutter/material.dart';
 
-class SingleListBook extends StatelessWidget {
+class SingleCardBook extends StatelessWidget {
   
-  final LibroBloc libroBloc;
-  final BuildContext parentContext; 
-  final Function fnViewDettaglioLibro;
-  final Function fnDeleteLibro;
-  final Function fnGetItemImage;
-  final LibroViewModel item;
-  final int index;
+  final LibroBloc _libroBloc;
+  final BuildContext _parentContext; 
+  final Function _fnViewDettaglioLibro;
+  final Function _fnDeleteLibro;
+  final Function _fnGetItemImage;
+  final LibroViewModel _item;
+  final int _index;
   final num nrTot;
 
-  const SingleListBook(
-    this.libroBloc,
-    this.parentContext,
-    this.fnViewDettaglioLibro, 
-    this.fnDeleteLibro,
-    this.fnGetItemImage,
-    this.item,
-    this.index,
+  const SingleCardBook(
+    this._libroBloc,
+    this._parentContext,
+    this._fnViewDettaglioLibro, 
+    this._fnDeleteLibro,
+    this._fnGetItemImage,
+    this._item,
+    this._index,
     this.nrTot,
     {super.key}
   );
@@ -36,7 +37,7 @@ class SingleListBook extends StatelessWidget {
         width: bookWith,
         height: bookHeight,
         child: FutureBuilder<Widget>(
-          future: fnGetItemImage(index, item),
+          future: _fnGetItemImage(_index, _item),
           builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
             if (!snapshot.hasData) {
               return const Center(
@@ -81,7 +82,7 @@ class SingleListBook extends StatelessWidget {
                 color: Colors.amber[200],
               ),
             ),
-            onPressed: () => fnViewDettaglioLibro(parentContext, libroBloc, item),
+            onPressed: () => _fnViewDettaglioLibro(_parentContext, _libroBloc, _item),
             child: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
           ),
           MenuItemButton(
@@ -94,7 +95,7 @@ class SingleListBook extends StatelessWidget {
                 color: Color.fromARGB(255, 235, 193, 180)
               ),
             ),
-            onPressed: () => fnDeleteLibro(parentContext, libroBloc, item),
+            onPressed: () => _fnDeleteLibro(_parentContext, _libroBloc, _item),
             child: Icon(Icons.delete, color: Colors.orange.shade800),
           ),
         ],
@@ -103,7 +104,7 @@ class SingleListBook extends StatelessWidget {
 
     Widget getTitolo() {
       return Text(
-        item.titolo,
+        _item.titolo,
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
           color: Colors.lightBlue[50] //Colors.white
         ),
@@ -115,7 +116,7 @@ class SingleListBook extends StatelessWidget {
 
     Widget getAutore() {
       return Text(
-        item.lstAutori.join(', '),
+        _item.lstAutori.join(', '),
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
           fontStyle: FontStyle.normal,
           color: Colors.lime[100]
@@ -126,8 +127,13 @@ class SingleListBook extends StatelessWidget {
     }
 
     Widget getCasaEditrice() {
+      String editore = '';
+      if (_item.editore != Constant.editoreDaDefinire) {
+        editore = _item.editore;
+      }
+
       return Text(
-        item.editore,
+        editore,
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
           fontStyle: FontStyle.italic,
           color: Colors.lime[50]
@@ -139,7 +145,7 @@ class SingleListBook extends StatelessWidget {
 
     Widget getPrezzo() {
       return Text(
-        '€ ${item.prezzo}',
+        '€ ${_item.prezzo}',
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
           fontStyle: FontStyle.italic,
           color: Colors.orange[50]
@@ -164,16 +170,14 @@ class SingleListBook extends StatelessWidget {
         child: InkWell(
           splashColor: Colors.red,
           onTap: () async {
-            fnViewDettaglioLibro(parentContext, libroBloc, item);
+            _fnViewDettaglioLibro(_parentContext, _libroBloc, _item);
           },
           child: Row(
             children: <Widget>[
               getCoverBook(),
               SizedBox(
-                // COVER--------------
                 width: (MediaQuery.of(context).size.width * 70 / 100),
                 height: cardBookHeight,  
-                // -------------------
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
                   child: Column(
@@ -230,7 +234,7 @@ class SingleListBook extends StatelessWidget {
                           Expanded(
                             flex: 2,
                             child: Text(
-                                '${index+1}/$nrTot',
+                                '${_index+1}/$nrTot',
                                 style: Theme.of(context).textTheme.labelSmall,
                                 textAlign: TextAlign.right,
                             ),
