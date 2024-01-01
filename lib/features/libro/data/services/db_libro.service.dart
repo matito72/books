@@ -1,6 +1,8 @@
 import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/services/filtro_util.dart';
+import 'package:books/resources/bisac_codes.dart';
 import 'package:books/resources/item_exception.dart';
 import 'package:books/resources/ordinamento_libri.dart';
 import 'package:books/utilities/ordinamento_libri_utils.dart';
@@ -45,6 +47,14 @@ class DbLibroService {
     return item; 
   }
 
+  Future<int> count(LibreriaModel libreriaSel) async {
+    Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+    int count = boxLibroView.keys.length;
+    await boxLibroView.close();
+
+    return count;
+  }
+
   Future<List<LibroViewModel>> readLstLibroFromDb(LibreriaModel libreriaSel) async {
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
     List<OrdinamentoLibri> lstOrdinamentoLibri = ComArea.lstBookOrderBy;
@@ -63,7 +73,7 @@ class DbLibroService {
         immagineCopertina: item.immagineCopertina,
         dataPubblicazione: item.dataPubblicazione,
         nrPagine: item.nrPagine,
-        lstCategoria: item.lstCategoria,
+        lstCategoria: item.lstCategoria.isEmpty ? [BisacList.nonClassifiable] : item.lstCategoria,
         previewLink: item.previewLink,
         isEbook: item.isEbook,
         country: item.country,
@@ -74,9 +84,13 @@ class DbLibroService {
       );
     })
     .where(
-      (libroViewModel) => _filtro(libroViewModel, libreriaSel)
+      (libroViewModel) {
+        FiltroUtil filtroUtil = FiltroUtil(libroViewModel, libreriaSel);
+        return filtroUtil.filtroAvanzato() && filtroUtil.filtroSemplice();
+      }
     )
     .toList();
+      
 
     // ORDER BY
     lstLibroViewSaved.sort((a, b) => libroViewModelSort(a, b, lstOrdinamentoLibri));
@@ -92,17 +106,25 @@ class DbLibroService {
     return lstLibroViewSaved;
   }
 
-  bool _filtro(LibroViewModel libroViewModel, LibreriaModel libreriaSel) {
-    bool filtro = (ComArea.bookToSearch.isNotEmpty)
-      ? (libroViewModel.descrizione.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
-          || libroViewModel.titolo.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
-          || libroViewModel.editore.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
-          || libroViewModel.prezzo.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
-          || libroViewModel.lstAutori.toString().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
-        )
-      : true;
-    return (libroViewModel.siglaLibreria == libreriaSel.sigla) && filtro;
-  }
+  // bool _filtro(LibroViewModel libroViewModel, LibreriaModel libreriaSel) {
+  //   bool filtro = true;
+
+  //   if (ComArea.booksSearchParameters.isNotEmpty()) {
+  //     if (ComArea.booksSearchParameters.txtTitolo != null && ComArea.booksSearchParameters.txtTitolo!.trim().isNotEmpty) {
+  //       filtro = libroViewModel.titolo.trim().toUpperCase().contains(ComArea.booksSearchParameters.txtTitolo!.trim().toUpperCase());
+  //     }
+  //   } else if (ComArea.bookToSearch.isNotEmpty) {
+  //     filtro = (
+  //            libroViewModel.descrizione.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
+  //         || libroViewModel.titolo.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
+  //         || libroViewModel.editore.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
+  //         || libroViewModel.prezzo.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
+  //         || libroViewModel.lstAutori.toString().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
+  //       );
+  //   }
+      
+  //   return (libroViewModel.siglaLibreria == libreriaSel.sigla) && filtro;
+  // }
 
   int libroViewModelSort(LibroViewModel a, LibroViewModel b, List<OrdinamentoLibri> lstOrdinamentoLibri) {
     int ret = 0;
@@ -124,34 +146,6 @@ class DbLibroService {
 
     return ret;
   }
-
-  // dynamic getLibroViewModelValue(LibroViewModel libroViewModel, OrdinamentoLibri ordinamentoLibri) {
-  //   return getLibroViewModelValueByLabel(libroViewModel, ordinamentoLibri.label);
-  // }
-
-  // dynamic getLibroViewModelValueByLabel(LibroViewModel libroViewModel, String label) {
-  //   if (label == OrdinamentoLibri.titolo().label) {
-  //     return libroViewModel.titolo;
-  //   } else if (label == OrdinamentoLibri.autore().label) {
-  //     return libroViewModel.lstAutori[0];
-  //   } else if (label == OrdinamentoLibri.editore().label) {
-  //     return libroViewModel.editore;
-  //   } else if (label == OrdinamentoLibri.dtPubblicazione().label) {
-  //     return libroViewModel.dataPubblicazione;
-  //   } else if (label == OrdinamentoLibri.prezzo().label) {
-  //     double prezzo = 0;
-  //     if (libroViewModel.prezzo.isNotEmpty) {
-  //       try {
-  //         prezzo = double.parse(libroViewModel.prezzo);
-  //       } on Exception catch (e) {
-  //         debugPrint('--->${libroViewModel.prezzo}<--- : $e');
-  //       }
-  //     }
-  //     return prezzo;
-  //   }
-
-  //   return "";
-  // }
 
   Future<void> saveLibroToDb(LibroViewModel libroToNewEdit, bool isNew) async {
     libroToNewEdit.siglaLibreria = ComArea.libreriaInUso!.sigla;

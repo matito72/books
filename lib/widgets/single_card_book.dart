@@ -29,7 +29,7 @@ class SingleCardBook extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double bookWith = 75;
-    double bookHeight = 110;
+    double bookHeight = 115;
     double cardBookHeight = bookHeight + 5;
 
     Widget getCoverBook() {
@@ -114,12 +114,24 @@ class SingleCardBook extends StatelessWidget {
       );
     }
 
+    Widget getCategoria() {
+      return Text(
+        _item.lstCategoria[0],
+        style: Theme.of(context).textTheme.titleSmall!.copyWith(
+          fontStyle: FontStyle.italic,
+          color: Colors.lime[50]
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+
     Widget getAutore() {
       return Text(
         _item.lstAutori.join(', '),
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
           fontStyle: FontStyle.normal,
-          color: Colors.lime[100]
+          color: Colors.limeAccent[100]
         ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -136,7 +148,7 @@ class SingleCardBook extends StatelessWidget {
         editore,
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
           fontStyle: FontStyle.italic,
-          color: Colors.lime[50]
+          color: Colors.lime[100]
         ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -173,6 +185,9 @@ class SingleCardBook extends StatelessWidget {
             _fnViewDettaglioLibro(_parentContext, _libroBloc, _item);
           },
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               getCoverBook(),
               SizedBox(
@@ -199,7 +214,15 @@ class SingleCardBook extends StatelessWidget {
                               children: <Widget>[
                                 Expanded(
                                   flex: 9,
-                                  child: getTitolo(),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      getTitolo(),
+                                      getAutore()
+                                    ],
+                                  ),
                                 ),
                                 Expanded(
                                   flex: 1,
@@ -210,17 +233,7 @@ class SingleCardBook extends StatelessWidget {
                           ),
                         ]
                       ),
-                      // Row(
-                        // mainAxisAlignment: MainAxisAlignment.start,
-                        // crossAxisAlignment: CrossAxisAlignment.start,
-                        // mainAxisSize: MainAxisSize.min,
-                      //   children: <Widget>[
-                      //     Expanded(
-                      //       child: getAutore(),
-                      //     )
-                      //   ]
-                      // )
-                      getAutore(),
+                      getCategoria(),
                       getCasaEditrice(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,

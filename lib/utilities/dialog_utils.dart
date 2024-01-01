@@ -1,6 +1,7 @@
 import 'package:books/models/widget_desc.module.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class DialogUtils {
 
@@ -91,6 +92,51 @@ class DialogUtils {
     );
   }
 
+  static Future<String?> getAnno(BuildContext context, String dataPubblicazione) {
+    DateTime selectedDate = DateTime.now();
+    if (dataPubblicazione.length == 4) {
+      selectedDate = DateFormat("yyyy").parse(dataPubblicazione);
+    }
+    
+    return showDialog<String?>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Anno di pubblicazione:"),
+          titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
+            fontStyle: FontStyle.italic,
+            color: Colors.blue.shade200
+          ),
+          contentTextStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+            fontStyle: FontStyle.italic,
+            color: Colors.black,
+            backgroundColor: Colors.blueAccent,
+          ),
+          shadowColor: Colors.blueAccent,
+          content: SizedBox( 
+            width: 300,
+            height: 250,
+            child: YearPicker(
+              firstDate: DateTime(DateTime.now().year - 100, 1),
+              lastDate: DateTime(DateTime.now().year + 100, 1),
+              initialDate: DateTime.now(),
+              selectedDate: selectedDate,
+              onChanged: (DateTime dateTime) {
+                Navigator.of(context).pop(dateTime.year.toString());
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: Navigator.of(context).pop,
+              child: const Text('Cancel')
+            ),
+          ],
+        );
+      }
+    );
+  }
+
   static Future<String?> getDescrizione(BuildContext context, String strHintText, String preValue, {int maxLines = 15}) {
     TextEditingController textController = TextEditingController();
     textController.text = preValue;
@@ -148,8 +194,8 @@ class DialogUtils {
           shadowColor: Colors.blueAccent,
           content: TextField(
             autofocus: true,
-            keyboardType: TextInputType.number,
             decoration: InputDecoration(hintText: strHintText),
+            keyboardType: TextInputType.number,
             inputFormatters: isDigitOnly 
               ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]
               : <TextInputFormatter>[FilteringTextInputFormatter.singleLineFormatter],

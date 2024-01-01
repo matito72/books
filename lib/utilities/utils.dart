@@ -190,26 +190,23 @@ class Utils {
     }
   }
 
-  // static checkImage(LibroSearchModel libroViewModel) async {
-  //   String immagineCopertina = libroViewModel.immagineCopertina;
-  //   if (immagineCopertina != '') {
-  //     String textImgOrig = await getTextFromUrlImage(immagineCopertina);
-  //     String textImgNew = textImgOrig;
+  static String getListToString(List<String> lstStr) {
+    String ret = lstStr.toString();
+    return ret.substring(1, ret.length - 1);
+  }
 
-  //     if (immagineCopertina.contains('zoom=1')) {
-  //       immagineCopertina = '${immagineCopertina.replaceFirst('zoom=1', 'zoom=0')}&fife=w400-h600';
-  //       textImgNew = await getTextFromUrlImage(immagineCopertina);
-  //     } else if (immagineCopertina.contains('zoom=5')) {
-  //       immagineCopertina = '${immagineCopertina.replaceFirst('zoom=5', 'zoom=0')}&fife=w400-h600';
-  //       textImgNew = await getTextFromUrlImage(immagineCopertina);
-  //     } 
+  static double getPositiveDouble(String strDouble) {
+    double ret = 0;
+    try {
+      ret = double.parse(strDouble);
+      if (ret < 0) {
+        throw 'Attenzione: $strDouble risulta NEGATIVO [$ret] !!!';
+      }
+    } on Exception {
+      ret = -1;
+    }
 
-  //     if (textImgNew != textImgOrig) {
-  //       immagineCopertina = libroViewModel.immagineCopertina.replaceFirst('zoom=0', 'zoom=5');
-  //     }      
-
-  //     libroViewModel.immagineCopertina = immagineCopertina;
-  //   }
-  // }
+    return ret;
+  }
 
 }

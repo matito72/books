@@ -39,7 +39,6 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
   _updateWidget({File? imageFile, String? urlImage, bool? isMiSentoFortunato}) {
     if (imageFile != null) {
       setState(() {
-        // immagineCopertina = imageFile;
         widget._libroViewModel.immagineCopertina = imageFile.path;
       });
     } else if (urlImage != null) {
@@ -170,25 +169,9 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
       color: Colors.yellowAccent[700],
     );
   }
-
-  // Widget _getIconSearchImageFromWeb() {
-  //   return IconButton(
-  //     icon: Icon(MdiIcons.web),
-  //     onPressed: () => {}, // _updateWidget(swithSearchWeb: true), 
-  //     color: Colors.greenAccent[400],
-  //   );
-  // }
   
   Widget _getWidgetImageCopertina() {
-    // bool isImageOk = widget.isImmaginePresent; 
-    double heightPerc = 80; // (widget.isImmaginePresent) ? 80 : 80;
-    // List<Widget> lstWidget = [_getFutureImage(heightPerc)];
-
-    // if (isImageOk) {
-    //   lstWidget.add(
-    //     _widgetMiSentoFortunato()
-    //   );
-    // }
+    double heightPerc = 80;
     
     return Column(
       mainAxisSize: MainAxisSize.min,

@@ -1,6 +1,7 @@
 import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
 import 'package:books/features/libro/data/models/libro_search.module.dart';
+import 'package:books/resources/bisac_codes.dart';
 import 'package:hive/hive.dart';
 import 'dart:convert';
 part 'libro_view.module.g.dart';
@@ -179,8 +180,11 @@ class LibroViewModel extends LibroSearchModel {
     
     if (mapVolumeInfo['categories'] != null) {
       lstCategoria = (mapVolumeInfo['categories'] as List).map((item) => item as String).toList();
+      if (lstCategoria.length > 1) {
+        print('==============================================================> ${lstCategoria.toString()} <==========================================');
+      }
     } else {
-      lstCategoria = []; // mapVolumeInfo['categories'] ?? [];
+      lstCategoria = [BisacList.nonClassifiable]; // mapVolumeInfo['categories'] ?? [];
     }
 
     previewLink = mapVolumeInfo['previewLink'] ?? _strNullValue;

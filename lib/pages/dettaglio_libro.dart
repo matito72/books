@@ -2,10 +2,8 @@ import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/widgets/appbar/appbar_default.dart';
-import 'package:books/widgets/dettaglio_libro/dettaglio_libro_web_view.dart';
 import 'package:books/widgets/dettaglio_libro/dettaglio_libro_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:zoom_widget/zoom_widget.dart';
 
 
 class DettaglioLibro extends StatefulWidget {
@@ -57,14 +55,14 @@ class _DettaglioLibro extends State<DettaglioLibro> {
       tabs: [
         Tab(text: 'Dettaglio',),
         Tab(text: 'Note',),
-        Tab(text: 'Preview',),
+        // Tab(text: 'Preview',),
       ],
     );
     
     return SafeArea(
         child: Scaffold(
           body: DefaultTabController(
-            length: 3,
+            length: 2,
             child: Scaffold(
               appBar: AppBarDefault(
                 context: context,
@@ -104,24 +102,24 @@ class _DettaglioLibro extends State<DettaglioLibro> {
                             )
                           ]
                         ),
-                        Zoom(
-                          maxZoomWidth: 1200,
-                          maxZoomHeight: 1800,
-                          canvasColor: Colors.grey,
-                          backgroundColor: Colors.orange,
-                          colorScrollBars: const Color.fromARGB(151, 39, 114, 176),
-                          opacityScrollBars: 0.9,
-                          scrollWeight: 10.0,
-                          centerOnScale: true,
-                          enableScroll: true,
-                          doubleTapZoom: true,
-                          zoomSensibility: 0.8,
-                          initTotalZoomOut: false,
-                          child: Center(
-                              child: DettaglioLibroWebView(libroViewModel.previewLink)
-                              // #v=onepage&q=isbn=${libroViewModel.isbn}&f=true
-                          ),
-                        ),
+                        // Zoom(
+                        //   maxZoomWidth: 1200,
+                        //   maxZoomHeight: 1800,
+                        //   canvasColor: Colors.grey,
+                        //   backgroundColor: Colors.orange,
+                        //   colorScrollBars: const Color.fromARGB(151, 39, 114, 176),
+                        //   opacityScrollBars: 0.9,
+                        //   scrollWeight: 10.0,
+                        //   centerOnScale: true,
+                        //   enableScroll: true,
+                        //   doubleTapZoom: true,
+                        //   zoomSensibility: 0.8,
+                        //   initTotalZoomOut: false,
+                        //   child: Center(
+                        //       child: DettaglioLibroWebView(libroViewModel.previewLink)
+                        //       // #v=onepage&q=isbn=${libroViewModel.isbn}&f=true
+                        //   ),
+                        // ),
                       ],
                     ),
                   )

@@ -12,6 +12,7 @@ import 'package:books/pages/back_drop_lista_libri.dart';
 import 'package:books/pages/import_export_file.dart';
 import 'package:books/pages/libreria_lista_libri_page.dart';
 import 'package:books/pages/lista_libri_groupby.dart';
+import 'package:books/pages/ricerca_avanzata.dart';
 import 'package:books/resources/action_result.dart';
 import 'package:books/services/libro_search_service.dart';
 import 'package:books/utilities/dialog_utils.dart';
@@ -115,10 +116,10 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   _createBackLayer(BuildContext context) {
     return SizedBox(
       width: (MediaQuery.of(context).size.width * 100 / 100),
-      height: (MediaQuery.of(context).size.height * 35 / 100),
+      height: (MediaQuery.of(context).size.height * 40 / 100),
       child : ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.all(6.0),
+        // padding: const EdgeInsets.all(6.0),
         itemBuilder: (context,item)=> buildCardHorizontal(context, item+1),
         separatorBuilder: (context,item)=> const SizedBox(height: 5,),
         itemCount: 2
@@ -127,55 +128,54 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   Widget buildCardHorizontal(BuildContext context, int nr) {    
+    LibroBloc libroBloc = context.read<LibroBloc>();
+
     if (nr == 1) {
-      LibroBloc libroBloc = context.read<LibroBloc>();
       return BackDropListaLibri(libroBloc);
     } 
+
+    // return RicercaAvanzata(libroBloc);
+    return _createRicercaAvanzataBloc(context);
+  }
+
+  Widget _createRicercaAvanzataBloc(BuildContext context) {
+    LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
+    RicercaAvanzata ricercaAvanzata = RicercaAvanzata(libroBloc);
     
-    return SizedBox(
-      width: (MediaQuery.of(context).size.width * 100 / 100),
-      height: (MediaQuery.of(context).size.height * 35 / 100),
-      child: Container(
-        color: Colors.teal[900],
-        child: RichText(
-          text: TextSpan(
-            style: TextStyle(color: Colors.grey[200], fontSize: 24),
-            children: const <TextSpan>[
-              TextSpan(text: 'Ricerca avanzata ... '),
-            ],
-          ),
-        ),
+    return BlocListener<LibroBloc, LibroState> (
+      listener: (context, LibroState state) {
+        if (state.actionResult != null && state.msg != null) {
+          // GESTIONE MESSAGGI OK e d'ERRORE         
+        }
+        if (state is AddedNewLibroState || state is EditLibroState || state is DeletedLibroState ||
+            state is LibroInitializedState || state is DeleteAllLibroState) {
+          // libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+        } 
+      },
+      child: BlocBuilder<LibroBloc, LibroState> (
+        // buildWhen: (context, state) {
+        //   return state is ListaLibroLoadedState;
+        // },
+        builder: (context, state) {
+          if (state is LibroWaitingState) {
+            /*return const Center(
+              child: CircularProgressIndicator(),
+            ); */
+          }
+
+          if (state is ListaLibroLoadedState) {
+            
+          } 
+          
+          if (state is LibroErrorState) {
+            // return Center(child:  Text("Error: ${state.msg}"));
+          }
+
+          return ricercaAvanzata;
+        },
       )
     );
   }
-
-  // Widget buildCardVertical(BuildContext context, int nr) {    
-  //   LibroBloc libroBloc = context.read<LibroBloc>();;
-
-  //   if (nr == 1) {
-  //     return SizedBox(
-  //       width: (MediaQuery.of(context).size.width * 100 / 100),
-  //       height: (MediaQuery.of(context).size.height * 35 / 100),
-  //       child : ReorderableOrderBy(libroBloc)
-  //     );
-  //   } 
-    
-  //   return SizedBox(
-  //       width: (MediaQuery.of(context).size.width * 100 / 100),
-  //       height: (MediaQuery.of(context).size.height * 35 / 100),
-  //       child: Container(
-  //         color: Colors.teal[900],
-  //         child: RichText(
-  //           text: TextSpan(
-  //             style: TextStyle(color: Colors.grey[200], fontSize: 24),
-  //             children: const <TextSpan>[
-  //               TextSpan(text: 'Raggruppamento libri  ... '),
-  //             ],
-  //           ),
-  //         ),
-  //       )
-  //     );
-  // }
 
   PopupMenuButton _createAppBarPopupMenuButton(BuildContext context) {
     LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
@@ -187,7 +187,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       splashRadius: 200,
       shadowColor: Colors.blueGrey[800],
       surfaceTintColor: Colors.blueGrey[700],
-      // color: Color.fromARGB(223, 173, 173, 31),
       color: const Color.fromARGB(224, 88, 136, 182),
       shape: RoundedRectangleBorder(
         side: BorderSide.lerp(BorderSide.none, BorderSide.none, 12),
@@ -195,56 +194,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       ),
       icon: const Icon(Icons.more_vert, color: Colors.white),
       itemBuilder: (context) {
-        return [
-              PopupMenuItem<int>(
-                value: MenuItemCode.exportAllBooksLibreria.cd, 
-                child: Row(
-                  children: [
-                    Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.save_alt, color: Colors.green[100]),),
-                    Text(
-                      MenuItemCode.exportAllBooksLibreria.label.replaceFirst('{0}', ComArea.libreriaInUso!.nome),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  ],
-                )
-              ),
-              PopupMenuItem<int>(
-                value: MenuItemCode.restoreFileBackup.cd, 
-                child: Row(
-                  children: [
-                    Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.restore_page, color: Colors.lightGreenAccent[100]),),
-                    Text(
-                      MenuItemCode.restoreFileBackup.label,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  ],
-                )
-              ),
-              PopupMenuItem<int>(
-                value: MenuItemCode.deleteAllBooksInLibreria.cd, 
-                child: Row(
-                  children: [
-                    const Padding(padding: EdgeInsets.only(right: 10.0), child: Icon(Icons.delete, color: Colors.red),),
-                    Text(
-                      MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', ComArea.libreriaInUso!.nome),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  ],
-                )
-              ),
-              PopupMenuItem<int>(
-                value: MenuItemCode.deleteAllBooksInAllLibrerie.cd, 
-                child: Row(
-                  children: [
-                    const Padding(padding: EdgeInsets.only(right: 10.0), child:  Icon(Icons.sentiment_very_dissatisfied_outlined, color: Color.fromARGB(255, 245, 28, 28),),),
-                    Text(
-                      MenuItemCode.deleteAllBooksInAllLibrerie.label,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  ],
-                )
-              ),
-          ];
+        return getPopUpMenuItem();
       },
       onSelected: (value) {
         if (value == MenuItemCode.deleteAllBooksInLibreria.cd) {
@@ -264,6 +214,59 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         }
       }
     );
+  }
+
+  List<PopupMenuItem> getPopUpMenuItem() {
+    return [
+      PopupMenuItem<int>(
+        value: MenuItemCode.exportAllBooksLibreria.cd, 
+        child: Row(
+          children: [
+            Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.save_alt, color: Colors.green[100]),),
+            Text(
+              MenuItemCode.exportAllBooksLibreria.label.replaceFirst('{0}', ComArea.libreriaInUso!.nome),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            )
+          ],
+        )
+      ),
+      PopupMenuItem<int>(
+        value: MenuItemCode.restoreFileBackup.cd, 
+        child: Row(
+          children: [
+            Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.restore_page, color: Colors.lightGreenAccent[100]),),
+            Text(
+              MenuItemCode.restoreFileBackup.label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            )
+          ],
+        )
+      ),
+      PopupMenuItem<int>(
+        value: MenuItemCode.deleteAllBooksInLibreria.cd, 
+        child: Row(
+          children: [
+            const Padding(padding: EdgeInsets.only(right: 10.0), child: Icon(Icons.delete, color: Colors.red),),
+            Text(
+              MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', ComArea.libreriaInUso!.nome),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            )
+          ],
+        )
+      ),
+      PopupMenuItem<int>(
+        value: MenuItemCode.deleteAllBooksInAllLibrerie.cd, 
+        child: Row(
+          children: [
+            const Padding(padding: EdgeInsets.only(right: 10.0), child:  Icon(Icons.sentiment_very_dissatisfied_outlined, color: Color.fromARGB(255, 245, 28, 28),),),
+            Text(
+              MenuItemCode.deleteAllBooksInAllLibrerie.label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            )
+          ],
+        )
+      ),
+    ];
   }
 
   Future<bool?> _exportLibriLibreria(BuildContext context, LibroBloc libroBloc) async {

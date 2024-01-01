@@ -24,24 +24,23 @@ class _BackDropListaLibriState extends State<BackDropListaLibri> {
       height: (MediaQuery.of(context).size.height * 35 / 100),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           const Padding(
-            padding: EdgeInsets.only(top: 5),
+            padding: EdgeInsets.only(top: 16),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.max,
             children: [
               getHeaderText(),
-              // const Text(' ')
             ],
           ),
           const Padding(
-            padding: EdgeInsets.only(top: 5),
+            padding: EdgeInsets.only(top: 16),
           ),
-          // lstOrderBy(context)
           ComArea.showOrderBy 
             ? ReorderableOrderBy(widget._libroBloc)
             : GroupByWidget(widget._libroBloc)
@@ -52,13 +51,12 @@ class _BackDropListaLibriState extends State<BackDropListaLibri> {
 
   Widget getHeaderText() {
     TextStyle defaultStyle = TextStyle(color: Colors.grey[200], fontSize: 18);
-    TextStyle linkStyle = TextStyle(color: Colors.lightGreen[100]);
+    TextStyle linkStyle = TextStyle(color: Colors.lightGreen[100], decoration: TextDecoration.underline,);
 
     return RichText(
       text: TextSpan(
         style: defaultStyle,
         children: <TextSpan>[
-          // const TextSpan(text: 'Ordinamento Libri '),
           TextSpan(
             text: ComArea.showOrderBy ? 'Ordinamento' : 'Raggruppamento',
             style: linkStyle,
@@ -87,112 +85,4 @@ class _BackDropListaLibriState extends State<BackDropListaLibri> {
     );
   }
 
-  String getLabelOrdinemantoLibri() {
-    if (ComArea.orderByAsc) {
-      return 'Ordinamento Libri -> Ascendente';
-    }
-    return 'Ordinamento Libri -> Discendente';
-  }
-
-  // Widget lstOrderBy(BuildContext context) {
-  //   final ColorScheme colorScheme = Theme.of(context).colorScheme;
-  //   final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
-  //   final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
-    
-  //   return Expanded(
-  //     flex: 10,
-  //     child: SizedBox(
-  //       height: 150.0,
-  //       child: ReorderableListView(
-  //         buildDefaultDragHandles: false,
-  //         children: <Widget>[
-  //           for (int index = 0; index < _items.length; index++)
-  //             ColoredBox(
-  //               key: Key('$index'),
-  //               color: index.isOdd ? oddItemColor : evenItemColor,
-  //               child: Row(
-  //                 children: <Widget>[
-  //                   Container(
-  //                     width: 50,
-  //                     height: 50,
-  //                     padding: const EdgeInsets.all(8),
-  //                     child: ReorderableDragStartListener(
-  //                       index: index,
-  //                       child: Card(
-  //                         color: colorScheme.primary,
-  //                         elevation: 2,
-  //                         child: Center(
-  //                           child: Text(
-  //                             _items[index].label.substring(0, 1),
-  //                             style: const TextStyle(
-  //                               color: Colors.black, 
-  //                               fontWeight: FontWeight.bold,
-  //                               fontStyle: FontStyle.normal,
-  //                               fontSize: 16,
-  //                             )
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   Row(
-  //                     mainAxisAlignment: MainAxisAlignment.end,
-  //                     crossAxisAlignment: CrossAxisAlignment.center,
-  //                     children: [
-  //                       SizedBox(
-  //                         width: 150,
-  //                         child: Column(
-  //                           crossAxisAlignment: CrossAxisAlignment.start,
-  //                           children: [
-  //                             Text(
-  //                               _items[index].label,
-  //                               style: const TextStyle(
-  //                                 // color: Colors.black, 
-  //                                 fontWeight: FontWeight.bold,
-  //                                 fontStyle: FontStyle.normal,
-  //                                 fontSize: 14,
-  //                               )
-  //                             )
-  //                           ]
-  //                         ),
-  //                       ),
-  //                       SizedBox(
-  //                         width: 50,
-  //                         child: Column(
-  //                           crossAxisAlignment: CrossAxisAlignment.end,
-  //                           children: [
-  //                             Checkbox(
-  //                               value: _items[index].isSelected,
-  //                               onChanged: (bool? newValue) {
-  //                                 setState(() {
-  //                                   _items[index].isSelected = newValue!;
-  //                                   widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
-  //                                 });
-  //                               },
-  //                             )
-  //                           ]
-  //                         ),
-  //                       )
-  //                     ],
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //         ],
-  //         onReorder: (int oldIndex, int newIndex) {
-  //           setState(() {
-  //             if (oldIndex < newIndex) {
-  //               newIndex -= 1;
-  //             }
-  //             final OrdinamentoLibri item = _items.removeAt(oldIndex);
-  //             _items.insert(newIndex, item);
-  //           });
-
-  //           ComArea.lstBookOrderBy = _items;
-  //           widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
-  //         },
-  //       ),
-  //     ),
-  //   );
-  // }
 }

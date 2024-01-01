@@ -182,48 +182,72 @@ class HomeLibreriaScreen extends StatelessWidget {
                 // color: Colors.transparent,
                 elevation: 5,
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                child: ListTile(
-                  style: ListTileStyle.list,
-                  leading: Padding(
-                      padding: const EdgeInsets.all(3),
-                      child: FittedBox(
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.green[100],
-                          child: Text(libreria.sigla,
-                              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                color: Colors.blue.shade900,
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold)),
+                child: InkWell(
+                  splashColor: Colors.deepOrange[400],
+                  onTap: () => {_goToHomeLibriLibreria(context, libreria)},
+                  child: ListTile(
+                    style: ListTileStyle.list,
+                    leading: Padding(
+                        padding: const EdgeInsets.all(3),
+                        child: FittedBox(
+                          child: CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Colors.green[100],
+                            child: Text(libreria.sigla,
+                                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                  color: Colors.blue.shade900,
+                                  fontSize: 24.0,
+                                  fontWeight: FontWeight.bold)),
+                          ),
+                        )
+                      ),
+                    title: (!ComArea.initApp) 
+                      ? Text(libreria.nome)
+                      : (libreriaInUso != null && libreriaInUso.sigla == libreria.sigla) 
+                        ? Text(
+                            libreria.nome,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold, 
+                              letterSpacing: 5,
+                              decoration: TextDecoration.underline,
+                              decorationStyle: TextDecorationStyle.double
+                            ),
+                          ) 
+                        : Text(
+                          libreria.nome,
+                          style: const TextStyle(fontWeight: FontWeight.normal, letterSpacing: 0)
                         ),
-                      )
+                    // title: Text(libreria.nome),
+                    // title: libreria.isLibreriaDefault ? Text('${libreria.nome} - default') : Text(libreria.nome),
+                    subtitle: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(padding: EdgeInsets.only(top: 10)),
+                        Text(
+                          'Libri: ${libreria.nrLibriCaricati}'
+                        ),
+                      ],
                     ),
-                  title: (!ComArea.initApp) 
-                    ? Text(libreria.nome)
-                    : (libreriaInUso != null && libreriaInUso.sigla == libreria.sigla) ? Text('[ ${libreria.nome} ]') : Text(libreria.nome),
-                  // title: Text(libreria.nome),
-                  // title: libreria.isLibreriaDefault ? Text('${libreria.nome} - default') : Text(libreria.nome),
-                  subtitle: Text(
-                    'Libri: ${libreria.nrLibriCaricati}'
-                  ),
-                  trailing: Wrap(
-                    // spacing: 0,
-                    children: [
-                      IconButton(
-                        icon: (ComArea.initApp && libreriaInUso != null && libreriaInUso.sigla == libreria.sigla) 
-                          ? Icon(MdiIcons.doorOpen, color: Colors.green,)
-                          : Icon(MdiIcons.doorClosed, color: Colors.green,),
-                        onPressed: () => {_goToHomeLibriLibreria(context, libreria)},
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
-                        onPressed: () => {_editLibreria(context, libreria)},
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete, color: Colors.orange.shade800),
-                        onPressed: () => {_deleteLibreria(context, libreria)},
-                      ),
-                    ], 
+                    trailing: Wrap(
+                      // spacing: 0,
+                      children: [
+                        IconButton(
+                          icon: (ComArea.initApp && libreriaInUso != null && libreriaInUso.sigla == libreria.sigla) 
+                            ? Icon(MdiIcons.doorOpen, color: Colors.green,)
+                            : Icon(MdiIcons.doorClosed, color: Colors.green,),
+                          onPressed: () => {_goToHomeLibriLibreria(context, libreria)},
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
+                          onPressed: () => {_editLibreria(context, libreria)},
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete, color: Colors.orange.shade800),
+                          onPressed: () => {_deleteLibreria(context, libreria)},
+                        ),
+                      ], 
+                    ),
                   ),
                 ),
               );

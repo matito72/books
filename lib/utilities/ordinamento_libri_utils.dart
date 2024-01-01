@@ -15,6 +15,8 @@ class OrdinamentoLibriUtils {
       return libroViewModel.lstAutori[0];
     } else if (label == OrdinamentoLibri.editore().label) {
       return libroViewModel.editore;
+    } else if (label == OrdinamentoLibri.categoria().label) {
+      return libroViewModel.lstCategoria[0];
     } else if (label == OrdinamentoLibri.dtPubblicazione().label) {
       return libroViewModel.dataPubblicazione;
     } else if (label == OrdinamentoLibri.prezzo().label) {

@@ -16,13 +16,6 @@ class ReorderableOrderBy extends StatefulWidget {
 class _ReorderableOrderByState extends State<ReorderableOrderBy> {
   final List<OrdinamentoLibri> _items = ComArea.lstBookOrderBy;
 
-  String getLabelOrdinemantoLibri() {
-    if (ComArea.orderByAsc) {
-      return 'Ordinamento Libri -> Ascendente';
-    }
-    return 'Ordinamento Libri -> Discendente';
-  }
-
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;

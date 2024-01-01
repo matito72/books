@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:books/config/constant.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
@@ -5,6 +7,7 @@ import 'package:books/pages/immagine_copertina.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/libro_utils.dart';
 import 'package:books/utilities/utils.dart';
+import 'package:books/widgets/bisac_dropdown_menu.dart';
 import 'package:books/widgets/dettaglio_libro/five_stars.dart';
 import 'package:flutter/material.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
@@ -29,7 +32,6 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     String? immagineCopertinaPre = libroViewModel.immagineCopertina;
 
     await Navigator.pushNamed(context, ImmagineCopertina.pagePath, arguments: {
-      // 'libroViewModel': LibroUtils.createLibroViewFromSearchModel(Constant.libreriaInUso!, libroViewModel),
       'libroViewModel': libroViewModel,
       'askBeforeDelete': true
     });
@@ -37,7 +39,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
 
     if (!widget._isNewDettaglio && (immagineCopertinaPre != immagineCopertinaPost)) {
       // UPDATE:
-      await dbLibroService.saveLibroToDb(libroViewModel, false);
+      // await dbLibroService.saveLibroToDb(libroViewModel, false);
 
       setState(() {
         widget._libroViewModel.immagineCopertina = immagineCopertinaPost;
@@ -94,54 +96,52 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 10, right: 5),
-      child: ListView(
-        children: <Widget> [
-          Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
+  Widget headerBook() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: (MediaQuery.of(context).size.width * 35 / 100),
+          height: (MediaQuery.of(context).size.height * 25 / 100),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: FutureBuilder<Widget>(
+              future: getImageNetwork(context, widget._libroViewModel),
+              builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  return snapshot.data as Widget;
+                }
+              }
+            ),
+          ),
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: (MediaQuery.of(context).size.width * 62 / 100),
+              height: (MediaQuery.of(context).size.height * 20 / 100),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: SizedBox(
-                        width: 125,
-                        height: 200,
-                        child: FutureBuilder<Widget>(
-                          future: getImageNetwork(context, widget._libroViewModel),
-                          builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-                            if (!snapshot.hasData) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else {
-                              return snapshot.data as Widget;
-                            }
-                          }
-                        )
-                      ),
-                    ),
-                  ],
-                ),
-                Flexible(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10, left: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            InkWell(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      flex: 4,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10, left: 15),
+                            child: InkWell(
                               splashColor: Colors.red,
                               onDoubleTap: () async {
                                 String? strDesc = await DialogUtils.getDescrizione(context, 'Titolo:', widget._libroViewModel.titolo, maxLines: 3);
@@ -153,21 +153,22 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                               },
                               child: ReadMoreText.selectable(
                                 widget._libroViewModel.titolo,
-                                numLines: 4,
+                                numLines: 2,
                                 style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white),
                                 readMoreTextStyle: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.amber.shade200),
-                                // trimMode: TrimMode.Line,
-                                readMoreText: '', // '...espandi',
-                                readLessText: '', //' comprimi',
+                                readMoreIcon: Icon(Icons.more_horiz, color: Colors.blue.shade200),
+                                readLessIcon: Icon(Icons.keyboard_arrow_up, color: Colors.blue.shade200),
+                                readMoreText: '',
+                                readLessText: '',
                               )
                             ),
-                            // const SizedBox(
-                            //   height: 1,
-                            // ),
-                            InkWell(
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10, left: 15),
+                            child: InkWell(
                               splashColor: Colors.red,
                               onDoubleTap: () async {
                                 String? strDesc = await DialogUtils.getDescrizione(context, 'Autore:', widget._libroViewModel.lstAutori[0], maxLines: 3);
@@ -175,7 +176,6 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                   setState(() {
                                     widget._libroViewModel.lstAutori.clear();
                                     widget._libroViewModel.lstAutori.add(strDesc);
-                                    // widget.libroViewModel.lstAutori[0] = strDesc;
                                   });
                                 }
                               },
@@ -187,242 +187,283 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                   color: Colors.white70
                                 ),
                                 readMoreTextStyle: TextStyle(color: Colors.amber.shade200),
+                                readMoreIcon: Icon(Icons.more_horiz, color: Colors.blue.shade200),
+                                readLessIcon: Icon(Icons.keyboard_arrow_up, color: Colors.blue.shade200),
                                 readMoreText: '', 
                                 readLessText: '',
                               ),
                             ),
-                              const SizedBox(
-                                height: 1,
-                              ),
-                              InkWell(
-                                splashColor: Colors.red,
-                                onDoubleTap: () async {
-                                  String? strDesc = await DialogUtils.getDescrizione(context, 'Editore:', widget._libroViewModel.editore, maxLines: 2);
-                                  if (strDesc != null) {
-                                    setState(() {
-                                      widget._libroViewModel.editore = strDesc;
-                                    });
-                                  }
-                                },
-                                child: ReadMoreText.selectable(
-                                  widget._libroViewModel.editore,
-                                  numLines: 1,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                  ),
-                                  readMoreTextStyle: TextStyle(color: Colors.amber.shade200),
-                                  readMoreText: '', 
-                                  readLessText: '', 
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                            ],
-                        ),
-                      ),
-                      const SizedBox(height: 15,),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: FiveStars(
-                          value: widget._libroViewModel.stars,
-                          onPressed: (value) {
-                            setState(() {
-                              widget._libroViewModel.stars = value;
-                            });
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 0, left: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: <Widget>[
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(
-                                    LibroUtils.getDataFormattata(widget._libroViewModel.dataPubblicazione),
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  InkWell(
-                                    splashColor: Colors.red,
-                                    onDoubleTap: () {
-                                      getYear(context, widget._libroViewModel);
-                                    },
-                                    child: Text(
-                                      'Data',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.lightBlue.shade100,
-                                      ), 
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 50,
-                                width: 50,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    widget._libroViewModel.nrPagine.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  InkWell(
-                                    splashColor: Colors.red,
-                                    onDoubleTap: () async {
-                                      String? strNr = await DialogUtils.getNumero(context, 'Inserisci il numero pagine', widget._libroViewModel.nrPagine.toString(), true);
-                                      if (strNr != null) {
-                                        setState(() {                                                
-                                          int? nr = int.tryParse(strNr);
-                                          widget._libroViewModel.nrPagine = (nr != null) ? nr : 0;
-                                        });
-                                      }
-                                    },
-                                    child: Text(
-                                      'Pagine',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.lightBlue.shade100,
-                                      ),                                          
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 50,
-                                width: 50,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    widget._libroViewModel.prezzo.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  InkWell(
-                                    splashColor: Colors.red,
-                                    onDoubleTap: () async {
-                                      String? strNr = await DialogUtils.getNumero(context, 'Inserisci il prezzo', widget._libroViewModel.prezzo.toString(), false);
-                                      if (strNr != null) {
-                                        setState(() {                                                
-                                          double? nr = double.tryParse(strNr);
-                                          widget._libroViewModel.prezzo = (nr != null) ? nr.toString() : '';
-                                        });
-                                      }
-                                    },
-                                    child: Text(
-                                      'Prezzo',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.lightBlue.shade100,
-                                      ),                                          
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            // const SizedBox(height: 8,),
-            const Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(top: 15),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 5, left: 5),
-                ),
-                Text("ISBN: ", 
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.lightBlue.shade100),
-                ),
-                SelectableText(
-                  widget._libroViewModel.isbn
-                )
-              ],
-            ),
-            const SizedBox(height: 5,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10, left: 5),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            InkWell(
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10, left: 15),
+                            child: InkWell(
                               splashColor: Colors.red,
                               onDoubleTap: () async {
-                                String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget._libroViewModel.descrizione);
+                                String? strDesc = await DialogUtils.getDescrizione(context, 'Editore:', widget._libroViewModel.editore, maxLines: 2);
                                 if (strDesc != null) {
                                   setState(() {
-                                    widget._libroViewModel.descrizione = strDesc;
+                                    widget._libroViewModel.editore = strDesc;
                                   });
                                 }
                               },
-                              child: Text(
-                                'Descrizione',
-                                style: TextStyle(
+                              child: ReadMoreText.selectable(
+                                widget._libroViewModel.editore,
+                                numLines: 1,
+                                style: const TextStyle(
                                   fontSize: 14,
-                                  color: Colors.lightBlue.shade100,
-                                ),                                          
+                                  color: Colors.white,
+                                ),
+                                readMoreTextStyle: TextStyle(color: Colors.amber.shade200),
+                                readMoreText: '', 
+                                readLessText: '', 
                               ),
                             ),
-                            ReadMoreText.selectable(
-                              widget._libroViewModel.descrizione,
-                              numLines: 10,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                              ),
-                              readMoreTextStyle: TextStyle(color: Colors.blue.shade200,),
-                              // trimMode: TrimMode.Line,
-                              readMoreText: '', // '...espandi',
-                              readLessText: '', //' comprimi',
-                              cursorColor: Colors.blue.shade200,
-                              cursorRadius: const Radius.circular(1),
-                            )
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, left: 15),
+                  child: FiveStars(
+                    value: widget._libroViewModel.stars,
+                    onPressed: (value) {
+                      setState(() {
+                        widget._libroViewModel.stars = value;
+                      });
+                    },
                   ),
                 ),
               ],
             ),
           ],
         ),
-        ]
+      ],
+    );
+  }
+
+  Widget dataHeaderBook() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SelectableText(
+                  widget._libroViewModel.isbn,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  'ISBN',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.lightBlue.shade100,
+                  ),                                          
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  LibroUtils.getDataFormattata(widget._libroViewModel.dataPubblicazione),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+                InkWell(
+                  splashColor: Colors.red,
+                  onDoubleTap: () {
+                    getYear(context, widget._libroViewModel);
+                  },
+                  child: Text(
+                    'Data',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.lightBlue.shade100,
+                      decoration: TextDecoration.underline,
+                    ), 
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  widget._libroViewModel.nrPagine.toString(),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+                InkWell(
+                  splashColor: Colors.red,
+                  onDoubleTap: () async {
+                    String? strNr = await DialogUtils.getNumero(context, 'Inserisci il numero pagine', widget._libroViewModel.nrPagine.toString(), true);
+                    if (strNr != null) {
+                      setState(() {                                                
+                        int? nr = int.tryParse(strNr);
+                        widget._libroViewModel.nrPagine = (nr != null) ? nr : 0;
+                      });
+                    }
+                  },
+                  child: Text(
+                    'Pagine',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.lightBlue.shade100,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  widget._libroViewModel.prezzo.toString(),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+                InkWell(
+                  splashColor: Colors.red,
+                  onDoubleTap: () async {
+                    String? strNr = await DialogUtils.getNumero(context, 'Inserisci il prezzo', widget._libroViewModel.prezzo.toString(), false);
+                    if (strNr != null) {
+                      setState(() {                                                
+                        double? nr = double.tryParse(strNr);
+                        widget._libroViewModel.prezzo = (nr != null) ? nr.toString() : '';
+                      });
+                    }
+                  },
+                  child: Text(
+                    'Prezzo',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.lightBlue.shade100,
+                      decoration: TextDecoration.underline,
+                    ),                                          
+                  ),
+                ),
+              ],
+            ),
+          ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 5, right: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            headerBook(),
+            dataHeaderBook(),
+            const Padding(
+              padding: EdgeInsets.only(top: 5),
+            ),
+            SizedBox(
+              height: (MediaQuery.of(context).size.height * 50 / 100),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Categoria',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.lightBlue.shade100,
+                          ),                                          
+                        ),
+                        BisacDropdownMenu(
+                          widget._libroViewModel.lstCategoria[0].toUpperCase(),
+                          onPressed: (value) {
+                            setState(() {
+                              widget._libroViewModel.lstCategoria = [value];
+                              // ComArea.itemComparatorField = OrdinamentoLibri.byName(value);
+                              // widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          splashColor: Colors.red,
+                          onDoubleTap: () async {
+                            String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget._libroViewModel.descrizione);
+                            if (strDesc != null) {
+                              setState(() {
+                                widget._libroViewModel.descrizione = strDesc;
+                              });
+                            }
+                          },
+                          child: Text(
+                            'Descrizione',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.lightBlue.shade100,
+                              decoration: TextDecoration.underline,
+                            ),                                          
+                          ),
+                        ),
+                        ReadMoreText.selectable(
+                          widget._libroViewModel.descrizione,
+                          numLines: 10,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                          readMoreTextStyle: TextStyle(color: Colors.blue.shade200,),
+                          readMoreIcon: Icon(Icons.more_horiz, color: Colors.blue.shade200),
+                          readLessIcon: Icon(Icons.keyboard_arrow_up, color: Colors.blue.shade200),
+                          readMoreText: '',
+                          readLessText: '',
+                          cursorColor: Colors.blue.shade200,
+                          cursorRadius: const Radius.circular(1),
+                          readMoreAlign: AlignmentDirectional.topEnd,
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          ),
       ),
     );
   }

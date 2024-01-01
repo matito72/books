@@ -23,12 +23,21 @@ class GroupByMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<OrdinamentoLibri> lstBookOrderBy = ComArea.lstBookOrderBy;
-    // String dropdownValue = ComArea.groupComparatorField.label;
 
     return DropdownMenu<String>(
       width: (MediaQuery.of(context).size.width * 35 / 100),
       menuHeight: (MediaQuery.of(context).size.height * 40 / 100),
       textStyle: const TextStyle(fontSize: 16),
+      inputDecorationTheme: InputDecorationTheme(
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        constraints: BoxConstraints.tight(
+          const Size.fromHeight(35)
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
       menuStyle: MenuStyle(
         backgroundColor: MaterialStatePropertyAll<Color>(Colors.blueGrey[400]!),
       ),

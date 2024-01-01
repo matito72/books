@@ -7,6 +7,7 @@ class OrdinamentoLibri {
   factory OrdinamentoLibri.titolo() => OrdinamentoLibri('Titolo');
   factory OrdinamentoLibri.autore() => OrdinamentoLibri('Autore');
   factory OrdinamentoLibri.editore() => OrdinamentoLibri('Editore', isSelected: false);
+  factory OrdinamentoLibri.categoria() => OrdinamentoLibri('Categoria', isSelected: false);
   factory OrdinamentoLibri.dtPubblicazione() => OrdinamentoLibri('Data Pubblicazione', isSelected: false);
   factory OrdinamentoLibri.prezzo() => OrdinamentoLibri('Prezzo', isSelected: false);
 
@@ -15,6 +16,7 @@ class OrdinamentoLibri {
       OrdinamentoLibri.titolo(),
       OrdinamentoLibri.autore(),
       OrdinamentoLibri.editore(),
+      OrdinamentoLibri.categoria(),
       OrdinamentoLibri.dtPubblicazione(),
       OrdinamentoLibri.prezzo(),
     ];

@@ -21,12 +21,11 @@ class _GroupByWidgetState extends State<GroupByWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Padding space = const Padding(padding: EdgeInsets.only(top: 80, left: 20));
 
     return Expanded(
       flex: 10,
       child: Padding(
-        padding: const EdgeInsets.only(top: 40, left: 10),
+        padding: const EdgeInsets.only(top: 10, left: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,13 +36,13 @@ class _GroupByWidgetState extends State<GroupByWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Padding(padding: EdgeInsets.only(top: 15)),
+                const Padding(padding: EdgeInsets.only(top: 0)),
                 Text('Raggruppato per: ', style: defaultStyle),
-                space,
+                const Padding(padding: EdgeInsets.only(top: 75, left: 20)),
                 Text('Ordinato per: ', style: defaultStyle),
               ],
             ),
-            space,
+            const Padding(padding: EdgeInsets.only(top: 85, left: 20)),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +57,7 @@ class _GroupByWidgetState extends State<GroupByWidget> {
                     });
                   },
                 ),
-                const Padding(padding: EdgeInsets.only(top: 40)),
+                const Padding(padding: EdgeInsets.only(top: 55)),
                 GroupByMenu(
                   initOrdinamentoLibri: ComArea.itemComparatorField,
                   onPressed: (value) {
