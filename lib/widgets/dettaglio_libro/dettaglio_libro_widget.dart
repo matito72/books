@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:books/config/constant.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
@@ -74,7 +72,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
             child: YearPicker(
               firstDate: DateTime(DateTime.now().year - 100, 1),
               lastDate: DateTime(DateTime.now().year + 100, 1),
-              initialDate: DateTime.now(),
+              // initialDate: DateTime.now(),
               selectedDate: selectedDate,
               onChanged: (DateTime dateTime) {
                 setState(() {
@@ -174,7 +172,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                 String? strDesc = await DialogUtils.getDescrizione(context, 'Autore:', widget._libroViewModel.lstAutori[0], maxLines: 3);
                                 if (strDesc != null) {
                                   setState(() {
-                                    widget._libroViewModel.lstAutori.clear();
+                                    widget._libroViewModel.lstAutori = [];
                                     widget._libroViewModel.lstAutori.add(strDesc);
                                   });
                                 }

@@ -23,47 +23,7 @@ class LibreriaListaLibriPage extends StatelessWidget {
   ) : _nrTot = _listaLibri.length;
 
   @override
-  Widget build(BuildContext context) {    
-    
-    // Future<Widget>  getImage(String urlImage) async {
-    //   late Widget image;
-    //   File f = File(urlImage);
-
-    //   if (f.existsSync()) {
-    //     image = Image.file(File(urlImage), fit: BoxFit.fill);
-    //   } else {
-    //     if (urlImage.toLowerCase().startsWith("http")) {
-    //       image = CachedNetworkImage(
-    //         imageUrl: urlImage,
-    //         fit: BoxFit.cover,
-    //         placeholder: (context, url) => const CircularProgressIndicator(),
-    //         errorWidget: (context, url, error) => const Icon(Icons.error),
-    //         cacheManager: CacheManager(
-    //           Config(
-    //             "googleBooks",
-    //             stalePeriod: const Duration(days: 30),
-    //           )
-    //         )
-    //       );
-    //     } else {
-    //       image = Image.asset(Constant.assetImageDefault, fit: BoxFit.fill);
-    //     }
-    //   }
-
-    //   return image;
-    // }
-    
-    // Future<ClipRRect> buildImage(int index, String urlImage) async => ClipRRect(
-    //   borderRadius: BorderRadius.circular(10),
-    //   child: await getImage(urlImage)
-    // );
-
-    // Future<Widget> getItemImage(int index, LibroViewModel item) async {
-    //   return (item.immagineCopertina != '')
-    //     ? await buildImage(index, item.immagineCopertina)
-    //     : const Text('-');
-    // }
-
+  Widget build(BuildContext context) {
     return SafeArea(
       child: _listaLibri.isEmpty
         ? Center(
@@ -91,6 +51,7 @@ class LibreriaListaLibriPage extends StatelessWidget {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
+                    
                     final item = _listaLibri[index];
                     return SingleCardBook(
                       _libroBloc, 

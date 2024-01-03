@@ -81,7 +81,11 @@ class HomeLibreriaScreen extends StatelessWidget {
       appBar: _buildAppbar(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _addNewLibreria(context),
-        child: const Icon(Icons.add),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).colorScheme.onSecondary
+        ),
       ),
       body: _blocBody(context),
     );
@@ -195,27 +199,34 @@ class HomeLibreriaScreen extends StatelessWidget {
                             backgroundColor: Colors.green[100],
                             child: Text(libreria.sigla,
                                 style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                  color: Colors.blue.shade900,
+                                  color: Colors.black, // Colors.blue.shade900,
                                   fontSize: 24.0,
                                   fontWeight: FontWeight.bold)),
                           ),
                         )
                       ),
                     title: (!ComArea.initApp) 
-                      ? Text(libreria.nome)
+                      ? Text(libreria.nome, style: Theme.of(context).textTheme.headlineSmall)
                       : (libreriaInUso != null && libreriaInUso.sigla == libreria.sigla) 
                         ? Text(
-                            libreria.nome,
+                            libreria.nome.toUpperCase(),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold, 
                               letterSpacing: 5,
                               decoration: TextDecoration.underline,
-                              decorationStyle: TextDecorationStyle.double
+                              decorationStyle: TextDecorationStyle.double,
+                              color: Colors.white,
+                              decorationColor: Colors.white,
                             ),
                           ) 
                         : Text(
                           libreria.nome,
-                          style: const TextStyle(fontWeight: FontWeight.normal, letterSpacing: 0)
+                          // style: const TextStyle(
+                          //   fontWeight: FontWeight.normal, 
+                          //   letterSpacing: 0,
+                          //   color: Colors.white
+                          // )
+                          style: Theme.of(context).textTheme.headlineSmall
                         ),
                     // title: Text(libreria.nome),
                     // title: libreria.isLibreriaDefault ? Text('${libreria.nome} - default') : Text(libreria.nome),
@@ -225,7 +236,8 @@ class HomeLibreriaScreen extends StatelessWidget {
                       children: [
                         const Padding(padding: EdgeInsets.only(top: 10)),
                         Text(
-                          'Libri: ${libreria.nrLibriCaricati}'
+                          'Libri: ${libreria.nrLibriCaricati}',
+                          style: Theme.of(context).textTheme.headlineSmall
                         ),
                       ],
                     ),

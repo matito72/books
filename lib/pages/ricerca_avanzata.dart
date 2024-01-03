@@ -85,7 +85,10 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                 textCapitalization: TextCapitalization.none,
                 autofocus: true,
                 keyboardType: TextInputType.text,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
                 decoration: InputDecoration(
+                  prefixStyle: Theme.of(context).textTheme.titleSmall,
+                  labelStyle: Theme.of(context).textTheme.titleSmall,
                   fillColor: evenItemColor,
                   filled: true, 
                   hintText: (txtTitoloCtrl.text.isEmpty || txtTitoloCtrl.text == '') ? 'Titolo: ' : '',
@@ -106,7 +109,10 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                 textCapitalization: TextCapitalization.words,
                 autofocus: true,
                 keyboardType: TextInputType.name,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
                 decoration: InputDecoration(
+                  prefixStyle: Theme.of(context).textTheme.titleSmall,
+                  labelStyle: Theme.of(context).textTheme.titleSmall,
                   hintText: txtAutoreCtrl.text.isEmpty ? 'Autore: ' : '',
                   prefixText: txtAutoreCtrl.text.isEmpty ? '' : 'Autore: ',
                   fillColor: oddItemColor,
@@ -126,7 +132,10 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                 textCapitalization: TextCapitalization.sentences,
                 autofocus: true,
                 keyboardType: TextInputType.text,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
                 decoration: InputDecoration(
+                  prefixStyle: Theme.of(context).textTheme.titleSmall,
+                  labelStyle: Theme.of(context).textTheme.titleSmall,
                   hintText: txtEditoreCtrl.text.isEmpty ? 'Editore: ' : '',
                   prefixText: txtEditoreCtrl.text.isEmpty ? '' : 'Editore: ',
                   fillColor: evenItemColor,
@@ -149,7 +158,10 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Padding(padding: EdgeInsets.only(left: 3)),
-                      const Text('Categoria:'),
+                      Text(
+                        'Categoria:',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
                       BisacDropdownMenu(
                         txtCategoriaSel,
                         widthPerc: 75,
@@ -182,7 +194,10 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                         autofocus: true,
                         readOnly: true,
                         controller: txtAnnoPubblicazioneDaCtrl,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
                         decoration: InputDecoration(
+                          prefixStyle: Theme.of(context).textTheme.titleSmall,
+                          labelStyle: Theme.of(context).textTheme.titleSmall,
                           hintText: txtAnnoPubblicazioneDaCtrl.text.isEmpty ? 'Dt. Pubb.ne da: ' : '',
                           prefixText: txtAnnoPubblicazioneDaCtrl.text.isEmpty ? '' : 'Dt. Pubb.ne da: ',
                           floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -210,7 +225,10 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                         readOnly: true,
                         keyboardType: TextInputType.text,
                         controller: txtAnnoPubblicazioneACtrl,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
                         decoration: InputDecoration(
+                          prefixStyle: Theme.of(context).textTheme.titleSmall,
+                          labelStyle: Theme.of(context).textTheme.titleSmall,
                           hintText: txtAnnoPubblicazioneACtrl.text.isEmpty ? 'Dt. Pubbl.ne a: ' : '',
                           prefixText: txtAnnoPubblicazioneACtrl.text.isEmpty ? '' : 'Dt. Pubbl.ne a: ',
                           fillColor: evenItemColor,
@@ -241,7 +259,10 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                       maxLines: 1,
                       textCapitalization: TextCapitalization.sentences,
                       autofocus: true,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
                       decoration: InputDecoration(
+                        prefixStyle: Theme.of(context).textTheme.titleSmall,
+                        labelStyle: Theme.of(context).textTheme.titleSmall,
                         hintText: txtPrezzoMinCtrl.text.isEmpty ? 'Prezzo min: ' : '',
                         prefixText: txtPrezzoMinCtrl.text.isEmpty ? '' : 'Prezzo min: ',
                         fillColor: oddItemColor,
@@ -265,7 +286,10 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                       autofocus: true,
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.singleLineFormatter],
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
                       decoration: InputDecoration(
+                        prefixStyle: Theme.of(context).textTheme.titleSmall,
+                        labelStyle: Theme.of(context).textTheme.titleSmall,
                         hintText: txtPrezzoMaxCtrl.text.isEmpty ? 'Prezzo max: ' : '',
                         prefixText: txtPrezzoMaxCtrl.text.isEmpty ? '' : 'Prezzo max: ',
                         fillColor: oddItemColor,
@@ -303,6 +327,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
               icon: Icon(
                 MdiIcons.eraser, 
                 size: 20,
+                color: const Color.fromARGB(255, 185, 76, 76)
               ),
               onPressed: () => {
                 setState(() {
@@ -322,6 +347,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
               icon: Icon(
                 MdiIcons.bookSearch, 
                 size: 20,
+                color: Colors.lightGreenAccent[100],
               ),
               onPressed: () => {
                 setState(() {

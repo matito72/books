@@ -46,8 +46,9 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
    @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      // onWillPop: () async => false,
+      canPop: false,
       child: MultiBlocProvider(
         providers: [
           BlocProvider<LibroBloc>(
@@ -106,8 +107,13 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       backLayer: _createBackLayer(context),
       frontLayer: _blocBody(context),
       floatingActionButton: FloatingActionButton(
-        child: Icon(MdiIcons.barcodeScan),
-        onPressed: () => _searchBookByBarcode(context)
+        // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Colors.transparent,
+        onPressed: () => _searchBookByBarcode(context),
+        child: Icon(
+          MdiIcons.barcodeScan,
+          color: Theme.of(context).colorScheme.onSecondary,
+        ),
       ),
       stickyFrontLayer: true,
     );
@@ -401,9 +407,10 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   _viewEditLibro(BuildContext context, LibroBloc libroBloc, LibroViewModel libroViewModel) async {
+    LibroViewModel libroViewModelClone = libroViewModel.clonaLibro();
     String immagineCopertinaPre = libroViewModel.immagineCopertina;
-    LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModel, true);
-    String immagineCopertinaPost = libroViewModel.immagineCopertina;
+    LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModelClone, true);
+    String immagineCopertinaPost = libroViewModelClone.immagineCopertina;
 
     if (ret != null) {
       if (ret.isDelete) {

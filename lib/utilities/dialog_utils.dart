@@ -22,12 +22,13 @@ class DialogUtils {
           // fillColor: Colors.brown[200],
           // filled: widgetDescModel.readOnly
         ),
-        style: TextStyle(
-          color: widgetDescModel.readOnly 
-            ? Theme.of(context).primaryColor.withOpacity(0.4) 
-            : Theme.of(context).primaryColor,
-          fontStyle: widgetDescModel.readOnly ? FontStyle.italic : FontStyle.normal
-        ),
+        // style: TextStyle(
+        //   color: widgetDescModel.readOnly 
+        //     ? Theme.of(context).primaryColor.withOpacity(0.4) 
+        //     : Theme.of(context).primaryColor,
+        //   fontStyle: widgetDescModel.readOnly ? FontStyle.italic : FontStyle.normal
+        // ),
+        style: Theme.of(context).textTheme.titleSmall,
         controller: widgetDescModel.textController
       ));
       lstWidget.add(const Padding(padding: EdgeInsets.only(top: 30)));
@@ -109,7 +110,6 @@ class DialogUtils {
           ),
           contentTextStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
             fontStyle: FontStyle.italic,
-            color: Colors.black,
             backgroundColor: Colors.blueAccent,
           ),
           shadowColor: Colors.blueAccent,
@@ -119,7 +119,7 @@ class DialogUtils {
             child: YearPicker(
               firstDate: DateTime(DateTime.now().year - 100, 1),
               lastDate: DateTime(DateTime.now().year + 100, 1),
-              initialDate: DateTime.now(),
+              // initialDate: DateTime.now(),
               selectedDate: selectedDate,
               onChanged: (DateTime dateTime) {
                 Navigator.of(context).pop(dateTime.year.toString());
@@ -159,6 +159,7 @@ class DialogUtils {
               keyboardType: TextInputType.multiline,
               decoration: InputDecoration(hintText: strHintText),
               controller: textController,
+              style: Theme.of(context).textTheme.titleSmall
             ),
           ),
           actions: [
@@ -200,6 +201,7 @@ class DialogUtils {
               ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]
               : <TextInputFormatter>[FilteringTextInputFormatter.singleLineFormatter],
             controller: textController,
+            style: Theme.of(context).textTheme.titleSmall
           ),
           actions: [
             TextButton(

@@ -16,13 +16,19 @@ class LibroViewModel extends LibroSearchModel {
   String? pathImmagineCopertina;  // Campo usato come 'backup' del campo 'immagineCopertina' originale
 
   @HiveField(17)
-  String siglaLibreria;  
+  String siglaLibreria; 
+
+  @HiveField(18)
+  String note;
+
+  @HiveField(19)
+  String dataInserimento;
 
   static const String _strNullValue = '';
 
-  LibroViewModel(this.siglaLibreria, {super.googleBookId='', required super.isbn, super.titolo='', super.lstAutori=const [], super.editore='', 
+  LibroViewModel(this.siglaLibreria, this.dataInserimento, {super.googleBookId='', required super.isbn, super.titolo='', super.lstAutori=const [], super.editore='', 
       super.descrizione='', super.immagineCopertina='', super.dataPubblicazione='', super.nrPagine=0, super.lstCategoria=const [], 
-      super.previewLink='', super.isEbook=false, super.country='', super.valuta='',  super.prezzo='', this.stars = 0, this.pathImmagineCopertina}) ;
+      super.previewLink='', super.isEbook=false, super.country='', super.valuta='',  super.prezzo='', this.stars = 0, this.pathImmagineCopertina, this.note = ''}) ;
 
   Map toJson() => {
     'isbn': isbn.trim().isNotEmpty ? isbn : googleBookId,
@@ -42,10 +48,12 @@ class LibroViewModel extends LibroSearchModel {
     'googleBookId': googleBookId,
     'stars' : stars,
     'pathImmagineCopertina': pathImmagineCopertina,
-    'siglaLibreria': siglaLibreria
+    'siglaLibreria': siglaLibreria,
+    'dataInserimento' : dataInserimento,
+    'note': note
   };
 
-  LibroViewModel.fromMap(Map<String, dynamic> mappa, {this.stars = 0, this.siglaLibreria = ''}) {
+  LibroViewModel.fromMap(Map<String, dynamic> mappa, {this.stars = 0, this.siglaLibreria = '', this.dataInserimento = Constant.dataInserimentoDefault, this.note = ''}) {
     isbn = mappa['isbn'];
     titolo = mappa['titolo'];
     lstAutori = List<String>.from(jsonDecode(mappa['autori']));
@@ -68,6 +76,8 @@ class LibroViewModel extends LibroSearchModel {
 
   LibroViewModel copyWith({
       String? siglaLibreria,
+      String? dataInserimento,
+      String? note,
       String? googleBookId,
       String? isbn,
       String? titolo,
@@ -88,6 +98,8 @@ class LibroViewModel extends LibroSearchModel {
   }) => 
     LibroViewModel(
         siglaLibreria ?? this.siglaLibreria,
+        dataInserimento ?? this.dataInserimento,
+        note: note ?? this.note,
         googleBookId: googleBookId ?? this.googleBookId,
         isbn: isbn ?? this.isbn, 
         titolo: titolo ?? this.titolo,
@@ -109,6 +121,8 @@ class LibroViewModel extends LibroSearchModel {
 
    LibroViewModel clonaLibro() => LibroViewModel(
         siglaLibreria,
+        dataInserimento,
+        note: note,
         googleBookId: googleBookId,
         isbn: isbn, 
         titolo: titolo,
@@ -149,7 +163,7 @@ class LibroViewModel extends LibroSearchModel {
     stars = libroViewModel.stars;
   }
 
-  LibroViewModel.fromGoogleMap(Map<String, dynamic> mappa, {this.stars = 0, this.siglaLibreria = ''}) {
+  LibroViewModel.fromGoogleMap(Map<String, dynamic> mappa, {this.stars = 0, this.siglaLibreria = '', this.dataInserimento = Constant.dataInserimentoDefault, this.note = ''}) {
     googleBookId = mappa['id'] ?? mappa['googleBookId'];
 
     Map<String, dynamic> mapVolumeInfo = mappa['volumeInfo'];
@@ -159,14 +173,14 @@ class LibroViewModel extends LibroSearchModel {
     } else {
       lstAutori = ['<Autore da definire>'];
     }
-    descrizione = mapVolumeInfo['description'] ?? _strNullValue; // '<Descrizione da definire>';
+    descrizione = mapVolumeInfo['description'] ?? _strNullValue;
     descrizione = descrizione.replaceAll('<i>', '');
     descrizione = descrizione.replaceAll('<br>', '');
     descrizione = descrizione.replaceAll('</i>', '');
     descrizione = descrizione.replaceAll('<b>', '');
     descrizione = descrizione.replaceAll('</b>', '');
 
-    editore = mapVolumeInfo['publisher'] ?? Constant.editoreDaDefinire; // _strNullValue;
+    editore = mapVolumeInfo['publisher'] ?? Constant.editoreDaDefinire;
 
     List industryIdentifiers = mapVolumeInfo['industryIdentifiers'] ?? [];
     if (industryIdentifiers.isNotEmpty && industryIdentifiers.length > 1) {
@@ -180,9 +194,9 @@ class LibroViewModel extends LibroSearchModel {
     
     if (mapVolumeInfo['categories'] != null) {
       lstCategoria = (mapVolumeInfo['categories'] as List).map((item) => item as String).toList();
-      if (lstCategoria.length > 1) {
-        print('==============================================================> ${lstCategoria.toString()} <==========================================');
-      }
+      // if (lstCategoria.length > 1) {
+      //   print('==============================================================> ${lstCategoria.toString()} <==========================================');
+      // }
     } else {
       lstCategoria = [BisacList.nonClassifiable]; // mapVolumeInfo['categories'] ?? [];
     }

@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/widgets/appbar/appbar_default.dart';
 import 'package:books/widgets/dettaglio_libro/dettaglio_libro_widget.dart';
+import 'package:books/widgets/dettaglio_libro/note_libro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 
 
 class DettaglioLibro extends StatefulWidget {
@@ -12,8 +16,20 @@ class DettaglioLibro extends StatefulWidget {
 
   final LibroViewModel libroViewModel;
   final bool showDelete;
+  late final QuillController controller;
 
-  const DettaglioLibro({super.key, required this.libroViewModel, required this.showDelete});
+  DettaglioLibro({super.key, required this.libroViewModel, required this.showDelete}) {
+    String noteInit = libroViewModel.note;
+    // print("===========================> $noteInit");
+    if (noteInit.trim() == '') {
+      controller = QuillController.basic();
+    } else {
+      // print(jsonDecode(noteInit));
+      controller = QuillController(document: Document.fromJson(jsonDecode(noteInit)),
+          selection: const TextSelection.collapsed(offset: 0),
+      );
+    }
+  }
 
   @override
   State<DettaglioLibro> createState() => _DettaglioLibro();
@@ -47,12 +63,13 @@ class _DettaglioLibro extends State<DettaglioLibro> {
       color: Colors.orangeAccent,
     );
 
-    TabBar tabBar = const TabBar(
+    TabBar tabBar = TabBar(
       isScrollable: false,
       labelColor: Colors.yellow,
+      unselectedLabelColor: Theme.of(context).colorScheme.tertiary,
       indicatorPadding: EdgeInsets.zero,
       automaticIndicatorColorAdjustment: true,
-      tabs: [
+      tabs: const [
         Tab(text: 'Dettaglio',),
         Tab(text: 'Note',),
         // Tab(text: 'Preview',),
@@ -89,37 +106,7 @@ class _DettaglioLibro extends State<DettaglioLibro> {
                       viewportFraction: 1,
                       children: [
                         DettaglioLibroWidget(libroViewModel, !widget.showDelete),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsetsDirectional.only(top: 20),
-                              child: Text(
-                                'Note ... \n\n${libroViewModel.titolo} ...\n\n ${libroViewModel.previewLink}',
-                                style: const TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            )
-                          ]
-                        ),
-                        // Zoom(
-                        //   maxZoomWidth: 1200,
-                        //   maxZoomHeight: 1800,
-                        //   canvasColor: Colors.grey,
-                        //   backgroundColor: Colors.orange,
-                        //   colorScrollBars: const Color.fromARGB(151, 39, 114, 176),
-                        //   opacityScrollBars: 0.9,
-                        //   scrollWeight: 10.0,
-                        //   centerOnScale: true,
-                        //   enableScroll: true,
-                        //   doubleTapZoom: true,
-                        //   zoomSensibility: 0.8,
-                        //   initTotalZoomOut: false,
-                        //   child: Center(
-                        //       child: DettaglioLibroWebView(libroViewModel.previewLink)
-                        //       // #v=onepage&q=isbn=${libroViewModel.isbn}&f=true
-                        //   ),
-                        // ),
+                        NoteLibro(libroViewModel, widget.controller)
                       ],
                     ),
                   )
@@ -130,4 +117,19 @@ class _DettaglioLibro extends State<DettaglioLibro> {
         )
     );
   }
+
+  // NoteLibro getNoteLibro(LibroViewModel libroViewModel) {
+  //   QuillController controller;
+  //   String noteInit = libroViewModel.note;
+  //   print("===========================> $noteInit");
+  //   if (noteInit.trim() == '') {
+  //     controller = QuillController.basic();
+  //   } else {
+  //     controller = QuillController(document: Document.fromJson([{'insert':'$noteInit\n'}]),
+  //         selection: const TextSelection.collapsed(offset: 0),
+  //     );
+  //   }
+
+  //   return NoteLibro(libroViewModel, controller);
+  // }
 }

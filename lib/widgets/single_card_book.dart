@@ -28,8 +28,8 @@ class SingleCardBook extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double bookWith = 75;
-    double bookHeight = 115;
+    double bookWith = 95;
+    double bookHeight = 135;
     double cardBookHeight = bookHeight + 5;
 
     Widget getCoverBook() {
@@ -67,7 +67,10 @@ class SingleCardBook extends StatelessWidget {
                 controller.open();
               }
             },
-            icon: const Icon(Icons.more_vert),
+            icon: Icon(
+              Icons.more_vert,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
             tooltip: 'Show menu',
           );
         },
@@ -169,7 +172,9 @@ class SingleCardBook extends StatelessWidget {
 
     return Card(
       elevation: 5,
-      shadowColor: Colors.blueGrey,
+      color: Theme.of(context).cardColor,
+      // color: Theme.of(context).scaffoldBackgroundColor,
+      shadowColor: const Color.fromARGB(255, 30, 109, 148),
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -236,21 +241,15 @@ class SingleCardBook extends StatelessWidget {
                       getCategoria(),
                       getCasaEditrice(),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: MainAxisSize.max,
                         children: [
-                          Expanded(
-                            flex: 8,
-                            child: getPrezzo(),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                                '${_index+1}/$nrTot',
-                                style: Theme.of(context).textTheme.labelSmall,
-                                textAlign: TextAlign.right,
-                            ),
+                          getPrezzo(),
+                          Text(
+                              '${_index+1}/$nrTot - ${_item.dataInserimento}',
+                              style: Theme.of(context).textTheme.labelSmall,
+                              textAlign: TextAlign.right,
                           ),
                         ],
                       )

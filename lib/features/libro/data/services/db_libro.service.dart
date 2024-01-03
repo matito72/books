@@ -47,9 +47,41 @@ class DbLibroService {
     return item; 
   }
 
-  Future<int> count(LibreriaModel libreriaSel) async {
+  Future<int> countLibriLibreria(LibreriaModel libreriaSel) async {
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
-    int count = boxLibroView.keys.length;
+
+    List<LibroViewModel> lstLibroViewSaved = boxLibroView.keys.map((key) {
+      final item = boxLibroView.get(key);
+
+      return LibroViewModel(
+        item!.siglaLibreria,
+        item.dataInserimento,
+        note: item.note,
+        isbn: item.isbn,
+        googleBookId: item.googleBookId,
+        titolo: item.titolo,
+        lstAutori: item.lstAutori,
+        editore: item.editore,
+        descrizione: item.descrizione,
+        immagineCopertina: item.immagineCopertina,
+        dataPubblicazione: item.dataPubblicazione,
+        nrPagine: item.nrPagine,
+        lstCategoria: item.lstCategoria.isEmpty ? [BisacList.nonClassifiable] : item.lstCategoria,
+        previewLink: item.previewLink,
+        isEbook: item.isEbook,
+        country: item.country,
+        valuta: item.valuta,
+        prezzo: item.prezzo,
+        stars: item.stars,
+        pathImmagineCopertina: item.pathImmagineCopertina
+      );
+    })
+    .where(
+      (libroViewModel) => libroViewModel.siglaLibreria == libreriaSel.sigla
+    )
+    .toList();
+
+    int count = lstLibroViewSaved.length;
     await boxLibroView.close();
 
     return count;
@@ -64,6 +96,8 @@ class DbLibroService {
 
       return LibroViewModel(
         item!.siglaLibreria,
+        item.dataInserimento,
+        note: item.note,
         isbn: item.isbn,
         googleBookId: item.googleBookId,
         titolo: item.titolo,

@@ -56,7 +56,10 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
             _showIconSx
               ? _iconSx ?? IconButton(
                   padding: EdgeInsets.zero,
-                  icon: const Icon(Icons.arrow_back_ios_new),
+                  icon: Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Theme.of(context).colorScheme.tertiary,
+                  ),
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -68,6 +71,7 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
                   ? Text(
                     _txtLabel!,
                     overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.headlineSmall
                   )
                   : (_appBarContent != null)
                     ? _appBarContent!

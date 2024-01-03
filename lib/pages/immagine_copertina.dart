@@ -107,7 +107,11 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: Text(widget._libroViewModel.titolo)
+                  child: Text(
+                    widget._libroViewModel.titolo,
+                    style: Theme.of(context).textTheme.titleSmall,
+                    overflow: TextOverflow.ellipsis,
+                  )
                 ),
                 Expanded(
                   flex: 1,

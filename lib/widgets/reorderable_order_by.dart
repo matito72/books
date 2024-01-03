@@ -70,7 +70,7 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
                               Text(
                                 _items[index].label,
                                 style: const TextStyle(
-                                  // color: Colors.black, 
+                                  color: Colors.white, 
                                   fontWeight: FontWeight.bold,
                                   fontStyle: FontStyle.normal,
                                   fontSize: 14,

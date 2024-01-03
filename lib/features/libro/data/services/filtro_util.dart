@@ -8,7 +8,7 @@ class FiltroUtil {
   LibroViewModel libroViewModel;
   LibreriaModel libreriaSel;
 
-  FiltroUtil(this.libroViewModel, this.libreriaSel, );
+  FiltroUtil(this.libroViewModel, this.libreriaSel);
 
   bool filtroAvanzato() {
     bool filtro = true;

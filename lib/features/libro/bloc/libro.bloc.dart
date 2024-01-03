@@ -1,4 +1,5 @@
 import 'package:books/config/com_area.dart';
+import 'package:books/config/constant.dart';
 import 'package:books/features/import_export/data/services/import_export.service.dart';
 import 'package:books/features/libreria/data/services/db_libreria.service.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
@@ -85,6 +86,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
     on<AddLibroEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
+        event.libroModelNew.dataInserimento = Constant.now;
         await _dbLibroService.saveLibroToDb(event.libroModelNew, true);
         await sl<DbLibreriaService>().addLibriInLibreriaInUso(1);
         emit(AddedNewLibroState('Libro ${event.libroModelNew.titolo} caricato in Libreria.'));

@@ -17,7 +17,7 @@ class BisacDropdownMenu extends StatelessWidget {
     return DropdownMenu<String>(
       width: (MediaQuery.of(context).size.width * widthPerc / 100),
       menuHeight: (MediaQuery.of(context).size.height * heighPerc / 100),
-      textStyle: const TextStyle(fontSize: 14),
+      textStyle: Theme.of(context).textTheme.titleSmall, // const TextStyle(fontSize: 14),
       // selectedTrailingIcon: Icon(Icons.more_horiz, color: Colors.blue.shade200),
       // trailingIcon: Icon(Icons.more_horiz, color: Colors.blue.shade200),
       inputDecorationTheme: InputDecorationTheme(
@@ -31,7 +31,8 @@ class BisacDropdownMenu extends StatelessWidget {
         ),
       ),
       menuStyle: MenuStyle(
-        backgroundColor: MaterialStatePropertyAll<Color>(Colors.blueGrey[400]!),
+        // backgroundColor: MaterialStatePropertyAll<Color>(Colors.blueGrey[400]!),
+        backgroundColor: MaterialStatePropertyAll<Color>(Colors.blueGrey[900]!),
       ),
       initialSelection: _initialSelection,
       onSelected: (String? value) {

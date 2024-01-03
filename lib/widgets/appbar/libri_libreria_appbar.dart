@@ -49,6 +49,8 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
       widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
     }
     ComArea.bookToSearch = '';
+    bool showFiltroAttivo = (ComArea.nrLibriVisibiliInLista != ComArea.libreriaInUso!.nrLibriCaricati);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -71,21 +73,21 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
             ),
           )
         ),
-        (ComArea.nrLibriVisibiliInLista != ComArea.libreriaInUso!.nrLibriCaricati)
-        ? Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // const Padding(padding: EdgeInsets.only(left: 5)),
-            IconButton(
-              icon: Icon(
-                MdiIcons.eraser, 
-                size: 20,
-              ),
-              alignment: Alignment.center,
-              visualDensity: VisualDensity.compact,
-              onPressed: () => {
-                setState(() {
+        showFiltroAttivo
+          ? Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // const Padding(padding: EdgeInsets.only(left: 5)),
+              IconButton(
+                icon: Icon(
+                  MdiIcons.eraser, 
+                  size: 20,
+                  color: const Color.fromARGB(255, 185, 76, 76)
+                ),
+                alignment: Alignment.center,
+                visualDensity: VisualDensity.compact,
+                onPressed: () => {
                   setState(() {
                     ComArea.booksSearchParameters = BooksSearchParameters(
                       txtTitolo: '', 
@@ -98,19 +100,18 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
                       txtPrezzoMax: ''
                     );
                     widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
-                  });
-                })                
-              },
-            ),
-            const Text(
-              "Filtro Attivo",
-              style: TextStyle(
-                color: Colors.white, fontSize: 13
+                  })                
+                },
               ),
-            )
-          ],
-        )
-        : const Text("")
+              const Text(
+                "Filtro Attivo",
+                style: TextStyle(
+                  color: Colors.white, fontSize: 13
+                ),
+              )
+            ],
+          )
+          : const Text("")
 
       ],
     );

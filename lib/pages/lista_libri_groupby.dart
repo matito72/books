@@ -68,44 +68,44 @@ class _ListaLibriGroupByState extends State<ListaLibriGroupBy> {
                 ],
             ),
           )
-        : GroupedListView<LibroViewModel, String>(
-          elements: widget._listaLibri,
-          groupBy: (element) => getValueField(element, ComArea.groupComparatorField.label), // element.lstAutori[0],
-          groupComparator: (value1, value2) => value1.compareTo(value2),
-          itemComparator: (a, b) => compareValueField(a, b), // item1.titolo.compareTo(item2.titolo),
-          order: ComArea.orderByAsc ? GroupedListOrder.ASC : GroupedListOrder.DESC,
-          useStickyGroupSeparators: true,
-          floatingHeader: false,
-          // separator: const ColoredBox(
-          //   color: Colors.red,
-          // ),
-          stickyHeaderBackgroundColor: Colors.blueGrey[900]!,
-          groupHeaderBuilder: (element) => ColoredBox(
-            color: const Color.fromARGB(224, 88, 136, 182),
-            child: Text(
-              getValueField(element, ComArea.groupComparatorField.label),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.lime[100],
-                backgroundColor: Colors.transparent
-                // backgroundColor: Colors.black
-              ),
-            )
-          ),
-          indexedItemBuilder: (context, libroViewModel, index) {
-            return SingleCardBook(
-              widget._libroBloc, 
-              widget._parentContext, 
-              widget._fnViewDettaglioLibro, 
-              widget._fnDeleteLibro, 
-              getItemImage, 
-              libroViewModel, 
-              index, 
-              widget._nrTot
-            );
-          },
-        )
+        : GroupedListView<LibroViewModel, String> (
+            elements: widget._listaLibri,
+            groupBy: (element) => getValueField(element, ComArea.groupComparatorField.label), // element.lstAutori[0],
+            groupComparator: (value1, value2) => value1.compareTo(value2),
+            itemComparator: (a, b) => compareValueField(a, b), // item1.titolo.compareTo(item2.titolo),
+            order: ComArea.orderByAsc ? GroupedListOrder.ASC : GroupedListOrder.DESC,
+            useStickyGroupSeparators: true,
+            floatingHeader: false,
+            // separator: const ColoredBox(
+            //   color: Colors.red,
+            // ),
+            stickyHeaderBackgroundColor: Colors.blueGrey[900]!,
+            groupHeaderBuilder: (element) => ColoredBox(
+              color: const Color.fromARGB(224, 88, 136, 182),
+              child: Text(
+                getValueField(element, ComArea.groupComparatorField.label),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.lime[100],
+                  backgroundColor: Colors.transparent
+                  // backgroundColor: Colors.black
+                ),
+              )
+            ),
+            indexedItemBuilder: (context, libroViewModel, index) {
+              return SingleCardBook(
+                widget._libroBloc, 
+                widget._parentContext, 
+                widget._fnViewDettaglioLibro, 
+                widget._fnDeleteLibro, 
+                getItemImage, 
+                libroViewModel, 
+                index, 
+                widget._nrTot
+              );
+            },
+          )
     );
   }
 

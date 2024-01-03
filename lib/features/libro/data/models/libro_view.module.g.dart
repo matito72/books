@@ -18,6 +18,7 @@ class LibroViewModelAdapter extends TypeAdapter<LibroViewModel> {
     };
     return LibroViewModel(
       fields[17] as String,
+      fields[19] as String,
       googleBookId: fields[0] as String,
       isbn: fields[1] as String,
       titolo: fields[2] as String,
@@ -35,19 +36,24 @@ class LibroViewModelAdapter extends TypeAdapter<LibroViewModel> {
       prezzo: fields[14] as String,
       stars: fields[15] as int,
       pathImmagineCopertina: fields[16] as String?,
+      note: fields[18] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, LibroViewModel obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(20)
       ..writeByte(15)
       ..write(obj.stars)
       ..writeByte(16)
       ..write(obj.pathImmagineCopertina)
       ..writeByte(17)
       ..write(obj.siglaLibreria)
+      ..writeByte(18)
+      ..write(obj.note)
+      ..writeByte(19)
+      ..write(obj.dataInserimento)
       ..writeByte(0)
       ..write(obj.googleBookId)
       ..writeByte(1)

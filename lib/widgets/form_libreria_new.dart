@@ -30,12 +30,13 @@ class FormLibreriaNew {
         // fillColor: Colors.brown[200],
         // filled: widgetDescModel.readOnly
       ),
-      style: TextStyle(
-        color: _siglaLibreriaWid.readOnly 
-          ? Theme.of(context).primaryColor.withOpacity(0.4) 
-          : Theme.of(context).primaryColor,
-        fontStyle: _siglaLibreriaWid.readOnly ? FontStyle.italic : FontStyle.normal
-      ),
+      // style: TextStyle(
+      //   color: _siglaLibreriaWid.readOnly 
+      //     ? Theme.of(context).primaryColor.withOpacity(0.4) 
+      //     : Theme.of(context).primaryColor,
+      //   fontStyle: _siglaLibreriaWid.readOnly ? FontStyle.italic : FontStyle.normal
+      // ),
+      style: Theme.of(context).textTheme.titleSmall,
       controller: _siglaLibreriaWid.textController
     );
 
@@ -54,12 +55,13 @@ class FormLibreriaNew {
         // fillColor: Colors.brown[200],
         // filled: widgetDescModel.readOnly
       ),
-      style: TextStyle(
-        color: _nomeLibreriaWid.readOnly 
-          ? Theme.of(context).primaryColor.withOpacity(0.4) 
-          : Theme.of(context).primaryColor,
-        fontStyle: _nomeLibreriaWid.readOnly ? FontStyle.italic : FontStyle.normal
-      ),
+      // style: TextStyle(
+      //   color: _nomeLibreriaWid.readOnly 
+      //     ? Theme.of(context).primaryColor.withOpacity(0.4) 
+      //     : Theme.of(context).primaryColor,
+      //   fontStyle: _nomeLibreriaWid.readOnly ? FontStyle.italic : FontStyle.normal
+      // ),
+      style: Theme.of(context).textTheme.titleSmall,
       controller: _nomeLibreriaWid.textController
     );
 

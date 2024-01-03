@@ -91,6 +91,7 @@ class _MyAppState extends State<MyApp> {
       ],
       currentIndex: _selectedIndex,
       selectedItemColor: Colors.amber[800],
+      backgroundColor: BookStyle.bookStyleTheme.scaffoldBackgroundColor, // const Color.fromARGB(255, 75, 64, 64),
       onTap: (index) {
         bottomTapped(index);
       },

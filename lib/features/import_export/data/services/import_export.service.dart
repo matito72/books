@@ -80,8 +80,10 @@ class ImportExportService {
       String siglaLibreria = ComArea.libreriaInUso!.sigla;
       List<LibroViewModel> lstLibriGiaPresenti = [];
       Object? errore;
+
       for (var libroModelNew in lstLibroViewModel) {
         libroModelNew.siglaLibreria = siglaLibreria;
+        libroModelNew.dataInserimento = Constant.now;
 
         try {
           await dbLibroService.saveLibroToDb(libroModelNew, true);
