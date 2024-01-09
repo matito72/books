@@ -1,4 +1,5 @@
 import 'package:books/config/com_area.dart';
+import 'package:books/config/constant.dart';
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/features/libro/data/services/filtro_util.dart';
@@ -6,6 +7,7 @@ import 'package:books/resources/bisac_codes.dart';
 import 'package:books/resources/item_exception.dart';
 import 'package:books/resources/ordinamento_libri.dart';
 import 'package:books/utilities/ordinamento_libri_utils.dart';
+import 'package:books/utilities/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 
@@ -45,6 +47,14 @@ class DbLibroService {
     final LibroViewModel? item = boxLibroView.get(key);
     await boxLibroView.close();
     return item; 
+  }
+
+  Future<int> countLibri() async {
+    Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+    int count = boxLibroView.keys.length;
+    await boxLibroView.close();
+
+    return count;
   }
 
   Future<int> countLibriLibreria(LibreriaModel libreriaSel) async {
@@ -182,6 +192,10 @@ class DbLibroService {
   }
 
   Future<void> saveLibroToDb(LibroViewModel libroToNewEdit, bool isNew) async {
+    if (isNew && libroToNewEdit.dataInserimento == Constant.dataInserimentoDefault) {
+      libroToNewEdit.dataInserimento = Utils.getDataInserimentoNew();
+    }
+
     libroToNewEdit.siglaLibreria = ComArea.libreriaInUso!.sigla;
     String keyLibro = ComArea.libreriaInUso!.sigla + libroToNewEdit.isbn;
     

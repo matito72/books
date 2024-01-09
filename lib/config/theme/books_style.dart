@@ -28,6 +28,11 @@ class BookStyle {
       ),
       bodyMedium: const TextStyle(fontSize: 14.0, fontFamily: 'Hind')      
     ),
+    buttonTheme: const ButtonThemeData(
+      buttonColor: Colors.deepPurple,     //  <-- dark color
+      textTheme: ButtonTextTheme.normal, 
+      // buttonColor: Colors.black54,//  <-- this auto selects the right color
+    ),
     // dialogBackgroundColor: Colors.red,
     scaffoldBackgroundColor:  Colors.blueGrey[900]!, // const Color.fromARGB(255, 75, 64, 64),
     colorScheme: ColorScheme(
@@ -37,11 +42,11 @@ class BookStyle {
       onError: Colors.red.shade300,
       onPrimary: Colors.blueGrey[700]!,
       onSecondary: Colors.yellow.shade50,
-      onSurface: Colors.blueGrey[200]!, //Colors.yellow.shade500,
+      onSurface: Colors.white70, //const Color.fromARGB(255, 242, 255, 59),  // Colors.blueGrey[200]!, 
       primary: Colors.yellow.shade100,
       secondary: Colors.lightBlue.shade200,
       tertiary: const Color.fromARGB(255, 211, 212, 201),
-      surface: const Color.fromARGB(255, 45, 122, 158),
+      surface: const Color.fromARGB(255, 45, 122, 158), // const Color.fromARGB(255, 45, 122, 158),
       brightness: Brightness.dark,
     ),
     // cardColor: const Color.fromARGB(255, 13, 50, 68),

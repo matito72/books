@@ -22,13 +22,14 @@ class DialogUtils {
           // fillColor: Colors.brown[200],
           // filled: widgetDescModel.readOnly
         ),
-        // style: TextStyle(
-        //   color: widgetDescModel.readOnly 
-        //     ? Theme.of(context).primaryColor.withOpacity(0.4) 
-        //     : Theme.of(context).primaryColor,
-        //   fontStyle: widgetDescModel.readOnly ? FontStyle.italic : FontStyle.normal
+        style: widgetDescModel.readOnly
+          ? TextStyle(
+              color: Theme.of(context).primaryColor.withOpacity(0.4),
+              fontStyle: FontStyle.italic
+            )
+          :  Theme.of(context).textTheme.titleSmall,
         // ),
-        style: Theme.of(context).textTheme.titleSmall,
+        // style: Theme.of(context).textTheme.titleSmall,
         controller: widgetDescModel.textController
       ));
       lstWidget.add(const Padding(padding: EdgeInsets.only(top: 30)));

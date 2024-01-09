@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:books/config/constant.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/show_image_picker.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/appbar/appbar_default.dart';
@@ -67,11 +68,6 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
             }
           } 
         } else {
-          // if (widget.libroViewModel.pathImmagineCopertina != null && widget.libroViewModel.pathImmagineCopertina!.trim().isNotEmpty) {
-          //   widget.libroViewModel.immagineCopertina = widget.libroViewModel.pathImmagineCopertina!;
-          // } else {
-          //   widget.libroViewModel.immagineCopertina = widget.libroViewModel.immagineCopertina.replaceFirst('zoom=0', 'zoom=5');
-          // }
           if (immagineCopertinaBackup.trim().isNotEmpty) {
             widget._libroViewModel.immagineCopertina = immagineCopertinaBackup.replaceFirst('zoom=0', 'zoom=5');
           } else {
@@ -96,95 +92,167 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
 
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBarDefault(
           context: context,
           percHeight: 7,
-          secondaryColor: const Color.fromARGB(115, 0, 143, 88),
-          appBarContent: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    widget._libroViewModel.titolo,
-                    style: Theme.of(context).textTheme.titleSmall,
-                    overflow: TextOverflow.ellipsis,
-                  )
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Text(widget._libroViewModel.lstAutori.join(', '), style: TextStyle(color: Colors.amber[300]))
+          // secondaryColor: const Color.fromARGB(115, 0, 143, 88),
+          appBarContent: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: 1,
+                child: Text(
+                  widget._libroViewModel.titolo,
+                  style: Theme.of(context).textTheme.titleSmall,
+                  overflow: TextOverflow.ellipsis,
                 )
-              ],
-            ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  widget._libroViewModel.lstAutori.join(', '), 
+                  style: TextStyle(color: Colors.amber[300]),
+                  overflow: TextOverflow.ellipsis,
+                )
+              )
+            ],
           ),
-          lstWidgetDx: [
-            _getSwithSearchPhoneWeb(),
-            // swSearchWeb ? _getIconSearchImageFromWeb() : _getIconSearchImageFromPhone()
-            swSearchWeb 
-            ? const SizedBox(
-                width: 50,
-                height: 20,
-               child: Text(' ')
-              ) 
-            : _getIconSearchImageFromPhone()
-          ]
+          lstWidgetDx: [getMenuBar(context)],
+          // lstWidgetDx: [
+          //   _getSwithSearchPhoneWeb(),
+          //   // swSearchWeb ? _getIconSearchImageFromWeb() : _getIconSearchImageFromPhone()
+          //   swSearchWeb 
+          //   ? const SizedBox(
+          //       width: 50,
+          //       height: 20,
+          //      child: Text(' ')
+          //     ) 
+          //   : _getIconSearchImageFromPhone()
+          // ]
         ),
         body: _getWidgetImageCopertina(),
       ),
     );
   }
 
-  Widget _getSwithSearchPhoneWeb() {
-    return Switch(
-      value: swSearchWeb,
-      trackColor: MaterialStateProperty.all(Colors.black38),
-      activeColor: Colors.greenAccent[400],
-      inactiveThumbColor: Colors.yellowAccent[700],
-      // when the switch is on, this image will be displayed
-      // activeThumbImage: const AssetImage('assets/happy_emoji.png'),
-      activeThumbImage: const AssetImage('assets/images/searchWeb.png'),
-      // when the switch is off, this image will be displayed
-      inactiveThumbImage: const AssetImage('assets/images/searchPhotoLibrary.png'),
-      onChanged: (value) => setState(
-        () => swSearchWeb = value
-      )
+  Widget getMenuBar(BuildContext context) {
+    return MenuBar(
+      children: <Widget>[
+        SubmenuButton(
+          menuChildren: <Widget>[
+            MenuItemButton(
+              onPressed: () {
+                setState(() {
+                  swSearchWeb = !swSearchWeb;
+                });
+              },
+              leadingIcon: Icon(MdiIcons.imageSearch),
+              child: !swSearchWeb 
+                ? const MenuAcceleratorLabel('Cerca nel Web')
+                : const MenuAcceleratorLabel('Ripristina Immagine'),
+            ),
+            MenuItemButton(
+              onPressed: () async {
+                swSearchWeb = false;
+                Map<Permission, PermissionStatus> statuses = await [
+                  Permission.manageExternalStorage, Permission.camera,
+                ].request();
+                if(statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
+                  if (mounted) {
+                    // _updateWidget(swithSearchPhone: true);
+                    showImagePickerUtil.showImagePicker(context, _reloadImage);
+                  }
+                } else {
+                  debugPrint('no permission provided');
+                }
+              },
+              leadingIcon: const Icon(Icons.photo_camera),
+              child: const MenuAcceleratorLabel('Foto/Cerca nel telefono'),
+            ),
+            MenuItemButton(
+              onPressed: () {
+                setState(() async {
+                  String? newUrl = await DialogUtils.getDescrizione(context, 'URL', '', maxLines: 1);
+                  if (newUrl != null) {
+                    widget._libroViewModel.immagineCopertina = newUrl;
+                  }
+                });
+              },
+              leadingIcon: const Icon(Icons.link),
+              child: const MenuAcceleratorLabel('Aggiungi collegamento immagine'),
+            ),
+            MenuItemButton(
+              onPressed: () {
+                setState(() {
+                  widget._libroViewModel.immagineCopertina = '';
+                });
+              },
+              leadingIcon: const Icon(Icons.delete),
+              child: const MenuAcceleratorLabel('Cancella immagine'),
+            )
+          ],
+          child: const MenuAcceleratorLabel('Modifica'),
+        ),
+      ],
     );
   }
 
-  Widget _getIconSearchImageFromPhone() {
-    return IconButton(
-      icon: Icon(MdiIcons.imageSearch),
-      onPressed: () async {
-        Map<Permission, PermissionStatus> statuses = await [
-          Permission.manageExternalStorage, Permission.camera,
-        ].request();
-        if(statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
-          if (mounted) {
-            // _updateWidget(swithSearchPhone: true);
-            showImagePickerUtil.showImagePicker(context, _reloadImage);
-          }
-        } else {
-          debugPrint('no permission provided');
-        }
-      },
-      color: Colors.yellowAccent[700],
-    );
-  }
+  // Widget _getSwithSearchPhoneWeb() {
+  //   return Switch(
+  //     value: swSearchWeb,
+  //     trackColor: MaterialStateProperty.all(Colors.black38),
+  //     activeColor: Colors.greenAccent[400],
+  //     inactiveThumbColor: Colors.yellowAccent[700],
+  //     // when the switch is on, this image will be displayed
+  //     // activeThumbImage: const AssetImage('assets/happy_emoji.png'),
+  //     activeThumbImage: const AssetImage('assets/images/searchWeb.png'),
+  //     // when the switch is off, this image will be displayed
+  //     inactiveThumbImage: const AssetImage('assets/images/searchPhotoLibrary.png'),
+  //     onChanged: (value) => setState(
+  //       () => swSearchWeb = value
+  //     )
+  //   );
+  // }
+
+  // Widget _getIconSearchImageFromPhone() {
+  //   return IconButton(
+  //     icon: Icon(MdiIcons.imageSearch),
+  //     onPressed: () async {
+  //       Map<Permission, PermissionStatus> statuses = await [
+  //         Permission.manageExternalStorage, Permission.camera,
+  //       ].request();
+  //       if(statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
+  //         if (mounted) {
+  //           // _updateWidget(swithSearchPhone: true);
+  //           showImagePickerUtil.showImagePicker(context, _reloadImage);
+  //         }
+  //       } else {
+  //         debugPrint('no permission provided');
+  //       }
+  //     },
+  //     color: Colors.yellowAccent[700],
+  //   );
+  // }
   
   Widget _getWidgetImageCopertina() {
-    double heightPerc = 80;
+    double heightPerc = 70;
     
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      // children: lstWidget,
-      children: !swSearchWeb 
-        ? widget._isImmaginePresent ? [_getFutureImage(heightPerc), _widgetMiSentoFortunato()] : [_getFutureImage(heightPerc)]
-        : [_getGoogleSearchImage()],
+    return Center(
+      child: SizedBox(
+        width: (MediaQuery.of(context).size.width * 100 / 100),
+        height: (MediaQuery.of(context).size.height * 85 / 100),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          // children: lstWidget,
+          children: !swSearchWeb 
+            ? widget._isImmaginePresent ? [_getFutureImage(heightPerc), _widgetMiSentoFortunato()] : [_getFutureImage(heightPerc)]
+            : [_getGoogleSearchImage()],
+        ),
+      ),
     );
   }
 
@@ -227,7 +295,9 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
 
   Widget _widgetMiSentoFortunato() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'Mi sento fortunato', 
@@ -255,12 +325,11 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
       ),
       builder: (BuildContext context, AsyncSnapshot<Image> snapshot) {
         if (!snapshot.hasData) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const CircularProgressIndicator();
         } else {
           return InteractiveViewer(
             panEnabled: true,
+            boundaryMargin: const EdgeInsets.all(20),
             minScale: 1,
             maxScale: 5,
             child: snapshot.data!,

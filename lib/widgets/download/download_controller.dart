@@ -1,6 +1,5 @@
 
 import 'package:books/config/com_area.dart';
-import 'package:books/config/constant.dart';
 import 'package:books/features/import_export/data/models/file_backup.module.dart';
 import 'package:books/features/import_export/data/services/import_export.service.dart';
 import 'package:books/features/libreria/data/services/db_libreria.service.dart';
@@ -8,6 +7,7 @@ import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
 import 'package:books/resources/item_exception.dart';
+import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/download/download_button.dart';
 import 'package:flutter/widgets.dart';
 
@@ -116,7 +116,7 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
       int i = 0;
       for (var libroModelNew in lstLibroViewModel) {
         libroModelNew.siglaLibreria = siglaLibreria;
-        libroModelNew.dataInserimento = Constant.now;
+        libroModelNew.dataInserimento = Utils.getDataInserimentoNew();
 
         try {
           await dbLibroService.saveLibroToDb(libroModelNew, true);

@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 
 
-class DettaglioLibro extends StatefulWidget {
+class DettaglioLibro extends StatelessWidget {
   static const String pagePath = '/HomeLibriLibreria/detailBook';
   static const String pageEditPath = '/LibreriaListaLibriPage/detailBook';
 
@@ -32,21 +32,14 @@ class DettaglioLibro extends StatefulWidget {
   }
 
   @override
-  State<DettaglioLibro> createState() => _DettaglioLibro();
-}
-
-class _DettaglioLibro extends State<DettaglioLibro> {
-
-  @override
   Widget build(BuildContext context) {
-    LibroViewModel libroViewModel = widget.libroViewModel;
 
     returnToScreen(bool isDelete) async {
       bool? isRemoveBook = false;
       if (isDelete) {
         isRemoveBook = await DialogUtils.showConfirmationSiNo(context, 'Vuoi rimuovere il libro dalla lista ?');
       }
-      if (mounted) {
+      if (context.mounted) {
         Navigator.pop(context, LibroDettaglioResult(libroViewModel, !isDelete, isDelete && (isRemoveBook != null && isRemoveBook))); 
       }
     }
@@ -84,9 +77,12 @@ class _DettaglioLibro extends State<DettaglioLibro> {
               appBar: AppBarDefault(
                 context: context,
                 percHeight: 4,
-                secondaryColor: const Color.fromARGB(115, 0, 143, 88),
+                // secondaryColor: const Color.fromARGB(115, 0, 143, 88),
+                // colors: <Color>[Color.fromARGB(255, 33, 44, 49), Colors.blue],
+                primaryColor : const Color.fromARGB(255, 33, 44, 49),
+                secondaryColor: Colors.blue,
                 txtLabel: libroViewModel.titolo,
-                lstWidgetDx: widget.showDelete
+                lstWidgetDx: showDelete
                   ? [ iconDeleteLibro, iconCheckAddLibro ]
                   : [ iconCheckAddLibro ]
               ),
@@ -96,7 +92,9 @@ class _DettaglioLibro extends State<DettaglioLibro> {
                     // preferredSize: tabBar.preferredSize,
                     preferredSize: Size.fromHeight((MediaQuery.of(context).size.height * 4 / 100)),
                     child: Material(
-                      color: const Color.fromARGB(115, 0, 143, 88),
+                      // color: const Color.fromARGB(115, 0, 143, 88),
+                      color: const Color.fromARGB(110, 27, 69, 90),
+                      surfaceTintColor: Colors.deepOrange[100],
                       child: tabBar,
                     ),
                   ),
@@ -105,8 +103,8 @@ class _DettaglioLibro extends State<DettaglioLibro> {
                       physics: const NeverScrollableScrollPhysics(),
                       viewportFraction: 1,
                       children: [
-                        DettaglioLibroWidget(libroViewModel, !widget.showDelete),
-                        NoteLibro(libroViewModel, widget.controller)
+                        DettaglioLibroWidget(libroViewModel, !showDelete),
+                        NoteLibro(libroViewModel, controller)
                       ],
                     ),
                   )
@@ -117,19 +115,4 @@ class _DettaglioLibro extends State<DettaglioLibro> {
         )
     );
   }
-
-  // NoteLibro getNoteLibro(LibroViewModel libroViewModel) {
-  //   QuillController controller;
-  //   String noteInit = libroViewModel.note;
-  //   print("===========================> $noteInit");
-  //   if (noteInit.trim() == '') {
-  //     controller = QuillController.basic();
-  //   } else {
-  //     controller = QuillController(document: Document.fromJson([{'insert':'$noteInit\n'}]),
-  //         selection: const TextSelection.collapsed(offset: 0),
-  //     );
-  //   }
-
-  //   return NoteLibro(libroViewModel, controller);
-  // }
 }

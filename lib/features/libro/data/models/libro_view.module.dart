@@ -31,7 +31,7 @@ class LibroViewModel extends LibroSearchModel {
       super.previewLink='', super.isEbook=false, super.country='', super.valuta='',  super.prezzo='', this.stars = 0, this.pathImmagineCopertina, this.note = ''}) ;
 
   Map toJson() => {
-    'isbn': isbn.trim().isNotEmpty ? isbn : googleBookId,
+    'isbn': isbn.trim().isNotEmpty ? isbn : '',
     'titolo': titolo, 
     'autori': jsonEncode(lstAutori),
     'editore': editore,

@@ -4,18 +4,23 @@ import 'package:books/resources/ordinamento_libri.dart';
 
 class ComArea {
   static bool initApp = false;
+
+  // LIBRERIA IN USO : DATA
+  static List<LibreriaModel> lstLibrerieInUso = [];
   static LibreriaModel? libreriaInUso;
-  
   static int nrLibriInLibreriaInUso = 0;
   static int nrLibriVisibiliInLista = 0;
   
+  // ORDER BY : DEFAULT
   static List<OrdinamentoLibri> lstBookOrderBy = OrdinamentoLibri.values();
   static bool showOrderBy = true;
   static bool orderByAsc = true;
 
+  // GROUP BY : DEFAULT
   static OrdinamentoLibri groupComparatorField = OrdinamentoLibri.autore(); 
   static OrdinamentoLibri itemComparatorField = OrdinamentoLibri.titolo(); 
 
+  // SEARCH (semplice e non) : DEFAULT
   static bool appBarStateText = true;  // DEFAULT
   static String bookToSearch = '';
   static BooksSearchParameters booksSearchParameters = BooksSearchParameters();

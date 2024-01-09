@@ -5,7 +5,6 @@ import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/pages/dettaglio_libro.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-// import 'package:flutter/material.dart';
 
 abstract class LibroUtils {
 
@@ -45,30 +44,6 @@ abstract class LibroUtils {
 
     return ret;
   }
-
-  // static LibroViewModel createLibroViewFromSearchModel(LibreriaModel libreriaDefault, LibroSearchModel libroSearchModel) {
-  //   LibroViewModel libroViewModel = LibroViewModel(
-  //     libreriaDefault.sigla, 
-  //     1,
-  //     googleBookId: libroSearchModel.googleBookId,
-  //     isbn: libroSearchModel.isbn,
-  //     country: libroSearchModel.country, 
-  //     titolo: libroSearchModel.titolo,
-  //     editore: libroSearchModel.editore,
-  //     descrizione: libroSearchModel.descrizione,
-  //     immagineCopertina: libroSearchModel.immagineCopertina,
-  //     dataPubblicazione: libroSearchModel.dataPubblicazione,
-  //     previewLink: libroSearchModel.previewLink,
-  //     valuta: libroSearchModel.valuta,
-  //     prezzo: libroSearchModel.prezzo,
-  //     nrPagine: libroSearchModel.nrPagine, 
-  //     lstCategoria: libroSearchModel.lstCategoria, 
-  //     isEbook: libroSearchModel.isEbook, 
-  //     lstAutori: libroSearchModel.lstAutori,
-  //   );
-    
-  //   return libroViewModel;
-  // }
 
   static LibroViewModel cloneLibroViewModel(LibroViewModel libroViewModel) {
     LibroViewModel cloneLibroViewModel = LibroViewModel(

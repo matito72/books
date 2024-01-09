@@ -16,11 +16,17 @@ class LibriLibreriaAppBar extends StatefulWidget {
 }
 
 class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
-    TextEditingController textCtrlSearch = TextEditingController(); // SEARCH
+  TextEditingController textCtrlSearch = TextEditingController(); // SEARCH
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    textCtrlSearch.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return _createAppBar(textCtrlSearch);
   }
 

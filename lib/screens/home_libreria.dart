@@ -8,6 +8,7 @@ import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/models/widget_desc.module.dart';
 import 'package:books/resources/action_result.dart';
 import 'package:books/utilities/dialog_utils.dart';
+import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/appbar/appbar_default.dart';
 import 'package:books/widgets/form_libreria_new.dart';
 import 'package:flutter/foundation.dart';
@@ -26,13 +27,11 @@ class HomeLibreriaScreen extends StatelessWidget {
   const HomeLibreriaScreen({Function? fn, super.key}) : _fn = fn;
   
   _addNewLibreria(BuildContext context) async {
-    FormLibreriaNew f = FormLibreriaNew(WidgetDescModel('Nome libreria:', '', maxLines:1), WidgetDescModel('Sigla libreria:', '', maxLines:1));
-    String? strDesc = await f.getMultiDescrizione(context);
-    //List<WidgetDescModel> lstWidgetDescModel = [WidgetDescModel('Nome libreria:', '', maxLines:1), WidgetDescModel('Sigla libreria:', '', maxLines:1)];
-    //String? strDesc = await DialogUtils.getMultiDescrizione(context, lstWidgetDescModel);
+    FormLibreriaNew f = FormLibreriaNew(WidgetDescModel('Nome libreria:', '', maxLines:1));
+    String? nomeLibreria = await f.getMultiDescrizione(context);
 
-    if (strDesc != null && strDesc.contains(';') && strDesc.split(';').length == 2) {
-      LibreriaModel libreriaModelNew = LibreriaModel(nome: strDesc.split(';')[0].trim(), sigla: strDesc.split(';')[1].trim().toUpperCase());
+    if (nomeLibreria != null && nomeLibreria.isNotEmpty) {
+      LibreriaModel libreriaModelNew = LibreriaModel(nome: nomeLibreria, sigla: Utils.getDataInserimentoNew());
       
       if (context.mounted) {
         BlocProvider.of<LibreriaBloc>(context).add(AddLibreriaEvent(libreriaModelNew));
@@ -60,7 +59,7 @@ class HomeLibreriaScreen extends StatelessWidget {
   }
 
   _deleteLibreria(BuildContext context, LibreriaModel libreria) async {
-    bool? isDeleteLibreria = await DialogUtils.showConfirmationSiNo(context, "Vuoi eliminare la libreria:\n\n '${libreria.sigla} - ${libreria.nome}'\n\n con [${libreria.nrLibriCaricati}] libri caricati ?");
+    bool? isDeleteLibreria = await DialogUtils.showConfirmationSiNo(context, "Vuoi eliminare la seguente libreria\n\n Nome: '${libreria.nome}'\n\nCod.: ${libreria.sigla}'\n\n con [${libreria.nrLibriCaricati}] libri caricati ?");
     if (context.mounted && isDeleteLibreria != null && isDeleteLibreria) {
       BlocProvider.of<LibreriaBloc>(context).add(DeleteLibreriaEvent(libreria));
     }
@@ -197,11 +196,15 @@ class HomeLibreriaScreen extends StatelessWidget {
                           child: CircleAvatar(
                             radius: 30,
                             backgroundColor: Colors.green[100],
-                            child: Text(libreria.sigla,
-                                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                  color: Colors.black, // Colors.blue.shade900,
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.bold)),
+                            child: Text(
+                              // libreria.sigla,
+                              Utils.getLastSubstring(libreria.sigla, 4),
+                              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                color: Colors.black, // Colors.blue.shade900,
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.bold
+                              )
+                            ),
                           ),
                         )
                       ),

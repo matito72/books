@@ -4,7 +4,6 @@ import 'package:books/features/import_export/bloc/import_export.bloc.dart';
 import 'package:books/features/import_export/data/services/import_export.service.dart';
 import 'package:books/features/libreria/bloc/libreria.bloc.dart';
 import 'package:books/features/libreria/data/services/db_libreria.service.dart';
-import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -26,9 +25,9 @@ Future<void> initializeDependencies() async {
     () => LibreriaBloc(sl())
   );
 
-  sl.registerFactory<LibroBloc>(
-    () => LibroBloc(sl())
-  );
+  // sl.registerFactory<LibroBloc>(
+  //   () => LibroBloc(sl())
+  // );
 
   sl.registerFactory<ImportExportBloc>(
     () => ImportExportBloc(sl())

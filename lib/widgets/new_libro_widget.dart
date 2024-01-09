@@ -31,6 +31,15 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+
+    _titoloController.dispose();
+    _autoreController.dispose();
+    _editoreController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     
     Future<void> execSimpleGoogleBooksSearch(ParameterGoogleSearchModel googleSearchModel) async {

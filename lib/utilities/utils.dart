@@ -1,12 +1,13 @@
-
-
 import 'dart:io';
+import 'dart:math';
 
 import 'package:books/config/constant.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/services/libro_search_service.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+// import 'package:flutter/widgets.dart';
 
 class Utils {
 
@@ -28,7 +29,26 @@ class Utils {
       } else {
         if (libroViewModel.immagineCopertina.toLowerCase().startsWith("http")) {
           if (w != null && h != null) {
-            return Image.network(libroViewModel.immagineCopertina, height: h, width: w, fit: BoxFit.fill);
+            // Image img = Image.network(libroViewModel.immagineCopertina, height: h, width: w, fit: BoxFit.fill);
+            Image img = Image.network(
+              libroViewModel.immagineCopertina,
+              // fit: BoxFit.fill,
+              fit: BoxFit.contain,
+              loadingBuilder: (BuildContext context, Widget child,
+                  ImageChunkEvent? loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              },
+            );
+            
+            return img;
           } else {
             image = Image.network(libroViewModel.immagineCopertina, fit: BoxFit.fill);
           }
@@ -208,5 +228,26 @@ class Utils {
 
     return ret;
   }
+
+  static String getLastSubstring(String str, int n) {
+    if (str.length <= n) {
+      return str;
+    }
+    return str.substring(str.length - n);
+  }
+
+  static String getDataInserimentoNew() {
+    DateTime now = DateTime.now();
+    String strMonth = NumberFormat("00").format(now.month);
+    String strDay = NumberFormat("00").format(now.day);
+    String strHour = NumberFormat("00").format(now.hour);
+    String strMinute = NumberFormat("00").format(now.minute);
+    String strSecond = NumberFormat("00").format(now.second);
+    String strMillisecond = NumberFormat("000").format(now.microsecond);
+    String nr999 = NumberFormat("0000").format(Random().nextInt(999));
+
+    return '${now.year}$strMonth$strDay$strHour$strMinute$strSecond$strMillisecond$nr999';
+  } 
+
 
 }

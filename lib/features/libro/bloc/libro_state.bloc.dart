@@ -1,4 +1,5 @@
 import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/models/selected_item.module.dart';
 import 'package:books/resources/action_result.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +32,8 @@ class LibroInitializedState extends LibroSuccessState {
 }
 
 //* LISTA
-class ListaLibroLoadedState<T extends List<LibroViewModel>> extends LibroSuccessState {
-  const ListaLibroLoadedState(List<LibroViewModel> data, String msg) : super(data: data, msg: msg);
+class ListaLibroLoadedState<T extends List<SelectedItem<LibroViewModel>>> extends LibroSuccessState {
+  const ListaLibroLoadedState(List<SelectedItem<LibroViewModel>> data, String msg) : super(data: data, msg: msg);
 }
 
 //* ADDED NEW LIBRO
@@ -63,6 +64,10 @@ class DeletedLibroState<int> extends LibroSuccessState {
 //* DELETE ALL
 class DeleteAllLibroState<int> extends LibroSuccessState {
   const DeleteAllLibroState(int data, String msg) : super(data: data, msg: msg);
+}
+
+class DeleteBookSelectedState<int> extends LibroSuccessState {
+  const DeleteBookSelectedState(int data, String msg) : super(data: data, msg: msg);
 }
 
 //* ERRORE

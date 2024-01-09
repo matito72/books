@@ -83,7 +83,7 @@ class DownloadButton extends StatelessWidget {
                     const Icon(
                       Icons.stop,
                       size: 10,
-                      color: CupertinoColors.activeBlue,
+                      color: Colors.lightBlueAccent,
                     ),
                 ],
               ),
@@ -142,7 +142,7 @@ class ButtonShapeWidget extends StatelessWidget {
         child: isDownloaded 
             ? lstLibriGiaPresenti.isEmpty 
               ? IconButton(
-                icon: const Icon(Icons.check, color: Colors.green),
+                icon: const Icon(Icons.check, color: Colors.greenAccent),
                 onPressed: () => {} 
               )
               : IconButton(
@@ -150,7 +150,7 @@ class ButtonShapeWidget extends StatelessWidget {
                 onPressed: () => {} 
               )
             : IconButton(
-              icon: Icon(MdiIcons.backupRestore, color: Colors.teal[500],),
+              icon: Icon(MdiIcons.backupRestore, color: Colors.lightGreenAccent[400],),
               onPressed: () => {} 
             ) 
       ),
@@ -184,8 +184,8 @@ class ProgressIndicatorWidget extends StatelessWidget {
                 ? CupertinoColors.lightBackgroundGray
                 : Colors.white.withOpacity(0),
             valueColor: AlwaysStoppedAnimation(isFetching
-                ? CupertinoColors.lightBackgroundGray
-                : CupertinoColors.activeBlue),
+                ? Colors.blueGrey[50]
+                : Colors.lightBlueAccent),
             strokeWidth: 2,
             value: isFetching ? null : progress,
           );

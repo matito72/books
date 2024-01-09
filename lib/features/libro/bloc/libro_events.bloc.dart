@@ -1,5 +1,6 @@
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/models/selected_item.module.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -38,6 +39,13 @@ class DeleteAllLibriLibreriaEvent extends LibroEvent {
   const DeleteAllLibriLibreriaEvent(this.libreriaModel);
 }
 
+//* DELETE LIBRI SELEZIONATI
+class DeleteBookSelectedEvent extends LibroEvent { 
+  final List<SelectedItem<LibroViewModel>> lstSelectedItem;
+
+  const DeleteBookSelectedEvent(this.lstSelectedItem);
+}
+
 //* DELETE ALL LIBRI 
 class DeleteAllLibriEvent extends LibroEvent { 
   const DeleteAllLibriEvent();
@@ -56,6 +64,24 @@ class LoadLibroEvent extends LibroEvent {
   final LibreriaModel libreriaModel;
 
   const LoadLibroEvent(this.libreriaModel);
+}
+
+class CheckAllLibroEvent extends LibroEvent { 
+  final List<SelectedItem<LibroViewModel>> lstSelectedItem;
+
+  const CheckAllLibroEvent(this.lstSelectedItem);
+}
+
+class DeCheckAllLibroEvent extends LibroEvent { 
+  final List<SelectedItem<LibroViewModel>> lstSelectedItem;
+
+  const DeCheckAllLibroEvent(this.lstSelectedItem);
+}
+
+class RefreshLibroEvent extends LibroEvent { 
+  final List<SelectedItem<LibroViewModel>> lstSelectedItem;
+
+  const RefreshLibroEvent(this.lstSelectedItem);
 }
 
 // //* SEARCH by BARCODE SCAN

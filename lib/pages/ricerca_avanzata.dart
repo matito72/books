@@ -31,6 +31,20 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
   TextEditingController txtCategoriaCtrl = TextEditingController();
 
   @override
+  void dispose() {
+    super.dispose();
+    
+    txtTitoloCtrl.dispose();
+    txtAutoreCtrl.dispose();
+    txtEditoreCtrl.dispose();
+    txtAnnoPubblicazioneDaCtrl.dispose();
+    txtAnnoPubblicazioneACtrl.dispose();
+    txtPrezzoMinCtrl.dispose();
+    txtPrezzoMaxCtrl.dispose();
+    txtCategoriaCtrl.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     if (ComArea.booksSearchParameters.isEmpty()) {

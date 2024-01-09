@@ -106,7 +106,7 @@ class FileBackupWidget extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.share, color:Color.fromARGB(202, 176, 235, 158),),
+                  icon: Icon(Icons.share, color: Colors.lightGreen[200]), // Color.fromARGB(202, 176, 235, 158),),
                   onPressed: () => {shareFileBackup(context, _item)},
                 ),
                 IconButton(

@@ -1,5 +1,8 @@
 import 'package:backdrop/backdrop.dart';
 import 'package:books/config/com_area.dart';
+import 'package:books/features/list_items_select/bloc/list_items_select.bloc.dart';
+import 'package:books/features/list_items_select/bloc/list_items_select_events.bloc.dart';
+import 'package:books/features/list_items_select/bloc/list_items_select_state.bloc.dart';
 import 'package:books/features/libreria/bloc/libreria_state.bloc.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
@@ -8,6 +11,7 @@ import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
+import 'package:books/models/selected_item.module.dart';
 import 'package:books/pages/back_drop_lista_libri.dart';
 import 'package:books/pages/import_export_file.dart';
 import 'package:books/pages/libreria_lista_libri_page.dart';
@@ -17,6 +21,7 @@ import 'package:books/resources/action_result.dart';
 import 'package:books/services/libro_search_service.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/libro_utils.dart';
+import 'package:books/utilities/list_items_utils.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/appbar/libri_libreria_appbar.dart';
 import 'package:books/widgets/new_libro_widget.dart';
@@ -28,10 +33,11 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 /// Pagina con la lista dei libri della libreria selezionata
 ///
 enum MenuItemCode {
-  deleteAllBooksInLibreria(0, "Elimina tutti i libri di {0}"),
   exportAllBooksLibreria(10, "Crea file backup"),
   restoreFileBackup(25, "Gestione files backup"),
-  deleteAllBooksInAllLibrerie(30, "Elimina TUTTI i Libri."),
+  deleteAllBooksInLibreria(0, "Elimina tutti i libri di {0}"),
+  deleteNrBooksFromList(30, 'Elimina i libri selezionati in lista'),
+  // deleteAllBooksInAllLibrerie(30, "Elimina TUTTI i Libri."),
   ;
 
   final int cd;
@@ -47,12 +53,14 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
    @override
   Widget build(BuildContext context) {
     return PopScope(
-      // onWillPop: () async => false,
       canPop: false,
       child: MultiBlocProvider(
         providers: [
           BlocProvider<LibroBloc>(
             create: (_) => LibroBloc(sl<DbLibroService>())..add(InitLibroEvent()),
+          ),
+          BlocProvider<ListItemsSelectBloc>(
+            create: (_) => ListItemsSelectBloc()..add(InitListItemsSelectEvent()),
           ),
         ],
         child: BlocBuilder<LibroBloc, LibroState>(
@@ -106,17 +114,59 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       ),
       backLayer: _createBackLayer(context),
       frontLayer: _blocBody(context),
-      floatingActionButton: FloatingActionButton(
-        // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      floatingActionButton: _createFloatingActionButtonBloc(context),
+      stickyFrontLayer: true,
+    );
+  }
+
+  Widget _createFloatingActionButtonBloc(BuildContext context) {
+    return BlocListener<ListItemsSelectBloc, ListItemsSelectState> (
+      listener: (context, ListItemsSelectState state) {
+        // ...
+      },
+      child: BlocBuilder<ListItemsSelectBloc, ListItemsSelectState> (
+        builder: (context, state) {
+          return createFloatingActionButton(context, state.nrItemSel, state.isAllSel);
+        },
+      )
+    );
+  }
+
+  Widget createFloatingActionButton(BuildContext context, int? nrItemSel, bool? isAllSel) {
+    LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
+
+    if (nrItemSel == 0) {
+      // DEFAULT
+      return FloatingActionButton(
         backgroundColor: Colors.transparent,
         onPressed: () => _searchBookByBarcode(context),
         child: Icon(
           MdiIcons.barcodeScan,
           color: Theme.of(context).colorScheme.onSecondary,
+        ),        
+      );
+    } 
+    else {
+      // CHECK-ALL
+      return FloatingActionButton.extended(
+        backgroundColor: Colors.transparent,
+        onPressed: () => {
+          (isAllSel == true) 
+            ? libroBloc.add(DeCheckAllLibroEvent(libroBloc.state.data))
+            : libroBloc.add(CheckAllLibroEvent(libroBloc.state.data)),
+        },
+        label: Text(
+          'Nr. sel. ${nrItemSel.toString()}',
+          style: TextStyle(color: Theme.of(context).colorScheme.onSecondary,)
         ),
-      ),
-      stickyFrontLayer: true,
-    );
+        icon: Icon(
+          (isAllSel == true) 
+            ? MdiIcons.selectionOff 
+            : Icons.done_all_outlined, 
+          color: Theme.of(context).colorScheme.onSecondary,
+        ),
+      );
+    }
   }
 
   _createBackLayer(BuildContext context) {
@@ -125,7 +175,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       height: (MediaQuery.of(context).size.height * 40 / 100),
       child : ListView.separated(
         scrollDirection: Axis.horizontal,
-        // padding: const EdgeInsets.all(6.0),
         itemBuilder: (context,item)=> buildCardHorizontal(context, item+1),
         separatorBuilder: (context,item)=> const SizedBox(height: 5,),
         itemCount: 2
@@ -170,7 +219,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           }
 
           if (state is ListaLibroLoadedState) {
-            
+            debugPrint("TEST");
           } 
           
           if (state is LibroErrorState) {
@@ -200,7 +249,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       ),
       icon: const Icon(Icons.more_vert, color: Colors.white),
       itemBuilder: (context) {
-        return getPopUpMenuItem();
+        return _getPopUpMenuItem(libroBloc);
       },
       onSelected: (value) {
         if (value == MenuItemCode.deleteAllBooksInLibreria.cd) {
@@ -215,14 +264,17 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         else if(value == MenuItemCode.restoreFileBackup.cd) {
           _fnRestoreFileBackup(context, libroBloc);
         }
-        else if(value == MenuItemCode.deleteAllBooksInAllLibrerie.cd) {
-          libroBloc.add(const DeleteAllLibriEvent());
+        // else if(value == MenuItemCode.deleteAllBooksInAllLibrerie.cd) {
+        //   libroBloc.add(const DeleteAllLibriEvent());
+        // }
+        else if(value == MenuItemCode.deleteNrBooksFromList.cd) {
+          _fnDeleteNrBooksFromList(context, libroBloc);
         }
       }
     );
   }
 
-  List<PopupMenuItem> getPopUpMenuItem() {
+  List<PopupMenuItem> _getPopUpMenuItem(LibroBloc libroBloc) {
     return [
       PopupMenuItem<int>(
         value: MenuItemCode.exportAllBooksLibreria.cd, 
@@ -261,18 +313,68 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         )
       ),
       PopupMenuItem<int>(
-        value: MenuItemCode.deleteAllBooksInAllLibrerie.cd, 
+        value: MenuItemCode.deleteNrBooksFromList.cd, 
+        enabled: (ListItemsUtils.countSelectedItems(libroBloc.state.data) != 0),
         child: Row(
           children: [
-            const Padding(padding: EdgeInsets.only(right: 10.0), child:  Icon(Icons.sentiment_very_dissatisfied_outlined, color: Color.fromARGB(255, 245, 28, 28),),),
+            Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.delete, color: Colors.pink[100]),),
             Text(
-              MenuItemCode.deleteAllBooksInAllLibrerie.label,
+              MenuItemCode.deleteNrBooksFromList.label,
               style: const TextStyle(fontWeight: FontWeight.bold),
             )
           ],
         )
       ),
+      // PopupMenuItem<int>(
+      //   value: MenuItemCode.deleteAllBooksInAllLibrerie.cd, 
+      //   child: Row(
+      //     children: [
+      //       const Padding(padding: EdgeInsets.only(right: 10.0), child:  Icon(Icons.sentiment_very_dissatisfied_outlined, color: Color.fromARGB(255, 245, 28, 28),),),
+      //       Text(
+      //         MenuItemCode.deleteAllBooksInAllLibrerie.label,
+      //         style: const TextStyle(fontWeight: FontWeight.bold),
+      //       )
+      //     ],
+      //   )
+      // ),
     ];
+  }
+
+  /// Elimina i libri selezionati
+  /// 
+  Future<bool?> _fnDeleteNrBooksFromList(BuildContext context, LibroBloc libroBloc) async {
+    debugPrint("Elimina -${ListItemsUtils.countSelectedItems(libroBloc.state.data)}- i libri selezionati");
+
+    int nrLibriSel = ListItemsUtils.countSelectedItems(libroBloc.state.data);
+
+    if (context.mounted) {
+      return showDialog<bool>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Procedo con l'eliminazione di nr.$nrLibriSel libri selezionati ?"),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Si'),
+                onPressed: () {
+                  libroBloc.add(DeleteBookSelectedEvent(ListItemsUtils.getSelectedItems(libroBloc.state.data)));
+                  Navigator.pop(context, true);
+                },
+              ),
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+    
+    return false;
   }
 
   Future<bool?> _exportLibriLibreria(BuildContext context, LibroBloc libroBloc) async {
@@ -330,7 +432,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           }
         }
         if (state is AddedNewLibroState || state is EditLibroState || state is DeletedLibroState ||
-            state is LibroInitializedState || state is DeleteAllLibroState) {
+            state is LibroInitializedState || state is DeleteAllLibroState || state is DeleteBookSelectedState) {
           libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
         } else  if (state is ExportedFileState) {
           _fnRestoreFileBackup(context, libroBloc);
@@ -348,7 +450,10 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           }
 
           if (state is ListaLibroLoadedState) {
-            return _widgetListaLibriDataBase(context, libroBloc, state.data);
+            ListItemsSelectBloc listItemsSelectBloc = BlocProvider.of<ListItemsSelectBloc>(context);
+            listItemsSelectBloc.add(RefreshListItemsSelectEvent(libroBloc.state.data));
+
+            return _widgetListaLibriDataBase(context, libroBloc, listItemsSelectBloc, state.data);
           } 
           
           if (state is LibroErrorState) {
@@ -372,11 +477,11 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     }
   }
 
-  Widget _widgetListaLibriDataBase(BuildContext context, LibroBloc libroBloc, List<LibroViewModel> lstLibroViewModel) {
+  Widget _widgetListaLibriDataBase(BuildContext context, LibroBloc libroBloc, ListItemsSelectBloc floatingButtonBloc, List<SelectedItem<LibroViewModel>> lstSelectedItem) {
     if (ComArea.showOrderBy) {
-      return LibreriaListaLibriPage(context, libroBloc, lstLibroViewModel, _viewEditLibro, _deleteLibro);
+      return LibreriaListaLibriPage(context, libroBloc, floatingButtonBloc, lstSelectedItem, _viewEditLibro, _deleteLibro);
     } else {
-      return ListaLibriGroupBy(context, libroBloc, lstLibroViewModel, _viewEditLibro, _deleteLibro);
+      return ListaLibriGroupBy(context, libroBloc, floatingButtonBloc, lstSelectedItem, _viewEditLibro, _deleteLibro);
     }
   }
 

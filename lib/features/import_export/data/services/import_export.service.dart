@@ -8,6 +8,7 @@ import 'package:books/features/libreria/data/services/db_libreria.service.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
 import 'package:books/resources/item_exception.dart';
+import 'package:books/utilities/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
@@ -83,7 +84,7 @@ class ImportExportService {
 
       for (var libroModelNew in lstLibroViewModel) {
         libroModelNew.siglaLibreria = siglaLibreria;
-        libroModelNew.dataInserimento = Constant.now;
+        libroModelNew.dataInserimento = Utils.getDataInserimentoNew();
 
         try {
           await dbLibroService.saveLibroToDb(libroModelNew, true);

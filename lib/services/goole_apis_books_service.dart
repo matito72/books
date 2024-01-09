@@ -33,7 +33,10 @@ class GooleApisBooksService {
         qParams.add('intitle:${googleSearchModel.title}');
       }
       if (googleSearchModel.author != null && googleSearchModel.author!.trim().isNotEmpty) {
-        qParams.add('inauthor:${getStrSearchAutore(googleSearchModel.author!)}');
+        qParams.add('inauthor:${getConcatStrSearch(googleSearchModel.author!)}');
+      }
+      if (googleSearchModel.casaEditrice != null && googleSearchModel.casaEditrice!.trim().isNotEmpty) {
+        qParams.add('inpublisher:${getConcatStrSearch(googleSearchModel.casaEditrice!)}');
       }
       if (googleSearchModel.genericParam != null && googleSearchModel.genericParam!.trim().isNotEmpty) {
         qParams.add(googleSearchModel.genericParam!);
@@ -53,10 +56,12 @@ class GooleApisBooksService {
       // parametri.putIfAbsent('maxResults', () => 10.toString());
     }
 
-    final Uri url = Uri.https(Constant.googleapisDominio, percorso, parametri);
+    Uri url = Uri.https(Constant.googleapisDominio, percorso, parametri);
+    url =  Uri.parse(Uri.decodeComponent(url.toString()));
+    // final Uri url = Uri.https(Constant.googleapisDominio, percorso, parametri);
     
     try {
-        // print('URL: ${url.toString()}');
+      // print('URL: ${url.toString()}');
 
       await http.get(url).then((res) async {
         final resJson = json.decode(res.body);
@@ -96,54 +101,11 @@ class GooleApisBooksService {
     return libri;
   }
 
-  String getStrSearchAutore(String author) {
+  String getConcatStrSearch(String author) {
     if (!author.contains(" ")) {
       return '"$author"';
     }
 
     return '"${author.split(' ').map((s) => s.trim()).join('+')}"';
   }
-
-  // readImageFromAmazon(LibroViewModel libroViewModel) async {
-  //   if (libroViewModel.isbn.isEmpty) {
-  //     return;
-  //   }
-    
-  //   final Uri url = Uri.https(
-  //     "https://covers.openlibrary.org", "/b/isbn/${libroViewModel.isbn}-L.jpg"
-  //   );
-
-    
-    
-  //   // UserAgentClient u = UserAgentClient(
-  //   //   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36", 
-  //   //   http.BaseClient)
-    
-  //   try {
-  //     final client = UserAgentClient("Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome", http.Client());
-  //     // await http.get(url).then((res) {
-  //     await client.get(url).then((res) {
-  //       String html = res.body;
-
-  //       int i = html.indexOf("https://m.media-amazon.com/images/I/");
-        
-  //       debugPrint(html);
-  //     });
-  //   } catch (errore) {
-  //     debugPrint("ERRORE: ${errore.toString()}");
-  //     rethrow;
-  //   } 
-  // }
 }
-
-// class UserAgentClient extends http.BaseClient {
-//   final String userAgent;
-//   final http.Client _inner;
-
-//   UserAgentClient(this.userAgent, this._inner);
-
-//   Future<http.StreamedResponse> send(http.BaseRequest request) {
-//     request.headers['user-agent'] = userAgent;
-//     return _inner.send(request);
-//   }
-// }

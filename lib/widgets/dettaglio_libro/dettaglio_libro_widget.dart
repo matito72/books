@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:intl/intl.dart';
 import 'package:read_more_text/read_more_text.dart';
+import 'package:expandable_text/expandable_text.dart';
 
 
 class DettaglioLibroWidget extends StatefulWidget {
@@ -140,7 +141,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                           Padding(
                             padding: const EdgeInsets.only(top: 10, left: 15),
                             child: InkWell(
-                              splashColor: Colors.red,
+                              splashColor: Colors.transparent,
                               onDoubleTap: () async {
                                 String? strDesc = await DialogUtils.getDescrizione(context, 'Titolo:', widget._libroViewModel.titolo, maxLines: 3);
                                 if (strDesc != null) {
@@ -149,18 +150,12 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                   });
                                 }
                               },
-                              child: ReadMoreText.selectable(
+                              child: ExpandableText(
                                 widget._libroViewModel.titolo,
-                                numLines: 2,
+                                maxLines: 2,
                                 style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white),
-                                readMoreTextStyle: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.amber.shade200),
-                                readMoreIcon: Icon(Icons.more_horiz, color: Colors.blue.shade200),
-                                readLessIcon: Icon(Icons.keyboard_arrow_up, color: Colors.blue.shade200),
-                                readMoreText: '',
-                                readLessText: '',
+                                expandText: '',
+                                collapseText: '<<',
                               )
                             ),
                           ),
@@ -177,18 +172,15 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                                   });
                                 }
                               },
-                              child: ReadMoreText.selectable(
+                              child: ExpandableText(
                                 widget._libroViewModel.lstAutori.join(', '),
-                                numLines: 2,
+                                maxLines: 2,
                                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                                   fontStyle: FontStyle.italic,
                                   color: Colors.white70
                                 ),
-                                readMoreTextStyle: TextStyle(color: Colors.amber.shade200),
-                                readMoreIcon: Icon(Icons.more_horiz, color: Colors.blue.shade200),
-                                readLessIcon: Icon(Icons.keyboard_arrow_up, color: Colors.blue.shade200),
-                                readMoreText: '', 
-                                readLessText: '',
+                                expandText: '',
+                                collapseText: '<<',
                               ),
                             ),
                           ),
@@ -438,22 +430,32 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                             ),                                          
                           ),
                         ),
-                        ReadMoreText.selectable(
+                        ExpandableText(
                           widget._libroViewModel.descrizione,
-                          numLines: 10,
+                          maxLines: 10,
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.white,
                           ),
-                          readMoreTextStyle: TextStyle(color: Colors.blue.shade200,),
-                          readMoreIcon: Icon(Icons.more_horiz, color: Colors.blue.shade200),
-                          readLessIcon: Icon(Icons.keyboard_arrow_up, color: Colors.blue.shade200),
-                          readMoreText: '',
-                          readLessText: '',
-                          cursorColor: Colors.blue.shade200,
-                          cursorRadius: const Radius.circular(1),
-                          readMoreAlign: AlignmentDirectional.topEnd,
+                          expandText: '',
+                          collapseText: '<<',
                         )
+                        // ReadMoreText.selectable(
+                        //   widget._libroViewModel.descrizione,
+                        //   numLines: 10,
+                        //   style: const TextStyle(
+                        //     fontSize: 14,
+                        //     color: Colors.white,
+                        //   ),
+                        //   readMoreTextStyle: TextStyle(color: Colors.blue.shade200,),
+                        //   readMoreIcon: Icon(Icons.more_horiz, color: Colors.blue.shade200),
+                        //   readLessIcon: Icon(Icons.keyboard_arrow_up, color: Colors.blue.shade200),
+                        //   readMoreText: '',
+                        //   readLessText: '',
+                        //   cursorColor: Colors.blue.shade200,
+                        //   cursorRadius: const Radius.circular(1),
+                        //   readMoreAlign: AlignmentDirectional.topEnd,
+                        // )
                       ],
                     ),
                   ],
