@@ -1,3 +1,4 @@
+import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:books/features/libro/data/models/libro_search.module.dart';
@@ -68,5 +69,32 @@ abstract class LibroUtils {
     );
     
     return cloneLibroViewModel;
+  }
+
+  static addNrLibriCaricatiInCache(String siglaLibreria, {int nrToAdd = 1}) {
+    for (LibreriaModel libreriaModel in ComArea.lstLibrerieInUso) {
+      if (libreriaModel.sigla == siglaLibreria) {
+        libreriaModel.nrLibriCaricati += nrToAdd;
+        break;
+      }
+    }
+  }
+
+static removeNrLibriCaricatiInCache(String siglaLibreria) {
+    for (LibreriaModel libreriaModel in ComArea.lstLibrerieInUso) {
+      if (libreriaModel.sigla == siglaLibreria) {
+        libreriaModel.nrLibriCaricati--;
+        break;
+      }
+    }
+  }
+
+static clearNrLibriCaricatiInCache(String siglaLibreria) {
+    for (LibreriaModel libreriaModel in ComArea.lstLibrerieInUso) {
+      if (libreriaModel.sigla == siglaLibreria) {
+        libreriaModel.nrLibriCaricati = 0;
+        break;
+      }
+    }
   }
 }

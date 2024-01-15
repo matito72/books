@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -50,10 +48,10 @@ class DbLibreriaService {
     lstLibreriaSaved.addAll(boxLibreria.keys.map((key) {
       final item = boxLibreria.get(key);
       LibreriaModel libreriaToAdd = LibreriaModel(sigla: item!.sigla, nome: item.nome,  nrLibriCaricati: item.nrLibriCaricati, isLibreriaDefault: item.isLibreriaDefault);
-      if (libreriaToAdd.isLibreriaDefault) {
-        ComArea.libreriaInUso = libreriaToAdd;
-        ComArea.nrLibriInLibreriaInUso = libreriaToAdd.nrLibriCaricati;
-      }
+      // if (libreriaToAdd.isLibreriaDefault) {
+      //   ComArea.libreriaInUso = libreriaToAdd;
+      //   // ComArea.nrLibriInLibreriaInUso = libreriaToAdd.nrLibriCaricati;
+      // }
       return libreriaToAdd;
     }).toList());
     await boxLibreria.close();
@@ -61,13 +59,14 @@ class DbLibreriaService {
     return lstLibreriaSaved;
   }
 
-  Future<bool> changeLibreriaDefault(LibreriaModel libreriaSel) async {
+  Future<bool> changeLibreriaDefault(List<LibreriaModel> lstSortedBySiglaLibreriaSel) async {
     Box<LibreriaModel> boxLibreria = await _openBoxLibreria();
 
     for (var i = 0; i < boxLibreria.length; i++) {
       LibreriaModel? libreriaDb = boxLibreria.getAt(i);
       if (libreriaDb != null) {
-        libreriaDb.isLibreriaDefault = (libreriaSel.sigla == libreriaDb.sigla) ? true : false;
+        LibreriaModel? libreriaCheck = lstSortedBySiglaLibreriaSel.cast<LibreriaModel?>().firstWhere((element) => element!.sigla == libreriaDb.sigla, orElse: () => null);
+        libreriaDb.isLibreriaDefault = (libreriaCheck != null) ? true : false;
         await libreriaDb.save();
       }
     }
@@ -76,40 +75,40 @@ class DbLibreriaService {
     return true;
   }
 
-  Future<void> addLibriInLibreriaInUso(int nr) async {
+  Future<void> addLibriInLibreriaInUso(String siglaLibreria, int nr) async {
     Box<LibreriaModel> boxLibreria = await _openBoxLibreria();
 
-    LibreriaModel? libreria = boxLibreria.get(ComArea.libreriaInUso!.sigla);
+    LibreriaModel? libreria = boxLibreria.get(siglaLibreria);
     libreria!.nrLibriCaricati += nr;
     await libreria.save();
     await boxLibreria.close();
 
-    ComArea.libreriaInUso = libreria;
-    ComArea.nrLibriInLibreriaInUso = libreria.nrLibriCaricati;
+    // ComArea.libreriaInUso = libreria;
+    // ComArea.nrLibriInLibreriaInUso = libreria.nrLibriCaricati;
   }
 
-  Future<void> removeLibroFromLibreriaInUso() async {
+  Future<void> removeLibroFromLibreriaInUso(String siglaLibreria) async {
     Box<LibreriaModel> boxLibreria = await _openBoxLibreria();
 
-    LibreriaModel? libreria = boxLibreria.get(ComArea.libreriaInUso!.sigla);
+    LibreriaModel? libreria = boxLibreria.get(siglaLibreria);
     libreria!.nrLibriCaricati--;
     await libreria.save();
     await boxLibreria.close();
 
-    ComArea.libreriaInUso = libreria;
-    ComArea.nrLibriInLibreriaInUso = libreria.nrLibriCaricati;
+    // ComArea.libreriaInUso = libreria;
+    // ComArea.nrLibriInLibreriaInUso = libreria.nrLibriCaricati;
   }
 
-  Future<void> setNrLibriInLibreriaInUso(int nr) async {
+  Future<void> setNrLibriInLibreriaInUso(String siglaLibreria, int nr) async {
     Box<LibreriaModel> boxLibreria = await _openBoxLibreria();
 
-    LibreriaModel? libreria = boxLibreria.get(ComArea.libreriaInUso!.sigla);
+    LibreriaModel? libreria = boxLibreria.get(siglaLibreria);
     libreria!.nrLibriCaricati = nr;
     await libreria.save();
     await boxLibreria.close();
     
-    ComArea.libreriaInUso = libreria;
-    ComArea.nrLibriInLibreriaInUso = libreria.nrLibriCaricati;
+    // ComArea.libreriaInUso = libreria;
+    // ComArea.nrLibriInLibreriaInUso = libreria.nrLibriCaricati;
   }
 
   Future<void> insertLibreria(LibreriaModel libreriaToAdd) async {

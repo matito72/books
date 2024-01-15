@@ -2,6 +2,7 @@ import 'package:books/config/com_area.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
 import 'package:books/models/books_search_parameters.module.dart';
+import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/appbar/backdrop_appbar_default.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -20,9 +21,9 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
 
   @override
   void dispose() {
-    super.dispose();
-
     textCtrlSearch.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -37,14 +38,6 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
       appBarContent: ComArea.appBarStateText 
         ? _createTextTitle(context, textCtrlSearch)
         : _createTextSearch(context, textCtrlSearch)
-      // appBarContent: BlocBuilder<LibroBloc, LibroState>(
-      //   builder: (context, state) {
-      //     if (appBarBloc.state is TextAppBarState) {
-      //       return _createTextTitle(context, textCtrlSearch);
-      //     }
-      //     return _createTextSearch(context, textCtrlSearch);
-      //   }      
-      // ),
     );
   }
 
@@ -52,10 +45,10 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
     // LABEL : default
     textCtrlSearch.clear();
     if (ComArea.bookToSearch.isNotEmpty) {
-      widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+      widget._libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
     }
     ComArea.bookToSearch = '';
-    bool showFiltroAttivo = (ComArea.nrLibriVisibiliInLista != ComArea.libreriaInUso!.nrLibriCaricati);
+    bool showFiltroAttivo = (ComArea.nrLibriVisibiliInLista != ComArea.nrLibriInLibreriaInUso);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -66,17 +59,18 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
             setState(() {
               ComArea.appBarStateText = false;
             });
-            // if (appBarBloc.state is SearchAppBarState) {
-            //   appBarBloc.add(SwithToTextAppBarEvent());
-            // } else if (appBarBloc.state is TextAppBarState) {
-            //   appBarBloc.add(SwithToSearchAppBarEvent());
-            // }
           },
-          child: Text(
-            getTextAppbar(),
-            style: const TextStyle(
-              color: Colors.white, fontSize: 16
-            ),
+          child: Row(
+            children: [
+              const Icon(Icons.library_books),
+              const Padding(padding: EdgeInsets.only(right: 5)),
+              Text(
+                getTextAppbar(),
+                style: const TextStyle(
+                  color: Colors.white, fontSize: 16
+                ),
+              ),
+            ],
           )
         ),
         showFiltroAttivo
@@ -84,7 +78,6 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // const Padding(padding: EdgeInsets.only(left: 5)),
               IconButton(
                 icon: Icon(
                   MdiIcons.eraser, 
@@ -105,12 +98,12 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
                       txtPrezzoMin: '',
                       txtPrezzoMax: ''
                     );
-                    widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+                    widget._libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
                   })                
                 },
               ),
               const Text(
-                "Filtro Attivo",
+                "Filtro ON",
                 style: TextStyle(
                   color: Colors.white, fontSize: 13
                 ),
@@ -118,17 +111,20 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
             ],
           )
           : const Text("")
-
       ],
     );
   }
 
   String getTextAppbar() {
-    if (ComArea.nrLibriVisibiliInLista == ComArea.libreriaInUso!.nrLibriCaricati) {
-      return 'Libreria ${ComArea.libreriaInUso!.nome}: ${ComArea.libreriaInUso!.nrLibriCaricati} libri';
-    }
+    String strNomeLibreriaSel = (ComArea.lstLibrerieInUso.isNotEmpty && ComArea.lstLibrerieInUso.length == 1)
+      ? Utils.getFirstSubstring(ComArea.libreriaInUso!.nome, 10)
+      : '';
+    
+    // if (ComArea.nrLibriVisibiliInLista == ComArea.libreriaInUso!.nrLibriCaricati) {
+    //   return '$strNomeLibreriaSel: ${ComArea.nrLibriInLibreriaInUso} libri';
+    // }
 
-    return 'Libreria ${ComArea.libreriaInUso!.nome}: ${ComArea.nrLibriVisibiliInLista}/${ComArea.libreriaInUso!.nrLibriCaricati} libri';
+    return '$strNomeLibreriaSel: ${ComArea.nrLibriVisibiliInLista}/${ComArea.nrLibriInLibreriaInUso} libri';
   }
 
   Widget _createTextSearch(BuildContext context, TextEditingController textCtrlSearch) {
@@ -141,7 +137,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
       style: const TextStyle(color: Colors.black),
       onSubmitted: (value) {
         ComArea.bookToSearch = textCtrlSearch.text;
-        widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+        widget._libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
         FocusScope.of(context).unfocus();
       },
       decoration: InputDecoration(
@@ -157,7 +153,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
           onPressed: () {                  
             textCtrlSearch.clear();
             ComArea.bookToSearch = '';
-            widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+            widget._libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
             FocusScope.of(context).unfocus();
             setState(() {
               ComArea.appBarStateText = true;

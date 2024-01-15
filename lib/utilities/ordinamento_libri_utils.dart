@@ -29,9 +29,13 @@ class OrdinamentoLibriUtils {
         }
       }
       return prezzo;
-    }
+    } else if (label == OrdinamentoLibri.dtInserimento().label) {
+      return libroViewModel.dataInserimento;
+    } else if (label == OrdinamentoLibri.libreria().label) {
+      return libroViewModel.siglaLibreria;
+    } 
 
     return "";
-  }
+  } 
   
 }

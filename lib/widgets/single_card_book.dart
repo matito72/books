@@ -6,6 +6,7 @@ import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:books/utilities/list_items_utils.dart';
 import 'package:books/utilities/utils.dart';
+import 'package:books/widgets/icon_check_item.dart';
 import 'package:flutter/material.dart';
 
 class SingleCardBook extends StatefulWidget {
@@ -64,6 +65,7 @@ class _SingleCardBook extends State<SingleCardBook> {
 
     Widget getMenuAnchor() {
       return MenuAnchor(
+        crossAxisUnconstrained: false,
         style: const MenuStyle(
           backgroundColor: MaterialStatePropertyAll<Color>(Color.fromARGB(224, 88, 136, 182)),
         ),
@@ -316,35 +318,20 @@ class _SingleCardBook extends State<SingleCardBook> {
             opacity: !widget._selItem.sel ? 1 : 0.5,
             child: getBookCardContent()
           ),
-          SizedBox(
-            width: (MediaQuery.of(context).size.width * 100 / 100),
-            height: cardBookHeight - 5,
-            child: Visibility(
-              maintainSize: true, 
-              maintainAnimation: true,
-              maintainState: true,
-              visible: widget._selItem.sel,
-              child: IconButton(
-                alignment: Alignment.topRight,  
-                onPressed: () => {
-                  setState(() {
-                    widget._selItem.sel = !widget._selItem.sel;
-                    widget._floatingButtonBloc.add(InitListItemsSelectEvent());
-                    widget._floatingButtonBloc.add(RefreshListItemsSelectEvent(widget._libroBloc.state.data));
-                  })
-                },
-                icon: Icon(
-                  Icons.check_circle_outline,
-                  color: Colors.blueGrey[100],
-                ),
-                selectedIcon: Icon(
-                  Icons.check_circle,
-                  color: Colors.green[200],
-                ),
-                iconSize: 50,
-                enableFeedback: true,
-                isSelected: widget._selItem.sel,
-              ),
+          Align(
+            alignment: Alignment.topRight,
+            child: IconCheckItem(
+              heightBox: (cardBookHeight - 5),
+              onPressed: () => setState(() {
+                widget._selItem.sel = !widget._selItem.sel;
+                widget._floatingButtonBloc.add(InitListItemsSelectEvent());
+                widget._floatingButtonBloc.add(RefreshListItemsSelectEvent(widget._libroBloc.state.data));
+              }), 
+              isItemSel: widget._selItem.sel,
+              selectedIcon: Icon(
+                Icons.check_circle,
+                color: Colors.green[200],
+              )
             ),
           )
         ]

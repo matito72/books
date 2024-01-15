@@ -229,6 +229,13 @@ class Utils {
     return ret;
   }
 
+  static String getFirstSubstring(String str, int n) {
+    if (str.length <= (n + 3)) {
+      return str;
+    }
+    return '${str.substring(0, (n - 3))}...';
+  }
+
   static String getLastSubstring(String str, int n) {
     if (str.length <= n) {
       return str;

@@ -8,6 +8,7 @@ import 'package:books/features/libreria/data/services/db_libreria.service.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
 import 'package:books/resources/item_exception.dart';
+import 'package:books/utilities/libro_utils.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
@@ -97,7 +98,8 @@ class ImportExportService {
         }
       }
 
-      await dbLibreriaService.addLibriInLibreriaInUso(nrLibriCaricati);
+      await dbLibreriaService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, nrLibriCaricati);
+      LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla, nrToAdd: nrLibriCaricati);
       if (errore != null) {
         throw errore;
       }

@@ -1,9 +1,9 @@
-// import 'dart:math';
-
 import 'package:books/features/libreria/bloc/libreria_events.bloc.dart';
 import 'package:books/features/libreria/bloc/libreria_state.bloc.dart';
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libreria/data/services/db_libreria.service.dart';
+import 'package:books/models/selected_item.module.dart';
+import 'package:books/utilities/list_items_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
@@ -30,8 +30,18 @@ class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
             await Future.delayed(const Duration(seconds: 1));
         }
         List<LibreriaModel> lstLibreriaViewModel = await _dbLibreriaService.readLstLibreriaFromDb();
+        List<SelectedItem<LibreriaModel>> lstLibreriaModelSel = ListItemsUtils.convertListToSelectedItems(lstLibreriaViewModel);
+        for (SelectedItem<LibreriaModel> selectedItemItem in lstLibreriaModelSel) {
+          if (selectedItemItem.item.isLibreriaDefault) {
+            selectedItemItem.sel = true;
+            // ComArea.libreriaInUso = selectedItemItem.item;
+          }
+        }
+        // if (lstLibreriaViewModel.isLibreriaDefault) {
+        //   ComArea.libreriaInUso = libreriaToAdd;
+        // }
         String msg = lstLibreriaViewModel.isEmpty ? 'Nessuna Libreria presente' : 'Nr. ${lstLibreriaViewModel.length} Librerie caricate correttamente';
-        emit(LibreriaLoadedState(lstLibreriaViewModel, msg));
+        emit(LibreriaLoadedState(lstLibreriaModelSel, msg));
       } catch (e) {
         emit(LibreriaErrorState(e.toString()));
       }

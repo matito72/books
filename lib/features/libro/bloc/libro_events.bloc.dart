@@ -61,9 +61,9 @@ class DeleteLibroEvent extends LibroEvent {
 
 //* LIST
 class LoadLibroEvent extends LibroEvent { 
-  final LibreriaModel libreriaModel;
+  final List<LibreriaModel> lstLibreriaSel;
 
-  const LoadLibroEvent(this.libreriaModel);
+  const LoadLibroEvent(this.lstLibreriaSel);
 }
 
 class CheckAllLibroEvent extends LibroEvent { 
@@ -78,11 +78,11 @@ class DeCheckAllLibroEvent extends LibroEvent {
   const DeCheckAllLibroEvent(this.lstSelectedItem);
 }
 
-class RefreshLibroEvent extends LibroEvent { 
-  final List<SelectedItem<LibroViewModel>> lstSelectedItem;
+// class RefreshLibroEvent extends LibroEvent { 
+//   final List<SelectedItem<LibroViewModel>> lstSelectedItem;
 
-  const RefreshLibroEvent(this.lstSelectedItem);
-}
+//   const RefreshLibroEvent(this.lstSelectedItem);
+// }
 
 // //* SEARCH by BARCODE SCAN
 // class SearchLibroByBarcodeEvent extends LibroEvent { 

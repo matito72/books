@@ -195,7 +195,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
   Widget _createRicercaAvanzataBloc(BuildContext context) {
     LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
-    RicercaAvanzata ricercaAvanzata = RicercaAvanzata(libroBloc);
+    RicercaAvanzata ricercaAvanzata = RicercaAvanzata(libroBloc, ComArea.lstLibrerieInUso);
     
     return BlocListener<LibroBloc, LibroState> (
       listener: (context, LibroState state) {
@@ -204,26 +204,22 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         }
         if (state is AddedNewLibroState || state is EditLibroState || state is DeletedLibroState ||
             state is LibroInitializedState || state is DeleteAllLibroState) {
-          // libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+          // ...
         } 
       },
       child: BlocBuilder<LibroBloc, LibroState> (
-        // buildWhen: (context, state) {
-        //   return state is ListaLibroLoadedState;
-        // },
+        // ...
         builder: (context, state) {
           if (state is LibroWaitingState) {
-            /*return const Center(
-              child: CircularProgressIndicator(),
-            ); */
+            // ...
           }
 
           if (state is ListaLibroLoadedState) {
-            debugPrint("TEST");
+            // ...
           } 
           
           if (state is LibroErrorState) {
-            // return Center(child:  Text("Error: ${state.msg}"));
+            // ...
           }
 
           return ricercaAvanzata;
@@ -253,7 +249,8 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       },
       onSelected: (value) {
         if (value == MenuItemCode.deleteAllBooksInLibreria.cd) {
-          libroBloc.add(DeleteAllLibriLibreriaEvent(ComArea.libreriaInUso!));
+          _fnDeleteAllBooksLibreria(context, libroBloc);
+          // libroBloc.add(DeleteAllLibriLibreriaEvent(ComArea.libreriaInUso!));
         } 
         else if(value == MenuItemCode.exportAllBooksLibreria.cd) {
           _exportLibriLibreria(context, libroBloc);
@@ -278,6 +275,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     return [
       PopupMenuItem<int>(
         value: MenuItemCode.exportAllBooksLibreria.cd, 
+        enabled: (ComArea.lstLibrerieInUso.length == 1 && ComArea.nrLibriInLibreriaInUso != 0),
         child: Row(
           children: [
             Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.save_alt, color: Colors.green[100]),),
@@ -290,6 +288,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       ),
       PopupMenuItem<int>(
         value: MenuItemCode.restoreFileBackup.cd, 
+        enabled: (ComArea.lstLibrerieInUso.length == 1 && ComArea.nrLibriInLibreriaInUso != 0),
         child: Row(
           children: [
             Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.restore_page, color: Colors.lightGreenAccent[100]),),
@@ -302,11 +301,12 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       ),
       PopupMenuItem<int>(
         value: MenuItemCode.deleteAllBooksInLibreria.cd, 
+        enabled: (ComArea.lstLibrerieInUso.length == 1 && ComArea.nrLibriInLibreriaInUso != 0),
         child: Row(
           children: [
             const Padding(padding: EdgeInsets.only(right: 10.0), child: Icon(Icons.delete, color: Colors.red),),
             Text(
-              MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', ComArea.libreriaInUso!.nome),
+              MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', Utils.getFirstSubstring(ComArea.libreriaInUso!.nome, 10)),
               style: const TextStyle(fontWeight: FontWeight.bold),
             )
           ],
@@ -343,8 +343,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   /// Elimina i libri selezionati
   /// 
   Future<bool?> _fnDeleteNrBooksFromList(BuildContext context, LibroBloc libroBloc) async {
-    debugPrint("Elimina -${ListItemsUtils.countSelectedItems(libroBloc.state.data)}- i libri selezionati");
-
     int nrLibriSel = ListItemsUtils.countSelectedItems(libroBloc.state.data);
 
     if (context.mounted) {
@@ -359,6 +357,39 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
                 child: const Text('Si'),
                 onPressed: () {
                   libroBloc.add(DeleteBookSelectedEvent(ListItemsUtils.getSelectedItems(libroBloc.state.data)));
+                  Navigator.pop(context, true);
+                },
+              ),
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+    
+    return false;
+  }
+
+    /// Elimina TUTTI i libri della Libreria
+  /// 
+  Future<bool?> _fnDeleteAllBooksLibreria(BuildContext context, LibroBloc libroBloc) async {
+    if (context.mounted) {
+      return showDialog<bool>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Procedo con l'eliminazione TUTTI i libri della libreria ${ComArea.libreriaInUso!.nome} ?"),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Si'),
+                onPressed: () {
+                  libroBloc.add(DeleteAllLibriLibreriaEvent(ComArea.libreriaInUso!));
                   Navigator.pop(context, true);
                 },
               ),
@@ -433,7 +464,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         }
         if (state is AddedNewLibroState || state is EditLibroState || state is DeletedLibroState ||
             state is LibroInitializedState || state is DeleteAllLibroState || state is DeleteBookSelectedState) {
-          libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+          libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
         } else  if (state is ExportedFileState) {
           _fnRestoreFileBackup(context, libroBloc);
         }
@@ -473,7 +504,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     await Navigator.pushNamed<dynamic> (context, ImportExportFile.pagePath);
 
     if (context.mounted) {
-      libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+      libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
     }
   }
 
@@ -524,7 +555,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         libroBloc.add(EditLibroEvent(ComArea.libreriaInUso!, ret.libroViewModel));
       }
     } else if (immagineCopertinaPre != immagineCopertinaPost) {
-      libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+      libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
     }
   }
 

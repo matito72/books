@@ -1,3 +1,4 @@
+import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
@@ -7,6 +8,7 @@ import 'package:books/utilities/libro_utils.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/bisac_dropdown_menu.dart';
 import 'package:books/widgets/dettaglio_libro/five_stars.dart';
+import 'package:books/widgets/libreria_sel_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:intl/intl.dart';
@@ -386,6 +388,27 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(
+                          'Libreria',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.lightBlue.shade100,
+                          ),                                          
+                        ),
+                        LibreriaSelDropdown(
+                          widget._libroViewModel.siglaLibreria.isNotEmpty
+                            ? widget._libroViewModel.siglaLibreria
+                            : ComArea.libreriaInUso!.sigla,
+                          onPressed: (value) {
+                            setState(() {
+                              widget._libroViewModel.siglaLibreria = value;
+                              // widget._libroViewModel.lstCategoria = [value];
+                              // ComArea.itemComparatorField = OrdinamentoLibri.byName(value);
+                              // widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+                            });
+                          },
+                        ),
+                        const Padding(padding: EdgeInsets.only(top: 10)),
                         Text(
                           'Categoria',
                           style: TextStyle(

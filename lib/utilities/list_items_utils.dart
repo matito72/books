@@ -4,8 +4,8 @@ class ListItemsUtils {
   static List<SelectedItem<T>> convertListToSelectedItems<T>(List<T> lstSelectedItem) {
     List<SelectedItem<T>> ret = [];
     
-    for (T libroViewModel in lstSelectedItem) {
-      ret.add(SelectedItem(libroViewModel));
+    for (T wrapperModel in lstSelectedItem) {
+      ret.add(SelectedItem(wrapperModel));
     }
 
     return ret;
@@ -13,6 +13,17 @@ class ListItemsUtils {
 
   static List<SelectedItem<T>> getSelectedItems<T>(List<SelectedItem<T>> lstSelectedItem) {
     return lstSelectedItem.where((element) => element.sel).toList();
+  }
+
+  static List<T> getSelectedListItems<T>(List<SelectedItem<T>> lstSelectedItem) {
+    List<T> lstOut = [];
+    Iterable<SelectedItem<T>> it = lstSelectedItem.where((element) => element.sel).toList();
+    if (it.isNotEmpty) {
+      for (SelectedItem<T> selectedItem in it) {
+        lstOut.add(selectedItem.item);
+      }
+    }
+    return lstOut;
   }
 
   static bool isThereOneSelected<T>(List<SelectedItem<T>> lstSelectedItem) {

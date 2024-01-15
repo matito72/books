@@ -10,6 +10,8 @@ class OrdinamentoLibri {
   factory OrdinamentoLibri.categoria() => OrdinamentoLibri('Categoria', isSelected: false);
   factory OrdinamentoLibri.dtPubblicazione() => OrdinamentoLibri('Data Pubblicazione', isSelected: false);
   factory OrdinamentoLibri.prezzo() => OrdinamentoLibri('Prezzo', isSelected: false);
+  factory OrdinamentoLibri.dtInserimento() => OrdinamentoLibri('Inserimento', isSelected: false);
+  factory OrdinamentoLibri.libreria() => OrdinamentoLibri('Libreria', isSelected: false);
 
   static List<OrdinamentoLibri> values() {
     return [
@@ -19,6 +21,8 @@ class OrdinamentoLibri {
       OrdinamentoLibri.categoria(),
       OrdinamentoLibri.dtPubblicazione(),
       OrdinamentoLibri.prezzo(),
+      OrdinamentoLibri.dtInserimento(),
+      OrdinamentoLibri.libreria()
     ];
   } 
 

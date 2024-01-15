@@ -50,17 +50,20 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    super.dispose();
     sl<DbLibreriaService>().dispose();
     _pageController.dispose();
+    super.dispose();
   }
 
   // Inizializza/Apre una libreria 
-  void _goToHomeLibriLibreria(LibreriaModel libreriaSel) async {
-    if (ComArea.libreriaInUso == null || libreriaSel.sigla != ComArea.libreriaInUso!.sigla)   {
-      await sl<DbLibreriaService>().changeLibreriaDefault(libreriaSel);
-      ComArea.libreriaInUso = libreriaSel;
-    }
+  void _goToHomeLibriLibreria() async {
+    List<LibreriaModel> lstLibreriaSelClone = List.from(ComArea.lstLibrerieInUso);
+    lstLibreriaSelClone.sort((a, b) => a.sigla.compareTo(b.sigla));
+
+    // if (ComArea.libreriaInUso == null || libreriaSel.sigla != ComArea.libreriaInUso!.sigla)   {
+      await sl<DbLibreriaService>().changeLibreriaDefault(lstLibreriaSelClone);
+    //   ComArea.libreriaInUso = libreriaSel;
+    // }
 
     setState(() {
       if (widgetOptions.length == 2) {

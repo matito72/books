@@ -1,4 +1,5 @@
 import 'package:books/config/com_area.dart';
+import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
 import 'package:books/models/books_search_parameters.module.dart';
@@ -12,8 +13,9 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 class RicercaAvanzata extends StatefulWidget {
   final LibroBloc _libroBloc;
+  final List<LibreriaModel> _lstLibreriaSel;
   
-  const RicercaAvanzata(this._libroBloc, {super.key});
+  const RicercaAvanzata(this._libroBloc, this._lstLibreriaSel, {super.key});
 
   @override
   State<RicercaAvanzata> createState() => _RicercaAvanzataState();
@@ -32,8 +34,6 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
 
   @override
   void dispose() {
-    super.dispose();
-    
     txtTitoloCtrl.dispose();
     txtAutoreCtrl.dispose();
     txtEditoreCtrl.dispose();
@@ -42,6 +42,8 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
     txtPrezzoMinCtrl.dispose();
     txtPrezzoMaxCtrl.dispose();
     txtCategoriaCtrl.dispose();
+    
+    super.dispose();
   }
 
   @override
@@ -365,7 +367,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
               ),
               onPressed: () => {
                 setState(() {
-                    widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+                    widget._libroBloc.add(LoadLibroEvent(widget._lstLibreriaSel));
                 })
                 
               },
@@ -396,7 +398,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
   clearSearchForm() {
     clearTxtControllerForm();
     updateComAreaBooksSearchParameters();
-    widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+    widget._libroBloc.add(LoadLibroEvent(widget._lstLibreriaSel));
   }
 
   clearTxtControllerForm() {

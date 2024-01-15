@@ -42,12 +42,12 @@ class DbLibroService {
     debugPrint('DISPOSE - stop');
   }
 
-  Future<LibroViewModel?> getLibroFromDb(String key) async {
-    Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
-    final LibroViewModel? item = boxLibroView.get(key);
-    await boxLibroView.close();
-    return item; 
-  }
+  // Future<LibroViewModel?> getLibroFromDb(String key) async {
+  //   Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+  //   final LibroViewModel? item = boxLibroView.get(key);
+  //   await boxLibroView.close();
+  //   return item; 
+  // }
 
   Future<int> countLibri() async {
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
@@ -135,7 +135,6 @@ class DbLibroService {
     )
     .toList();
       
-
     // ORDER BY
     lstLibroViewSaved.sort((a, b) => libroViewModelSort(a, b, lstOrdinamentoLibri));
 
@@ -145,8 +144,6 @@ class DbLibroService {
     }
 
     await boxLibroView.close();
-    ComArea.nrLibriVisibiliInLista = lstLibroViewSaved.length;
-
     return lstLibroViewSaved;
   }
 
@@ -191,16 +188,21 @@ class DbLibroService {
     return ret;
   }
 
-  Future<void> saveLibroToDb(LibroViewModel libroToNewEdit, bool isNew) async {
+  Future<String> saveLibroToDb(LibroViewModel libroToNewEdit, bool isNew) async {
     if (isNew && libroToNewEdit.dataInserimento == Constant.dataInserimentoDefault) {
       libroToNewEdit.dataInserimento = Utils.getDataInserimentoNew();
     }
 
-    libroToNewEdit.siglaLibreria = ComArea.libreriaInUso!.sigla;
-    String keyLibro = ComArea.libreriaInUso!.sigla + libroToNewEdit.isbn;
+    if (libroToNewEdit.siglaLibreria.isEmpty) {
+      libroToNewEdit.siglaLibreria = ComArea.libreriaInUso!.sigla;
+    }
+    String keyLibro = libroToNewEdit.dataInserimento; // libroToNewEdit.siglaLibreria + libroToNewEdit.isbn;
     
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
     LibroViewModel? libroViewModel = boxLibroView.get(keyLibro);
+    String siglaLibroOld = (libroViewModel != null) 
+      ? libroViewModel.siglaLibreria
+      : '';
 
     if (isNew && libroViewModel != null) {
       await boxLibroView.close();
@@ -212,12 +214,15 @@ class DbLibroService {
     
     await boxLibroView.put(keyLibro, libroToNewEdit.clonaLibro());
     await boxLibroView.close();
+
+    return siglaLibroOld;
   }
 
   Future<void> deleteLibroToDb(LibroViewModel libroToDelete) async {
-    String keyLibro = ComArea.libreriaInUso!.sigla + libroToDelete.isbn;
+    String keyLibro = libroToDelete.dataInserimento; // libroToDelete.siglaLibreria + libroToDelete.isbn;
 
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
+    
     LibroViewModel? libroViewModel = boxLibroView.get(keyLibro);
     if (libroViewModel == null) {
       await boxLibroView.close();

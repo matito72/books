@@ -5,16 +5,18 @@ import 'package:books/features/libreria/bloc/libreria.bloc.dart';
 import 'package:books/features/libreria/bloc/libreria_events.bloc.dart';
 import 'package:books/features/libreria/bloc/libreria_state.bloc.dart';
 import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/models/selected_item.module.dart';
 import 'package:books/models/widget_desc.module.dart';
 import 'package:books/resources/action_result.dart';
 import 'package:books/utilities/dialog_utils.dart';
+import 'package:books/utilities/list_items_utils.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/appbar/appbar_default.dart';
 import 'package:books/widgets/form_libreria_new.dart';
+import 'package:books/widgets/single_card_libreria.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../config/constant.dart';
 import 'dart:convert' show utf8;
 
@@ -22,9 +24,9 @@ import 'dart:convert' show utf8;
 /// Pagina con la lista delle librerie salvate
 /// 
 class HomeLibreriaScreen extends StatelessWidget {
-  final Function? _fn;
+  final Function()? _fn;
   
-  const HomeLibreriaScreen({Function? fn, super.key}) : _fn = fn;
+  const HomeLibreriaScreen({Function()? fn, super.key}) : _fn = fn;
   
   _addNewLibreria(BuildContext context) async {
     FormLibreriaNew f = FormLibreriaNew(WidgetDescModel('Nome libreria:', '', maxLines:1));
@@ -65,12 +67,20 @@ class HomeLibreriaScreen extends StatelessWidget {
     }
   }
 
-  void _goToHomeLibriLibreria(BuildContext context, LibreriaModel libreria) async {
+  void _goToHomeLibriLibreria(BuildContext context, LibreriaModel? libreriaModelSel) async {
     if (_fn != null) {
-      await _fn!(libreria);
+      LibreriaBloc libreriaBloc = BlocProvider.of<LibreriaBloc>(context);
+      // await _fn!();
       if (context.mounted) {
-        BlocProvider.of<LibreriaBloc>(context).add(const LoadLibreriaEvent());
-      }
+        if (libreriaModelSel != null) {
+          ComArea.libreriaInUso = libreriaModelSel;
+          ComArea.lstLibrerieInUso = ListItemsUtils.getSelectedListItems(libreriaBloc.state.data);
+        }
+        await _fn!();
+        if (context.mounted) {
+          BlocProvider.of<LibreriaBloc>(context).add(const LoadLibreriaEvent());
+        }
+      }      
     }
   }
   
@@ -159,113 +169,33 @@ class HomeLibreriaScreen extends StatelessWidget {
     debugPrint(decoded);
   }
 
-  Widget _widgetListaLibrerie(BuildContext context, List<LibreriaModel> lstLibreriaModel) {
-    LibreriaModel? libreriaInUso = ComArea.libreriaInUso;
-
-    if (libreriaInUso != null && lstLibreriaModel.isNotEmpty) {
-      for (var libreria in lstLibreriaModel) {
-        // debugPrint('==============================> ${libreriaInUso.nome}');
-        if (libreria.sigla == libreriaInUso.sigla) {
-          // libreria = libreriaInUso!;
-          libreria.nrLibriCaricati = libreriaInUso.nrLibriCaricati;
-        } 
+  Widget _widgetListaLibrerie(BuildContext context, List<SelectedItem<LibreriaModel>> lstSelectedItem) {
+    LibreriaBloc libreriaBloc = BlocProvider.of<LibreriaBloc>(context);
+    // LibreriaModel? libreriaInUso = ComArea.libreriaInUso;
+    // if (libreriaInUso != null && lstSelectedItem.isNotEmpty) {
+    //   for (var selectedItem in lstSelectedItem) {
+    //     // debugPrint('==============================> ${libreriaInUso.nome}');
+    //     if (selectedItem.item.sigla == libreriaInUso.sigla) {
+    //       // libreria = libreriaInUso!;
+    //       selectedItem.item.nrLibriCaricati = libreriaInUso.nrLibriCaricati;
+    //     } 
+    //   }
+    // }
+    if (ComArea.lstLibrerieInUso.isNotEmpty) {
+      for (SelectedItem<LibreriaModel> selItem in lstSelectedItem) {
+        LibreriaModel? libreriaCheck = ComArea.lstLibrerieInUso.cast<LibreriaModel?>().firstWhere((element) => element!.sigla == selItem.item.sigla, orElse: () => null);
+        if (libreriaCheck != null) {
+          selItem.item.nrLibriCaricati = libreriaCheck.nrLibriCaricati;
+        }
       }
     }
     
     return Center(
-      child: lstLibreriaModel.isEmpty
+      child: lstSelectedItem.isEmpty
         ? const Text('Nessuna Libreria presente')
         : ListView(
-            children: lstLibreriaModel.map((libreria) {
-              return Card(
-                shadowColor: const Color.fromARGB(139, 48, 63, 159),
-                surfaceTintColor: libreria.isLibreriaDefault ? Colors.green.shade100 : Colors.transparent,
-                // color: (dbLibreriaService.libreriaInUso.nome == libreria.nome) ? Colors.cyan.shade800 : Colors.transparent,
-                color: libreria.isLibreriaDefault ? const Color.fromARGB(103, 0, 131, 143) : const Color.fromARGB(0, 119, 18, 18),
-                // color: Colors.transparent,
-                elevation: 5,
-                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                child: InkWell(
-                  splashColor: Colors.deepOrange[400],
-                  onTap: () => {_goToHomeLibriLibreria(context, libreria)},
-                  child: ListTile(
-                    style: ListTileStyle.list,
-                    leading: Padding(
-                        padding: const EdgeInsets.all(3),
-                        child: FittedBox(
-                          child: CircleAvatar(
-                            radius: 30,
-                            backgroundColor: Colors.green[100],
-                            child: Text(
-                              // libreria.sigla,
-                              Utils.getLastSubstring(libreria.sigla, 4),
-                              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                color: Colors.black, // Colors.blue.shade900,
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold
-                              )
-                            ),
-                          ),
-                        )
-                      ),
-                    title: (!ComArea.initApp) 
-                      ? Text(libreria.nome, style: Theme.of(context).textTheme.headlineSmall)
-                      : (libreriaInUso != null && libreriaInUso.sigla == libreria.sigla) 
-                        ? Text(
-                            libreria.nome.toUpperCase(),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold, 
-                              letterSpacing: 5,
-                              decoration: TextDecoration.underline,
-                              decorationStyle: TextDecorationStyle.double,
-                              color: Colors.white,
-                              decorationColor: Colors.white,
-                            ),
-                          ) 
-                        : Text(
-                          libreria.nome,
-                          // style: const TextStyle(
-                          //   fontWeight: FontWeight.normal, 
-                          //   letterSpacing: 0,
-                          //   color: Colors.white
-                          // )
-                          style: Theme.of(context).textTheme.headlineSmall
-                        ),
-                    // title: Text(libreria.nome),
-                    // title: libreria.isLibreriaDefault ? Text('${libreria.nome} - default') : Text(libreria.nome),
-                    subtitle: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(padding: EdgeInsets.only(top: 10)),
-                        Text(
-                          'Libri: ${libreria.nrLibriCaricati}',
-                          style: Theme.of(context).textTheme.headlineSmall
-                        ),
-                      ],
-                    ),
-                    trailing: Wrap(
-                      // spacing: 0,
-                      children: [
-                        IconButton(
-                          icon: (ComArea.initApp && libreriaInUso != null && libreriaInUso.sigla == libreria.sigla) 
-                            ? Icon(MdiIcons.doorOpen, color: Colors.green,)
-                            : Icon(MdiIcons.doorClosed, color: Colors.green,),
-                          onPressed: () => {_goToHomeLibriLibreria(context, libreria)},
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
-                          onPressed: () => {_editLibreria(context, libreria)},
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete, color: Colors.orange.shade800),
-                          onPressed: () => {_deleteLibreria(context, libreria)},
-                        ),
-                      ], 
-                    ),
-                  ),
-                ),
-              );
+            children: lstSelectedItem.map((selectedItem) {
+              return SingleCardLibreria(libreriaBloc, selectedItem, _goToHomeLibriLibreria, _editLibreria, _deleteLibreria);
             }).toList(),
           ),
       );

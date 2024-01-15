@@ -7,6 +7,7 @@ import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
 import 'package:books/resources/item_exception.dart';
+import 'package:books/utilities/libro_utils.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/download/download_button.dart';
 import 'package:flutter/widgets.dart';
@@ -120,7 +121,8 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
 
         try {
           await dbLibroService.saveLibroToDb(libroModelNew, true);
-          await dbLibreriaService.addLibriInLibreriaInUso(1);
+          await dbLibreriaService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 1);
+          LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
 
           await Future<void>.delayed(const Duration(milliseconds: 50));
           _nrRecordCaricati++;

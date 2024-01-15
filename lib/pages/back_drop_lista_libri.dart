@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 
 class BackDropListaLibri extends StatefulWidget {
   final LibroBloc _libroBloc;
-  
+
   const BackDropListaLibri(this._libroBloc, {super.key});
 
   @override
@@ -42,8 +42,8 @@ class _BackDropListaLibriState extends State<BackDropListaLibri> {
             padding: EdgeInsets.only(top: 16),
           ),
           ComArea.showOrderBy 
-            ? ReorderableOrderBy(widget._libroBloc)
-            : GroupByWidget(widget._libroBloc)
+            ? ReorderableOrderBy(widget._libroBloc, ComArea.lstLibrerieInUso)
+            : GroupByWidget(widget._libroBloc, ComArea.lstLibrerieInUso)
         ],
       ),
     );
@@ -64,7 +64,7 @@ class _BackDropListaLibriState extends State<BackDropListaLibri> {
               ..onTap = () {
                 setState(() {
                   ComArea.showOrderBy = !ComArea.showOrderBy;
-                  widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+                  widget._libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
                 });  
               }
           ),
@@ -76,7 +76,7 @@ class _BackDropListaLibriState extends State<BackDropListaLibri> {
               ..onTap = () {
                 setState(() {
                   ComArea.orderByAsc = !ComArea.orderByAsc;
-                  widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+                  widget._libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
                 });  
               }
           ),
