@@ -75,6 +75,7 @@ class HomeLibreriaScreen extends StatelessWidget {
         if (libreriaModelSel != null) {
           ComArea.libreriaInUso = libreriaModelSel;
           ComArea.lstLibrerieInUso = ListItemsUtils.getSelectedListItems(libreriaBloc.state.data);
+          ComArea.mapCodDescLibreria = Utils.getMapCodDescLibreria(ComArea.lstLibrerieInUso);
         }
         await _fn!();
         if (context.mounted) {

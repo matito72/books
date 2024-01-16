@@ -1,3 +1,4 @@
+import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
 import 'package:books/features/list_items_select/bloc/list_items_select.bloc.dart';
 import 'package:books/features/list_items_select/bloc/list_items_select_events.bloc.dart';
@@ -5,7 +6,6 @@ import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:books/utilities/list_items_utils.dart';
-import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/icon_check_item.dart';
 import 'package:flutter/material.dart';
 
@@ -101,6 +101,24 @@ class _SingleCardBook extends State<SingleCardBook> {
             child: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
           ),
           MenuItemButton(
+            trailingIcon: Text(
+              "Seleziona",
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.green[100],
+              ),
+            ),
+            onPressed: () => setState(() {
+              widget._selItem.sel = !widget._selItem.sel;
+              widget._floatingButtonBloc.add(InitListItemsSelectEvent());
+              widget._floatingButtonBloc.add(RefreshListItemsSelectEvent(widget._libroBloc.state.data));
+            }),
+            child: Icon(Icons.check_circle, color: Colors.green[200],
+              )            
+          ),
+          MenuItemButton(
             trailingIcon: const Text(
               "Elimina libro",
               textAlign: TextAlign.left,
@@ -188,10 +206,22 @@ class _SingleCardBook extends State<SingleCardBook> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Text(
+          //   // 'Dt.Ins.: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget._selItem.item.dataInserimento))}',
+          //   'Cod.: ${Utils.getLastSubstring(widget._selItem.item.dataInserimento, 4)}',
+          //   style: Theme.of(context).textTheme.labelSmall,
+          //   textAlign: TextAlign.right,
+          //   maxLines: 1,
+          //   overflow: TextOverflow.ellipsis,
+          // ),
           Text(
-            // 'Dt.Ins.: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget._selItem.item.dataInserimento))}',
-            'Cod.: ${Utils.getLastSubstring(widget._selItem.item.dataInserimento, 4)}',
-            style: Theme.of(context).textTheme.labelSmall,
+            '${ComArea.mapCodDescLibreria[widget._selItem.item.siglaLibreria]}',
+            style: TextStyle(
+              fontSize: 12.0, 
+              fontStyle: FontStyle.normal,
+              fontWeight: FontWeight.bold,
+              color: Colors.orange[100]
+            ),
             textAlign: TextAlign.right,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

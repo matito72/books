@@ -3,6 +3,7 @@ import 'package:books/config/constant.dart';
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/features/libro/data/services/filtro_util.dart';
+import 'package:books/models/libro_to_save.module.dart';
 import 'package:books/resources/bisac_codes.dart';
 import 'package:books/resources/item_exception.dart';
 import 'package:books/resources/ordinamento_libri.dart';
@@ -99,7 +100,6 @@ class DbLibroService {
 
   Future<List<LibroViewModel>> readLstLibroFromDb(LibreriaModel libreriaSel) async {
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
-    List<OrdinamentoLibri> lstOrdinamentoLibri = ComArea.lstBookOrderBy;
 
     List<LibroViewModel> lstLibroViewSaved = boxLibroView.keys.map((key) {
       final item = boxLibroView.get(key);
@@ -135,37 +135,18 @@ class DbLibroService {
     )
     .toList();
       
-    // ORDER BY
-    lstLibroViewSaved.sort((a, b) => libroViewModelSort(a, b, lstOrdinamentoLibri));
+    // // ORDER BY
+    // List<OrdinamentoLibri> lstOrdinamentoLibri = ComArea.lstBookOrderBy;
+    // lstLibroViewSaved.sort((a, b) => libroViewModelSort(a, b, lstOrdinamentoLibri));
 
-    // ASC - DESC
-    if (!ComArea.orderByAsc) {
-      lstLibroViewSaved = lstLibroViewSaved.reversed.toList();
-    }
+    // // ASC - DESC
+    // if (!ComArea.orderByAsc) {
+    //   lstLibroViewSaved = lstLibroViewSaved.reversed.toList();
+    // }
 
     await boxLibroView.close();
     return lstLibroViewSaved;
   }
-
-  // bool _filtro(LibroViewModel libroViewModel, LibreriaModel libreriaSel) {
-  //   bool filtro = true;
-
-  //   if (ComArea.booksSearchParameters.isNotEmpty()) {
-  //     if (ComArea.booksSearchParameters.txtTitolo != null && ComArea.booksSearchParameters.txtTitolo!.trim().isNotEmpty) {
-  //       filtro = libroViewModel.titolo.trim().toUpperCase().contains(ComArea.booksSearchParameters.txtTitolo!.trim().toUpperCase());
-  //     }
-  //   } else if (ComArea.bookToSearch.isNotEmpty) {
-  //     filtro = (
-  //            libroViewModel.descrizione.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
-  //         || libroViewModel.titolo.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
-  //         || libroViewModel.editore.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
-  //         || libroViewModel.prezzo.trim().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
-  //         || libroViewModel.lstAutori.toString().toUpperCase().contains(ComArea.bookToSearch.trim().toUpperCase())
-  //       );
-  //   }
-      
-  //   return (libroViewModel.siglaLibreria == libreriaSel.sigla) && filtro;
-  // }
 
   int libroViewModelSort(LibroViewModel a, LibroViewModel b, List<OrdinamentoLibri> lstOrdinamentoLibri) {
     int ret = 0;
@@ -188,21 +169,24 @@ class DbLibroService {
     return ret;
   }
 
-  Future<String> saveLibroToDb(LibroViewModel libroToNewEdit, bool isNew) async {
+  Future<void> saveLibroToDb(LibroToSaveModel libroToSaveMode, bool isNew) async {
+    LibroViewModel libroToNewEdit = libroToSaveMode.libroViewModel;
+    String siglaLibreriaOld = libroToSaveMode.siglaLibreriaOld ?? libroToNewEdit.siglaLibreria;
+
     if (isNew && libroToNewEdit.dataInserimento == Constant.dataInserimentoDefault) {
       libroToNewEdit.dataInserimento = Utils.getDataInserimentoNew();
     }
-
     if (libroToNewEdit.siglaLibreria.isEmpty) {
       libroToNewEdit.siglaLibreria = ComArea.libreriaInUso!.sigla;
     }
-    String keyLibro = libroToNewEdit.dataInserimento; // libroToNewEdit.siglaLibreria + libroToNewEdit.isbn;
+    if (libroToNewEdit.isbn.isEmpty) {
+      libroToNewEdit.isbn = Utils.getIsbnTmpNotNull();
+    }
+    String newKeyLibro = libroToNewEdit.siglaLibreria + libroToNewEdit.isbn;
+    String oldKeyLibro = siglaLibreriaOld + libroToNewEdit.isbn;
     
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
-    LibroViewModel? libroViewModel = boxLibroView.get(keyLibro);
-    String siglaLibroOld = (libroViewModel != null) 
-      ? libroViewModel.siglaLibreria
-      : '';
+    LibroViewModel? libroViewModel = boxLibroView.get(isNew ? newKeyLibro : oldKeyLibro);
 
     if (isNew && libroViewModel != null) {
       await boxLibroView.close();
@@ -212,10 +196,13 @@ class DbLibroService {
       throw ItemNotPresentException(ItemType.libro, 'Libro ${libroToNewEdit.isbn}-${libroToNewEdit.titolo} non presente!');
     }
     
-    await boxLibroView.put(keyLibro, libroToNewEdit.clonaLibro());
-    await boxLibroView.close();
+    await boxLibroView.put(newKeyLibro, libroToNewEdit.clonaLibro());
 
-    return siglaLibroOld;
+    if (!isNew && siglaLibreriaOld != libroToNewEdit.siglaLibreria) {
+      await boxLibroView.delete(oldKeyLibro);
+    }
+
+    await boxLibroView.close();
   }
 
   Future<void> deleteLibroToDb(LibroViewModel libroToDelete) async {

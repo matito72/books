@@ -5,6 +5,7 @@ import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:books/features/libro/data/models/libro_search.module.dart';
+import 'package:books/models/libro_to_save.module.dart';
 import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/pages/search_list_book_page.dart';
 import 'package:books/services/libro_search_service.dart';
@@ -71,7 +72,8 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
             );
             
             if (libroDettaglioResult != null) {
-              widget._libroBloc.add(AddLibroEvent(ComArea.libreriaInUso!, libroDettaglioResult.libroViewModel));
+              LibroToSaveModel libroToSaveModel = LibroToSaveModel(libroDettaglioResult.libroViewModel);
+              widget._libroBloc.add(AddLibroEvent(ComArea.libreriaInUso!, libroToSaveModel));
               // widget.appBarBloc.add(SwithToTextAppBarEvent());
             }
           }        

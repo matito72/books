@@ -207,27 +207,6 @@ class _SingleCardLibreria extends State<SingleCardLibreria> {
             opacity: !selectedItem.sel ? 1 : 0.5,
             child: getCardLibreriaContent(),
           ),
-          // Align(
-          //   alignment: Alignment.centerRight,
-          //   child: ColoredBox(
-          //     color: Colors.transparent,
-          //     child: IconCheckItem(
-          //       heightBox: (MediaQuery.of(context).size.height * (selectedItem.sel ? 8 : 0) / 100),
-          //       onPressed: () => setState(() {
-          //         if (ListItemsUtils.isThereOneSelected(widget._libreriaBloc.state.data)) {
-          //           widget._goToHomeLibriLibreria(context, selectedItem.item);
-          //         } else {
-          //           selectedItem.sel = !selectedItem.sel;
-          //         }
-          //       }), 
-          //       isItemSel: selectedItem.sel,
-          //       selectedIcon: Icon(
-          //         MdiIcons.locationEnter,
-          //         color: Colors.green[200],
-          //       )
-          //     ),
-          //   ),
-          // ),
           Visibility(
             maintainSize: true, 
             maintainAnimation: true,

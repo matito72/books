@@ -1,5 +1,6 @@
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/models/libro_to_save.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -99,15 +100,15 @@ class DeCheckAllLibroEvent extends LibroEvent {
 //* NEW
 class AddLibroEvent extends LibroEvent {
   final LibreriaModel libreriaModel;
-  final LibroViewModel libroModelNew;
+  final LibroToSaveModel libroToSaveModel;
 
-  const AddLibroEvent(this.libreriaModel, this.libroModelNew);
+  const AddLibroEvent(this.libreriaModel, this.libroToSaveModel);
 }
 
 //* EDIT
 class EditLibroEvent extends LibroEvent {
   final LibreriaModel libreriaModel;
-  final LibroViewModel libroModelEdit;
+  final LibroToSaveModel libroToSaveModel;
 
-  const EditLibroEvent(this.libreriaModel, this.libroModelEdit);
+  const EditLibroEvent(this.libreriaModel, this.libroToSaveModel);
 }

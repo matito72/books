@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:books/config/constant.dart';
+import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/services/libro_search_service.dart';
@@ -243,6 +244,8 @@ class Utils {
     return str.substring(str.length - n);
   }
 
+  /// Es.: 202401161828010011234
+  ///
   static String getDataInserimentoNew() {
     DateTime now = DateTime.now();
     String strMonth = NumberFormat("00").format(now.month);
@@ -250,11 +253,27 @@ class Utils {
     String strHour = NumberFormat("00").format(now.hour);
     String strMinute = NumberFormat("00").format(now.minute);
     String strSecond = NumberFormat("00").format(now.second);
-    String strMillisecond = NumberFormat("000").format(now.microsecond);
-    String nr999 = NumberFormat("0000").format(Random().nextInt(999));
+    String strMillisecond = NumberFormat("000").format(now.millisecond);
+    // String strMicrosecond = NumberFormat("000").format(now.microsecond);
+    // String nr999 = NumberFormat("0000").format(Random().nextInt(999));
 
-    return '${now.year}$strMonth$strDay$strHour$strMinute$strSecond$strMillisecond$nr999';
+    return '${now.year}$strMonth$strDay$strHour$strMinute$strSecond$strMillisecond${now.microsecond}';
   } 
 
+  /// Es.: XXX1234567890
+  /// 
+  static String getIsbnTmpNotNull() {
+    String nr = NumberFormat("0000000000").format(Random().nextInt(999999999));
+    return 'XXX$nr';
+  } 
 
+  static Map<String, String> getMapCodDescLibreria(List<LibreriaModel> lstLibrerieInUso) {
+    Map<String, String> mapCodDescLibreria = {};
+    if (lstLibrerieInUso.isNotEmpty) {
+      for (LibreriaModel libreriaModel in lstLibrerieInUso) {
+        mapCodDescLibreria.putIfAbsent(libreriaModel.sigla, () => libreriaModel.nome);        
+      }
+    }
+    return mapCodDescLibreria;
+  }
 }

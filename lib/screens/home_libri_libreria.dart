@@ -11,6 +11,7 @@ import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
+import 'package:books/models/libro_to_save.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:books/pages/back_drop_lista_libri.dart';
 import 'package:books/pages/import_export_file.dart';
@@ -288,7 +289,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       ),
       PopupMenuItem<int>(
         value: MenuItemCode.restoreFileBackup.cd, 
-        enabled: (ComArea.lstLibrerieInUso.length == 1 && ComArea.nrLibriInLibreriaInUso != 0),
+        enabled: (ComArea.lstLibrerieInUso.length == 1),
         child: Row(
           children: [
             Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.restore_page, color: Colors.lightGreenAccent[100]),),
@@ -543,6 +544,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   _viewEditLibro(BuildContext context, LibroBloc libroBloc, LibroViewModel libroViewModel) async {
+    String siglaLibreriaOld = libroViewModel.siglaLibreria;
     LibroViewModel libroViewModelClone = libroViewModel.clonaLibro();
     String immagineCopertinaPre = libroViewModel.immagineCopertina;
     LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModelClone, true);
@@ -552,7 +554,8 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       if (ret.isDelete) {
         libroBloc.add(DeleteLibroEvent(ComArea.libreriaInUso!, ret.libroViewModel));
       } else if (ret.isInsert) {
-        libroBloc.add(EditLibroEvent(ComArea.libreriaInUso!, ret.libroViewModel));
+        LibroToSaveModel libroToSaveModel = LibroToSaveModel(ret.libroViewModel, siglaLibreriaOld: siglaLibreriaOld);
+        libroBloc.add(EditLibroEvent(ComArea.libreriaInUso!, libroToSaveModel));
       }
     } else if (immagineCopertinaPre != immagineCopertinaPost) {
       libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
@@ -560,10 +563,12 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   _viewDettaglioLibro(BuildContext context, LibroBloc libroBloc, LibroViewModel libroViewModel) async {
+    String siglaLibreriaOld = libroViewModel.siglaLibreria;
     LibroDettaglioResult? libroDettaglioResult = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModel, false);
 
     if (libroDettaglioResult != null && libroDettaglioResult.isInsert) {
-      libroBloc.add(AddLibroEvent(ComArea.libreriaInUso!, libroDettaglioResult.libroViewModel));
+      LibroToSaveModel libroToSaveModel = LibroToSaveModel(libroDettaglioResult.libroViewModel, siglaLibreriaOld: siglaLibreriaOld);
+      libroBloc.add(AddLibroEvent(ComArea.libreriaInUso!, libroToSaveModel));
     }
   }
 

@@ -7,6 +7,7 @@ class ComArea {
 
   // LIBRERIA IN USO : DATA
   static List<LibreriaModel> lstLibrerieInUso = [];
+  static Map<String, String> mapCodDescLibreria = {};
   static LibreriaModel? libreriaInUso;
   static int nrLibriInLibreriaInUso = 0;
   static int nrLibriVisibiliInLista = 0;

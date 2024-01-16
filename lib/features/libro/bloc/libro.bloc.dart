@@ -1,5 +1,4 @@
 import 'package:books/config/com_area.dart';
-import 'package:books/config/constant.dart';
 import 'package:books/features/import_export/data/services/import_export.service.dart';
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libreria/data/services/db_libreria.service.dart';
@@ -51,6 +50,15 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         }
 
         String msg = lstLibroView.isEmpty ? 'Nessun Libro presente' : 'Nr. ${lstLibroView.length}, libri caricati correttamente';
+
+        // ORDER BY
+        lstLibroView.sort((a, b) => _dbLibroService.libroViewModelSort(a, b, ComArea.lstBookOrderBy));
+
+        // ASC - DESC
+        if (!ComArea.orderByAsc) {
+          lstLibroView = lstLibroView.reversed.toList();
+        }
+
         emit(ListaLibroLoadedState(ListItemsUtils.convertListToSelectedItems(lstLibroView), msg));
       } catch (e) {
         emit(LibroErrorState(e.toString()));
@@ -114,12 +122,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         await sl<DbLibreriaService>().setNrLibriInLibreriaInUso(event.libreriaModel.sigla, 0);
         ComArea.nrLibriVisibiliInLista = 0;
         LibroUtils.clearNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
-        // for (LibreriaModel libreriaModel in ComArea.lstLibrerieInUso) {
-        //   if (libreriaModel.sigla == ComArea.libreriaInUso!.sigla) {
-        //     libreriaModel.nrLibriCaricati = 0;
-        //     break;
-        //   }
-        // }
+
         emit(DeleteAllLibroState(nrRecordDeleted, 'Nr. $nrRecordDeleted: libri eliminati.'));
       } catch (e) {
         emit(LibroErrorState(e.toString()));
@@ -134,12 +137,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         await sl<DbLibreriaService>().setNrLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 0);
         ComArea.nrLibriVisibiliInLista = 0;
         LibroUtils.clearNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
-        // for (LibreriaModel libreriaModel in ComArea.lstLibrerieInUso) {
-        //   if (libreriaModel.sigla == ComArea.libreriaInUso!.sigla) {
-        //     libreriaModel.nrLibriCaricati = 0;
-        //     break;
-        //   }
-        // }
+
         emit(DeleteAllLibroState(nrRecordDeleted, 'Nr. $nrRecordDeleted: libri eliminati.'));
       } catch (e) {
         emit(LibroErrorState(e.toString()));
@@ -150,18 +148,13 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
     on<AddLibroEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
-        event.libroModelNew.dataInserimento = Utils.getDataInserimentoNew();
-        await _dbLibroService.saveLibroToDb(event.libroModelNew, true);
-        await sl<DbLibreriaService>().addLibriInLibreriaInUso(event.libroModelNew.siglaLibreria, 1);
-        LibroUtils.addNrLibriCaricatiInCache(event.libroModelNew.siglaLibreria);
-        // for (LibreriaModel libreriaModel in ComArea.lstLibrerieInUso) {
-        //   if (libreriaModel.sigla == event.libroModelNew.siglaLibreria) {
-        //     libreriaModel.nrLibriCaricati++;
-        //     break;
-        //   }
-        // }
+        event.libroToSaveModel.libroViewModel.dataInserimento = Utils.getDataInserimentoNew();
+        await _dbLibroService.saveLibroToDb(event.libroToSaveModel, true);
+        await sl<DbLibreriaService>().addLibriInLibreriaInUso(event.libroToSaveModel.libroViewModel.siglaLibreria, 1);
+        LibroUtils.addNrLibriCaricatiInCache(event.libroToSaveModel.libroViewModel.siglaLibreria);
+
         ComArea.nrLibriInLibreriaInUso++;
-        emit(AddedNewLibroState('Libro ${event.libroModelNew.titolo} caricato in Libreria.'));
+        emit(AddedNewLibroState('Libro ${event.libroToSaveModel.libroViewModel.titolo} caricato in Libreria.'));
       } catch (e) {
         emit(LibroErrorState(e.toString()));
       }
@@ -171,15 +164,16 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
     on<EditLibroEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
-        String siglaLibroOld = await _dbLibroService.saveLibroToDb(event.libroModelEdit, false);
-        if (siglaLibroOld != event.libroModelEdit.siglaLibreria) {
-          await sl<DbLibreriaService>().removeLibroFromLibreriaInUso(siglaLibroOld);
-          LibroUtils.removeNrLibriCaricatiInCache(siglaLibroOld);
+        String? siglaLibreriaOld = event.libroToSaveModel.siglaLibreriaOld;
+        await _dbLibroService.saveLibroToDb(event.libroToSaveModel, false);
+        if (siglaLibreriaOld != null && siglaLibreriaOld != event.libroToSaveModel.libroViewModel.siglaLibreria) {
+          await sl<DbLibreriaService>().removeLibroFromLibreriaInUso(siglaLibreriaOld);
+          LibroUtils.removeNrLibriCaricatiInCache(siglaLibreriaOld);
 
-          await sl<DbLibreriaService>().addLibriInLibreriaInUso(event.libroModelEdit.siglaLibreria, 1);
-          LibroUtils.addNrLibriCaricatiInCache(event.libroModelEdit.siglaLibreria);
+          await sl<DbLibreriaService>().addLibriInLibreriaInUso(event.libroToSaveModel.libroViewModel.siglaLibreria, 1);
+          LibroUtils.addNrLibriCaricatiInCache(event.libroToSaveModel.libroViewModel.siglaLibreria);
         }
-        emit(EditLibroState('Libro ${event.libroModelEdit.titolo} modificato.'));
+        emit(EditLibroState('Libro ${event.libroToSaveModel.libroViewModel.titolo} modificato.'));
       } catch (e) {
         emit(LibroErrorState(e.toString()));
       }
@@ -193,12 +187,6 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         await sl<DbLibreriaService>().removeLibroFromLibreriaInUso(event.libroModelDelete.siglaLibreria);
         ComArea.nrLibriInLibreriaInUso--;
         LibroUtils.removeNrLibriCaricatiInCache(event.libroModelDelete.siglaLibreria);
-        // for (LibreriaModel libreriaModel in ComArea.lstLibrerieInUso) {
-        //   if (libreriaModel.sigla == event.libroModelDelete.siglaLibreria) {
-        //     libreriaModel.nrLibriCaricati--;
-        //     break;
-        //   }
-        // }
 
         // print("=====> ${Constant.libreriaInUso!.nrLibriCaricati}");
         emit(DeletedLibroState('Libro ${event.libroModelDelete.titolo} eliminato.'));

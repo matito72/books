@@ -39,9 +39,6 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     String? immagineCopertinaPost = libroViewModel.immagineCopertina;
 
     if (!widget._isNewDettaglio && (immagineCopertinaPre != immagineCopertinaPost)) {
-      // UPDATE:
-      // await dbLibroService.saveLibroToDb(libroViewModel, false);
-
       setState(() {
         widget._libroViewModel.immagineCopertina = immagineCopertinaPost;
       });
@@ -164,7 +161,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                           Padding(
                             padding: const EdgeInsets.only(top: 10, left: 15),
                             child: InkWell(
-                              splashColor: Colors.red,
+                              splashColor: Colors.transparent,
                               onDoubleTap: () async {
                                 String? strDesc = await DialogUtils.getDescrizione(context, 'Autore:', widget._libroViewModel.lstAutori[0], maxLines: 3);
                                 if (strDesc != null) {
@@ -189,7 +186,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                           Padding(
                             padding: const EdgeInsets.only(top: 10, left: 15),
                             child: InkWell(
-                              splashColor: Colors.red,
+                              splashColor: Colors.transparent,
                               onDoubleTap: () async {
                                 String? strDesc = await DialogUtils.getDescrizione(context, 'Editore:', widget._libroViewModel.editore, maxLines: 2);
                                 if (strDesc != null) {
@@ -280,7 +277,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                   ),
                 ),
                 InkWell(
-                  splashColor: Colors.red,
+                  splashColor: Colors.transparent,
                   onDoubleTap: () {
                     getYear(context, widget._libroViewModel);
                   },
@@ -306,7 +303,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                   ),
                 ),
                 InkWell(
-                  splashColor: Colors.red,
+                  splashColor: Colors.transparent,
                   onDoubleTap: () async {
                     String? strNr = await DialogUtils.getNumero(context, 'Inserisci il numero pagine', widget._libroViewModel.nrPagine.toString(), true);
                     if (strNr != null) {
@@ -338,7 +335,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                   ),
                 ),
                 InkWell(
-                  splashColor: Colors.red,
+                  splashColor: Colors.transparent,
                   onDoubleTap: () async {
                     String? strNr = await DialogUtils.getNumero(context, 'Inserisci il prezzo', widget._libroViewModel.prezzo.toString(), false);
                     if (strNr != null) {
@@ -435,7 +432,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         InkWell(
-                          splashColor: Colors.red,
+                          splashColor: Colors.transparent,
                           onDoubleTap: () async {
                             String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget._libroViewModel.descrizione);
                             if (strDesc != null) {

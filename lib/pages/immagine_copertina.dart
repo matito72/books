@@ -92,7 +92,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
 
     return SafeArea(
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         appBar: AppBarDefault(
           context: context,
           percHeight: 7,
@@ -187,6 +187,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
               onPressed: () {
                 setState(() {
                   widget._libroViewModel.immagineCopertina = '';
+                  // widget._isImmaginePresent = false;
                 });
               },
               leadingIcon: const Icon(Icons.delete),
@@ -237,7 +238,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
   // }
   
   Widget _getWidgetImageCopertina() {
-    double heightPerc = 70;
+    double heightPerc = 75;
     
     return Center(
       child: SizedBox(
@@ -249,7 +250,9 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
           mainAxisSize: MainAxisSize.max,
           // children: lstWidget,
           children: !swSearchWeb 
-            ? widget._isImmaginePresent ? [_getFutureImage(heightPerc), _widgetMiSentoFortunato()] : [_getFutureImage(heightPerc)]
+            ? (widget._isImmaginePresent && widget._libroViewModel.immagineCopertina.isNotEmpty) 
+              ? [_getFutureImage(heightPerc), _widgetMiSentoFortunato()] 
+              : [_getFutureImage(heightPerc)]
             : [_getGoogleSearchImage()],
         ),
       ),
@@ -317,34 +320,38 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
 
   Widget _getFutureImage(double heightPerc) {
     return widget._libroViewModel.immagineCopertina.isNotEmpty
-    ? FutureBuilder<Image>(
-      future: Utils.getImageFromUrlFile(
-        widget._libroViewModel,
-        w: MediaQuery.of(context).size.width,
-        h: MediaQuery.of(context).size.height * heightPerc/100
-      ),
-      builder: (BuildContext context, AsyncSnapshot<Image> snapshot) {
-        if (!snapshot.hasData) {
-          return const CircularProgressIndicator();
-        } else {
-          return InteractiveViewer(
-            panEnabled: true,
-            boundaryMargin: const EdgeInsets.all(20),
-            minScale: 1,
-            maxScale: 5,
-            child: snapshot.data!,
-          );
+      ? FutureBuilder<Image>(
+        future: Utils.getImageFromUrlFile(
+          widget._libroViewModel,
+          w: MediaQuery.of(context).size.width,
+          h: MediaQuery.of(context).size.height * heightPerc/100
+        ),
+        builder: (BuildContext context, AsyncSnapshot<Image> snapshot) {
+          if (!snapshot.hasData) {
+            return const CircularProgressIndicator();
+          } else {
+            return InteractiveViewer(
+              panEnabled: true,
+              boundaryMargin: const EdgeInsets.all(20),
+              minScale: 1,
+              maxScale: 5,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * heightPerc/100,
+                child: snapshot.data!
+              ),
+            );
+          }
         }
-      }
-    )
-    : Center(
-      heightFactor: 0.8,
-      child: SizedBox(
-        // height: 200,
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Image.asset(Constant.assetImageDefault, fit: BoxFit.none)
-      ),
+      )
+      : Center(
+        heightFactor: 0.8,
+        child: SizedBox(
+          // height: 200,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Image.asset(Constant.assetImageDefault, fit: BoxFit.none)
+        ),
     );
   }
 
