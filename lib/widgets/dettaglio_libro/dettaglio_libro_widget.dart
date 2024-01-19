@@ -3,24 +3,28 @@ import 'package:books/config/constant.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
 import 'package:books/pages/immagine_copertina.dart';
-import 'package:books/utilities/dialog_utils.dart';
-import 'package:books/utilities/libro_utils.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/bisac_dropdown_menu.dart';
+import 'package:books/widgets/dettaglio_libro/fields_libro/descrizione_field.dart';
+import 'package:books/widgets/dettaglio_libro/fields_libro/dt_pubblicazione_field.dart';
+import 'package:books/widgets/dettaglio_libro/fields_libro/editore_field.dart';
+import 'package:books/widgets/dettaglio_libro/fields_libro/isbn_field.dart';
+import 'package:books/widgets/dettaglio_libro/fields_libro/lst_autori_field.dart';
+import 'package:books/widgets/dettaglio_libro/fields_libro/num_pagine_field.dart';
+import 'package:books/widgets/dettaglio_libro/fields_libro/prezzo_field.dart';
+import 'package:books/widgets/dettaglio_libro/fields_libro/titolo_field.dart';
 import 'package:books/widgets/dettaglio_libro/five_stars.dart';
 import 'package:books/widgets/libreria_sel_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:intl/intl.dart';
-import 'package:read_more_text/read_more_text.dart';
-import 'package:expandable_text/expandable_text.dart';
 
 
 class DettaglioLibroWidget extends StatefulWidget {
-  final LibroViewModel _libroViewModel;
+  final LibroViewModel libroViewModel;
   final bool _isNewDettaglio;
   
-  const DettaglioLibroWidget(this._libroViewModel, this._isNewDettaglio, {super.key});
+  const DettaglioLibroWidget(this.libroViewModel, this._isNewDettaglio, {super.key});
 
   @override
   State<DettaglioLibroWidget> createState() => _DettaglioLibroWidget();
@@ -29,7 +33,7 @@ class DettaglioLibroWidget extends StatefulWidget {
 class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
   final DbLibroService dbLibroService = sl<DbLibroService>();
 
-  void goToImageview(context, LibroViewModel libroViewModel) async {
+  void _goToImageview(BuildContext context, LibroViewModel libroViewModel) async {
     String? immagineCopertinaPre = libroViewModel.immagineCopertina;
 
     await Navigator.pushNamed(context, ImmagineCopertina.pagePath, arguments: {
@@ -40,12 +44,12 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
 
     if (!widget._isNewDettaglio && (immagineCopertinaPre != immagineCopertinaPost)) {
       setState(() {
-        widget._libroViewModel.immagineCopertina = immagineCopertinaPost;
+        widget.libroViewModel.immagineCopertina = immagineCopertinaPost;
       });
     }
   }
 
-  void getYear(context, LibroViewModel libroViewModel) async {
+  void _getYear(BuildContext context, LibroViewModel libroViewModel) async {
     DateTime selectedDate = DateTime.now();
     if (libroViewModel.dataPubblicazione.length == 4) {
       selectedDate = DateFormat("yyyy").parse(libroViewModel.dataPubblicazione);
@@ -94,7 +98,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     );
   }
 
-  Widget headerBook() {
+  Widget _headerBook(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,7 +109,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
           child: Padding(
             padding: const EdgeInsets.only(top: 10),
             child: FutureBuilder<Widget>(
-              future: getImageNetwork(context, widget._libroViewModel),
+              future: _getImageNetwork(context, widget.libroViewModel),
               builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
                 if (!snapshot.hasData) {
                   return const Center(
@@ -137,77 +141,22 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10, left: 15),
-                            child: InkWell(
-                              splashColor: Colors.transparent,
-                              onDoubleTap: () async {
-                                String? strDesc = await DialogUtils.getDescrizione(context, 'Titolo:', widget._libroViewModel.titolo, maxLines: 3);
-                                if (strDesc != null) {
-                                  setState(() {
-                                    widget._libroViewModel.titolo = strDesc;
-                                  });
-                                }
-                              },
-                              child: ExpandableText(
-                                widget._libroViewModel.titolo,
-                                maxLines: 2,
-                                style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white),
-                                expandText: '',
-                                collapseText: '<<',
-                              )
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10, left: 15),
-                            child: InkWell(
-                              splashColor: Colors.transparent,
-                              onDoubleTap: () async {
-                                String? strDesc = await DialogUtils.getDescrizione(context, 'Autore:', widget._libroViewModel.lstAutori[0], maxLines: 3);
-                                if (strDesc != null) {
-                                  setState(() {
-                                    widget._libroViewModel.lstAutori = [];
-                                    widget._libroViewModel.lstAutori.add(strDesc);
-                                  });
-                                }
-                              },
-                              child: ExpandableText(
-                                widget._libroViewModel.lstAutori.join(', '),
-                                maxLines: 2,
-                                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  fontStyle: FontStyle.italic,
-                                  color: Colors.white70
-                                ),
-                                expandText: '',
-                                collapseText: '<<',
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10, left: 15),
-                            child: InkWell(
-                              splashColor: Colors.transparent,
-                              onDoubleTap: () async {
-                                String? strDesc = await DialogUtils.getDescrizione(context, 'Editore:', widget._libroViewModel.editore, maxLines: 2);
-                                if (strDesc != null) {
-                                  setState(() {
-                                    widget._libroViewModel.editore = strDesc;
-                                  });
-                                }
-                              },
-                              child: ReadMoreText.selectable(
-                                widget._libroViewModel.editore,
-                                numLines: 1,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                ),
-                                readMoreTextStyle: TextStyle(color: Colors.amber.shade200),
-                                readMoreText: '', 
-                                readLessText: '', 
-                              ),
-                            ),
-                          ),
+                          getTitoloField(context, widget, (strDesc) => {
+                            setState(() {
+                              widget.libroViewModel.titolo = strDesc;
+                            })
+                          }),
+                          getLstAutoriField(context, widget, (strDesc) => {
+                            setState(() {
+                              widget.libroViewModel.lstAutori = [];
+                              widget.libroViewModel.lstAutori.add(strDesc);
+                            })
+                          }),
+                          getEditoreField(context, widget, (strDesc) => {
+                            setState(() {
+                              widget.libroViewModel.editore = strDesc;
+                            })
+                          })
                         ],
                       ),
                     ),
@@ -222,10 +171,14 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                 Padding(
                   padding: const EdgeInsets.only(top: 10, left: 15),
                   child: FiveStars(
-                    value: widget._libroViewModel.stars,
+                    value: widget.libroViewModel.stars,
                     onPressed: (value) {
                       setState(() {
-                        widget._libroViewModel.stars = value;
+                        if (value == widget.libroViewModel.stars) {
+                          widget.libroViewModel.stars = 0;
+                        } else {
+                          widget.libroViewModel.stars = value;
+                        }
                       });
                     },
                   ),
@@ -238,124 +191,33 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     );
   }
 
-  Widget dataHeaderBook() {
+  Widget _dataHeaderBook(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 10, bottom: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SelectableText(
-                  widget._libroViewModel.isbn,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  'ISBN',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.lightBlue.shade100,
-                  ),                                          
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  LibroUtils.getDataFormattata(widget._libroViewModel.dataPubblicazione),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
-                InkWell(
-                  splashColor: Colors.transparent,
-                  onDoubleTap: () {
-                    getYear(context, widget._libroViewModel);
-                  },
-                  child: Text(
-                    'Data',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.lightBlue.shade100,
-                      decoration: TextDecoration.underline,
-                    ), 
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  widget._libroViewModel.nrPagine.toString(),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
-                InkWell(
-                  splashColor: Colors.transparent,
-                  onDoubleTap: () async {
-                    String? strNr = await DialogUtils.getNumero(context, 'Inserisci il numero pagine', widget._libroViewModel.nrPagine.toString(), true);
-                    if (strNr != null) {
-                      setState(() {                                                
-                        int? nr = int.tryParse(strNr);
-                        widget._libroViewModel.nrPagine = (nr != null) ? nr : 0;
-                      });
-                    }
-                  },
-                  child: Text(
-                    'Pagine',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.lightBlue.shade100,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  widget._libroViewModel.prezzo.toString(),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
-                InkWell(
-                  splashColor: Colors.transparent,
-                  onDoubleTap: () async {
-                    String? strNr = await DialogUtils.getNumero(context, 'Inserisci il prezzo', widget._libroViewModel.prezzo.toString(), false);
-                    if (strNr != null) {
-                      setState(() {                                                
-                        double? nr = double.tryParse(strNr);
-                        widget._libroViewModel.prezzo = (nr != null) ? nr.toString() : '';
-                      });
-                    }
-                  },
-                  child: Text(
-                    'Prezzo',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.lightBlue.shade100,
-                      decoration: TextDecoration.underline,
-                    ),                                          
-                  ),
-                ),
-              ],
-            ),
+          getIsbnField(context, widget, (strDesc) => {
+            if (strDesc.isNotEmpty) {
+              widget.libroViewModel.isbn = strDesc              
+            },
+          }),
+            getDtPubblicazioneField(context, widget, () => {
+               _getYear(context, widget.libroViewModel)
+            }),
+            getNrPaginaField(context, widget, (strNr) => {
+              setState(() {                                                
+                int? nr = int.tryParse(strNr);
+                widget.libroViewModel.nrPagine = (nr != null) ? nr : 0;
+              })
+            }),
+            getPrezzoField(context, widget, (strNr) => {
+              setState(() {                                                
+                double? nr = double.tryParse(strNr);
+                widget.libroViewModel.prezzo = (nr != null) ? nr.toString() : '';
+              })
+            }),
           ],
       ),
     );
@@ -369,8 +231,8 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            headerBook(),
-            dataHeaderBook(),
+            _headerBook(context),
+            _dataHeaderBook(context),
             const Padding(
               padding: EdgeInsets.only(top: 5),
             ),
@@ -390,18 +252,16 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.lightBlue.shade100,
+                            fontWeight: FontWeight.bold
                           ),                                          
                         ),
                         LibreriaSelDropdown(
-                          widget._libroViewModel.siglaLibreria.isNotEmpty
-                            ? widget._libroViewModel.siglaLibreria
+                          widget.libroViewModel.siglaLibreria.isNotEmpty
+                            ? widget.libroViewModel.siglaLibreria
                             : ComArea.libreriaInUso!.sigla,
                           onPressed: (value) {
                             setState(() {
-                              widget._libroViewModel.siglaLibreria = value;
-                              // widget._libroViewModel.lstCategoria = [value];
-                              // ComArea.itemComparatorField = OrdinamentoLibri.byName(value);
-                              // widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+                              widget.libroViewModel.siglaLibreria = value;
                             });
                           },
                         ),
@@ -411,15 +271,14 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.lightBlue.shade100,
+                            fontWeight: FontWeight.bold
                           ),                                          
                         ),
                         BisacDropdownMenu(
-                          widget._libroViewModel.lstCategoria[0].toUpperCase(),
+                          widget.libroViewModel.lstCategoria[0].toUpperCase(),
                           onPressed: (value) {
                             setState(() {
-                              widget._libroViewModel.lstCategoria = [value];
-                              // ComArea.itemComparatorField = OrdinamentoLibri.byName(value);
-                              // widget._libroBloc.add(LoadLibroEvent(ComArea.libreriaInUso!));
+                              widget.libroViewModel.lstCategoria = [value];
                             });
                           },
                         ),
@@ -428,56 +287,11 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                     const Padding(
                       padding: EdgeInsets.only(top: 10),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InkWell(
-                          splashColor: Colors.transparent,
-                          onDoubleTap: () async {
-                            String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget._libroViewModel.descrizione);
-                            if (strDesc != null) {
-                              setState(() {
-                                widget._libroViewModel.descrizione = strDesc;
-                              });
-                            }
-                          },
-                          child: Text(
-                            'Descrizione',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.lightBlue.shade100,
-                              decoration: TextDecoration.underline,
-                            ),                                          
-                          ),
-                        ),
-                        ExpandableText(
-                          widget._libroViewModel.descrizione,
-                          maxLines: 10,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                          expandText: '',
-                          collapseText: '<<',
-                        )
-                        // ReadMoreText.selectable(
-                        //   widget._libroViewModel.descrizione,
-                        //   numLines: 10,
-                        //   style: const TextStyle(
-                        //     fontSize: 14,
-                        //     color: Colors.white,
-                        //   ),
-                        //   readMoreTextStyle: TextStyle(color: Colors.blue.shade200,),
-                        //   readMoreIcon: Icon(Icons.more_horiz, color: Colors.blue.shade200),
-                        //   readLessIcon: Icon(Icons.keyboard_arrow_up, color: Colors.blue.shade200),
-                        //   readMoreText: '',
-                        //   readLessText: '',
-                        //   cursorColor: Colors.blue.shade200,
-                        //   cursorRadius: const Radius.circular(1),
-                        //   readMoreAlign: AlignmentDirectional.topEnd,
-                        // )
-                      ],
-                    ),
+                    getDescrizioneField(context, widget, (strDesc) => {
+                      setState(() {
+                        widget.libroViewModel.descrizione = strDesc;
+                      })
+                    }),
                   ],
                 ),
               ),
@@ -488,7 +302,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     );
   }
   
-  Future<InkWell> getImageNetwork(BuildContext context, LibroViewModel libroViewModel) async {
+  Future<InkWell> _getImageNetwork(BuildContext context, LibroViewModel libroViewModel) async {
     if (widget._isNewDettaglio) {
       await Utils.integrazioneDatiIncompleti(libroViewModel);
     } else {
@@ -498,12 +312,44 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     return InkWell(
       splashColor: Colors.red,
       onDoubleTap: () {
-        goToImageview(context, widget._libroViewModel);
+        _goToImageview(context, widget.libroViewModel);
       },
-      child: (widget._libroViewModel.immagineCopertina != '')
-        ? await Utils.getImageFromUrlFile(widget._libroViewModel)
-        : Image.asset(Constant.assetImageDefault, fit: BoxFit.cover,),
+      child: (widget.libroViewModel.immagineCopertina != '')
+        ? await Utils.getImageFromUrlFile(widget.libroViewModel)
+        : getImmagineDaDefinire()
     );
   }
 
+  Widget getImmagineDaDefinire() {
+    return Stack(
+      children: [
+        Container(
+          width: (MediaQuery.of(context).size.width * 85 / 100),
+          height: (MediaQuery.of(context).size.height * 50 / 100),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            // border: Border.all(color: Theme.of(context).colorScheme.background)
+            border: Border.all(color: Theme.of(context).colorScheme.inversePrimary)
+            // border: Border.all(color: Colors.transparent)
+          ),
+          child: Image.asset(Constant.assetImageDefault, fit: BoxFit.cover,),
+        ),
+        Align(
+          alignment: Alignment.topRight,
+          child: IconButton(
+            iconSize: 25,
+            padding: const EdgeInsets.all(0),
+            icon: Icon(
+              Icons.edit,
+              color: Colors.yellowAccent[700]
+            ),
+            alignment: Alignment.topRight,
+            onPressed: () async {
+              _goToImageview(context, widget.libroViewModel);
+            },
+          ),
+        )
+      ],
+    );
+  }
 }

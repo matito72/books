@@ -180,7 +180,7 @@ class DbLibroService {
       libroToNewEdit.siglaLibreria = ComArea.libreriaInUso!.sigla;
     }
     if (libroToNewEdit.isbn.isEmpty) {
-      libroToNewEdit.isbn = Utils.getIsbnTmpNotNull();
+      libroToNewEdit.isbn = Utils.getIsbnGenAutoNotNull();
     }
     String newKeyLibro = libroToNewEdit.siglaLibreria + libroToNewEdit.isbn;
     String oldKeyLibro = siglaLibreriaOld + libroToNewEdit.isbn;

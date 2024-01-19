@@ -1,7 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
+import 'package:books/features/import_export/bloc/import_export_state.bloc.dart';
 import 'package:books/features/import_export/data/models/file_backup.module.dart';
+import 'package:books/features/libreria/data/services/db_libreria.service.dart';
+import 'package:books/features/libro/data/services/db_libro.service.dart';
+import 'package:books/injection_container.dart';
+import 'package:books/models/libro_to_save.module.dart';
+import 'package:books/resources/item_exception.dart';
+import 'package:books/utilities/libro_utils.dart';
+import 'package:books/utilities/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
@@ -63,43 +72,43 @@ class ImportExportService {
     return lstLibriLibreria;
   }
 
-  // Future<ImportedFileBackupState> importIntoDbFileBackup(String? pathFolderFile, String nomeFile) async {
-  //   List<LibroViewModel> lstLibroViewModel = await restoreFileBackup(pathFolderFile, nomeFile);
-  //   int nrLibriCaricati = 0;
+  Future<ImportedFileBackupState> importIntoDbFileBackup(String? pathFolderFile, String nomeFile) async {
+    List<LibroViewModel> lstLibroViewModel = await restoreFileBackup(pathFolderFile, nomeFile);
+    int nrLibriCaricati = 0;
 
-  //   if (lstLibroViewModel.isNotEmpty) {
-  //     DbLibroService dbLibroService = sl<DbLibroService>();
-  //     DbLibreriaService dbLibreriaService = sl<DbLibreriaService>();
+    if (lstLibroViewModel.isNotEmpty) {
+      DbLibroService dbLibroService = sl<DbLibroService>();
+      DbLibreriaService dbLibreriaService = sl<DbLibreriaService>();
 
-  //     String siglaLibreria = ComArea.libreriaInUso!.sigla;
-  //     List<LibroViewModel> lstLibriGiaPresenti = [];
-  //     Object? errore;
+      String siglaLibreria = ComArea.libreriaInUso!.sigla;
+      List<LibroViewModel> lstLibriGiaPresenti = [];
+      Object? errore;
 
-  //     for (var libroModelNew in lstLibroViewModel) {
-  //       libroModelNew.siglaLibreria = siglaLibreria;
-  //       libroModelNew.dataInserimento = Utils.getDataInserimentoNew();
+      for (var libroModelNew in lstLibroViewModel) {
+        libroModelNew.siglaLibreria = siglaLibreria;
+        libroModelNew.dataInserimento = Utils.getDataInserimentoNew();
 
-  //       try {
-  //         await dbLibroService.saveLibroToDb(libroModelNew, true);
-  //         nrLibriCaricati++;
-  //       } on ItemPresentException {
-  //         lstLibriGiaPresenti.add(libroModelNew);
-  //       } catch (e) {
-  //         errore = e;
-  //         break;
-  //       }
-  //     }
+        try {
+          await dbLibroService.saveLibroToDb(LibroToSaveModel(libroModelNew), true);
+          nrLibriCaricati++;
+        } on ItemPresentException {
+          lstLibriGiaPresenti.add(libroModelNew);
+        } catch (e) {
+          errore = e;
+          break;
+        }
+      }
 
-  //     await dbLibreriaService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, nrLibriCaricati);
-  //     LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla, nrToAdd: nrLibriCaricati);
-  //     if (errore != null) {
-  //       throw errore;
-  //     }
-  //     // print('lstLibriGiaPresenti: ${lstLibriGiaPresenti.length}');
-  //   }
+      await dbLibreriaService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, nrLibriCaricati);
+      LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla, nrToAdd: nrLibriCaricati);
+      if (errore != null) {
+        throw errore;
+      }
+      // print('lstLibriGiaPresenti: ${lstLibriGiaPresenti.length}');
+    }
 
-  //   return ImportedFileBackupState(lstLibroViewModel.length, 'Importati $nrLibriCaricati libri.');
-  // }
+    return ImportedFileBackupState(lstLibroViewModel.length, 'Importati $nrLibriCaricati libri.');
+  }
 
   Future<void> shareFileBackup(FileBackupModel fileBackupModel) async {
     final String pathFolder = pathFolderDefault;

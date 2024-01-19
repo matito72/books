@@ -49,16 +49,16 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
       }
     });
 
-    // // ** IMPORT: import file backup into libreria selezionata
-    // on<ImportFileBackupEvent>((event, emit) async {
-    //   emit(const ImportExportWaitingState());
-    //   try {
-    //     ImportedFileBackupState importedFileBackupState = await _importExportService.importIntoDbFileBackup(event.pathFolderFile, event.fileBackupModel.fileName);
-    //     emit(importedFileBackupState);
-    //   } catch (e) {
-    //     emit(ImportExportErrorState(e.toString()));
-    //   }
-    // });
+    // ** IMPORT: import file backup into libreria selezionata
+    on<ImportFileBackupEvent>((event, emit) async {
+      emit(const ImportExportWaitingState());
+      try {
+        ImportedFileBackupState importedFileBackupState = await _importExportService.importIntoDbFileBackup(event.pathFolderFile, event.fileBackupModel.fileName);
+        emit(importedFileBackupState);
+      } catch (e) {
+        emit(ImportExportErrorState(e.toString()));
+      }
+    });
 
   }
 }

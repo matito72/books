@@ -6,12 +6,19 @@ class FiveStars extends StatelessWidget {
 
   const FiveStars({super.key, required int value, required this.onPressed}) : _value = value;
 
+  // Icon _getStar(int pos) {
+  //  if (pos <= _value) {
+  //    return const Icon(Icons.star,  color: Colors.orange);
+  //  } else {
+  //    return const Icon(Icons.star_border, color: Colors.grey);
+  //  }
+  // }
   Icon _getStar(int pos) {
-   if (pos <= _value) {
-     return const Icon(Icons.star,  color: Colors.orange);
-   } else {
-     return const Icon(Icons.star_border, color: Colors.grey);
-   }
+    if (pos > _value) {
+      return const Icon(Icons.star_border, color: Colors.grey);
+    } else {
+      return const Icon(Icons.star,  color: Colors.orange);
+    }
   }
 
   @override
@@ -20,8 +27,8 @@ class FiveStars extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: List.generate(5, (index) {
         return InkWell(
-          child: _getStar(index),
-          onTap: () => onPressed(index),
+          child: _getStar(index+1),
+          onTap: () => onPressed(index+1),
         );
       })
     );

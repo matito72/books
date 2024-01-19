@@ -260,11 +260,11 @@ class Utils {
     return '${now.year}$strMonth$strDay$strHour$strMinute$strSecond$strMillisecond${now.microsecond}';
   } 
 
-  /// Es.: XXX1234567890
+  /// Es.: GEN_123456789
   /// 
-  static String getIsbnTmpNotNull() {
+  static String getIsbnGenAutoNotNull() {
     String nr = NumberFormat("0000000000").format(Random().nextInt(999999999));
-    return 'XXX$nr';
+    return 'GEN$nr';
   } 
 
   static Map<String, String> getMapCodDescLibreria(List<LibreriaModel> lstLibrerieInUso) {
