@@ -15,7 +15,7 @@ class ListaLibriGroupBy extends StatelessWidget {
   final LibroBloc _libroBloc;
   final ListItemsSelectBloc _floatingButtonBloc;
   final List<SelectedItem<LibroViewModel>> _listaLibri;
-  final Function _fnViewDettaglioLibro;
+  final Function(BuildContext, LibroBloc, LibroViewModel, bool) _fnViewDettaglioLibro;
   final Function _fnDeleteLibro;
   final num _nrTot;
 

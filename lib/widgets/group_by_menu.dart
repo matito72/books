@@ -1,5 +1,5 @@
 import 'package:books/config/com_area.dart';
-import 'package:books/resources/ordinamento_libri.dart';
+import 'package:books/resources/libro_field_selected.dart';
 import 'package:flutter/material.dart';
 
 // class GroupByMenu extends StatefulWidget {
@@ -14,15 +14,15 @@ import 'package:flutter/material.dart';
 // class _GroupByState extends State<GroupByMenu> {
 
 class GroupByMenu extends StatelessWidget {
-  final OrdinamentoLibri _initOrdinamentoLibri;
+  final LibroFieldSelected _initOrdinamentoLibri;
   final void Function(String value) onPressed;
 
-  const GroupByMenu({super.key, required OrdinamentoLibri initOrdinamentoLibri, required this.onPressed}) :
+  const GroupByMenu({super.key, required LibroFieldSelected initOrdinamentoLibri, required this.onPressed}) :
     _initOrdinamentoLibri = initOrdinamentoLibri;
 
   @override
   Widget build(BuildContext context) {
-    List<OrdinamentoLibri> lstBookOrderBy = ComArea.lstBookOrderBy;
+    List<LibroFieldSelected> lstBookOrderBy = ComArea.lstBookOrderBy;
 
     return DropdownMenu<String>(
       width: (MediaQuery.of(context).size.width * 35 / 100),
@@ -45,7 +45,7 @@ class GroupByMenu extends StatelessWidget {
       onSelected: (String? value) {
         onPressed(value!);
       },
-      dropdownMenuEntries: lstBookOrderBy.map<DropdownMenuEntry<String>>((OrdinamentoLibri item) {
+      dropdownMenuEntries: lstBookOrderBy.map<DropdownMenuEntry<String>>((LibroFieldSelected item) {
         return DropdownMenuEntry<String>(value: item.label, label: item.label);
       }).toList(),
     );

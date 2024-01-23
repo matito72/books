@@ -6,7 +6,7 @@ import 'package:books/features/libro/data/services/filtro_util.dart';
 import 'package:books/models/libro_to_save.module.dart';
 import 'package:books/resources/bisac_codes.dart';
 import 'package:books/resources/item_exception.dart';
-import 'package:books/resources/ordinamento_libri.dart';
+import 'package:books/resources/libro_field_selected.dart';
 import 'package:books/utilities/ordinamento_libri_utils.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:flutter/foundation.dart';
@@ -148,13 +148,13 @@ class DbLibroService {
     return lstLibroViewSaved;
   }
 
-  int libroViewModelSort(LibroViewModel a, LibroViewModel b, List<OrdinamentoLibri> lstOrdinamentoLibri) {
+  int libroViewModelSort(LibroViewModel a, LibroViewModel b, List<LibroFieldSelected> lstOrdinamentoLibri) {
     int ret = 0;
     bool stop = false;
 
     int i = 0;
     while (!stop && (i < lstOrdinamentoLibri.length)) {
-      OrdinamentoLibri ordinamentoLibri = lstOrdinamentoLibri[i];
+      LibroFieldSelected ordinamentoLibri = lstOrdinamentoLibri[i];
       if (!ordinamentoLibri.isSelected) {
         i++;
         continue;
@@ -206,7 +206,7 @@ class DbLibroService {
   }
 
   Future<void> deleteLibroToDb(LibroViewModel libroToDelete) async {
-    String keyLibro = libroToDelete.dataInserimento; // libroToDelete.siglaLibreria + libroToDelete.isbn;
+    String keyLibro = libroToDelete.siglaLibreria + libroToDelete.isbn;
 
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
     

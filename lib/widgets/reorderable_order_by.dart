@@ -2,7 +2,7 @@ import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
-import 'package:books/resources/ordinamento_libri.dart';
+import 'package:books/resources/libro_field_selected.dart';
 import 'package:flutter/material.dart';
 
 class ReorderableOrderBy extends StatefulWidget {
@@ -16,7 +16,7 @@ class ReorderableOrderBy extends StatefulWidget {
 }
 
 class _ReorderableOrderByState extends State<ReorderableOrderBy> {
-  final List<OrdinamentoLibri> _items = ComArea.lstBookOrderBy;
+  final List<LibroFieldSelected> _items = ComArea.lstBookOrderBy;
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +109,7 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
               if (oldIndex < newIndex) {
                 newIndex -= 1;
               }
-              final OrdinamentoLibri item = _items.removeAt(oldIndex);
+              final LibroFieldSelected item = _items.removeAt(oldIndex);
               _items.insert(newIndex, item);
             });
 

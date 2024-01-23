@@ -66,8 +66,8 @@ Widget _getDescrizioneDaDefinire(BuildContext context, DettaglioLibroWidget widg
     child: Stack(
       children: [
         Container(
-          width: (MediaQuery.of(context).size.width * 95 / 100),
-          height: (MediaQuery.of(context).size.height * 35 / 100),
+          width: (MediaQuery.of(context).size.width * 98 / 100),
+          height: (MediaQuery.of(context).size.height * 30 / 100),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),
             // border: Border.all(color: Theme.of(context).colorScheme.background)

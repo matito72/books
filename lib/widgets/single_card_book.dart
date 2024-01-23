@@ -13,7 +13,7 @@ class SingleCardBook extends StatefulWidget {
   final LibroBloc _libroBloc;
   final ListItemsSelectBloc _floatingButtonBloc;
   final BuildContext _parentContext; 
-  final Function _fnViewDettaglioLibro;
+  final Function(BuildContext, LibroBloc, LibroViewModel, bool) _fnViewDettaglioLibro;
   final Function _fnDeleteLibro;
   final Function _fnGetItemImage;
   final SelectedItem<LibroViewModel> _selItem;
@@ -97,7 +97,7 @@ class _SingleCardBook extends State<SingleCardBook> {
                 color: Colors.amber[200],
               ),
             ),
-            onPressed: () => widget._fnViewDettaglioLibro(widget._parentContext, widget._libroBloc, widget._selItem.item),
+            onPressed: () => widget._fnViewDettaglioLibro(widget._parentContext, widget._libroBloc, widget._selItem.item, true),
             child: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
           ),
           MenuItemButton(
@@ -307,7 +307,7 @@ class _SingleCardBook extends State<SingleCardBook> {
         child: InkWell(
           splashColor: Colors.transparent, //Colors.red,
           onDoubleTap: () async {
-            widget._fnViewDettaglioLibro(widget._parentContext, widget._libroBloc, widget._selItem.item);
+            widget._fnViewDettaglioLibro(widget._parentContext, widget._libroBloc, widget._selItem.item, true);
           },
           onLongPress: () => {
             setState(() {

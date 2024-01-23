@@ -343,7 +343,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
               icon: Icon(
                 MdiIcons.eraser, 
                 size: 20,
-                color: const Color.fromARGB(255, 185, 76, 76)
+                color: const Color.fromARGB(255, 236, 26, 26)
               ),
               onPressed: () => {
                 setState(() {
@@ -363,7 +363,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
               icon: Icon(
                 MdiIcons.bookSearch, 
                 size: 20,
-                color: Colors.lightGreenAccent[100],
+                color: const Color.fromARGB(255, 127, 228, 11),
               ),
               onPressed: () => {
                 setState(() {

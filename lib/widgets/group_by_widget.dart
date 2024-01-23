@@ -3,7 +3,7 @@ import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/data/models/libreria.module.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
-import 'package:books/resources/ordinamento_libri.dart';
+import 'package:books/resources/libro_field_selected.dart';
 import 'package:books/widgets/group_by_menu.dart';
 import 'package:flutter/material.dart';
 
@@ -54,7 +54,7 @@ class _GroupByWidgetState extends State<GroupByWidget> {
                   initOrdinamentoLibri: ComArea.groupComparatorField,
                   onPressed: (value) {
                     setState(() {
-                      ComArea.groupComparatorField = OrdinamentoLibri.byName(value);
+                      ComArea.groupComparatorField = LibroFieldSelected.byName(value);
                       widget._libroBloc.add(LoadLibroEvent(widget._lstLibreriaSel));
                     });
                   },
@@ -64,7 +64,7 @@ class _GroupByWidgetState extends State<GroupByWidget> {
                   initOrdinamentoLibri: ComArea.itemComparatorField,
                   onPressed: (value) {
                     setState(() {
-                      ComArea.itemComparatorField = OrdinamentoLibri.byName(value);
+                      ComArea.itemComparatorField = LibroFieldSelected.byName(value);
                       widget._libroBloc.add(LoadLibroEvent(widget._lstLibreriaSel));
                     });
                   },

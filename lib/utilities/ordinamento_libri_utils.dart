@@ -1,25 +1,26 @@
+import 'package:books/config/com_area.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
-import 'package:books/resources/ordinamento_libri.dart';
+import 'package:books/resources/libro_field_selected.dart';
 import 'package:flutter/material.dart';
 
 class OrdinamentoLibriUtils {
 
-  static dynamic getLibroViewModelValue(LibroViewModel libroViewModel, OrdinamentoLibri ordinamentoLibri) {
+  static dynamic getLibroViewModelValue(LibroViewModel libroViewModel, LibroFieldSelected ordinamentoLibri) {
     return getLibroViewModelValueByLabel(libroViewModel, ordinamentoLibri.label);
   }
 
   static dynamic getLibroViewModelValueByLabel(LibroViewModel libroViewModel, String label) {
-    if (label == OrdinamentoLibri.titolo().label) {
+    if (label == LibroFieldSelected.titolo().label) {
       return libroViewModel.titolo;
-    } else if (label == OrdinamentoLibri.autore().label) {
-      return libroViewModel.lstAutori[0];
-    } else if (label == OrdinamentoLibri.editore().label) {
+    } else if (label == LibroFieldSelected.autore().label) {
+      return libroViewModel.lstAutori.isNotEmpty ? libroViewModel.lstAutori[0] : '';
+    } else if (label == LibroFieldSelected.editore().label) {
       return libroViewModel.editore;
-    } else if (label == OrdinamentoLibri.categoria().label) {
+    } else if (label == LibroFieldSelected.categoria().label) {
       return libroViewModel.lstCategoria[0];
-    } else if (label == OrdinamentoLibri.dtPubblicazione().label) {
+    } else if (label == LibroFieldSelected.dtPubblicazione().label) {
       return libroViewModel.dataPubblicazione;
-    } else if (label == OrdinamentoLibri.prezzo().label) {
+    } else if (label == LibroFieldSelected.prezzo().label) {
       double prezzo = 0;
       if (libroViewModel.prezzo.isNotEmpty) {
         try {
@@ -29,11 +30,15 @@ class OrdinamentoLibriUtils {
         }
       }
       return prezzo;
-    } else if (label == OrdinamentoLibri.dtInserimento().label) {
+    } else if (label == LibroFieldSelected.dtInserimento().label) {
       return libroViewModel.dataInserimento;
-    } else if (label == OrdinamentoLibri.libreria().label) {
-      return libroViewModel.siglaLibreria;
-    } 
+    } else if (label == LibroFieldSelected.libreria().label) {
+      return ComArea.mapCodDescLibreria[libroViewModel.siglaLibreria];
+    } else if (label == LibroFieldSelected.isbn().label) {
+       return libroViewModel.isbn;
+    } else if (label == LibroFieldSelected.nrPagine().label) {
+       return libroViewModel.nrPagine;
+    }
 
     return "";
   } 

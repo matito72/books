@@ -82,7 +82,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
                 icon: Icon(
                   MdiIcons.eraser, 
                   size: 20,
-                  color: const Color.fromARGB(255, 185, 76, 76)
+                  color: const Color.fromARGB(255, 236, 26, 26)
                 ),
                 alignment: Alignment.center,
                 visualDensity: VisualDensity.compact,
