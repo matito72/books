@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 
 class SingleCardBook extends StatefulWidget {
   final LibroBloc _libroBloc;
-  final ListItemsSelectBloc _floatingButtonBloc;
+  final ListItemsSelectBloc _listItemsSelectBloc;
   final BuildContext _parentContext; 
   final Function(BuildContext, LibroBloc, LibroViewModel, bool) _fnViewDettaglioLibro;
   final Function _fnDeleteLibro;
@@ -22,7 +22,7 @@ class SingleCardBook extends StatefulWidget {
 
   const SingleCardBook(
     this._libroBloc,
-    this._floatingButtonBloc,
+    this._listItemsSelectBloc,
     this._parentContext,
     this._fnViewDettaglioLibro, 
     this._fnDeleteLibro,
@@ -112,8 +112,8 @@ class _SingleCardBook extends State<SingleCardBook> {
             ),
             onPressed: () => setState(() {
               widget._selItem.sel = !widget._selItem.sel;
-              widget._floatingButtonBloc.add(InitListItemsSelectEvent());
-              widget._floatingButtonBloc.add(RefreshListItemsSelectEvent(widget._libroBloc.state.data));
+              widget._listItemsSelectBloc.add(InitListItemsSelectEvent());
+              widget._listItemsSelectBloc.add(RefreshListItemsSelectEvent(widget._libroBloc.state.data));
             }),
             child: Icon(Icons.check_circle, color: Colors.green[200],
               )            
@@ -312,16 +312,16 @@ class _SingleCardBook extends State<SingleCardBook> {
           onLongPress: () => {
             setState(() {
                 widget._selItem.sel = !widget._selItem.sel;
-                widget._floatingButtonBloc.add(InitListItemsSelectEvent());
-                widget._floatingButtonBloc.add(RefreshListItemsSelectEvent(widget._libroBloc.state.data));
+                widget._listItemsSelectBloc.add(InitListItemsSelectEvent());
+                widget._listItemsSelectBloc.add(RefreshListItemsSelectEvent(widget._libroBloc.state.data));
             })
           },
           onTap: () => {
             if (ListItemsUtils.isThereOneSelected(widget._libroBloc.state.data)) {
               setState(() {
                   widget._selItem.sel = !widget._selItem.sel;
-                  widget._floatingButtonBloc.add(InitListItemsSelectEvent());
-                  widget._floatingButtonBloc.add(RefreshListItemsSelectEvent(widget._libroBloc.state.data));
+                  widget._listItemsSelectBloc.add(InitListItemsSelectEvent());
+                  widget._listItemsSelectBloc.add(RefreshListItemsSelectEvent(widget._libroBloc.state.data));
               })
             }
           },
@@ -354,8 +354,8 @@ class _SingleCardBook extends State<SingleCardBook> {
               heightBox: (cardBookHeight - 5),
               onPressed: () => setState(() {
                 widget._selItem.sel = !widget._selItem.sel;
-                widget._floatingButtonBloc.add(InitListItemsSelectEvent());
-                widget._floatingButtonBloc.add(RefreshListItemsSelectEvent(widget._libroBloc.state.data));
+                widget._listItemsSelectBloc.add(InitListItemsSelectEvent());
+                widget._listItemsSelectBloc.add(RefreshListItemsSelectEvent(widget._libroBloc.state.data));
               }), 
               isItemSel: widget._selItem.sel,
               selectedIcon: Icon(

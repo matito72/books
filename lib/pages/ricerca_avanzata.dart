@@ -343,7 +343,8 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
               icon: Icon(
                 MdiIcons.eraser, 
                 size: 20,
-                color: const Color.fromARGB(255, 236, 26, 26)
+                // color: const Color.fromARGB(255, 236, 26, 26)
+                color: Colors.deepOrangeAccent
               ),
               onPressed: () => {
                 setState(() {

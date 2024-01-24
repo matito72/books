@@ -40,6 +40,8 @@ enum MenuItemCode {
   restoreFileBackup(25, "Gestione files backup"),
   deleteAllBooksInLibreria(0, "Elimina tutti i libri: '{0}'"),
   deleteNrBooksFromList(30, 'Elimina i libri selezionati'),
+  switchSearchToUserInsert(35, "Attiva inserimento manuale"),
+  switchUserToSearchInsert(40, "Attiva inserimento automatico"),
   // deleteAllBooksInAllLibrerie(30, "Elimina TUTTI i Libri."),
   ;
 
@@ -129,6 +131,12 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       },
       child: BlocBuilder<ListItemsSelectBloc, ListItemsSelectState> (
         builder: (context, state) {
+          if (state is ListItemsInsertByUserState) {
+            ComArea.isBarcode = false;
+          } else if (state is ListItemsInsertByBarcoreState) {
+            ComArea.isBarcode = true;
+          }
+
           return createFloatingActionButton(context, state.nrItemSel, state.isAllSel);
         },
       )
@@ -140,16 +148,27 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
     if (nrItemSel == 0) {
       // DEFAULT
-      return FloatingActionButton(
-        backgroundColor: const Color.fromARGB(176, 0, 97, 100),
-        onPressed: () => _searchBookByBarcode(context),
-        child: Icon(
-          MdiIcons.barcodeScan,
-          color: Theme.of(context).colorScheme.onSecondary,
-        ),        
-      );
-    } 
-    else {
+      if (ComArea.isBarcode) {
+        return FloatingActionButton(
+          backgroundColor: const Color.fromARGB(176, 0, 97, 100),
+          onPressed: () => _searchBookByBarcode(context),
+          child: Icon(
+            MdiIcons.barcodeScan,
+            color: Theme.of(context).colorScheme.onSecondary,
+          ),        
+        );
+      } else {
+        return FloatingActionButton(
+          backgroundColor: const Color.fromARGB(176, 0, 97, 100),
+          onPressed: () => _fnNewBookInLibreria(context, libroBloc),
+          child: Icon(
+            MdiIcons.bookPlus,
+            color: Theme.of(context).colorScheme.onSecondary,
+          ),        
+        );
+      }
+      
+    } else {
       // CHECK-ALL
       return FloatingActionButton.extended(
         backgroundColor: const Color.fromARGB(176, 0, 97, 100),
@@ -233,6 +252,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
   PopupMenuButton _createAppBarPopupMenuButton(BuildContext context) {
     LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
+    ListItemsSelectBloc listItemsSelectBloc = BlocProvider.of<ListItemsSelectBloc>(context);
 
     return PopupMenuButton(
       padding: EdgeInsets.zero,
@@ -272,6 +292,12 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         // }
         else if(value == MenuItemCode.deleteNrBooksFromList.cd) {
           _fnDeleteNrBooksFromList(context, libroBloc);
+        }
+        else if(value == MenuItemCode.switchSearchToUserInsert.cd) {
+          _fnSwitchSearchToUserInsert(context, libroBloc, listItemsSelectBloc);
+        }
+        else if(value == MenuItemCode.switchUserToSearchInsert.cd) {
+          _fnSwitchUserToSearchInsert(context, libroBloc, listItemsSelectBloc);
         }
       }
     );
@@ -319,11 +345,35 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         )
       ),
       PopupMenuItem<int>(
+        value: MenuItemCode.switchSearchToUserInsert.cd, 
+        child: Row(
+          children: [
+            Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(MdiIcons.bookPlus, color: Colors.deepPurple),),
+            Text(
+              MenuItemCode.switchSearchToUserInsert.label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            )
+          ],
+        )
+      ),
+      PopupMenuItem<int>(
+        value: MenuItemCode.switchUserToSearchInsert.cd, 
+        child: Row(
+          children: [
+            Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(MdiIcons.barcodeScan, color: Colors.orange[400]),),
+            Text(
+              MenuItemCode.switchUserToSearchInsert.label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            )
+          ],
+        )
+      ),
+      PopupMenuItem<int>(
         value: MenuItemCode.deleteAllBooksInLibreria.cd, 
         enabled: (ComArea.lstLibrerieInUso.length == 1 && ComArea.nrLibriInLibreriaInUso != 0),
         child: Row(
           children: [
-            const Padding(padding: EdgeInsets.only(right: 10.0), child: Icon(Icons.delete, color: Colors.red),),
+            const Padding(padding: EdgeInsets.only(right: 10.0), child: Icon(Icons.delete, color: Color.fromARGB(255, 216, 94, 86)),),
             Text(
               MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', Utils.getFirstSubstring(ComArea.libreriaInUso!.nome, 10)),
               style: const TextStyle(fontWeight: FontWeight.bold),
@@ -394,6 +444,14 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     return false;
   }
 
+  _fnSwitchSearchToUserInsert(BuildContext context, LibroBloc libroBloc, ListItemsSelectBloc listItemsSelectBloc) {
+    listItemsSelectBloc.add(SwitchSearchToUserInsertEvent());
+  }
+
+  _fnSwitchUserToSearchInsert(BuildContext context, LibroBloc libroBloc, ListItemsSelectBloc listItemsSelectBloc) {
+    listItemsSelectBloc.add(SwitchUserToSearchInsertEvent());
+  }
+
   /// Elimina TUTTI i libri della Libreria
   /// 
   Future<bool?> _fnDeleteAllBooksLibreria(BuildContext context, LibroBloc libroBloc) async {
@@ -436,7 +494,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       isbn: Utils.getIsbnGenAutoNotNull(),
       lstCategoria: [BisacList.nonClassifiable]
       );
-    _viewNewEditLibro(context, libroBloc, libroViewModel, false);
+    _viewNewEditLibro(context, libroBloc, libroViewModel, false, showDelete: false, isInsertByUserInterface: true);
   }
 
   Future<bool?> _exportLibriLibreria(BuildContext context, LibroBloc libroBloc) async {
@@ -573,11 +631,11 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     }
   }
 
-  _viewNewEditLibro(BuildContext context, LibroBloc libroBloc, LibroViewModel libroViewModel, bool isEdit) async {
+  _viewNewEditLibro(BuildContext context, LibroBloc libroBloc, LibroViewModel libroViewModel, bool isEdit, {bool showDelete = true, bool isInsertByUserInterface = false}) async {
     String siglaLibreriaOld = libroViewModel.siglaLibreria;
     LibroViewModel libroViewModelClone = libroViewModel.clonaLibro();
     String immagineCopertinaPre = libroViewModel.immagineCopertina;
-    LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModelClone, true);
+    LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModelClone, showDelete, isInsertByUserInterface);
     String immagineCopertinaPost = libroViewModelClone.immagineCopertina;
 
     if (ret != null) {
@@ -598,7 +656,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
   _viewDettaglioLibro(BuildContext context, LibroBloc libroBloc, LibroViewModel libroViewModel) async {
     String siglaLibreriaOld = libroViewModel.siglaLibreria;
-    LibroDettaglioResult? libroDettaglioResult = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModel, false);
+    LibroDettaglioResult? libroDettaglioResult = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModel, false, true);
 
     if (libroDettaglioResult != null && libroDettaglioResult.isInsert) {
       LibroToSaveModel libroToSaveModel = LibroToSaveModel(libroDettaglioResult.libroViewModel, siglaLibreriaOld: siglaLibreriaOld);

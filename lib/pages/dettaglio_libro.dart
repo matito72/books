@@ -13,12 +13,14 @@ import 'package:flutter_quill/flutter_quill.dart';
 class DettaglioLibro extends StatelessWidget {
   static const String pagePath = '/HomeLibriLibreria/detailBook';
   static const String pageEditPath = '/LibreriaListaLibriPage/detailBook';
+  static const String pageNewBookPath = '/LibreriaListaLibriPage/newBook';
 
   final LibroViewModel libroViewModel;
   final bool showDelete;
+  final bool isInsertByUserInterface;
   late final QuillController controller;
 
-  DettaglioLibro({super.key, required this.libroViewModel, required this.showDelete}) {
+  DettaglioLibro({super.key, required this.libroViewModel, required this.showDelete, this.isInsertByUserInterface = false}) {
     String noteInit = libroViewModel.note;
     // print("===========================> $noteInit");
     if (noteInit.trim() == '') {
@@ -103,7 +105,7 @@ class DettaglioLibro extends StatelessWidget {
                       physics: const NeverScrollableScrollPhysics(),
                       viewportFraction: 1,
                       children: [
-                        DettaglioLibroWidget(libroViewModel, !showDelete),
+                        DettaglioLibroWidget(libroViewModel, !showDelete, isInsertByUserInterface: isInsertByUserInterface),
                         NoteLibro(libroViewModel, controller)
                       ],
                     ),

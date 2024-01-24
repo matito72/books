@@ -35,6 +35,10 @@ class AppRoutes {
         final LibroViewModel libroViewModel = arguments['libroViewModel'];
         return _materialRoute(DettaglioLibro(libroViewModel: libroViewModel, showDelete: true));
 
+      case DettaglioLibro.pageNewBookPath:
+        final LibroViewModel libroViewModel = arguments['libroViewModel'];
+        return _materialRoute(DettaglioLibro(libroViewModel: libroViewModel, showDelete: false, isInsertByUserInterface: true));
+
       case ImmagineCopertina.pagePath:
         final LibroViewModel libroViewModel = arguments['libroViewModel'];
         return _materialRoute(ImmagineCopertina(libroViewModel: libroViewModel));

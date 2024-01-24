@@ -8,10 +8,20 @@ class ListItemsSelectBloc extends Bloc<ListItemsSelectEvent, ListItemsSelectStat
   
   ListItemsSelectBloc() : super(const ListItemsSelectInitializedState()) {
 
+    //* INIT
     on<InitListItemsSelectEvent>((event, emit) async {
       emit(const ListItemsSelectInitializedState());
     });
+
+    on<SwitchSearchToUserInsertEvent>((event, emit) async {
+      emit(const ListItemsInsertByUserState());
+    });
+
+    on<SwitchUserToSearchInsertEvent>((event, emit) async {
+      emit(const ListItemsInsertByBarcoreState());
+    });
     
+    //* REFRESH
     on<RefreshListItemsSelectEvent>((event, emit) async {
       bool isAllSel = false;
       int nrItemSel = 0;

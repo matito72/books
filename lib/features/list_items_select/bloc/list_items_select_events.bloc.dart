@@ -14,6 +14,11 @@ abstract class ListItemsSelectEvent extends Equatable {
 //* INIT
 class InitListItemsSelectEvent extends ListItemsSelectEvent { }
 
+class SwitchSearchToUserInsertEvent extends ListItemsSelectEvent { }
+
+class SwitchUserToSearchInsertEvent extends ListItemsSelectEvent { }
+
+//* REFRESH
 class RefreshListItemsSelectEvent extends ListItemsSelectEvent {
   final List<SelectedItem<LibroViewModel>> lstLibroViewModel;
 

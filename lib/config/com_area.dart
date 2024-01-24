@@ -25,4 +25,6 @@ class ComArea {
   static bool appBarStateText = true;  // DEFAULT
   static String bookToSearch = '';
   static BooksSearchParameters booksSearchParameters = BooksSearchParameters();
+
+  static bool isBarcode = true;
 }

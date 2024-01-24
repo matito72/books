@@ -38,10 +38,16 @@ abstract class LibroUtils {
     return out;
   }
 
-  static viewDettaglioLibro(BuildContext context, LibreriaModel libreriaDefault, LibroSearchModel libroViewModel, bool showDelete) async {
-    LibroDettaglioResult? ret = await Navigator.pushNamed(context, showDelete ? DettaglioLibro.pageEditPath : DettaglioLibro.pagePath, arguments: {
-        'libroViewModel': libroViewModel
-    }) as LibroDettaglioResult?;
+  static viewDettaglioLibro(BuildContext context, LibreriaModel libreriaDefault, LibroSearchModel libroViewModel, bool showDelete, bool isInsertByUserInterface) async {
+    LibroDettaglioResult? ret = await Navigator.pushNamed(
+      context, 
+      showDelete 
+        ? DettaglioLibro.pageEditPath 
+        : isInsertByUserInterface
+          ? DettaglioLibro.pageNewBookPath
+          : DettaglioLibro.pagePath, 
+      arguments: {'libroViewModel': libroViewModel}
+      ) as LibroDettaglioResult?;
 
     return ret;
   }

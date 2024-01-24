@@ -18,8 +18,9 @@ import 'package:intl/intl.dart';
 class DettaglioLibroWidget extends StatefulWidget {
   final LibroViewModel libroViewModel;
   final bool _isNewDettaglio;
+  final bool isInsertByUserInterface;
   
-  const DettaglioLibroWidget(this.libroViewModel, this._isNewDettaglio, {super.key});
+  const DettaglioLibroWidget(this.libroViewModel, this._isNewDettaglio, {super.key, this.isInsertByUserInterface = false});
 
   @override
   State<DettaglioLibroWidget> createState() => _DettaglioLibroWidget();
@@ -389,7 +390,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
   }
   
   Future<Widget> _getImageNetwork(BuildContext context, LibroViewModel libroViewModel) async {
-    if (widget._isNewDettaglio) {
+    if (widget._isNewDettaglio && !widget.isInsertByUserInterface) {
       await Utils.integrazioneDatiIncompleti(libroViewModel);
     } else {
       await Future.delayed(const Duration(milliseconds: 500));

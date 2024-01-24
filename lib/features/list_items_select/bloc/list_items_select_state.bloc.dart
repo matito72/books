@@ -17,7 +17,17 @@ abstract class ListItemsSelectState extends Equatable {
 //* INIT
 class ListItemsSelectInitializedState extends ListItemsSelectState {
   const ListItemsSelectInitializedState() : super(nrItemSel: 0, isAllSel: false);
- }
+}
+
+//* Insert By Barcore
+class ListItemsInsertByBarcoreState extends ListItemsSelectState {
+  const ListItemsInsertByBarcoreState() : super(nrItemSel: 0, isAllSel: false);
+}
+
+//* Insert By Barcore
+class ListItemsInsertByUserState extends ListItemsSelectState {
+  const ListItemsInsertByUserState() : super(nrItemSel: 0, isAllSel: false);
+}
 
 //* REFRESH
 class ListItemsSelectRefreshedState extends ListItemsSelectState {
