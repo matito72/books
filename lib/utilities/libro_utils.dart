@@ -56,6 +56,7 @@ abstract class LibroUtils {
     LibroViewModel cloneLibroViewModel = LibroViewModel(
       libroViewModel.siglaLibreria, 
       libroViewModel.dataInserimento,
+      libroViewModel.dataUltimaModifica,
       googleBookId: libroViewModel.googleBookId,
       isbn: libroViewModel.isbn,
       country: libroViewModel.country, 

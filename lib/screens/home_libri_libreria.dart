@@ -307,7 +307,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     return [
       PopupMenuItem<int>(
         value: MenuItemCode.newBookInLibreria.cd, 
-        enabled: (ComArea.lstLibrerieInUso.length == 1 && ComArea.nrLibriInLibreriaInUso != 0),
         child: Row(
           children: [
             Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(MdiIcons.bookPlus , color: Colors.lightBlueAccent),),
@@ -490,7 +489,8 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   Future<void> _fnNewBookInLibreria(BuildContext context, LibroBloc libroBloc) async {
     LibroViewModel libroViewModel = LibroViewModel(
       ComArea.libreriaInUso!.sigla, 
-      Utils.getDataInserimentoNew(), 
+      Utils.getDataNow(), 
+      Utils.getDataNow(), 
       isbn: Utils.getIsbnGenAutoNotNull(),
       lstCategoria: [BisacList.nonClassifiable]
       );

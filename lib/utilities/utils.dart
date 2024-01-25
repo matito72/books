@@ -246,7 +246,7 @@ class Utils {
 
   /// Es.: 202401161828010011234
   ///
-  static String getDataInserimentoNew() {
+  static String getDataNow() {
     DateTime now = DateTime.now();
     String strMonth = NumberFormat("00").format(now.month);
     String strDay = NumberFormat("00").format(now.day);

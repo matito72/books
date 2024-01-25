@@ -65,6 +65,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       }
     });
 
+    // CHECK
     on<CheckAllLibroEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
@@ -78,6 +79,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       }
     });
 
+    //DE-CHECK
     on<DeCheckAllLibroEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
@@ -148,7 +150,8 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
     on<AddLibroEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
-        event.libroToSaveModel.libroViewModel.dataInserimento = Utils.getDataInserimentoNew();
+        event.libroToSaveModel.libroViewModel.dataInserimento = Utils.getDataNow();
+        event.libroToSaveModel.libroViewModel.dataUltimaModifica = Utils.getDataNow();
         await _dbLibroService.saveLibroToDb(event.libroToSaveModel, true);
         await sl<DbLibreriaService>().addLibriInLibreriaInUso(event.libroToSaveModel.libroViewModel.siglaLibreria, 1);
         LibroUtils.addNrLibriCaricatiInCache(event.libroToSaveModel.libroViewModel.siglaLibreria);
@@ -165,6 +168,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       emit(const LibroWaitingState());
       try {
         String? siglaLibreriaOld = event.libroToSaveModel.siglaLibreriaOld;
+        event.libroToSaveModel.libroViewModel.dataUltimaModifica = Utils.getDataNow();
         await _dbLibroService.saveLibroToDb(event.libroToSaveModel, false);
         if (siglaLibreriaOld != null && siglaLibreriaOld != event.libroToSaveModel.libroViewModel.siglaLibreria) {
           await sl<DbLibreriaService>().removeLibroFromLibreriaInUso(siglaLibreriaOld);

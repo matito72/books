@@ -32,6 +32,8 @@ class OrdinamentoLibriUtils {
       return prezzo;
     } else if (label == LibroFieldSelected.dtInserimento().label) {
       return libroViewModel.dataInserimento;
+    } else if (label == LibroFieldSelected.dtUltimaModifica().label) {
+      return libroViewModel.dataUltimaModifica;
     } else if (label == LibroFieldSelected.libreria().label) {
       return ComArea.mapCodDescLibreria[libroViewModel.siglaLibreria];
     } else if (label == LibroFieldSelected.isbn().label) {

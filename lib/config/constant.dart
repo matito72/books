@@ -12,6 +12,6 @@ class Constant {
 
   static final LibreriaModel libreriaVuota = LibreriaModel(sigla: '', nome: '', nrLibriCaricati: 0);
 
- static const String dataInserimentoDefault = '0000000000000000';
+ static const String dataDefault = '0000000000000000';
  static String now = DateFormat('yyyyMMdd').format(DateTime.now());
 }

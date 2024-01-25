@@ -67,6 +67,7 @@ class DbLibroService {
       return LibroViewModel(
         item!.siglaLibreria,
         item.dataInserimento,
+        item.dataUltimaModifica,
         note: item.note,
         isbn: item.isbn,
         googleBookId: item.googleBookId,
@@ -107,6 +108,7 @@ class DbLibroService {
       return LibroViewModel(
         item!.siglaLibreria,
         item.dataInserimento,
+        item.dataUltimaModifica,
         note: item.note,
         isbn: item.isbn,
         googleBookId: item.googleBookId,
@@ -173,8 +175,8 @@ class DbLibroService {
     LibroViewModel libroToNewEdit = libroToSaveMode.libroViewModel;
     String siglaLibreriaOld = libroToSaveMode.siglaLibreriaOld ?? libroToNewEdit.siglaLibreria;
 
-    if (isNew && libroToNewEdit.dataInserimento == Constant.dataInserimentoDefault) {
-      libroToNewEdit.dataInserimento = Utils.getDataInserimentoNew();
+    if (isNew && libroToNewEdit.dataInserimento == Constant.dataDefault) {
+      libroToNewEdit.dataInserimento = Utils.getDataNow();
     }
     if (libroToNewEdit.siglaLibreria.isEmpty) {
       libroToNewEdit.siglaLibreria = ComArea.libreriaInUso!.sigla;

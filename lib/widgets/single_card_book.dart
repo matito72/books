@@ -206,14 +206,6 @@ class _SingleCardBook extends State<SingleCardBook> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Text(
-          //   // 'Dt.Ins.: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget._selItem.item.dataInserimento))}',
-          //   'Cod.: ${Utils.getLastSubstring(widget._selItem.item.dataInserimento, 4)}',
-          //   style: Theme.of(context).textTheme.labelSmall,
-          //   textAlign: TextAlign.right,
-          //   maxLines: 1,
-          //   overflow: TextOverflow.ellipsis,
-          // ),
           Text(
             '${ComArea.mapCodDescLibreria[widget._selItem.item.siglaLibreria]}',
             style: TextStyle(

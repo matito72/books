@@ -15,7 +15,7 @@ class ComArea {
   // ORDER BY : DEFAULT
   static List<LibroFieldSelected> lstBookOrderBy = LibroFieldSelected.values();
   static bool showOrderBy = true;
-  static bool orderByAsc = true;
+  static bool orderByAsc = false;
 
   // GROUP BY : DEFAULT
   static LibroFieldSelected groupComparatorField = LibroFieldSelected.autore(); 

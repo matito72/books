@@ -24,9 +24,12 @@ class LibroViewModel extends LibroSearchModel {
   @HiveField(19)
   String dataInserimento;
 
+  @HiveField(20)
+  String dataUltimaModifica;
+
   static const String _strNullValue = '';
 
-  LibroViewModel(this.siglaLibreria, this.dataInserimento, {super.googleBookId='', required super.isbn, super.titolo='', super.lstAutori=const [], super.editore='', 
+  LibroViewModel(this.siglaLibreria, this.dataInserimento, this.dataUltimaModifica, {super.googleBookId='', required super.isbn, super.titolo='', super.lstAutori=const [], super.editore='', 
       super.descrizione='', super.immagineCopertina='', super.dataPubblicazione='', super.nrPagine=0, super.lstCategoria=const [], 
       super.previewLink='', super.isEbook=false, super.country='', super.valuta='',  super.prezzo='', this.stars = 0, this.pathImmagineCopertina, this.note = ''}) ;
 
@@ -50,10 +53,16 @@ class LibroViewModel extends LibroSearchModel {
     'pathImmagineCopertina': pathImmagineCopertina,
     'siglaLibreria': siglaLibreria,
     'dataInserimento' : dataInserimento,
+    'ultimaModifica' : dataUltimaModifica,
     'note': note
   };
 
-  LibroViewModel.fromMap(Map<String, dynamic> mappa, {this.stars = 0, this.siglaLibreria = '', this.dataInserimento = Constant.dataInserimentoDefault, this.note = ''}) {
+  LibroViewModel.fromMap(Map<String, dynamic> mappa, {
+      this.stars = 0, 
+      this.siglaLibreria = '', 
+      this.dataInserimento = Constant.dataDefault, 
+      this.dataUltimaModifica = Constant.dataDefault,
+      this.note = ''}) {
     isbn = mappa['isbn'];
     titolo = mappa['titolo'];
     lstAutori = List<String>.from(jsonDecode(mappa['autori']));
@@ -77,6 +86,7 @@ class LibroViewModel extends LibroSearchModel {
   LibroViewModel copyWith({
       String? siglaLibreria,
       String? dataInserimento,
+      String? dataUltimaModifica,
       String? note,
       String? googleBookId,
       String? isbn,
@@ -99,6 +109,7 @@ class LibroViewModel extends LibroSearchModel {
     LibroViewModel(
         siglaLibreria ?? this.siglaLibreria,
         dataInserimento ?? this.dataInserimento,
+        dataUltimaModifica ?? this.dataUltimaModifica,
         note: note ?? this.note,
         googleBookId: googleBookId ?? this.googleBookId,
         isbn: isbn ?? this.isbn, 
@@ -122,6 +133,7 @@ class LibroViewModel extends LibroSearchModel {
    LibroViewModel clonaLibro() => LibroViewModel(
         siglaLibreria,
         dataInserimento,
+        dataUltimaModifica,
         note: note,
         googleBookId: googleBookId,
         isbn: isbn, 
@@ -163,7 +175,12 @@ class LibroViewModel extends LibroSearchModel {
     stars = libroViewModel.stars;
   }
 
-  LibroViewModel.fromGoogleMap(Map<String, dynamic> mappa, {this.stars = 0, this.siglaLibreria = '', this.dataInserimento = Constant.dataInserimentoDefault, this.note = ''}) {
+  LibroViewModel.fromGoogleMap(Map<String, dynamic> mappa, {
+        this.stars = 0, 
+        this.siglaLibreria = '', 
+        this.dataInserimento = Constant.dataDefault, 
+        this.dataUltimaModifica = Constant.dataDefault, 
+        this.note = ''}) {
     googleBookId = mappa['id'] ?? mappa['googleBookId'];
 
     Map<String, dynamic> mapVolumeInfo = mappa['volumeInfo'];

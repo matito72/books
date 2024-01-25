@@ -86,7 +86,8 @@ class ImportExportService {
 
       for (var libroModelNew in lstLibroViewModel) {
         libroModelNew.siglaLibreria = siglaLibreria;
-        libroModelNew.dataInserimento = Utils.getDataInserimentoNew();
+        libroModelNew.dataInserimento = Utils.getDataNow();
+        libroModelNew.dataUltimaModifica = Utils.getDataNow();
 
         try {
           await dbLibroService.saveLibroToDb(LibroToSaveModel(libroModelNew), true);
