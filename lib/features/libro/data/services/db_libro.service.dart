@@ -1,6 +1,8 @@
+import 'dart:io';
+
 import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/features/libro/data/services/filtro_util.dart';
 import 'package:books/models/libro_to_save.module.dart';
@@ -13,10 +15,12 @@ import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 
 class DbLibroService {
+  final Directory _appDocumentDir;
   
-  DbLibroService();
+  DbLibroService(this._appDocumentDir);
 
   Future<bool> init() async {
+    Hive.init(_appDocumentDir.path);
     Hive.registerAdapter(LibroViewModelAdapter());
 
     debugPrint('_boxLibroView - INIZIALIZZATO !!');
@@ -58,7 +62,7 @@ class DbLibroService {
     return count;
   }
 
-  Future<int> countLibriLibreria(LibreriaModel libreriaSel) async {
+  Future<int> countLibriLibreria(LibreriaIsarModel libreriaSel) async {
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
 
     List<LibroViewModel> lstLibroViewSaved = boxLibroView.keys.map((key) {
@@ -89,7 +93,7 @@ class DbLibroService {
       );
     })
     .where(
-      (libroViewModel) => libroViewModel.siglaLibreria == libreriaSel.sigla
+      (libroViewModel) => int.parse(libroViewModel.siglaLibreria) == libreriaSel.sigla
     )
     .toList();
 
@@ -99,7 +103,7 @@ class DbLibroService {
     return count;
   }
 
-  Future<List<LibroViewModel>> readLstLibroFromDb(LibreriaModel libreriaSel) async {
+  Future<List<LibroViewModel>> readLstLibroFromDb(LibreriaIsarModel libreriaSel) async {
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
 
     List<LibroViewModel> lstLibroViewSaved = boxLibroView.keys.map((key) {
@@ -179,7 +183,7 @@ class DbLibroService {
       libroToNewEdit.dataInserimento = Utils.getDataNow();
     }
     if (libroToNewEdit.siglaLibreria.isEmpty) {
-      libroToNewEdit.siglaLibreria = ComArea.libreriaInUso!.sigla;
+      libroToNewEdit.siglaLibreria = ComArea.libreriaInUso!.sigla.toString();
     }
     if (libroToNewEdit.isbn.isEmpty) {
       libroToNewEdit.isbn = Utils.getIsbnGenAutoNotNull();
@@ -232,11 +236,11 @@ class DbLibroService {
     return nrRecordDeleted;
   }
 
-  Future<int> deleteAllLibriLibreria(LibreriaModel libreriaModel) async {
+  Future<int> deleteAllLibriLibreria(LibreriaIsarModel libreriaModel) async {
     int nrRecordDeleted = 0;
     Box<LibroViewModel> boxLibroView = await _openBoxLibroView();
 
-    Iterator<LibroViewModel> it = boxLibroView.values.where((lv) => lv.siglaLibreria.toLowerCase().contains(libreriaModel.sigla.toLowerCase())).toList().iterator;
+    Iterator<LibroViewModel> it = boxLibroView.values.where((lv) => lv.siglaLibreria.toLowerCase().contains(libreriaModel.sigla.toString())).toList().iterator;
     while (it.moveNext()) {
       await it.current.delete();
     }

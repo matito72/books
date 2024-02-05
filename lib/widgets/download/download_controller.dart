@@ -2,7 +2,7 @@
 import 'package:books/config/com_area.dart';
 import 'package:books/features/import_export/data/models/file_backup.module.dart';
 import 'package:books/features/import_export/data/services/import_export.service.dart';
-import 'package:books/features/libreria/data/services/db_libreria.service.dart';
+import 'package:books/features/libreria/data/services/db_libreria.isar.service.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
@@ -110,10 +110,10 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
     
     if (lstLibroViewModel.isNotEmpty) {
       DbLibroService dbLibroService = sl<DbLibroService>();
-      DbLibreriaService dbLibreriaService = sl<DbLibreriaService>();
+      DbLibreriaIsarService dbLibreriaIsarService = sl<DbLibreriaIsarService>();
 
       List downloadProgressStops =  List.generate(nrRecordTot, (i) => (i * 100/(nrRecordTot - 1)).roundToDouble() / 100);
-      String siglaLibreria = ComArea.libreriaInUso!.sigla;
+      String siglaLibreria = ComArea.libreriaInUso!.sigla.toString();
 
       int i = 0;
       for (var libroModelNew in lstLibroViewModel) {
@@ -123,7 +123,7 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
 
         try {
           await dbLibroService.saveLibroToDb(LibroToSaveModel(libroModelNew), true);
-          await dbLibreriaService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 1);
+          await dbLibreriaIsarService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 1);
           LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
 
           await Future<void>.delayed(const Duration(milliseconds: 50));

@@ -342,11 +342,11 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                     ),
                     LibreriaSelDropdown(
                       widget.libroViewModel.siglaLibreria.isNotEmpty
-                        ? widget.libroViewModel.siglaLibreria
+                        ? int.parse(widget.libroViewModel.siglaLibreria)
                         : ComArea.libreriaInUso!.sigla,
                       onPressed: (value) {
                         setState(() {
-                          widget.libroViewModel.siglaLibreria = value;
+                          widget.libroViewModel.siglaLibreria = value.toString();
                         });
                       },
                     ),

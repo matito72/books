@@ -35,7 +35,7 @@ class OrdinamentoLibriUtils {
     } else if (label == LibroFieldSelected.dtUltimaModifica().label) {
       return libroViewModel.dataUltimaModifica;
     } else if (label == LibroFieldSelected.libreria().label) {
-      return ComArea.mapCodDescLibreria[libroViewModel.siglaLibreria];
+      return ComArea.mapCodDescLibreria[int.parse(libroViewModel.siglaLibreria)];
     } else if (label == LibroFieldSelected.isbn().label) {
        return libroViewModel.isbn;
     } else if (label == LibroFieldSelected.nrPagine().label) {

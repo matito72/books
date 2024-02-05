@@ -19,7 +19,7 @@ class DisposeLibroEvent extends ImportExportEvent { }
 
 //* LIST
 class LoadFileBackupEvent extends ImportExportEvent { 
-  final String siglaLibreria;
+  final int siglaLibreria;
 
   const LoadFileBackupEvent(this.siglaLibreria);
 }

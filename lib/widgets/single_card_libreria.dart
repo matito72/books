@@ -1,17 +1,16 @@
 import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/bloc/libreria.bloc.dart';
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:books/utilities/list_items_utils.dart';
-import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/icon_check_item.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class SingleCardLibreria extends StatefulWidget {
   final LibreriaBloc _libreriaBloc;
-  final SelectedItem<LibreriaModel> _selItem;
-  final Function(BuildContext context, LibreriaModel libreriaModelSel) _goToHomeLibriLibreria;
+  final SelectedItem<LibreriaIsarModel> _selItem;
+  final Function(BuildContext context, LibreriaIsarModel libreriaModelSel) _goToHomeLibriLibreria;
   final Function _editLibreria;
   final Function _deleteLibreria;
 
@@ -130,7 +129,7 @@ class _SingleCardLibreria extends State<SingleCardLibreria> {
                   backgroundColor: Colors.green[100],
                   child: Text(
                     // libreria.sigla,
-                    Utils.getLastSubstring(selectedItem.item.sigla, 4),
+                    selectedItem.item.sigla.toString(),
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
                       color: Colors.black, // Colors.blue.shade900,
                       fontSize: 24.0,

@@ -1,4 +1,4 @@
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:books/features/libro/data/models/libro_search.module.dart';
 import 'package:books/models/parameter_google_search.module.dart';
@@ -14,12 +14,12 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 class SearchListBookPage extends StatelessWidget {
   static const String pagePath = '/HomeLibriLibreria/searchListBook';
 
-  final LibreriaModel _libreriaSel;
+  final LibreriaIsarModel _libreriaSel;
   final ParameterGoogleSearchModel _googleSearchModel;
   final String _title;
 
   const SearchListBookPage({
-    super.key, required String title, required LibreriaModel libreriaSel, required ParameterGoogleSearchModel googleSearchModel, /*required this.libri, required this.totalFindedBooks */
+    super.key, required String title, required LibreriaIsarModel libreriaSel, required ParameterGoogleSearchModel googleSearchModel, /*required this.libri, required this.totalFindedBooks */
   }) : _title = title, _googleSearchModel = googleSearchModel, _libreriaSel = libreriaSel;
 
   @override
@@ -45,7 +45,7 @@ class PagewiseListViewExample extends StatelessWidget  {
   
   final String title;
   final ParameterGoogleSearchModel googleSearchModel;
-  final LibreriaModel libreriaSel;
+  final LibreriaIsarModel libreriaSel;
 
   const PagewiseListViewExample(this.googleSearchModel, this.libreriaSel, {super.key, required this.title});
 

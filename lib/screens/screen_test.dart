@@ -1,8 +1,8 @@
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:flutter/material.dart';
 
 class TestScreen extends StatelessWidget {
-  final LibreriaModel libreriaSel;
+  final LibreriaIsarModel libreriaSel;
 
   const TestScreen(this.libreriaSel, {super.key});
   

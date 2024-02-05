@@ -207,7 +207,7 @@ class _SingleCardBook extends State<SingleCardBook> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${ComArea.mapCodDescLibreria[widget._selItem.item.siglaLibreria]}',
+            '${ComArea.mapCodDescLibreria[int.parse(widget._selItem.item.siglaLibreria)]}',
             style: TextStyle(
               fontSize: 12.0, 
               fontStyle: FontStyle.normal,

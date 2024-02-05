@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:books/config/constant.dart';
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/services/libro_search_service.dart';
@@ -267,11 +267,11 @@ class Utils {
     return 'GEN$nr';
   } 
 
-  static Map<String, String> getMapCodDescLibreria(List<LibreriaModel> lstLibrerieInUso) {
-    Map<String, String> mapCodDescLibreria = {};
+  static Map<int, String> getMapCodDescLibreria(List<LibreriaIsarModel> lstLibrerieInUso) {
+    Map<int, String> mapCodDescLibreria = {};
     if (lstLibrerieInUso.isNotEmpty) {
-      for (LibreriaModel libreriaModel in lstLibrerieInUso) {
-        mapCodDescLibreria.putIfAbsent(libreriaModel.sigla, () => libreriaModel.nome);        
+      for (LibreriaIsarModel libreriaIsarModel in lstLibrerieInUso) {
+        mapCodDescLibreria.putIfAbsent(libreriaIsarModel.sigla, () => libreriaIsarModel.nome);        
       }
     }
     return mapCodDescLibreria;

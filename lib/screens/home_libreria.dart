@@ -4,7 +4,7 @@ import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/bloc/libreria.bloc.dart';
 import 'package:books/features/libreria/bloc/libreria_events.bloc.dart';
 import 'package:books/features/libreria/bloc/libreria_state.bloc.dart';
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:books/models/widget_desc.module.dart';
 import 'package:books/resources/action_result.dart';
@@ -33,24 +33,24 @@ class HomeLibreriaScreen extends StatelessWidget {
     String? nomeLibreria = await f.getMultiDescrizione(context);
 
     if (nomeLibreria != null && nomeLibreria.isNotEmpty) {
-      LibreriaModel libreriaModelNew = LibreriaModel(nome: nomeLibreria, sigla: Utils.getDataNow());
+      LibreriaIsarModel libreriaIsarModelNew = LibreriaIsarModel(nome: nomeLibreria, sigla: 0);
       
       if (context.mounted) {
-        BlocProvider.of<LibreriaBloc>(context).add(AddLibreriaEvent(libreriaModelNew));
+        BlocProvider.of<LibreriaBloc>(context).add(AddLibreriaEvent(libreriaIsarModelNew));
       }
     }
   }
 
-  _editLibreria(BuildContext context, LibreriaModel libreria) async {
+  _editLibreria(BuildContext context, LibreriaIsarModel libreria) async {
     List<WidgetDescModel> lstWidgetDescModel = [
       WidgetDescModel('Nome libreria:', libreria.nome, maxLines:1), 
-      WidgetDescModel('Sigla libreria:', libreria.sigla, maxLines:1, readOnly: true)
+      WidgetDescModel('Sigla libreria:', libreria.sigla.toString(), maxLines:1, readOnly: true)
     ];
     String? strDesc = await DialogUtils.getMultiDescrizione(context, lstWidgetDescModel);
     if (strDesc != null && strDesc.contains(';') && strDesc.split(';').length == 2) {
-      LibreriaModel libreriaModelNew = LibreriaModel(
+      LibreriaIsarModel libreriaModelNew = LibreriaIsarModel(
         nome: strDesc.split(';')[0].trim(), 
-        sigla: strDesc.split(';')[1].trim().toUpperCase(),
+        sigla: int.parse(strDesc.split(';')[1]),
         nrLibriCaricati: libreria.nrLibriCaricati
       );
       
@@ -60,20 +60,20 @@ class HomeLibreriaScreen extends StatelessWidget {
     }
   }
 
-  _deleteLibreria(BuildContext context, LibreriaModel libreria) async {
+  _deleteLibreria(BuildContext context, LibreriaIsarModel libreria) async {
     bool? isDeleteLibreria = await DialogUtils.showConfirmationSiNo(context, "Vuoi eliminare la seguente libreria\n\n Nome: '${libreria.nome}'\n\nCod.: ${libreria.sigla}'\n\n con [${libreria.nrLibriCaricati}] libri caricati ?");
     if (context.mounted && isDeleteLibreria != null && isDeleteLibreria) {
       BlocProvider.of<LibreriaBloc>(context).add(DeleteLibreriaEvent(libreria));
     }
   }
 
-  void _goToHomeLibriLibreria(BuildContext context, LibreriaModel? libreriaModelSel) async {
+  void _goToHomeLibriLibreria(BuildContext context, LibreriaIsarModel? libreriaIsarModelSel) async {
     if (_fn != null) {
       LibreriaBloc libreriaBloc = BlocProvider.of<LibreriaBloc>(context);
       // await _fn!();
       if (context.mounted) {
-        if (libreriaModelSel != null) {
-          ComArea.libreriaInUso = libreriaModelSel;
+        if (libreriaIsarModelSel != null) {
+          ComArea.libreriaInUso = libreriaIsarModelSel;
           ComArea.lstLibrerieInUso = ListItemsUtils.getSelectedListItems(libreriaBloc.state.data);
           ComArea.mapCodDescLibreria = Utils.getMapCodDescLibreria(ComArea.lstLibrerieInUso);
         }
@@ -170,7 +170,7 @@ class HomeLibreriaScreen extends StatelessWidget {
   //   debugPrint(decoded);
   // }
 
-  Widget _widgetListaLibrerie(BuildContext context, List<SelectedItem<LibreriaModel>> lstSelectedItem) {
+  Widget _widgetListaLibrerie(BuildContext context, List<SelectedItem<LibreriaIsarModel>> lstSelectedItem) {
     LibreriaBloc libreriaBloc = BlocProvider.of<LibreriaBloc>(context);
     // LibreriaModel? libreriaInUso = ComArea.libreriaInUso;
     // if (libreriaInUso != null && lstSelectedItem.isNotEmpty) {
@@ -183,8 +183,8 @@ class HomeLibreriaScreen extends StatelessWidget {
     //   }
     // }
     if (ComArea.lstLibrerieInUso.isNotEmpty) {
-      for (SelectedItem<LibreriaModel> selItem in lstSelectedItem) {
-        LibreriaModel? libreriaCheck = ComArea.lstLibrerieInUso.cast<LibreriaModel?>().firstWhere((element) => element!.sigla == selItem.item.sigla, orElse: () => null);
+      for (SelectedItem<LibreriaIsarModel> selItem in lstSelectedItem) {
+        LibreriaIsarModel? libreriaCheck = ComArea.lstLibrerieInUso.cast<LibreriaIsarModel?>().firstWhere((element) => element!.sigla == selItem.item.sigla, orElse: () => null);
         if (libreriaCheck != null) {
           selItem.item.nrLibriCaricati = libreriaCheck.nrLibriCaricati;
         }

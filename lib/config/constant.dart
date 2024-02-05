@@ -1,4 +1,4 @@
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:intl/intl.dart';
 
 class Constant {
@@ -10,7 +10,7 @@ class Constant {
   static const String editoreDaDefinire = '<Editore da definire>';
   static const String assetImageDefault = 'assets/images/waiting.png';
 
-  static final LibreriaModel libreriaVuota = LibreriaModel(sigla: '', nome: '', nrLibriCaricati: 0);
+  static final LibreriaIsarModel libreriaVuota = LibreriaIsarModel(sigla: 0, nome: '', nrLibriCaricati: 0);
 
  static const String dataDefault = '0000000000000000';
  static String now = DateFormat('yyyyMMdd').format(DateTime.now());

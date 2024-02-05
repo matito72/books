@@ -1,4 +1,4 @@
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/pages/dettaglio_libro.dart';
@@ -23,7 +23,7 @@ class AppRoutes {
 
       case SearchListBookPage.pagePath:
         final ParameterGoogleSearchModel googleSearchModel = arguments['googleSearchModel'];
-        final LibreriaModel libreriaSel = arguments['libreriaSel'];
+        final LibreriaIsarModel libreriaSel = arguments['libreriaSel'];
         const String title = ' ';
         return _materialRoute(SearchListBookPage(title: title, googleSearchModel: googleSearchModel, libreriaSel: libreriaSel));
 

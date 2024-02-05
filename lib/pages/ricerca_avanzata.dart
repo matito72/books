@@ -1,5 +1,5 @@
 import 'package:books/config/com_area.dart';
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
 import 'package:books/models/books_search_parameters.module.dart';
@@ -13,7 +13,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 class RicercaAvanzata extends StatefulWidget {
   final LibroBloc _libroBloc;
-  final List<LibreriaModel> _lstLibreriaSel;
+  final List<LibreriaIsarModel> _lstLibreriaSel;
   
   const RicercaAvanzata(this._libroBloc, this._lstLibreriaSel, {super.key});
 

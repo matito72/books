@@ -1,4 +1,4 @@
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:books/resources/action_result.dart';
 import 'package:equatable/equatable.dart';
@@ -47,8 +47,8 @@ class EditLibreriaState extends LibreriaSuccessState {
 }
 
 //* LISTA
-class LibreriaLoadedState<T extends List<SelectedItem<LibreriaModel>>> extends LibreriaSuccessState {
-  const LibreriaLoadedState(List<SelectedItem<LibreriaModel>> data, String msg) : super(data: data, msg: msg);
+class LibreriaLoadedState<T extends List<SelectedItem<LibreriaIsarModel>>> extends LibreriaSuccessState {
+  const LibreriaLoadedState(List<SelectedItem<LibreriaIsarModel>> data, String msg) : super(data: data, msg: msg);
 }
 
 //* DISPOSE

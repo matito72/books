@@ -1,4 +1,4 @@
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -21,24 +21,24 @@ class DeleteAllLibreriaEvent extends LibreriaEvent { }
 
 //* NEW
 class AddLibreriaEvent extends LibreriaEvent {
-  final LibreriaModel libreriaModelNew;
+  final LibreriaIsarModel libreriaIsarModelNew;
 
-  const AddLibreriaEvent(this.libreriaModelNew);
+  const AddLibreriaEvent(this.libreriaIsarModelNew);
 }
 
 //* EDIT
 class EditLibreriaEvent extends LibreriaEvent {
-  final LibreriaModel libreriaModelOld;
-  final LibreriaModel libreriaModelNew;
+  final LibreriaIsarModel libreriaIsarModelOld;
+  final LibreriaIsarModel libreriaIsarModelNew;
 
-  const EditLibreriaEvent(this.libreriaModelOld, this.libreriaModelNew);
+  const EditLibreriaEvent(this.libreriaIsarModelOld, this.libreriaIsarModelNew);
 }
 
 //* DELETE
 class DeleteLibreriaEvent extends LibreriaEvent {
-  final LibreriaModel libreriaModelDelete;
+  final LibreriaIsarModel libreriaIsarModelDelete;
 
-  const DeleteLibreriaEvent(this.libreriaModelDelete);
+  const DeleteLibreriaEvent(this.libreriaIsarModelDelete);
 }
 
 //* LIST

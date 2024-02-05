@@ -1,14 +1,14 @@
 import 'package:books/config/com_area.dart';
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/resources/bisac_codes.dart';
 import 'package:books/utilities/utils.dart';
 
 class FiltroUtil {
   LibroViewModel libroViewModel;
-  LibreriaModel libreriaSel;
+  LibreriaIsarModel libreriaIsarSel;
 
-  FiltroUtil(this.libroViewModel, this.libreriaSel);
+  FiltroUtil(this.libroViewModel, this.libreriaIsarSel);
 
   bool filtroAvanzato() {
     bool filtro = true;
@@ -40,7 +40,7 @@ class FiltroUtil {
       );
     }
       
-    return (libroViewModel.siglaLibreria == libreriaSel.sigla) && filtro;
+    return (int.parse(libroViewModel.siglaLibreria) == libreriaIsarSel.sigla) && filtro;
   }
 
   bool filtroSemplice() {
@@ -73,7 +73,7 @@ class FiltroUtil {
       );
     }
       
-    return (libroViewModel.siglaLibreria == libreriaSel.sigla) && filtro;
+    return (int.parse(libroViewModel.siglaLibreria) == libreriaIsarSel.sigla) && filtro;
   }
 
   bool _filtroTitolo(String? str) {

@@ -4,7 +4,7 @@ import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
 import 'package:books/features/import_export/bloc/import_export_state.bloc.dart';
 import 'package:books/features/import_export/data/models/file_backup.module.dart';
-import 'package:books/features/libreria/data/services/db_libreria.service.dart';
+import 'package:books/features/libreria/data/services/db_libreria.isar.service.dart';
 import 'package:books/features/libro/data/services/db_libro.service.dart';
 import 'package:books/injection_container.dart';
 import 'package:books/models/libro_to_save.module.dart';
@@ -78,14 +78,14 @@ class ImportExportService {
 
     if (lstLibroViewModel.isNotEmpty) {
       DbLibroService dbLibroService = sl<DbLibroService>();
-      DbLibreriaService dbLibreriaService = sl<DbLibreriaService>();
+      DbLibreriaIsarService dbLibreriaService = sl<DbLibreriaIsarService>();
 
-      String siglaLibreria = ComArea.libreriaInUso!.sigla;
+      int siglaLibreria = ComArea.libreriaInUso!.sigla;
       List<LibroViewModel> lstLibriGiaPresenti = [];
       Object? errore;
 
       for (var libroModelNew in lstLibroViewModel) {
-        libroModelNew.siglaLibreria = siglaLibreria;
+        libroModelNew.siglaLibreria = siglaLibreria.toString();
         libroModelNew.dataInserimento = Utils.getDataNow();
         libroModelNew.dataUltimaModifica = Utils.getDataNow();
 
@@ -158,7 +158,7 @@ class ImportExportService {
 
         FileStat fileStat = await element.stat();
         lstFileBackup.add(FileBackupModel(
-          siglaLibreria: lstSegmentFileName[2],
+          siglaLibreria: int.parse(lstSegmentFileName[2]),
           fileName: fileName,
           nrRecord: int.parse(lstSegmentFileName[1]),
           dtUltimaModifica: fileStat.changed,

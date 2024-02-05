@@ -19,13 +19,13 @@ import 'package:file_picker/file_picker.dart';
 ///
 class ImportExportFile extends StatelessWidget {
   static const String pagePath = '/HomeLibriLibreria/importExportFile';
-  final String? _siglaLibreria;
+  final int? _siglaLibreria;
 
-  const ImportExportFile({super.key, String? siglaLibreria}) : _siglaLibreria = siglaLibreria;
+  const ImportExportFile({super.key, int? siglaLibreria}) : _siglaLibreria = siglaLibreria;
   
   @override
   Widget build(BuildContext context) {
-    String siglaLibreriaSearch = _siglaLibreria ?? ComArea.libreriaInUso!.sigla;
+    int siglaLibreriaSearch = _siglaLibreria ?? ComArea.libreriaInUso!.sigla;
     ImportExportBloc importExportBloc = sl<ImportExportBloc>();
     
     return SafeArea(
@@ -77,7 +77,7 @@ class ImportExportFile extends StatelessWidget {
     }
   }
   
-  Widget _blocBody(BuildContext context, ImportExportBloc importExportBloc, String siglaLibreriaSearch) {
+  Widget _blocBody(BuildContext context, ImportExportBloc importExportBloc, int siglaLibreriaSearch) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ImportExportBloc>(

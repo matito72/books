@@ -1,20 +1,20 @@
 import 'package:books/config/com_area.dart';
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:flutter/material.dart';
 
 
 class LibreriaSelDropdown extends StatelessWidget {
-  final String siglaLibreria;
+  final int siglaLibreria;
   final int widthPerc;
   final int heighPerc;
-  final void Function(String siglaLibreriaSel) onPressed;
+  final void Function(int siglaLibreriaSel) onPressed;
 
   const LibreriaSelDropdown(this.siglaLibreria, {super.key, required this.onPressed, this.widthPerc=95, this.heighPerc=40});
 
   @override
   Widget build(BuildContext context) {
 
-    return DropdownMenu<String>(
+    return DropdownMenu<int>(
       width: (MediaQuery.of(context).size.width * widthPerc / 100),
       menuHeight: (MediaQuery.of(context).size.height * heighPerc / 100),
       textStyle: Theme.of(context).textTheme.titleSmall, // const TextStyle(fontSize: 14),
@@ -35,11 +35,11 @@ class LibreriaSelDropdown extends StatelessWidget {
         backgroundColor: MaterialStatePropertyAll<Color>(Colors.blueGrey[900]!),
       ),
       initialSelection: siglaLibreria,
-      onSelected: (String? value) {
+      onSelected: (int? value) {
         onPressed(value!);
       },
-      dropdownMenuEntries: ComArea.lstLibrerieInUso.map<DropdownMenuEntry<String>>((LibreriaModel libreriaModel) {
-        return DropdownMenuEntry<String>(value: libreriaModel.sigla, label: libreriaModel.nome);
+      dropdownMenuEntries: ComArea.lstLibrerieInUso.map<DropdownMenuEntry<int>>((LibreriaIsarModel libreriaModel) {
+        return DropdownMenuEntry<int>(value: libreriaModel.sigla, label: libreriaModel.nome);
       }).toList(),
     );
   }

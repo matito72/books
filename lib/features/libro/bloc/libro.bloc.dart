@@ -1,7 +1,7 @@
 import 'package:books/config/com_area.dart';
 import 'package:books/features/import_export/data/services/import_export.service.dart';
-import 'package:books/features/libreria/data/models/libreria.module.dart';
-import 'package:books/features/libreria/data/services/db_libreria.service.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:books/features/libreria/data/services/db_libreria.isar.service.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
 import 'package:books/features/libro/bloc/libro_state.bloc.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
@@ -41,8 +41,8 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         ComArea.nrLibriInLibreriaInUso = 0;
         ComArea.nrLibriVisibiliInLista = 0;
         List<LibroViewModel> lstLibroView = [];
-        List<LibreriaModel> lstLibreriaSel = event.lstLibreriaSel;
-        for (LibreriaModel libreriaModel in lstLibreriaSel) {
+        List<LibreriaIsarModel> lstLibreriaSel = event.lstLibreriaIsarSel;
+        for (LibreriaIsarModel libreriaModel in lstLibreriaSel) {
           List<LibroViewModel> lstTmp = await _dbLibroService.readLstLibroFromDb(libreriaModel);
           lstLibroView.addAll(lstTmp);
           ComArea.nrLibriInLibreriaInUso += libreriaModel.nrLibriCaricati;  // Tot. Nr. libri contenuti nella libreria
@@ -107,8 +107,8 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
     on<ExportAllLibriLibreriaEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
-        final List<LibroViewModel> lstLibroView = await _dbLibroService.readLstLibroFromDb(event.libreriaModel);
-        int nrRecordExported = await sl<ImportExportService>().exportLibriLibreria('libreria', event.libreriaModel.sigla, lstLibroView);
+        final List<LibroViewModel> lstLibroView = await _dbLibroService.readLstLibroFromDb(event.libreriaIsarModel);
+        int nrRecordExported = await sl<ImportExportService>().exportLibriLibreria('libreria', event.libreriaIsarModel.sigla.toString(), lstLibroView);
 
         emit(ExportedFileState(nrRecordExported, 'Nr. $nrRecordExported: libri esportati.'));
       } catch (e) {
@@ -120,8 +120,8 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
     on<DeleteAllLibriLibreriaEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
-        int nrRecordDeleted = await _dbLibroService.deleteAllLibriLibreria(event.libreriaModel);
-        await sl<DbLibreriaService>().setNrLibriInLibreriaInUso(event.libreriaModel.sigla, 0);
+        int nrRecordDeleted = await _dbLibroService.deleteAllLibriLibreria(event.libreriaIsarModel);
+        await sl<DbLibreriaIsarService>().setNrLibriInLibreriaInUso(event.libreriaIsarModel.sigla, 0);
         ComArea.nrLibriVisibiliInLista = 0;
         LibroUtils.clearNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
 
@@ -136,7 +136,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       emit(const LibroWaitingState());
       try {
         int nrRecordDeleted = await _dbLibroService.deleteAllLibri();
-        await sl<DbLibreriaService>().setNrLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 0);
+        await sl<DbLibreriaIsarService>().setNrLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 0);
         ComArea.nrLibriVisibiliInLista = 0;
         LibroUtils.clearNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
 
@@ -153,8 +153,8 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         event.libroToSaveModel.libroViewModel.dataInserimento = Utils.getDataNow();
         event.libroToSaveModel.libroViewModel.dataUltimaModifica = Utils.getDataNow();
         await _dbLibroService.saveLibroToDb(event.libroToSaveModel, true);
-        await sl<DbLibreriaService>().addLibriInLibreriaInUso(event.libroToSaveModel.libroViewModel.siglaLibreria, 1);
-        LibroUtils.addNrLibriCaricatiInCache(event.libroToSaveModel.libroViewModel.siglaLibreria);
+        await sl<DbLibreriaIsarService>().addLibriInLibreriaInUso(int.parse(event.libroToSaveModel.libroViewModel.siglaLibreria), 1);
+        LibroUtils.addNrLibriCaricatiInCache(int.parse(event.libroToSaveModel.libroViewModel.siglaLibreria));
 
         ComArea.nrLibriInLibreriaInUso++;
         emit(AddedNewLibroState('Libro ${event.libroToSaveModel.libroViewModel.titolo} caricato in Libreria.'));
@@ -171,11 +171,11 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         event.libroToSaveModel.libroViewModel.dataUltimaModifica = Utils.getDataNow();
         await _dbLibroService.saveLibroToDb(event.libroToSaveModel, false);
         if (siglaLibreriaOld != null && siglaLibreriaOld != event.libroToSaveModel.libroViewModel.siglaLibreria) {
-          await sl<DbLibreriaService>().removeLibroFromLibreriaInUso(siglaLibreriaOld);
-          LibroUtils.removeNrLibriCaricatiInCache(siglaLibreriaOld);
+          await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(int.parse(siglaLibreriaOld));
+          LibroUtils.removeNrLibriCaricatiInCache(int.parse(siglaLibreriaOld));
 
-          await sl<DbLibreriaService>().addLibriInLibreriaInUso(event.libroToSaveModel.libroViewModel.siglaLibreria, 1);
-          LibroUtils.addNrLibriCaricatiInCache(event.libroToSaveModel.libroViewModel.siglaLibreria);
+          await sl<DbLibreriaIsarService>().addLibriInLibreriaInUso(int.parse(event.libroToSaveModel.libroViewModel.siglaLibreria), 1);
+          LibroUtils.addNrLibriCaricatiInCache(int.parse(event.libroToSaveModel.libroViewModel.siglaLibreria));
         }
         emit(EditLibroState('Libro ${event.libroToSaveModel.libroViewModel.titolo} modificato.'));
       } catch (e) {
@@ -188,9 +188,9 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       emit(const LibroWaitingState());
       try {
         await _dbLibroService.deleteLibroToDb(event.libroModelDelete);
-        await sl<DbLibreriaService>().removeLibroFromLibreriaInUso(event.libroModelDelete.siglaLibreria);
+        await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(int.parse(event.libroModelDelete.siglaLibreria));
         ComArea.nrLibriInLibreriaInUso--;
-        LibroUtils.removeNrLibriCaricatiInCache(event.libroModelDelete.siglaLibreria);
+        LibroUtils.removeNrLibriCaricatiInCache(int.parse(event.libroModelDelete.siglaLibreria));
 
         // print("=====> ${Constant.libreriaInUso!.nrLibriCaricati}");
         emit(DeletedLibroState('Libro ${event.libroModelDelete.titolo} eliminato.'));
@@ -205,10 +205,10 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         int nrDel = 0;
         for (SelectedItem<LibroViewModel> selectedItem in event.lstSelectedItem) {
           await _dbLibroService.deleteLibroToDb(selectedItem.item);
-          await sl<DbLibreriaService>().removeLibroFromLibreriaInUso(selectedItem.item.siglaLibreria);
+          await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(int.parse(selectedItem.item.siglaLibreria));
           
           ComArea.nrLibriInLibreriaInUso--;
-          LibroUtils.removeNrLibriCaricatiInCache(selectedItem.item.siglaLibreria);
+          LibroUtils.removeNrLibriCaricatiInCache(int.parse(selectedItem.item.siglaLibreria));
           nrDel++;
         }
 

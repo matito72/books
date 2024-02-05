@@ -1,6 +1,6 @@
 
 import 'package:books/config/com_area.dart';
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
 import 'package:books/features/libro/bloc/libro_events.bloc.dart';
 import 'package:books/resources/libro_field_selected.dart';
@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 
 class GroupByWidget extends StatefulWidget {
   final LibroBloc _libroBloc;
-  final List<LibreriaModel> _lstLibreriaSel;
+  final List<LibreriaIsarModel> _lstLibreriaSel;
   
   const GroupByWidget(this._libroBloc, this._lstLibreriaSel, {super.key});
 

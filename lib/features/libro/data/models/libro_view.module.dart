@@ -80,7 +80,7 @@ class LibroViewModel extends LibroSearchModel {
     googleBookId = mappa['id'] ?? mappa['googleBookId'];
     stars = mappa['stars'];
     pathImmagineCopertina = mappa['pathImmagineCopertina'];
-    siglaLibreria = ComArea.libreriaInUso!.sigla;
+    siglaLibreria = ComArea.libreriaInUso!.sigla.toString();
   }
 
   LibroViewModel copyWith({

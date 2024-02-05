@@ -1,4 +1,4 @@
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/models/libro_to_save.module.dart';
 import 'package:books/models/selected_item.module.dart';
@@ -21,23 +21,23 @@ class DisposeLibroEvent extends LibroEvent { }
 
 //* EXPORT ALL BOOKS LIBRERIA
 class ExportAllLibriLibreriaEvent extends LibroEvent { 
-  final LibreriaModel libreriaModel;
+  final LibreriaIsarModel libreriaIsarModel;
 
-  const ExportAllLibriLibreriaEvent(this.libreriaModel);
+  const ExportAllLibriLibreriaEvent(this.libreriaIsarModel);
 }
 
 //* IMPORT ALL BOOKS LIBRERIA
 class ImportAllLibriLibreriaEvent extends LibroEvent { 
-  final LibreriaModel libreriaModel;
+  final LibreriaIsarModel libreriaIsarModel;
 
-  const ImportAllLibriLibreriaEvent(this.libreriaModel);
+  const ImportAllLibriLibreriaEvent(this.libreriaIsarModel);
 }
 
 //* DELETE ALL BOOKS LIBRERIA
 class DeleteAllLibriLibreriaEvent extends LibroEvent { 
-  final LibreriaModel libreriaModel;
+  final LibreriaIsarModel libreriaIsarModel;
 
-  const DeleteAllLibriLibreriaEvent(this.libreriaModel);
+  const DeleteAllLibriLibreriaEvent(this.libreriaIsarModel);
 }
 
 //* DELETE LIBRI SELEZIONATI
@@ -54,17 +54,17 @@ class DeleteAllLibriEvent extends LibroEvent {
 
 //* DEL LIBRO
 class DeleteLibroEvent extends LibroEvent {
-  final LibreriaModel libreriaModel;
+  final LibreriaIsarModel libreriaIsarModel;
   final LibroViewModel libroModelDelete;
 
-  const DeleteLibroEvent(this.libreriaModel, this.libroModelDelete);
+  const DeleteLibroEvent(this.libreriaIsarModel, this.libroModelDelete);
 }
 
 //* LIST
 class LoadLibroEvent extends LibroEvent { 
-  final List<LibreriaModel> lstLibreriaSel;
+  final List<LibreriaIsarModel> lstLibreriaIsarSel;
 
-  const LoadLibroEvent(this.lstLibreriaSel);
+  const LoadLibroEvent(this.lstLibreriaIsarSel);
 }
 
 class CheckAllLibroEvent extends LibroEvent { 
@@ -99,16 +99,16 @@ class DeCheckAllLibroEvent extends LibroEvent {
 
 //* NEW
 class AddLibroEvent extends LibroEvent {
-  final LibreriaModel libreriaModel;
+  final LibreriaIsarModel libreriaIsarModel;
   final LibroToSaveModel libroToSaveModel;
 
-  const AddLibroEvent(this.libreriaModel, this.libroToSaveModel);
+  const AddLibroEvent(this.libreriaIsarModel, this.libroToSaveModel);
 }
 
 //* EDIT
 class EditLibroEvent extends LibroEvent {
-  final LibreriaModel libreriaModel;
+  final LibreriaIsarModel libreriaIsarModel;
   final LibroToSaveModel libroToSaveModel;
 
-  const EditLibroEvent(this.libreriaModel, this.libroToSaveModel);
+  const EditLibroEvent(this.libreriaIsarModel, this.libroToSaveModel);
 }

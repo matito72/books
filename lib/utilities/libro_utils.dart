@@ -1,5 +1,5 @@
 import 'package:books/config/com_area.dart';
-import 'package:books/features/libreria/data/models/libreria.module.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:books/features/libro/data/models/libro_search.module.dart';
 import 'package:books/features/libro/data/models/libro_view.module.dart';
@@ -38,7 +38,7 @@ abstract class LibroUtils {
     return out;
   }
 
-  static viewDettaglioLibro(BuildContext context, LibreriaModel libreriaDefault, LibroSearchModel libroViewModel, bool showDelete, bool isInsertByUserInterface) async {
+  static viewDettaglioLibro(BuildContext context, LibreriaIsarModel libreriaIsarDefault, LibroSearchModel libroViewModel, bool showDelete, bool isInsertByUserInterface) async {
     LibroDettaglioResult? ret = await Navigator.pushNamed(
       context, 
       showDelete 
@@ -78,28 +78,28 @@ abstract class LibroUtils {
     return cloneLibroViewModel;
   }
 
-  static addNrLibriCaricatiInCache(String siglaLibreria, {int nrToAdd = 1}) {
-    for (LibreriaModel libreriaModel in ComArea.lstLibrerieInUso) {
-      if (libreriaModel.sigla == siglaLibreria) {
-        libreriaModel.nrLibriCaricati += nrToAdd;
+  static addNrLibriCaricatiInCache(int siglaLibreria, {int nrToAdd = 1}) {
+    for (LibreriaIsarModel libreriaIsarModel in ComArea.lstLibrerieInUso) {
+      if (libreriaIsarModel.sigla == siglaLibreria) {
+        libreriaIsarModel.nrLibriCaricati += nrToAdd;
         break;
       }
     }
   }
 
-static removeNrLibriCaricatiInCache(String siglaLibreria) {
-    for (LibreriaModel libreriaModel in ComArea.lstLibrerieInUso) {
-      if (libreriaModel.sigla == siglaLibreria) {
-        libreriaModel.nrLibriCaricati--;
+static removeNrLibriCaricatiInCache(int siglaLibreria) {
+    for (LibreriaIsarModel libreriaIsarModel in ComArea.lstLibrerieInUso) {
+      if (libreriaIsarModel.sigla == siglaLibreria) {
+        libreriaIsarModel.nrLibriCaricati--;
         break;
       }
     }
   }
 
-static clearNrLibriCaricatiInCache(String siglaLibreria) {
-    for (LibreriaModel libreriaModel in ComArea.lstLibrerieInUso) {
-      if (libreriaModel.sigla == siglaLibreria) {
-        libreriaModel.nrLibriCaricati = 0;
+static clearNrLibriCaricatiInCache(int siglaLibreria) {
+    for (LibreriaIsarModel libreriaIsarModel in ComArea.lstLibrerieInUso) {
+      if (libreriaIsarModel.sigla == siglaLibreria) {
+        libreriaIsarModel.nrLibriCaricati = 0;
         break;
       }
     }

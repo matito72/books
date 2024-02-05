@@ -488,7 +488,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   /// 
   Future<void> _fnNewBookInLibreria(BuildContext context, LibroBloc libroBloc) async {
     LibroViewModel libroViewModel = LibroViewModel(
-      ComArea.libreriaInUso!.sigla, 
+      ComArea.libreriaInUso!.sigla.toString(), 
       Utils.getDataNow(), 
       Utils.getDataNow(), 
       isbn: Utils.getIsbnGenAutoNotNull(),

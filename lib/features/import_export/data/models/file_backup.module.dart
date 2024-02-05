@@ -2,7 +2,7 @@
 import 'package:intl/intl.dart';
 
 class FileBackupModel {
-  final String siglaLibreria;
+  final int siglaLibreria;
   final String fileName;
   final int nrRecord;
   final DateTime dtUltimaModifica;

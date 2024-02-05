@@ -3,8 +3,8 @@ import 'package:books/config/routes.dart';
 import 'package:books/config/theme/books_style.dart';
 import 'package:books/features/libreria/bloc/libreria.bloc.dart';
 import 'package:books/features/libreria/bloc/libreria_events.bloc.dart';
-import 'package:books/features/libreria/data/models/libreria.module.dart';
-import 'package:books/features/libreria/data/services/db_libreria.service.dart';
+import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:books/features/libreria/data/services/db_libreria.isar.service.dart';
 import 'package:books/screens/home_libreria.dart';
 import 'package:books/screens/home_libri_libreria.dart';
 import 'package:flutter/material.dart';
@@ -50,18 +50,18 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    sl<DbLibreriaService>().dispose();
+    // sl<DbLibreriaIsarService>().dispose();
     _pageController.dispose();
     super.dispose();
   }
 
   // Inizializza/Apre una libreria 
   void _goToHomeLibriLibreria() async {
-    List<LibreriaModel> lstLibreriaSelClone = List.from(ComArea.lstLibrerieInUso);
+    List<LibreriaIsarModel> lstLibreriaSelClone = List.from(ComArea.lstLibrerieInUso);
     lstLibreriaSelClone.sort((a, b) => a.sigla.compareTo(b.sigla));
 
     // if (ComArea.libreriaInUso == null || libreriaSel.sigla != ComArea.libreriaInUso!.sigla)   {
-      await sl<DbLibreriaService>().changeLibreriaDefault(lstLibreriaSelClone);
+      await sl<DbLibreriaIsarService>().changeLibreriaDefault(lstLibreriaSelClone);
     //   ComArea.libreriaInUso = libreriaSel;
     // }
 
