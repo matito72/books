@@ -47,13 +47,18 @@ class DbLibreriaService {
 
     lstLibreriaSaved.addAll(boxLibreria.keys.map((key) {
       final item = boxLibreria.get(key);
-      LibreriaModel libreriaToAdd = LibreriaModel(sigla: item!.sigla, nome: item.nome,  nrLibriCaricati: item.nrLibriCaricati, isLibreriaDefault: item.isLibreriaDefault);
-      // if (libreriaToAdd.isLibreriaDefault) {
-      //   ComArea.libreriaInUso = libreriaToAdd;
-      //   // ComArea.nrLibriInLibreriaInUso = libreriaToAdd.nrLibriCaricati;
-      // }
-      return libreriaToAdd;
+
+      // LibreriaModel libreriaToAdd = LibreriaModel(
+      //   sigla: item!.sigla, 
+      //   nome: item.nome, 
+      //   nrLibriCaricati: item.nrLibriCaricati, 
+      //   isLibreriaDefault: item.isLibreriaDefault
+      // );
+      // return libreriaToAdd;
+
+      return item as LibreriaModel;
     }).toList());
+
     await boxLibreria.close();
 
     return lstLibreriaSaved;
@@ -128,7 +133,7 @@ class DbLibreriaService {
     await boxLibreria.close();
   }
 
-  Future<void> updateLibreria(LibreriaModel libreriaOld, LibreriaModel libreriaNew) async {
+  Future<void> updateLibreria(LibreriaModel libreriaNew) async {
     Box<LibreriaModel> boxLibreria = await _openBoxLibreria();
 
     LibreriaModel? libreria = boxLibreria.get(libreriaNew.sigla);

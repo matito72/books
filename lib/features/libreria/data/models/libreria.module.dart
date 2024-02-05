@@ -18,17 +18,17 @@ class LibreriaModel extends HiveObject {
 
   LibreriaModel({this.sigla = '-', this.nome = '-', this.nrLibriCaricati = 0, this.isLibreriaDefault = false});
 
-  LibreriaModel copyWith({
-    String? sigla,
-    String? nome,
-    int? nrLibriCaricati,
-    bool? isLibreriaDefault
-  }) =>
-      LibreriaModel(
-        sigla: sigla ?? this.sigla,
-        nome: nome ?? this.nome,
-        nrLibriCaricati: nrLibriCaricati ?? this.nrLibriCaricati,
-        isLibreriaDefault: isLibreriaDefault ?? this.isLibreriaDefault
-      );
+  // LibreriaModel copyWith({
+  //   String? sigla,
+  //   String? nome,
+  //   int? nrLibriCaricati,
+  //   bool? isLibreriaDefault
+  // }) =>
+  //     LibreriaModel(
+  //       sigla: sigla ?? this.sigla,
+  //       nome: nome ?? this.nome,
+  //       nrLibriCaricati: nrLibriCaricati ?? this.nrLibriCaricati,
+  //       isLibreriaDefault: isLibreriaDefault ?? this.isLibreriaDefault
+  //     );
 
 }
