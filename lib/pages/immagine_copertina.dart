@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/show_image_picker.dart';
 import 'package:books/utilities/utils.dart';
@@ -13,11 +13,11 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ImmagineCopertina extends StatefulWidget {
   static const String pagePath = '/detailImage';
-  final LibroViewModel _libroViewModel;
+  final LibroIsarModel _libroViewModel;
   // late final bool light;
   late final bool _isImmaginePresent;
 
-  ImmagineCopertina({super.key, required LibroViewModel libroViewModel}) : _libroViewModel = libroViewModel {
+  ImmagineCopertina({super.key, required LibroIsarModel libroViewModel}) : _libroViewModel = libroViewModel {
     _libroViewModel.pathImmagineCopertina ??= _libroViewModel.immagineCopertina;
 
     _isImmaginePresent = _libroViewModel.immagineCopertina.isNotEmpty 

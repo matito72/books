@@ -78,8 +78,8 @@ LibreriaIsarModel _libreriaIsarModelDeserialize(
     isLibreriaDefault: reader.readBoolOrNull(offsets[0]) ?? false,
     nome: reader.readStringOrNull(offsets[1]) ?? '-',
     nrLibriCaricati: reader.readLongOrNull(offsets[2]) ?? 0,
-    sigla: id,
   );
+  object.sigla = id;
   return object;
 }
 

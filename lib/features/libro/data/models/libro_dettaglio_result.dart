@@ -1,9 +1,9 @@
 
 
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 
 class LibroDettaglioResult {
-  LibroViewModel libroViewModel;
+  LibroIsarModel libroViewModel;
   bool isInsert;
   bool isDelete;
 

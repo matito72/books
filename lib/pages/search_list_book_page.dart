@@ -1,6 +1,6 @@
 import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
-import 'package:books/features/libro/data/models/libro_search.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/services/goole_apis_books_service.dart';
 import 'package:books/utilities/dialog_utils.dart';
@@ -52,7 +52,7 @@ class PagewiseListViewExample extends StatelessWidget  {
 
   @override
   Widget build(BuildContext context) {
-    return PagewiseListView<LibroSearchModel>(
+    return PagewiseListView<LibroIsarModel>(
         pageSize: 10,
         itemBuilder: _itemBuilder,
         pageFuture: (pageIndex) => GooleApisBooksService.getLibri(googleSearchModel, pageIndex! * 10, 10),
@@ -65,7 +65,7 @@ class PagewiseListViewExample extends StatelessWidget  {
     );
   }
 
-  Widget _itemBuilder(context, LibroSearchModel entry, index) {
+  Widget _itemBuilder(context, LibroIsarModel entry, index) {
 
     viewDettaglioLibro() async {
       LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, libreriaSel, entry, false, false);
@@ -246,7 +246,7 @@ class PagewiseListViewExample extends StatelessWidget  {
     );
   }
   
-  Future<Widget> getImageNetwork(LibroSearchModel libroSearchModel, {required int height, required int width, required BoxFit fit}) async {
+  Future<Widget> getImageNetwork(LibroIsarModel libroSearchModel, {required int height, required int width, required BoxFit fit}) async {
     if (libroSearchModel.immagineCopertina == '') {
       return const Text("");
     }

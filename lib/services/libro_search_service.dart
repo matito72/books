@@ -1,5 +1,4 @@
-// import 'package:books/features/libro/data/models/libro_search_model.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/services/goole_apis_books_service.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +20,7 @@ class LibroSearchService {
     return barcodeScanRes;
   }
 
-  static Future<List<LibroViewModel>> searchBooksByBarcode(String isbn) async {
+  static Future<List<LibroIsarModel>> searchBooksByBarcode(String isbn) async {
     return await simpleGoogleBooksSearch(ParameterGoogleSearchModel(isbn: isbn));
 
     // return lstResult.isNotEmpty 
@@ -29,7 +28,7 @@ class LibroSearchService {
     //   : DataFailed("Nessun libro trovato con ISBN: $isbn", ActDataResult.notFound);
   }
 
-  static Future<List<LibroViewModel>> simpleGoogleBooksSearch(ParameterGoogleSearchModel googleSearchModel) async {
+  static Future<List<LibroIsarModel>> simpleGoogleBooksSearch(ParameterGoogleSearchModel googleSearchModel) async {
     return (googleSearchModel.title != null || googleSearchModel.author != null || (googleSearchModel.isbn != null && googleSearchModel.isbn != "-1"))
       ? await GooleApisBooksService.getLibri(googleSearchModel, 0, -1)
       : [];

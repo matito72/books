@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:books/config/constant.dart';
 import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/services/libro_search_service.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +12,7 @@ import 'package:intl/intl.dart';
 
 class Utils {
 
-  static Future<Image> getImageFromUrlFile(LibroViewModel libroViewModel, {double? w, double? h}) async {
+  static Future<Image> getImageFromUrlFile(LibroIsarModel libroViewModel, {double? w, double? h}) async {
     late Image image;
 
     if (libroViewModel.immagineCopertina.isNotEmpty) {
@@ -68,14 +68,14 @@ class Utils {
     return image;
   }
   
-  static integrazioneDatiIncompleti(LibroViewModel libroViewModelDett) async {
+  static integrazioneDatiIncompleti(LibroIsarModel libroViewModelDett) async {
     int nrDatiIncompleti = 0;
     nrDatiIncompleti += libroViewModelDett.descrizione.isEmpty ? 1 : 0;
     nrDatiIncompleti += (libroViewModelDett.editore.isEmpty || libroViewModelDett.editore == Constant.editoreDaDefinire) ? 1 : 0;
     nrDatiIncompleti += libroViewModelDett.lstAutori.isEmpty ? 1 : 0;
     nrDatiIncompleti += libroViewModelDett.dataPubblicazione.isEmpty ? 1 : 0;
     nrDatiIncompleti += (libroViewModelDett.nrPagine == 0) ? 1 : 0;
-    nrDatiIncompleti += libroViewModelDett.prezzo.isEmpty ? 1 : 0;
+    nrDatiIncompleti += libroViewModelDett.prezzo <= 0 ? 1 : 0;
     // nrDatiIncompleti += libroViewModelDett.immagineCopertina.contains('zoom=0') ? 0 : 1;
 
     if (nrDatiIncompleti != 0) {
@@ -85,10 +85,10 @@ class Utils {
         casaEditrice: libroViewModelDett.editore
       );
 
-      List<LibroViewModel> lstLibri = await LibroSearchService.simpleGoogleBooksSearch(googleSearchModel);
+      List<LibroIsarModel> lstLibri = await LibroSearchService.simpleGoogleBooksSearch(googleSearchModel);
       if (lstLibri.isNotEmpty) {
         int nrTentativi = 10;
-        for (LibroViewModel libroViewModelResult in lstLibri) {
+        for (LibroIsarModel libroViewModelResult in lstLibri) {
           if (libroViewModelDett.descrizione.isEmpty && libroViewModelResult.descrizione.isNotEmpty) {
             libroViewModelDett.descrizione = libroViewModelResult.descrizione;
             nrDatiIncompleti--;
@@ -109,7 +109,7 @@ class Utils {
             libroViewModelDett.nrPagine = libroViewModelResult.nrPagine;
             nrDatiIncompleti--;
           }
-          if (nrDatiIncompleti > 0 && libroViewModelDett.prezzo.isEmpty && libroViewModelResult.prezzo.isNotEmpty) {
+          if (nrDatiIncompleti > 0 && libroViewModelDett.prezzo <= 0 && libroViewModelResult.prezzo > 0) {
             libroViewModelDett.prezzo = libroViewModelResult.prezzo;
             nrDatiIncompleti--;
           }
@@ -128,7 +128,7 @@ class Utils {
     }
   }
 
-  static Future<List<String>> simpleGoogleCoverBookSearch(LibroViewModel libroViewModelDett, int nrMax) async {
+  static Future<List<String>> simpleGoogleCoverBookSearch(LibroIsarModel libroViewModelDett, int nrMax) async {
     List<String> lstCoverBookUrl = [];
     List<String> lstCoverBookUrlLowResolution = [];
     ParameterGoogleSearchModel googleSearchModel = ParameterGoogleSearchModel(
@@ -140,7 +140,7 @@ class Utils {
     bool stop = false;
 
     while (!stop) {
-      List<LibroViewModel> lstLibri = await LibroSearchService.simpleGoogleBooksSearch(googleSearchModel);
+      List<LibroIsarModel> lstLibri = await LibroSearchService.simpleGoogleBooksSearch(googleSearchModel);
       if (lstLibri.isNotEmpty) {
         _loadCoverBook(lstCoverBookUrlLowResolution, lstCoverBookUrl, lstLibri, (nrMax - lstCoverBookUrl.length));
       }
@@ -183,9 +183,9 @@ class Utils {
     }
   }
 
-  static _loadCoverBook(List<String> lstCoverBookUrlLowResolution, List<String> lstCoverBookUrl, List<LibroViewModel> lstLibri, int nrMax) {
+  static _loadCoverBook(List<String> lstCoverBookUrlLowResolution, List<String> lstCoverBookUrl, List<LibroIsarModel> lstLibri, int nrMax) {
     if (lstLibri.isNotEmpty) {
-      for (LibroViewModel libroViewModelResult in lstLibri) {
+      for (LibroIsarModel libroViewModelResult in lstLibri) {
         String immagineCopertina = libroViewModelResult.immagineCopertina;
         if (immagineCopertina.trim().isEmpty) {
           continue;
@@ -228,6 +228,10 @@ class Utils {
     }
 
     return ret;
+  }
+
+  static String getTrimUppercaseParameter(String? str) {
+    return (str ?? '').trim().toUpperCase();
   }
 
   static String getFirstSubstring(String str, int n) {

@@ -10,7 +10,7 @@ class Constant {
   static const String editoreDaDefinire = '<Editore da definire>';
   static const String assetImageDefault = 'assets/images/waiting.png';
 
-  static final LibreriaIsarModel libreriaVuota = LibreriaIsarModel(sigla: 0, nome: '', nrLibriCaricati: 0);
+  static final LibreriaIsarModel libreriaVuota = LibreriaIsarModel(nome: '', nrLibriCaricati: 0);
 
  static const String dataDefault = '0000000000000000';
  static String now = DateFormat('yyyyMMdd').format(DateTime.now());

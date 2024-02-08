@@ -33,7 +33,7 @@ class HomeLibreriaScreen extends StatelessWidget {
     String? nomeLibreria = await f.getMultiDescrizione(context);
 
     if (nomeLibreria != null && nomeLibreria.isNotEmpty) {
-      LibreriaIsarModel libreriaIsarModelNew = LibreriaIsarModel(nome: nomeLibreria, sigla: 0);
+      LibreriaIsarModel libreriaIsarModelNew = LibreriaIsarModel(nome: nomeLibreria);
       
       if (context.mounted) {
         BlocProvider.of<LibreriaBloc>(context).add(AddLibreriaEvent(libreriaIsarModelNew));
@@ -50,7 +50,6 @@ class HomeLibreriaScreen extends StatelessWidget {
     if (strDesc != null && strDesc.contains(';') && strDesc.split(';').length == 2) {
       LibreriaIsarModel libreriaModelNew = LibreriaIsarModel(
         nome: strDesc.split(';')[0].trim(), 
-        sigla: int.parse(strDesc.split(';')[1]),
         nrLibriCaricati: libreria.nrLibriCaricati
       );
       

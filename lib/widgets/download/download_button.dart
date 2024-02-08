@@ -1,5 +1,5 @@
 import 'package:books/features/import_export/data/models/file_backup.module.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -21,7 +21,7 @@ class DownloadButton extends StatelessWidget {
     required void Function() onCancel,
     required Function onOpen,
     required FileBackupModel fileBackupModel,
-    required List<LibroViewModel> lstLibriGiaPresenti,
+    required List<LibroIsarModel> lstLibriGiaPresenti,
     this.transitionDuration = const Duration(milliseconds: 500),
   }) : _lstLibriGiaPresenti = lstLibriGiaPresenti, _onOpen = onOpen, _onCancel = onCancel, _onDownload = onDownload, _downloadProgress = downloadProgress, _status = status;
 
@@ -30,7 +30,7 @@ class DownloadButton extends StatelessWidget {
   final VoidCallback _onDownload;
   final VoidCallback _onCancel;
   final Function _onOpen;
-  final List<LibroViewModel> _lstLibriGiaPresenti;
+  final List<LibroIsarModel> _lstLibriGiaPresenti;
   final Duration transitionDuration;
 
   bool get _isDownloading => _status == DownloadStatus.downloading;
@@ -110,7 +110,7 @@ class ButtonShapeWidget extends StatelessWidget {
   final bool isDownloaded;
   final bool isFetching;
   final Duration transitionDuration;
-  final List<LibroViewModel> lstLibriGiaPresenti;
+  final List<LibroIsarModel> lstLibriGiaPresenti;
 
   @override
   Widget build(BuildContext context) {

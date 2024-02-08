@@ -1,15 +1,14 @@
 import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
-import 'package:books/features/libro/data/models/libro_search.module.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/pages/dettaglio_libro.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 abstract class LibroUtils {
 
-  static String getStrLstAutoriRidotta(LibroSearchModel libroSearchModel, int max) {
+  static String getStrLstAutoriRidotta(LibroIsarModel libroSearchModel, int max) {
     String strOut = libroSearchModel.lstAutori.join(', ');
     return strOut.length >= max ? '${strOut.substring(0, max)}...' : strOut;
   }
@@ -38,7 +37,7 @@ abstract class LibroUtils {
     return out;
   }
 
-  static viewDettaglioLibro(BuildContext context, LibreriaIsarModel libreriaIsarDefault, LibroSearchModel libroViewModel, bool showDelete, bool isInsertByUserInterface) async {
+  static viewDettaglioLibro(BuildContext context, LibreriaIsarModel libreriaIsarDefault, LibroIsarModel libroViewModel, bool showDelete, bool isInsertByUserInterface) async {
     LibroDettaglioResult? ret = await Navigator.pushNamed(
       context, 
       showDelete 
@@ -52,8 +51,8 @@ abstract class LibroUtils {
     return ret;
   }
 
-  static LibroViewModel cloneLibroViewModel(LibroViewModel libroViewModel) {
-    LibroViewModel cloneLibroViewModel = LibroViewModel(
+  static LibroIsarModel cloneLibroViewModel(LibroIsarModel libroViewModel) {
+    LibroIsarModel cloneLibroViewModel = LibroIsarModel(
       libroViewModel.siglaLibreria, 
       libroViewModel.dataInserimento,
       libroViewModel.dataUltimaModifica,

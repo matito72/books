@@ -1,4 +1,4 @@
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:books/resources/action_result.dart';
 import 'package:equatable/equatable.dart';
@@ -32,8 +32,8 @@ class LibroInitializedState extends LibroSuccessState {
 }
 
 //* LISTA
-class ListaLibroLoadedState<T extends List<SelectedItem<LibroViewModel>>> extends LibroSuccessState {
-  const ListaLibroLoadedState(List<SelectedItem<LibroViewModel>> data, String msg) : super(data: data, msg: msg);
+class ListaLibroLoadedState<T extends List<SelectedItem<LibroIsarModel>>> extends LibroSuccessState {
+  const ListaLibroLoadedState(List<SelectedItem<LibroIsarModel>> data, String msg) : super(data: data, msg: msg);
 }
 
 //* ADDED NEW LIBRO

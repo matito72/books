@@ -1,7 +1,6 @@
 import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/services/db_libro.service.dart';
-import 'package:books/injection_container.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/pages/immagine_copertina.dart';
 import 'package:books/resources/libro_field_selected.dart';
 import 'package:books/utilities/utils.dart';
@@ -11,12 +10,11 @@ import 'package:books/widgets/dettaglio_libro/fields_libro/field_dett_libro.dart
 import 'package:books/widgets/dettaglio_libro/five_stars.dart';
 import 'package:books/widgets/libreria_sel_dropdown.dart';
 import 'package:flutter/material.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:intl/intl.dart';
 
 
 class DettaglioLibroWidget extends StatefulWidget {
-  final LibroViewModel libroViewModel;
+  final LibroIsarModel libroViewModel;
   final bool _isNewDettaglio;
   final bool isInsertByUserInterface;
   
@@ -27,9 +25,9 @@ class DettaglioLibroWidget extends StatefulWidget {
 }
 
 class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
-  final DbLibroService dbLibroService = sl<DbLibroService>();
+  // final DbLibroIsarService dbLibroService = sl<DbLibroIsarService>();
 
-  void _goToImageview(BuildContext context, LibroViewModel libroViewModel) async {
+  void _goToImageview(BuildContext context, LibroIsarModel libroViewModel) async {
     String? immagineCopertinaPre = libroViewModel.immagineCopertina;
 
     await Navigator.pushNamed(context, ImmagineCopertina.pagePath, arguments: {
@@ -46,7 +44,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     }
   }
 
-  void _getYear(BuildContext context, LibroViewModel libroViewModel) async {
+  void _getYear(BuildContext context, LibroIsarModel libroViewModel) async {
     DateTime selectedDate = DateTime.now();
     if (libroViewModel.dataPubblicazione.length == 4) {
       selectedDate = DateFormat("yyyy").parse(libroViewModel.dataPubblicazione);
@@ -295,7 +293,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
             fnString: (strNr) => {
               setState(() {
                 double? nr = double.tryParse(strNr);
-                widget.libroViewModel.prezzo = (nr != null) ? nr.toString() : '';
+                widget.libroViewModel.prezzo = (nr != null) ? nr : 0;
               })
             }
           ),
@@ -338,15 +336,15 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                         fontSize: 14,
                         color: Colors.lightBlue.shade100,
                         fontWeight: FontWeight.bold
-                      ),                                          
+                      ), 
                     ),
                     LibreriaSelDropdown(
-                      widget.libroViewModel.siglaLibreria.isNotEmpty
-                        ? int.parse(widget.libroViewModel.siglaLibreria)
+                      widget.libroViewModel.siglaLibreria != 0
+                        ? widget.libroViewModel.siglaLibreria
                         : ComArea.libreriaInUso!.sigla,
                       onPressed: (value) {
                         setState(() {
-                          widget.libroViewModel.siglaLibreria = value.toString();
+                          widget.libroViewModel.siglaLibreria = value;
                         });
                       },
                     ),
@@ -389,7 +387,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     );
   }
   
-  Future<Widget> _getImageNetwork(BuildContext context, LibroViewModel libroViewModel) async {
+  Future<Widget> _getImageNetwork(BuildContext context, LibroIsarModel libroViewModel) async {
     if (widget._isNewDettaglio && !widget.isInsertByUserInterface) {
       await Utils.integrazioneDatiIncompleti(libroViewModel);
     } else {

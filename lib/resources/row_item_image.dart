@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -39,7 +39,7 @@ Future<ClipRRect> buildImage(int index, String urlImage) async => ClipRRect(
   child: await getImage(urlImage)
 );
 
-Future<Widget> getItemImage(int index, LibroViewModel item) async {
+Future<Widget> getItemImage(int index, LibroIsarModel item) async {
   return (item.immagineCopertina != '')
     ? await buildImage(index, item.immagineCopertina)
     : const Text('-');

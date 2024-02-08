@@ -1,4 +1,4 @@
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class SwitchUserToSearchInsertEvent extends ListItemsSelectEvent { }
 
 //* REFRESH
 class RefreshListItemsSelectEvent extends ListItemsSelectEvent {
-  final List<SelectedItem<LibroViewModel>> lstLibroViewModel;
+  final List<SelectedItem<LibroIsarModel>> lstLibroViewModel;
 
   const RefreshListItemsSelectEvent(this.lstLibroViewModel);
 }

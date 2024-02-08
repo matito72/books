@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/models/parameter_google_search.module.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -9,14 +9,14 @@ import 'package:http/http.dart' as http;
 
 class GooleApisBooksService {
 
-  static Future<List<LibroViewModel>> getLibri(ParameterGoogleSearchModel googleSearchModel, int offset, int limit) async {
+  static Future<List<LibroIsarModel>> getLibri(ParameterGoogleSearchModel googleSearchModel, int offset, int limit) async {
     GooleApisBooksService gooleApisBooksService = GooleApisBooksService();
 
     return gooleApisBooksService.cercaLibri(googleSearchModel, offset);
   }
 
-  Future<List<LibroViewModel>> cercaLibri(ParameterGoogleSearchModel googleSearchModel, int offset) async {
-    List<LibroViewModel> libri = [];
+  Future<List<LibroIsarModel>> cercaLibri(ParameterGoogleSearchModel googleSearchModel, int offset) async {
+    List<LibroIsarModel> libri = [];
     String percorso = Constant.googleapisPercorso;
     
     Map<String, dynamic> parametri = {};
@@ -74,12 +74,12 @@ class GooleApisBooksService {
           // }
 
           if (libriMap == resJson) {
-            LibroViewModel libroViewModel = LibroViewModel.fromGoogleMap(libriMap);
+            LibroIsarModel libroViewModel = LibroIsarModel.fromGoogleMap(libriMap);
             //await Utils.checkImage(libroViewModel);
             libri.add(libroViewModel);
           } else {
             for (var map in libriMap) {
-              LibroViewModel libroViewModel = LibroViewModel.fromGoogleMap(map);
+              LibroIsarModel libroViewModel = LibroIsarModel.fromGoogleMap(map);
               //await Utils.checkImage(libroViewModel);
               libri.add(libroViewModel);
             }

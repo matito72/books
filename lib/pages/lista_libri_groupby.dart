@@ -1,8 +1,8 @@
 import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/features/list_items_select/bloc/list_items_select.bloc.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:books/resources/row_item_image.dart';
 import 'package:books/utilities/ordinamento_libri_utils.dart';
@@ -14,8 +14,8 @@ class ListaLibriGroupBy extends StatelessWidget {
   final BuildContext _parentContext; 
   final LibroBloc _libroBloc;
   final ListItemsSelectBloc _floatingButtonBloc;
-  final List<SelectedItem<LibroViewModel>> _listaLibri;
-  final Function(BuildContext, LibroBloc, LibroViewModel, bool) _fnViewDettaglioLibro;
+  final List<SelectedItem<LibroIsarModel>> _listaLibri;
+  final Function(BuildContext, LibroBloc, LibroIsarModel, bool) _fnViewDettaglioLibro;
   final Function _fnDeleteLibro;
   final num _nrTot;
 
@@ -37,11 +37,11 @@ class ListaLibriGroupBy extends StatelessWidget {
 
   /// Estrae da 'libroViewModel' il valore del campo: 'nameField'
   /// DEFAULT: 'libroViewModel.lstAutori[0];'
-  String getValueField(LibroViewModel libroViewModel, String nameField) {
+  String getValueField(LibroIsarModel libroViewModel, String nameField) {
     return OrdinamentoLibriUtils.getLibroViewModelValueByLabel(libroViewModel, nameField);
   }
 
-  int compareValueField(LibroViewModel a, LibroViewModel b) {
+  int compareValueField(LibroIsarModel a, LibroIsarModel b) {
     return OrdinamentoLibriUtils.getLibroViewModelValue(a, ComArea.itemComparatorField).compareTo(OrdinamentoLibriUtils.getLibroViewModelValue(b, ComArea.itemComparatorField));
   }
 
@@ -63,7 +63,7 @@ class ListaLibriGroupBy extends StatelessWidget {
                 ],
             ),
           )
-        : GroupedListView<SelectedItem<LibroViewModel>, String> (
+        : GroupedListView<SelectedItem<LibroIsarModel>, String> (
             elements: _listaLibri,
             groupBy: (element) => getValueField(element.item, ComArea.groupComparatorField.label),
             groupComparator: (value1, value2) => value1.compareTo(value2),

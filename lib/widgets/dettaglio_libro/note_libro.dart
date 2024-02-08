@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 // import 'package:flutter_quill/flutter_quill.dart' as quill; 
 
 class NoteLibro extends StatefulWidget {
-  final LibroViewModel _libroViewModel;
+  final LibroIsarModel _libroViewModel;
   final QuillController _controller;
   
   const NoteLibro(this._libroViewModel, this._controller, {super.key});

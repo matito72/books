@@ -1,11 +1,11 @@
 import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/resources/bisac_codes.dart';
 import 'package:books/utilities/utils.dart';
 
 class FiltroUtil {
-  LibroViewModel libroViewModel;
+  LibroIsarModel libroViewModel;
   LibreriaIsarModel libreriaIsarSel;
 
   FiltroUtil(this.libroViewModel, this.libreriaIsarSel);
@@ -26,8 +26,8 @@ class FiltroUtil {
       filtroCategoria = _filtroCategoria(ComArea.booksSearchParameters.txtCategoria, true);
       filtroDescrizione = _filtroEditore(ComArea.booksSearchParameters.txtDescrizione);
 
-      double przMin = Utils.getPositiveDouble(getTrimUppercaseParameter(ComArea.booksSearchParameters.txtPrezzoMin));
-      double przMax = Utils.getPositiveDouble(getTrimUppercaseParameter(ComArea.booksSearchParameters.txtPrezzoMax));
+      double przMin = Utils.getPositiveDouble(Utils.getTrimUppercaseParameter(ComArea.booksSearchParameters.txtPrezzoMin));
+      double przMax = Utils.getPositiveDouble(Utils.getTrimUppercaseParameter(ComArea.booksSearchParameters.txtPrezzoMax));
       filtroPrezzo = (przMin < 0 && przMax < 0) || _filtroPrezzo(przMin, przMax);
 
       filtro = (
@@ -40,7 +40,7 @@ class FiltroUtil {
       );
     }
       
-    return (int.parse(libroViewModel.siglaLibreria) == libreriaIsarSel.sigla) && filtro;
+    return (libroViewModel.siglaLibreria == libreriaIsarSel.sigla) && filtro;
   }
 
   bool filtroSemplice() {
@@ -59,8 +59,8 @@ class FiltroUtil {
       filtroCategoria = _filtroCategoria(ComArea.bookToSearch, false);
       filtroDescrizione = _filtroDescrizione(ComArea.bookToSearch);
 
-      double przMin = Utils.getPositiveDouble(getTrimUppercaseParameter(ComArea.bookToSearch));
-      double przMax = Utils.getPositiveDouble(getTrimUppercaseParameter(ComArea.bookToSearch));
+      double przMin = Utils.getPositiveDouble(Utils.getTrimUppercaseParameter(ComArea.bookToSearch));
+      double przMax = Utils.getPositiveDouble(Utils.getTrimUppercaseParameter(ComArea.bookToSearch));
       filtroPrezzo = (przMin >= 0 && przMax >= 0) && _filtroPrezzo(przMin, przMax);
 
       filtro = (
@@ -73,17 +73,17 @@ class FiltroUtil {
       );
     }
       
-    return (int.parse(libroViewModel.siglaLibreria) == libreriaIsarSel.sigla) && filtro;
+    return (libroViewModel.siglaLibreria == libreriaIsarSel.sigla) && filtro;
   }
 
   bool _filtroTitolo(String? str) {
-    return libroViewModel.titolo.trim().toUpperCase().contains(getTrimUppercaseParameter(str));
+    return libroViewModel.titolo.trim().toUpperCase().contains(Utils.getTrimUppercaseParameter(str));
   }
 
   bool _filtroAutore(String? str) {
     bool filtroAutore = true;
 
-    str = getTrimUppercaseParameter(str);
+    str = Utils.getTrimUppercaseParameter(str);
     filtroAutore = libroViewModel.lstAutori.toString().toUpperCase().contains(str);
     if (!filtroAutore && str.contains(' ')) {
       List<String> lstNomeCognome = str.split(' ');
@@ -95,32 +95,30 @@ class FiltroUtil {
   }
 
   bool _filtroEditore(String? str) {
-    return libroViewModel.editore.trim().toUpperCase().contains(getTrimUppercaseParameter(str)); 
+    return libroViewModel.editore.trim().toUpperCase().contains(Utils.getTrimUppercaseParameter(str)); 
   }
 
   bool _filtroCategoria(String? str, bool isFiltroEqual) {
-    String strCategoria = getTrimUppercaseParameter(str);
+    String strCategoria = Utils.getTrimUppercaseParameter(str);
     return (strCategoria == BisacList.nonClassifiable) 
         || (isFiltroEqual && libroViewModel.lstCategoria[0].trim().toUpperCase() == strCategoria)
         || (!isFiltroEqual && libroViewModel.lstCategoria[0].trim().toUpperCase().contains(strCategoria)); 
   }
 
   bool _filtroDescrizione(String? str) {
-    return libroViewModel.descrizione.trim().toUpperCase().contains(getTrimUppercaseParameter(str)); 
+    return libroViewModel.descrizione.trim().toUpperCase().contains(Utils.getTrimUppercaseParameter(str)); 
   }
 
   bool _filtroPrezzo(double przMin, double przMax) {
-    double prezzoLibro = Utils.getPositiveDouble(getTrimUppercaseParameter(libroViewModel.prezzo));
+    // double prezzoLibro = Utils.getPositiveDouble(_getTrimUppercaseParameter(libroViewModel.prezzo));
 
     return (przMin < 0 && przMax < 0) 
-      || ((prezzoLibro >= 0) 
-        && ( (przMin >= 0 && przMax < 0 && przMin <= prezzoLibro)
-          || (przMin < 0 && przMax >= 0 && przMax >= prezzoLibro)
-          || (przMin >= 0 && przMax >= 0 && przMin <= prezzoLibro && prezzoLibro <= przMax))
+      || ((libroViewModel.prezzo >= 0) 
+        && ( (przMin >= 0 && przMax < 0 && przMin <= libroViewModel.prezzo)
+          || (przMin < 0 && przMax >= 0 && przMax >= libroViewModel.prezzo)
+          || (przMin >= 0 && przMax >= 0 && przMin <= libroViewModel.prezzo && libroViewModel.prezzo <= przMax))
       );
   }
 
-  String getTrimUppercaseParameter(String? str) {
-    return (str ?? '').trim().toUpperCase();
-  }
+  
 }

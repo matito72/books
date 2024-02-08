@@ -1,9 +1,9 @@
 import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/features/list_items_select/bloc/list_items_select.bloc.dart';
 import 'package:books/features/list_items_select/bloc/list_items_select_events.bloc.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:books/utilities/list_items_utils.dart';
 import 'package:books/widgets/icon_check_item.dart';
@@ -13,10 +13,10 @@ class SingleCardBook extends StatefulWidget {
   final LibroBloc _libroBloc;
   final ListItemsSelectBloc _listItemsSelectBloc;
   final BuildContext _parentContext; 
-  final Function(BuildContext, LibroBloc, LibroViewModel, bool) _fnViewDettaglioLibro;
+  final Function(BuildContext, LibroBloc, LibroIsarModel, bool) _fnViewDettaglioLibro;
   final Function _fnDeleteLibro;
   final Function _fnGetItemImage;
-  final SelectedItem<LibroViewModel> _selItem;
+  final SelectedItem<LibroIsarModel> _selItem;
   final int _index;
   final num nrTot;
 
@@ -149,7 +149,9 @@ class _SingleCardBook extends State<SingleCardBook> {
 
     Widget getCategoria() {
       return Text(
-        widget._selItem.item.lstCategoria[0],
+        widget._selItem.item.lstCategoria.isNotEmpty
+          ? widget._selItem.item.lstCategoria[0]
+          : '',
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
           fontStyle: FontStyle.italic,
           color: Colors.lime[50]
@@ -207,7 +209,7 @@ class _SingleCardBook extends State<SingleCardBook> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${ComArea.mapCodDescLibreria[int.parse(widget._selItem.item.siglaLibreria)]}',
+            '${ComArea.mapCodDescLibreria[widget._selItem.item.siglaLibreria]}',
             style: TextStyle(
               fontSize: 12.0, 
               fontStyle: FontStyle.normal,

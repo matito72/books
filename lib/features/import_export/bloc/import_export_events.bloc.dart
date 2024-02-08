@@ -1,5 +1,5 @@
 import 'package:books/features/import_export/data/models/file_backup.module.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 
@@ -44,7 +44,7 @@ class ImportFileBackupEvent extends ImportExportEvent {
 //* BACKUP LISTA LIBRI LIBRERIA
 class AddListaFileBackupEvent extends ImportExportEvent {
   final String siglaLibreria;
-  final List<LibroViewModel> lstLibroViewModel;
+  final List<LibroIsarModel> lstLibroViewModel;
 
   const AddListaFileBackupEvent(this.siglaLibreria, this.lstLibroViewModel);
 }

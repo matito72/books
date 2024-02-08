@@ -3,10 +3,10 @@ import 'package:books/config/com_area.dart';
 import 'package:books/features/import_export/data/models/file_backup.module.dart';
 import 'package:books/features/import_export/data/services/import_export.service.dart';
 import 'package:books/features/libreria/data/services/db_libreria.isar.service.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
-import 'package:books/features/libro/data/services/db_libro.service.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
+import 'package:books/features/libro/data/services/db_libro_isar.service.dart';
 import 'package:books/injection_container.dart';
-import 'package:books/models/libro_to_save.module.dart';
+import 'package:books/models/libro_isar_to_save.module.dart';
 import 'package:books/resources/item_exception.dart';
 import 'package:books/utilities/libro_utils.dart';
 import 'package:books/utilities/utils.dart';
@@ -17,7 +17,7 @@ abstract class DownloadController implements ChangeNotifier {
   DownloadStatus get downloadStatus;
   double get progress;
   int get nrRecordCaricati;
-  List<LibroViewModel> get lstLibriGiaPresenti;
+  List<LibroIsarModel> get lstLibriGiaPresenti;
 
   void startDownload();
   void stopDownload();
@@ -50,9 +50,9 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
   @override
   int get nrRecordCaricati => _nrRecordCaricati;
 
-  final List<LibroViewModel> _lstLibriGiaPresenti;
+  final List<LibroIsarModel> _lstLibriGiaPresenti;
   @override
-  List<LibroViewModel> get lstLibriGiaPresenti => _lstLibriGiaPresenti;
+  List<LibroIsarModel> get lstLibriGiaPresenti => _lstLibriGiaPresenti;
 
   final Function _onOpenDownload;
   final FileBackupModel _fileBackupModel;
@@ -106,14 +106,14 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
     int nrRecordTot = _fileBackupModel.nrRecord;
 
     ImportExportService importExportService = sl<ImportExportService>();
-    List<LibroViewModel> lstLibroViewModel = await importExportService.restoreFileBackup(null, _fileBackupModel.fileName);
+    List<LibroIsarModel> lstLibroViewModel = await importExportService.restoreFileBackup(null, _fileBackupModel.fileName);
     
     if (lstLibroViewModel.isNotEmpty) {
-      DbLibroService dbLibroService = sl<DbLibroService>();
+      DbLibroIsarService dbLibroService = sl<DbLibroIsarService>();
       DbLibreriaIsarService dbLibreriaIsarService = sl<DbLibreriaIsarService>();
 
       List downloadProgressStops =  List.generate(nrRecordTot, (i) => (i * 100/(nrRecordTot - 1)).roundToDouble() / 100);
-      String siglaLibreria = ComArea.libreriaInUso!.sigla.toString();
+      int siglaLibreria = ComArea.libreriaInUso!.sigla;
 
       int i = 0;
       for (var libroModelNew in lstLibroViewModel) {
@@ -122,7 +122,7 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
         libroModelNew.dataUltimaModifica = Utils.getDataNow();
 
         try {
-          await dbLibroService.saveLibroToDb(LibroToSaveModel(libroModelNew), true);
+          await dbLibroService.saveLibroToDb(LibroIsarToSaveModel(libroModelNew), true);
           await dbLibreriaIsarService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 1);
           LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
 

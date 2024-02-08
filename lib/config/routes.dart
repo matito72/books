@@ -1,5 +1,5 @@
 import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/models/parameter_google_search.module.dart';
 import 'package:books/pages/dettaglio_libro.dart';
 import 'package:books/pages/immagine_copertina.dart';
@@ -28,19 +28,19 @@ class AppRoutes {
         return _materialRoute(SearchListBookPage(title: title, googleSearchModel: googleSearchModel, libreriaSel: libreriaSel));
 
       case DettaglioLibro.pagePath:
-        final LibroViewModel libroViewModel = arguments['libroViewModel'];
+        final LibroIsarModel libroViewModel = arguments['libroViewModel'];
         return _materialRoute(DettaglioLibro(libroViewModel: libroViewModel, showDelete: false));
 
       case DettaglioLibro.pageEditPath:
-        final LibroViewModel libroViewModel = arguments['libroViewModel'];
+        final LibroIsarModel libroViewModel = arguments['libroViewModel'];
         return _materialRoute(DettaglioLibro(libroViewModel: libroViewModel, showDelete: true));
 
       case DettaglioLibro.pageNewBookPath:
-        final LibroViewModel libroViewModel = arguments['libroViewModel'];
+        final LibroIsarModel libroViewModel = arguments['libroViewModel'];
         return _materialRoute(DettaglioLibro(libroViewModel: libroViewModel, showDelete: false, isInsertByUserInterface: true));
 
       case ImmagineCopertina.pagePath:
-        final LibroViewModel libroViewModel = arguments['libroViewModel'];
+        final LibroIsarModel libroViewModel = arguments['libroViewModel'];
         return _materialRoute(ImmagineCopertina(libroViewModel: libroViewModel));
 
       case ImportExportFile.pagePath:

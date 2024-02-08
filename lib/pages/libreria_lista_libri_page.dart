@@ -1,7 +1,7 @@
 import 'package:books/config/constant.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/features/list_items_select/bloc/list_items_select.bloc.dart';
 import 'package:books/features/libro/bloc/libro.bloc.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:books/resources/row_item_image.dart';
 import 'package:books/widgets/single_card_book.dart';
@@ -11,8 +11,8 @@ class LibreriaListaLibriPage extends StatelessWidget {
   final BuildContext _parentContext; 
   final LibroBloc _libroBloc;
   final ListItemsSelectBloc _floatingButtonBloc;
-  final List<SelectedItem<LibroViewModel>> _listaLibri;
-  final Function(BuildContext, LibroBloc, LibroViewModel, bool) _fnViewDettaglioLibro;
+  final List<SelectedItem<LibroIsarModel>> _listaLibri;
+  final Function(BuildContext, LibroBloc, LibroIsarModel, bool) _fnViewDettaglioLibro;
   final Function _fnDeleteLibro;
   final num _nrTot;
 

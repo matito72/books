@@ -1,6 +1,6 @@
 import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
-import 'package:books/models/libro_to_save.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
+import 'package:books/models/libro_isar_to_save.module.dart';
 import 'package:books/models/selected_item.module.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +42,7 @@ class DeleteAllLibriLibreriaEvent extends LibroEvent {
 
 //* DELETE LIBRI SELEZIONATI
 class DeleteBookSelectedEvent extends LibroEvent { 
-  final List<SelectedItem<LibroViewModel>> lstSelectedItem;
+  final List<SelectedItem<LibroIsarModel>> lstSelectedItem;
 
   const DeleteBookSelectedEvent(this.lstSelectedItem);
 }
@@ -55,7 +55,7 @@ class DeleteAllLibriEvent extends LibroEvent {
 //* DEL LIBRO
 class DeleteLibroEvent extends LibroEvent {
   final LibreriaIsarModel libreriaIsarModel;
-  final LibroViewModel libroModelDelete;
+  final LibroIsarModel libroModelDelete;
 
   const DeleteLibroEvent(this.libreriaIsarModel, this.libroModelDelete);
 }
@@ -68,13 +68,13 @@ class LoadLibroEvent extends LibroEvent {
 }
 
 class CheckAllLibroEvent extends LibroEvent { 
-  final List<SelectedItem<LibroViewModel>> lstSelectedItem;
+  final List<SelectedItem<LibroIsarModel>> lstSelectedItem;
 
   const CheckAllLibroEvent(this.lstSelectedItem);
 }
 
 class DeCheckAllLibroEvent extends LibroEvent { 
-  final List<SelectedItem<LibroViewModel>> lstSelectedItem;
+  final List<SelectedItem<LibroIsarModel>> lstSelectedItem;
 
   const DeCheckAllLibroEvent(this.lstSelectedItem);
 }
@@ -100,7 +100,7 @@ class DeCheckAllLibroEvent extends LibroEvent {
 //* NEW
 class AddLibroEvent extends LibroEvent {
   final LibreriaIsarModel libreriaIsarModel;
-  final LibroToSaveModel libroToSaveModel;
+  final LibroIsarToSaveModel libroToSaveModel;
 
   const AddLibroEvent(this.libreriaIsarModel, this.libroToSaveModel);
 }
@@ -108,7 +108,7 @@ class AddLibroEvent extends LibroEvent {
 //* EDIT
 class EditLibroEvent extends LibroEvent {
   final LibreriaIsarModel libreriaIsarModel;
-  final LibroToSaveModel libroToSaveModel;
+  final LibroIsarToSaveModel libroToSaveModel;
 
   const EditLibroEvent(this.libreriaIsarModel, this.libroToSaveModel);
 }

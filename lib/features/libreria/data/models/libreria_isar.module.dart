@@ -26,16 +26,14 @@ class LibreriaIsarModel {
   //       isLibreriaDefault: isLibreriaDefault ?? this.isLibreriaDefault
   //     );
 
-  LibreriaIsarModel({this.sigla = 0, this.nome = '-', this.nrLibriCaricati = 0, this.isLibreriaDefault = false});
+  LibreriaIsarModel({this.nome = '-', this.nrLibriCaricati = 0, this.isLibreriaDefault = false});
 
   LibreriaIsarModel copyWith({
-    int? sigla,
     String? nome,
     int? nrLibriCaricati,
     bool? isLibreriaDefault
   }) =>
       LibreriaIsarModel(
-        sigla: sigla ?? this.sigla,
         nome: nome ?? this.nome,
         nrLibriCaricati: nrLibriCaricati ?? this.nrLibriCaricati,
         isLibreriaDefault: isLibreriaDefault ?? this.isLibreriaDefault

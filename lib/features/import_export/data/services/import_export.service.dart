@@ -5,16 +5,16 @@ import 'package:books/config/constant.dart';
 import 'package:books/features/import_export/bloc/import_export_state.bloc.dart';
 import 'package:books/features/import_export/data/models/file_backup.module.dart';
 import 'package:books/features/libreria/data/services/db_libreria.isar.service.dart';
-import 'package:books/features/libro/data/services/db_libro.service.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
+import 'package:books/features/libro/data/services/db_libro_isar.service.dart';
 import 'package:books/injection_container.dart';
-import 'package:books/models/libro_to_save.module.dart';
+import 'package:books/models/libro_isar_to_save.module.dart';
 import 'package:books/resources/item_exception.dart';
 import 'package:books/utilities/libro_utils.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
-import 'package:books/features/libro/data/models/libro_view.module.dart';
 import 'package:share_extend/share_extend.dart';
 
 class ImportExportService {
@@ -38,7 +38,7 @@ class ImportExportService {
   //   }
   // }
 
-  Future<int> exportLibriLibreria(String prefixNomeBackup, String siglaLibreria, List<LibroViewModel> lstLibriLibreria) async {
+  Future<int> exportLibriLibreria(String prefixNomeBackup, String siglaLibreria, List<LibroIsarModel> lstLibriLibreria) async {
     final String pathFolder = pathFolderDefault;
 
     // Check esistenza folder
@@ -57,8 +57,8 @@ class ImportExportService {
   /// 
   /// Restituisce una lista di 'LibroViewModel' a fronte di un file json
   ///
-  Future<List<LibroViewModel>> restoreFileBackup(String? pathFolderFile, String nomeFile) async {
-    List<LibroViewModel> lstLibriLibreria = [];
+  Future<List<LibroIsarModel>> restoreFileBackup(String? pathFolderFile, String nomeFile) async {
+    List<LibroIsarModel> lstLibriLibreria = [];
 
     final String pathFolder = pathFolderFile ?? pathFolderDefault;
     final File file = File('$pathFolder/$nomeFile');
@@ -66,31 +66,31 @@ class ImportExportService {
     String jsonFile = await file.readAsString();
     List<dynamic> lstJsonEntities = await json.decode(jsonFile);
     for (var json in lstJsonEntities) {
-      lstLibriLibreria.add(LibroViewModel.fromMap(json));
+      lstLibriLibreria.add(LibroIsarModel.fromMap(json));
     }
 
     return lstLibriLibreria;
   }
 
   Future<ImportedFileBackupState> importIntoDbFileBackup(String? pathFolderFile, String nomeFile) async {
-    List<LibroViewModel> lstLibroViewModel = await restoreFileBackup(pathFolderFile, nomeFile);
+    List<LibroIsarModel> lstLibroViewModel = await restoreFileBackup(pathFolderFile, nomeFile);
     int nrLibriCaricati = 0;
 
     if (lstLibroViewModel.isNotEmpty) {
-      DbLibroService dbLibroService = sl<DbLibroService>();
+      DbLibroIsarService dbLibroService = sl<DbLibroIsarService>();
       DbLibreriaIsarService dbLibreriaService = sl<DbLibreriaIsarService>();
 
       int siglaLibreria = ComArea.libreriaInUso!.sigla;
-      List<LibroViewModel> lstLibriGiaPresenti = [];
+      List<LibroIsarModel> lstLibriGiaPresenti = [];
       Object? errore;
 
       for (var libroModelNew in lstLibroViewModel) {
-        libroModelNew.siglaLibreria = siglaLibreria.toString();
+        libroModelNew.siglaLibreria = siglaLibreria;
         libroModelNew.dataInserimento = Utils.getDataNow();
         libroModelNew.dataUltimaModifica = Utils.getDataNow();
 
         try {
-          await dbLibroService.saveLibroToDb(LibroToSaveModel(libroModelNew), true);
+          await dbLibroService.saveLibroToDb(LibroIsarToSaveModel(libroModelNew), true);
           nrLibriCaricati++;
         } on ItemPresentException {
           lstLibriGiaPresenti.add(libroModelNew);

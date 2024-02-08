@@ -10,7 +10,10 @@ class DbLibreriaIsarService {
   DbLibreriaIsarService(this._appDocumentDir);
 
   Future<Isar> _openBoxLibreria() async {
-    if (Isar.instanceNames.isEmpty) {
+    if (Isar.instanceNames.isEmpty || !Isar.instanceNames.contains('boxLibreria')) {
+      if (Isar.getInstance('boxLibreria') != null && Isar.getInstance('boxLibreria')!.isOpen) {
+        Isar.getInstance('boxLibreria')!.close();
+      }
       return await Isar.open(
         name: 'boxLibreria', 
         [LibreriaIsarModelSchema], 
@@ -18,7 +21,7 @@ class DbLibreriaIsarService {
       );
     }
 
-    return Future.value(Isar.getInstance());
+    return Future.value(Isar.getInstance('boxLibreria'));
   }
 
   Future<List<LibreriaIsarModel>> readLstLibreriaFromDb() async {
@@ -26,7 +29,7 @@ class DbLibreriaIsarService {
 
     List<LibreriaIsarModel> lstLibreriaSaved = isarLibreria.libreriaIsarModels.where().findAllSync();
 
-    isarLibreria.close();
+    await isarLibreria.close();
 
     return lstLibreriaSaved;
   }
@@ -46,7 +49,7 @@ class DbLibreriaIsarService {
       }
     }
 
-    isarLibreria.close();
+    await isarLibreria.close();
   }
 
   Future<void> addLibriInLibreriaInUso(int siglaLibreria, int nr) async {
@@ -58,7 +61,7 @@ class DbLibreriaIsarService {
           await isarLibreria.libreriaIsarModels.put(libreria);
         });
     
-    isarLibreria.close();
+    await isarLibreria.close();
   }
 
   Future<void> removeLibroFromLibreriaInUso(int siglaLibreria) async {
@@ -70,7 +73,7 @@ class DbLibreriaIsarService {
           await isarLibreria.libreriaIsarModels.put(libreria);
         });
     
-    isarLibreria.close();
+    await isarLibreria.close();
   }
 
   Future<void> setNrLibriInLibreriaInUso(int siglaLibreria, int nr) async {
@@ -82,7 +85,7 @@ class DbLibreriaIsarService {
           await isarLibreria.libreriaIsarModels.put(libreria);
         });
     
-    isarLibreria.close();
+    await isarLibreria.close();
   }
 
   Future<void> insertLibreria(LibreriaIsarModel libreriaToAdd) async {
@@ -98,7 +101,7 @@ class DbLibreriaIsarService {
       await isarLibreria.libreriaIsarModels.put(libreriaToAdd);
     });
 
-    isarLibreria.close();
+    await isarLibreria.close();
   }
 
   Future<void> updateLibreria(LibreriaIsarModel libreriaNew) async {
@@ -114,7 +117,7 @@ class DbLibreriaIsarService {
       await isarLibreria.libreriaIsarModels.put(libreriaNew);
     });
 
-    isarLibreria.close();
+    await isarLibreria.close();
   }
 
   Future<void> deleteLibreria(LibreriaIsarModel libreriaToDelete) async {
@@ -130,7 +133,7 @@ class DbLibreriaIsarService {
       await isarLibreria.libreriaIsarModels.delete(libreria.sigla);
     });
 
-    isarLibreria.close();
+    await isarLibreria.close();
   }
 
 }

@@ -1,7 +1,5 @@
-
-
 import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/libro_view.module.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/resources/libro_field_selected.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/libro_utils.dart';
@@ -11,7 +9,7 @@ import 'package:flutter/material.dart';
 
 class FieldDettLibro {
   BuildContext context;
-  LibroViewModel libroViewModel;
+  LibroIsarModel libroViewModel;
 
   FieldDettLibro(this.context, this.libroViewModel);
 
