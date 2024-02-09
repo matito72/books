@@ -42,8 +42,15 @@ class LibroIsarModel  {
 
   LibroIsarModel(this.siglaLibreria, this.dataInserimento, this.dataUltimaModifica, 
     {this.googleBookId='', required this.isbn, this.titolo='', this.lstAutori=const [], this.editore='', 
-      this.descrizione='', this.immagineCopertina='', this.dataPubblicazione='', this.nrPagine=0, this.lstCategoria=const [BisacList.nonClassifiable], 
-      this.previewLink='', this.isEbook=false, this.country='', this.valuta='',  this.prezzo=0, this.stars = 0, this.pathImmagineCopertina, this.note = ''}) ;
+      this.descrizione='', this.immagineCopertina='', this.dataPubblicazione='', this.nrPagine=0, this.lstCategoria=const [], 
+      this.previewLink='', this.isEbook=false, this.country='', this.valuta='',  this.prezzo=0, this.stars = 0, this.pathImmagineCopertina, this.note = ''}) {
+        if (lstCategoria.isEmpty) {
+          lstCategoria = [BisacList.nonClassifiable];
+        }
+        if (prezzo < 0) {
+          prezzo = 0;
+        }
+  }
  
   Map toJson() => {
     'googleBookId': googleBookId,
@@ -88,7 +95,9 @@ class LibroIsarModel  {
     isEbook = mappa['isEbook'];
     country = mappa['country'];
     valuta = mappa['valuta'];
-    prezzo = Utils.getPositiveDouble(Utils.getTrimUppercaseParameter(mappa['prezzo']));
+    prezzo = (mappa['prezzo']  is double)
+      ? mappa['prezzo']
+      : Utils.getPositiveDouble(Utils.getTrimUppercaseParameter(mappa['prezzo']));
     googleBookId = mappa['id'] ?? mappa['googleBookId'];
     stars = mappa['stars'];
     pathImmagineCopertina = mappa['pathImmagineCopertina'];

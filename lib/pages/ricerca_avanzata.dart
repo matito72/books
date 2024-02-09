@@ -25,6 +25,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
   TextEditingController txtTitoloCtrl = TextEditingController();
   TextEditingController txtAutoreCtrl = TextEditingController();
   TextEditingController txtEditoreCtrl = TextEditingController();
+  TextEditingController txtDescrizioneCtrl = TextEditingController();
   String txtCategoriaSel = BisacList.nonClassifiable;
   TextEditingController txtAnnoPubblicazioneDaCtrl = TextEditingController();
   TextEditingController txtAnnoPubblicazioneACtrl = TextEditingController();
@@ -37,6 +38,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
     txtTitoloCtrl.dispose();
     txtAutoreCtrl.dispose();
     txtEditoreCtrl.dispose();
+    txtDescrizioneCtrl.dispose();
     txtAnnoPubblicazioneDaCtrl.dispose();
     txtAnnoPubblicazioneACtrl.dispose();
     txtPrezzoMinCtrl.dispose();
@@ -86,6 +88,16 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
     final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
     final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
 
+    Color getColor(int i) {
+      if (i % 2 == 0) {
+        return evenItemColor;
+      } else {
+        return oddItemColor;
+      }
+    }
+
+    int j = 0;
+
     return Expanded(
       flex: 10,
       child: SizedBox(
@@ -105,7 +117,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                 decoration: InputDecoration(
                   prefixStyle: Theme.of(context).textTheme.titleSmall,
                   labelStyle: Theme.of(context).textTheme.titleSmall,
-                  fillColor: evenItemColor,
+                  fillColor: getColor(j++),
                   filled: true, 
                   hintText: (txtTitoloCtrl.text.isEmpty || txtTitoloCtrl.text == '') ? 'Titolo: ' : '',
                   prefixText: txtTitoloCtrl.text.isEmpty ? '' : 'Titolo: ',
@@ -131,7 +143,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                   labelStyle: Theme.of(context).textTheme.titleSmall,
                   hintText: txtAutoreCtrl.text.isEmpty ? 'Autore: ' : '',
                   prefixText: txtAutoreCtrl.text.isEmpty ? '' : 'Autore: ',
-                  fillColor: oddItemColor,
+                  fillColor: getColor(j++),
                   filled: true, 
                 ),
                 controller: txtAutoreCtrl,
@@ -154,7 +166,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                   labelStyle: Theme.of(context).textTheme.titleSmall,
                   hintText: txtEditoreCtrl.text.isEmpty ? 'Editore: ' : '',
                   prefixText: txtEditoreCtrl.text.isEmpty ? '' : 'Editore: ',
-                  fillColor: evenItemColor,
+                  fillColor: getColor(j++),
                   filled: true, 
                 ),
                 controller: txtEditoreCtrl,
@@ -166,8 +178,31 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                 },
               ),
               const Padding(padding: EdgeInsets.only(top: 1)),
+              TextField(
+                maxLines: 1,
+                textCapitalization: TextCapitalization.sentences,
+                autofocus: true,
+                keyboardType: TextInputType.text,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
+                decoration: InputDecoration(
+                  prefixStyle: Theme.of(context).textTheme.titleSmall,
+                  labelStyle: Theme.of(context).textTheme.titleSmall,
+                  hintText: txtDescrizioneCtrl.text.isEmpty ? 'Descrizione: ' : '',
+                  prefixText: txtDescrizioneCtrl.text.isEmpty ? '' : 'Descrizione: ',
+                  fillColor: getColor(j++),
+                  filled: true, 
+                ),
+                controller: txtDescrizioneCtrl,
+                onChanged: (value) => {
+                  setState(() {
+                    txtDescrizioneCtrl.text = value;
+                    updateComAreaBooksSearchParameters();
+                  })
+                },
+              ),
+              const Padding(padding: EdgeInsets.only(top: 1)),
               ColoredBox(
-                color: oddItemColor,
+                color: getColor(j++),
                 child: SizedBox(
                   height: 50,
                   child: Row(
@@ -281,7 +316,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                         labelStyle: Theme.of(context).textTheme.titleSmall,
                         hintText: txtPrezzoMinCtrl.text.isEmpty ? 'Prezzo min: ' : '',
                         prefixText: txtPrezzoMinCtrl.text.isEmpty ? '' : 'Prezzo min: ',
-                        fillColor: oddItemColor,
+                        fillColor: getColor(j++),
                         filled: true, 
                       ),
                       keyboardType: TextInputType.number,
@@ -308,7 +343,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                         labelStyle: Theme.of(context).textTheme.titleSmall,
                         hintText: txtPrezzoMaxCtrl.text.isEmpty ? 'Prezzo max: ' : '',
                         prefixText: txtPrezzoMaxCtrl.text.isEmpty ? '' : 'Prezzo max: ',
-                        fillColor: oddItemColor,
+                        fillColor: getColor(j++),
                         filled: true, 
                       ),
                       controller: txtPrezzoMaxCtrl,
@@ -388,7 +423,8 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
       txtAnnoPubblicazioneDa: txtAnnoPubblicazioneDaCtrl.text, 
       txtAnnoPubblicazioneA: txtAnnoPubblicazioneACtrl.text,
       txtPrezzoMin: txtPrezzoMinCtrl.text,
-      txtPrezzoMax: txtPrezzoMaxCtrl.text
+      txtPrezzoMax: txtPrezzoMaxCtrl.text,
+      txtDescrizione: txtDescrizioneCtrl.text
     );
     // if (ComArea.booksSearchParameters.isEmpty()) {
     //   ComArea.appBarStateText = true;
@@ -411,5 +447,6 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
     txtAnnoPubblicazioneACtrl.text = '';
     txtPrezzoMinCtrl.text = '';
     txtPrezzoMaxCtrl.text = '';
+    txtDescrizioneCtrl.text = '';
   }
 }

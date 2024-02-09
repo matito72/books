@@ -57,12 +57,22 @@ class DbLibroIsarService {
     if (ComArea.booksSearchParameters.isNotEmpty()) {
       lstLibroViewSaved = await isarLibro.libroIsarModels.filter()
         .siglaLibreriaEqualTo(libreriaSel.sigla)
-        .titoloMatches('*$ComArea.booksSearchParameters.txtTitolo*', caseSensitive: false)
-        .lstAutoriElementMatches('*$ComArea.booksSearchParameters.txtAutore*', caseSensitive: false)
-        .editoreMatches('*$ComArea.booksSearchParameters.txtEditore*', caseSensitive: false)
         .optional(
-          ComArea.booksSearchParameters.txtCategoria != null && ComArea.booksSearchParameters.txtCategoria!.trim().isNotEmpty,
-          (q) => q.lstCategoriaElementMatches('$ComArea.booksSearchParameters.txtCategoria')
+          ComArea.booksSearchParameters.txtTitolo != null && ComArea.booksSearchParameters.txtTitolo!.trim().isNotEmpty,
+          (q) => q.titoloMatches('*${ComArea.booksSearchParameters.txtTitolo}*', caseSensitive: false)
+        )
+        .optional(
+          ComArea.booksSearchParameters.txtAutore != null && ComArea.booksSearchParameters.txtAutore!.trim().isNotEmpty,
+          (q) => q.lstAutoriElementMatches('*${ComArea.booksSearchParameters.txtAutore}*', caseSensitive: false)
+        )
+        .optional(
+          ComArea.booksSearchParameters.txtEditore != null && ComArea.booksSearchParameters.txtEditore!.trim().isNotEmpty,
+          (q) => q.editoreMatches('*${ComArea.booksSearchParameters.txtEditore}*', caseSensitive: false)
+        )
+        .optional(
+          ComArea.booksSearchParameters.txtCategoria != null && ComArea.booksSearchParameters.txtCategoria!.trim().isNotEmpty 
+              && ComArea.booksSearchParameters.txtCategoria != BisacList.nonClassifiable,
+          (q) => q.lstCategoriaElementContains(ComArea.booksSearchParameters.txtCategoria!, caseSensitive: false)
         )
         .optional(
           ComArea.booksSearchParameters.txtPrezzoMin != null && ComArea.booksSearchParameters.txtPrezzoMin!.trim().isNotEmpty,
@@ -72,23 +82,54 @@ class DbLibroIsarService {
           ComArea.booksSearchParameters.txtPrezzoMax != null && ComArea.booksSearchParameters.txtPrezzoMax!.trim().isNotEmpty,
           (q) => q.prezzoLessThan(Utils.getPositiveDouble(Utils.getTrimUppercaseParameter(ComArea.booksSearchParameters.txtPrezzoMax))),
         )
-        .descrizioneMatches('*$ComArea.booksSearchParameters.txtDescrizione*', caseSensitive: false)
+        .optional(
+          ComArea.booksSearchParameters.txtDescrizione != null && ComArea.booksSearchParameters.txtDescrizione!.trim().isNotEmpty,
+          (q) => q.descrizioneMatches('*${ComArea.booksSearchParameters.txtDescrizione}*', caseSensitive: false)
+        )
         .findAll();
     } else {
       lstLibroViewSaved = await isarLibro.libroIsarModels.filter()
         .siglaLibreriaEqualTo(libreriaSel.sigla)
+        .group(
+          (q) => q
+          .optional(
+            ComArea.bookToSearch.trim().isNotEmpty,
+            (q) => q.titoloMatches('*${ComArea.bookToSearch}*', caseSensitive: false)
+          )
+          .or()
+          .optional(
+            ComArea.bookToSearch.trim().isNotEmpty,
+            (q) => q.lstAutoriElementMatches('*${ComArea.bookToSearch}*', caseSensitive: false)
+          )
+          .or()
+          .optional(
+            ComArea.bookToSearch.trim().isNotEmpty,
+            (q) => q.editoreMatches('*${ComArea.bookToSearch}*', caseSensitive: false)
+          )
+          .or()
+          .optional(
+            ComArea.bookToSearch.trim().isNotEmpty,
+            (q) => q.lstCategoriaElementContains(ComArea.bookToSearch, caseSensitive: false)
+          )
+          .or()
+          .optional(
+            ComArea.bookToSearch.trim().isNotEmpty && (double.tryParse(ComArea.bookToSearch) != null),
+            (q) => q.prezzoEqualTo(double.parse(ComArea.bookToSearch)),
+          )
+          .or()
+          .optional(
+            ComArea.bookToSearch.trim().isNotEmpty && (double.tryParse(ComArea.bookToSearch) != null),
+            (q) => q.prezzoEqualTo(double.parse(ComArea.bookToSearch)),
+          )
+          .or()
+          .optional(
+            ComArea.bookToSearch.trim().isNotEmpty, 
+            (q) => q.descrizioneMatches('*${ComArea.bookToSearch}*', caseSensitive: false))
+        )
         .findAll();
     }
 
     await isarLibro.close();
-
-    if (lstLibroViewSaved.isNotEmpty) {
-      for (LibroIsarModel libroIsarModel in lstLibroViewSaved) {
-        if (libroIsarModel.lstCategoria.isEmpty) {
-          libroIsarModel.lstCategoria = [BisacList.nonClassifiable];
-        }
-      }
-    }
 
     return lstLibroViewSaved;
   }

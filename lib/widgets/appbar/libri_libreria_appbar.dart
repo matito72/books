@@ -104,7 +104,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
                 },
               ),
               const Text(
-                "Filtro ON",
+                "Reset",
                 style: TextStyle(
                   color: Colors.white, fontSize: 13
                 ),
