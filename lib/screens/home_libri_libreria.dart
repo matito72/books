@@ -633,6 +633,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
   _viewNewEditLibro(BuildContext context, LibroBloc libroBloc, LibroIsarModel libroViewModel, bool isEdit, {bool showDelete = true, bool isInsertByUserInterface = false}) async {
     int siglaLibreriaOld = libroViewModel.siglaLibreria;
+    String isbnLibroOld = libroViewModel.isbn;
     LibroIsarModel libroViewModelClone = libroViewModel.clonaLibro();
     libroViewModelClone.id = libroViewModel.id;
     String immagineCopertinaPre = libroViewModel.immagineCopertina;
@@ -643,7 +644,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       if (ret.isDelete) {
         libroBloc.add(DeleteLibroEvent(ComArea.libreriaInUso!, ret.libroViewModel));
       } else if (ret.isInsert) {
-        LibroIsarToSaveModel libroToSaveModel = LibroIsarToSaveModel(ret.libroViewModel, siglaLibreriaOld: siglaLibreriaOld);
+        LibroIsarToSaveModel libroToSaveModel = LibroIsarToSaveModel(ret.libroViewModel, siglaLibreriaOld: siglaLibreriaOld, isbnLibroOld: isbnLibroOld);
         if (isEdit) {
           libroBloc.add(EditLibroEvent(ComArea.libreriaInUso!, libroToSaveModel));
         } else {

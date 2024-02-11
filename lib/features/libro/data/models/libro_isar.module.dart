@@ -102,6 +102,7 @@ class LibroIsarModel  {
     stars = mappa['stars'];
     pathImmagineCopertina = mappa['pathImmagineCopertina'];
     siglaLibreria = ComArea.libreriaInUso!.sigla;
+    note = mappa['note'];
   }
 
   List<String> _getListaCategoriaFromMap(dynamic lstCategoria) {
