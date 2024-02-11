@@ -154,6 +154,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         event.libroToSaveModel.libroViewModel.dataInserimento = Utils.getDataNow();
         event.libroToSaveModel.libroViewModel.dataUltimaModifica = Utils.getDataNow();
         await _dbLibroService.saveLibroToDb(event.libroToSaveModel, true);
+        
         await sl<DbLibreriaIsarService>().addLibriInLibreriaInUso(event.libroToSaveModel.libroViewModel.siglaLibreria, 1);
         LibroUtils.addNrLibriCaricatiInCache(event.libroToSaveModel.libroViewModel.siglaLibreria);
 
@@ -170,7 +171,9 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       try {
         int? siglaLibreriaOld = event.libroToSaveModel.siglaLibreriaOld;
         event.libroToSaveModel.libroViewModel.dataUltimaModifica = Utils.getDataNow();
+        
         await _dbLibroService.saveLibroToDb(event.libroToSaveModel, false);
+
         if (siglaLibreriaOld != null && siglaLibreriaOld != event.libroToSaveModel.libroViewModel.siglaLibreria) {
           await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(siglaLibreriaOld);
           LibroUtils.removeNrLibriCaricatiInCache(siglaLibreriaOld);

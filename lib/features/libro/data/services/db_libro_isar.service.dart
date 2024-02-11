@@ -180,41 +180,46 @@ class DbLibroIsarService {
     return lstLibro.isNotEmpty ? lstLibro[0] : null;
   }
 
-  Future<void> saveLibroToDb(LibroIsarToSaveModel libroToSaveMode, bool isNew) async {
+  Future<void> saveLibroToDb(LibroIsarToSaveModel libroToSaveModel, bool isNew) async {
     Isar isarLibroNew = await _openBoxLibro(ComArea.libreriaInUso!.nome);
+    libroToSaveModel.libroViewModel.siglaLibreria = (libroToSaveModel.libroViewModel.siglaLibreria == 0)
+      ? ComArea.libreriaInUso!.sigla
+      : libroToSaveModel.libroViewModel.siglaLibreria;
 
     LibroIsarModel? libroDbNew = await getLibroBySiglaLibreriaAndIsbn(
-      libroToSaveMode.libroViewModel.siglaLibreria, 
-      libroToSaveMode.libroViewModel.isbn,
+      libroToSaveModel.libroViewModel.siglaLibreria, 
+      libroToSaveModel.libroViewModel.isbn,
       isarLibro: isarLibroNew
     );
 
+    libroToSaveModel.siglaLibreriaOld = libroToSaveModel.siglaLibreriaOld ?? libroToSaveModel.libroViewModel.siglaLibreria;
+
     if ((libroDbNew != null)
-        && (isNew || (libroToSaveMode.siglaLibreriaOld != libroToSaveMode.libroViewModel.siglaLibreria) || (libroToSaveMode.isbnLibroOld != libroToSaveMode.libroViewModel.isbn))) {
+        && (isNew || 
+          (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria) || (libroToSaveModel.isbnLibroOld != libroToSaveModel.libroViewModel.isbn))) {
       await isarLibroNew.close();
-      throw ItemPresentException(ItemType.libro, "Libreria '${ComArea.mapCodDescLibreria[libroToSaveMode.libroViewModel.siglaLibreria]!}':\n libro ${libroToSaveMode.libroViewModel.isbn}-${libroToSaveMode.libroViewModel.titolo} già presente!");  
+      throw ItemPresentException(ItemType.libro, "Libreria '${ComArea.mapCodDescLibreria[libroToSaveModel.libroViewModel.siglaLibreria]!}':\n libro ${libroToSaveModel.libroViewModel.isbn}-${libroToSaveModel.libroViewModel.titolo} già presente!");  
     } 
     
     await isarLibroNew.writeTxn(() async {
-      await isarLibroNew.libroIsarModels.put(libroToSaveMode.libroViewModel);
+      await isarLibroNew.libroIsarModels.put(libroToSaveModel.libroViewModel);
     });
     await isarLibroNew.close();
 
-    if (libroToSaveMode.siglaLibreriaOld != null 
-        && libroToSaveMode.siglaLibreriaOld != libroToSaveMode.libroViewModel.siglaLibreria) {
-      Isar isarLibroOld = await _openBoxLibro(ComArea.mapCodDescLibreria[libroToSaveMode.siglaLibreriaOld]!);
+    if (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria) {
+      Isar isarLibroOld = await _openBoxLibro(ComArea.mapCodDescLibreria[libroToSaveModel.siglaLibreriaOld]!);
       LibroIsarModel? libroDbOld;
 
       await isarLibroOld.writeTxn(() async {
         libroDbOld = await getLibroBySiglaLibreriaAndIsbn(
-          libroToSaveMode.siglaLibreriaOld!, 
-          libroToSaveMode.libroViewModel.isbn,
+          libroToSaveModel.siglaLibreriaOld!, 
+          libroToSaveModel.libroViewModel.isbn,
           isarLibro: isarLibroOld
         );
       });
       if (libroDbOld == null) {
         await isarLibroOld.close();
-        throw ItemPresentException(ItemType.libro, "Il libro '${libroToSaveMode.libroViewModel.isbn}' oggetto della modifica non esiste più!");
+        throw ItemPresentException(ItemType.libro, "Il libro '${libroToSaveModel.libroViewModel.isbn}' oggetto della modifica non esiste più!");
       }
       await isarLibroOld.writeTxn(() async {
         await isarLibroOld.libroIsarModels.delete(libroDbOld!.id);
