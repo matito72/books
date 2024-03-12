@@ -11,7 +11,7 @@ part 'libro_isar.module.g.dart';
 /// 
 ///** flutter pub run build_runner build */
 
-@collection
+@Collection()
 class LibroIsarModel  {
   Id id = Isar.autoIncrement;
 
