@@ -6,6 +6,7 @@ class Constant {
   static const String googleapisDominio = 'www.googleapis.com';
   static const String googleapisPercorso = '/books/v1/volumes';
   static const String jsonFilesPath = "jsonFiles";
+  static const String pdfFilesPath = "pdfFiles";
   static const String siglaLibreriaDaDefinire = '<Libreria da definire>';
   static const String editoreDaDefinire = '<Editore da definire>';
   static const String assetImageDefault = 'assets/images/waiting.png';

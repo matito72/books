@@ -160,10 +160,9 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
                   Permission.manageExternalStorage, Permission.camera,
                 ].request();
                 if(statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
-                  if (mounted) {
+                  if (!context.mounted) return;
                     // _updateWidget(swithSearchPhone: true);
                     showImagePickerUtil.showImagePicker(context, _reloadImage);
-                  }
                 } else {
                   debugPrint('no permission provided');
                 }

@@ -1,7 +1,10 @@
+import 'package:books/features/libro/data/models/link_isar.module.dart';
+import 'package:books/features/libro/data/models/pdf_isar.module.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/widgets/dettaglio_libro/dettaglio_libro_widget.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Widget _getDescrizioneEsistente(BuildContext context, DettaglioLibroWidget widget, Function(String) fn) {
   return Column(
@@ -33,7 +36,7 @@ Widget _getDescrizioneEsistente(BuildContext context, DettaglioLibroWidget widge
         ),
         expandText: '>>',
         collapseText: '<<',
-      )
+      ),
       // ReadMoreText.selectable(
       //   widget._libroViewModel.descrizione,
       //   numLines: 10,
@@ -67,7 +70,7 @@ Widget _getDescrizioneDaDefinire(BuildContext context, DettaglioLibroWidget widg
       children: [
         Container(
           width: (MediaQuery.of(context).size.width * 98 / 100),
-          height: (MediaQuery.of(context).size.height * 30 / 100),
+          height: (MediaQuery.of(context).size.height * 20 / 100),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),
             // border: Border.all(color: Theme.of(context).colorScheme.background)
@@ -117,6 +120,151 @@ Widget _getDescrizioneDaDefinire(BuildContext context, DettaglioLibroWidget widg
       ],
     ),
   );
+}
+
+Widget getWidgetLink(BuildContext context, String? linkName, String? linkDescription, String? linkUrl, LinkIsarModule? linkIsarModule, Function() fnDelete, Function()? fnEdit) {
+  bool isGoogleLinkPreview = (linkIsarModule == null);
+  linkName = (linkName == null && linkIsarModule != null) ? linkIsarModule.name : linkName;
+  linkDescription = (linkDescription == null && linkIsarModule != null) ? linkIsarModule.descrizione : linkDescription;
+  linkUrl = (linkUrl == null && linkIsarModule != null) ? linkIsarModule.url : linkUrl;  
+  
+  if (linkUrl == null || linkUrl.isEmpty) {
+    return const Text('');
+  }
+
+  return getWidgetLinkPdf(context, isGoogleLinkPreview, linkName!, linkDescription!, linkUrl, fnDelete, fnEdit);
+}
+
+Widget getWidgetPdf(BuildContext context, PdfIsarModule pdfIsarModule, Function() fnDelete, Function()? fnEdit) {
+  bool isGoogleLinkPreview = false;
+  String linkName = pdfIsarModule.name;
+  String linkDescription = pdfIsarModule.descrizione;
+  String pdfPathFileName = pdfIsarModule.pathNameFile;  
+
+  return getWidgetLinkPdf(context, isGoogleLinkPreview, linkName, linkDescription, pdfPathFileName, fnDelete, fnEdit);
+}
+
+Widget getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String linkName, String linkDescription, String linkUrl, Function() fnDelete, Function()? fnEdit) {
+  return Column(
+    children: [
+      const Padding(padding: EdgeInsets.only(top: 10)),
+      Divider(
+        height: 5,
+        thickness: 1,
+        indent: 5,
+        endIndent: 5,
+        color: Colors.orange[100],
+      ),
+      const Padding(padding: EdgeInsets.only(top: 20)),
+      Stack(
+        children: [
+          SizedBox(
+            width: (MediaQuery.of(context).size.width * 95 / 100),
+            height: (MediaQuery.of(context).size.height * 15 / 100),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: [
+                    Text(
+                      linkName,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.lightBlue.shade100,
+                        fontWeight: FontWeight.bold
+                      ),                                          
+                    ),
+                    SizedBox(
+                      width: 25,
+                      height: 20,
+                      child: IconButton(
+                        padding: const EdgeInsets.all(0),
+                        alignment: Alignment.topRight,
+                        icon: Icon(
+                          Icons.open_in_browser,
+                          size: 20,
+                          color: Colors.blue[400]
+                        ),
+                        onPressed: () => {
+                          openUrl(linkUrl!)
+                        },
+                      ),
+                    )
+                  ],
+                ),
+                ExpandableText(
+                  linkDescription.isNotEmpty ? linkDescription : '',
+                  maxLines: 2,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.lime[100],
+                  ),
+                  expandText: '>>',
+                  collapseText: '<<',
+                ),
+                ExpandableText(
+                  linkUrl,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                  expandText: '>>',
+                  collapseText: '<<',
+                ),
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                !isGoogleLinkPreview
+                  ? IconButton(
+                      // iconSize: 20,
+                      padding: const EdgeInsets.all(0),
+                      alignment: Alignment.topRight,
+                      icon: Icon(
+                        size: 20,
+                        Icons.edit,
+                        color: Colors.yellowAccent[700]
+                      ),
+                      onPressed: () => {
+                        if (fnEdit != null) {
+                          fnEdit()
+                        }
+                      },
+                    )
+                  : const Text(''),
+                IconButton(
+                  padding: const EdgeInsets.all(0),
+                  alignment: Alignment.topRight,
+                  icon: Icon(
+                    Icons.delete,
+                    size: 20,
+                    color: Colors.red[400],
+                  ),
+                  onPressed: () => {
+                    fnDelete()
+                  },
+                )
+              ],
+            )
+          )
+        ],
+      ),
+    ],
+  );
+}
+
+openUrl(String url) async {
+  final Uri uri = Uri.parse(url);
+  if (!await launchUrl(uri)) {
+    throw Exception('Could not launch $url');
+  }
 }
 
 Widget getDescrizioneField(BuildContext context, DettaglioLibroWidget widget, Function(String) fn) {

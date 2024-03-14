@@ -128,8 +128,45 @@ const LibroIsarModelSchema = CollectionSchema(
   deserialize: _libroIsarModelDeserialize,
   deserializeProp: _libroIsarModelDeserializeProp,
   idName: r'id',
-  indexes: {},
-  links: {},
+  indexes: {
+    r'lstAutori_titolo_editore': IndexSchema(
+      id: -6425596949695108645,
+      name: r'lstAutori_titolo_editore',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'lstAutori',
+          type: IndexType.hash,
+          caseSensitive: true,
+        ),
+        IndexPropertySchema(
+          name: r'titolo',
+          type: IndexType.hash,
+          caseSensitive: false,
+        ),
+        IndexPropertySchema(
+          name: r'editore',
+          type: IndexType.hash,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
+  links: {
+    r'links': LinkSchema(
+      id: 2795732110193184968,
+      name: r'links',
+      target: r'LinkIsarModule',
+      single: false,
+    ),
+    r'setPdf': LinkSchema(
+      id: -1822680997384933721,
+      name: r'setPdf',
+      target: r'PdfIsarModule',
+      single: false,
+    )
+  },
   embeddedSchemas: {},
   getId: _libroIsarModelGetId,
   getLinks: _libroIsarModelGetLinks,
@@ -300,12 +337,14 @@ Id _libroIsarModelGetId(LibroIsarModel object) {
 }
 
 List<IsarLinkBase<dynamic>> _libroIsarModelGetLinks(LibroIsarModel object) {
-  return [];
+  return [object.lstLinkIsarModule, object.lstPdfIsarModule];
 }
 
 void _libroIsarModelAttach(
     IsarCollection<dynamic> col, Id id, LibroIsarModel object) {
   object.id = id;
+  object.lstLinkIsarModule.attach(col, col.isar.collection<LinkIsarModule>(), r'links', id);
+  object.lstPdfIsarModule.attach(col, col.isar.collection<PdfIsarModule>(), r'setPdf', id);
 }
 
 extension LibroIsarModelQueryWhereSort
@@ -385,6 +424,144 @@ extension LibroIsarModelQueryWhere
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterWhereClause>
+      lstAutoriEqualToAnyTitoloEditore(List<String> lstAutori) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'lstAutori_titolo_editore',
+        value: [lstAutori],
+      ));
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterWhereClause>
+      lstAutoriNotEqualToAnyTitoloEditore(List<String> lstAutori) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'lstAutori_titolo_editore',
+              lower: [],
+              upper: [lstAutori],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'lstAutori_titolo_editore',
+              lower: [lstAutori],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'lstAutori_titolo_editore',
+              lower: [lstAutori],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'lstAutori_titolo_editore',
+              lower: [],
+              upper: [lstAutori],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterWhereClause>
+      lstAutoriTitoloEqualToAnyEditore(List<String> lstAutori, String titolo) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'lstAutori_titolo_editore',
+        value: [lstAutori, titolo],
+      ));
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterWhereClause>
+      lstAutoriEqualToTitoloNotEqualToAnyEditore(
+          List<String> lstAutori, String titolo) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'lstAutori_titolo_editore',
+              lower: [lstAutori],
+              upper: [lstAutori, titolo],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'lstAutori_titolo_editore',
+              lower: [lstAutori, titolo],
+              includeLower: false,
+              upper: [lstAutori],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'lstAutori_titolo_editore',
+              lower: [lstAutori, titolo],
+              includeLower: false,
+              upper: [lstAutori],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'lstAutori_titolo_editore',
+              lower: [lstAutori],
+              upper: [lstAutori, titolo],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterWhereClause>
+      lstAutoriTitoloEditoreEqualTo(
+          List<String> lstAutori, String titolo, String editore) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'lstAutori_titolo_editore',
+        value: [lstAutori, titolo, editore],
+      ));
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterWhereClause>
+      lstAutoriTitoloEqualToEditoreNotEqualTo(
+          List<String> lstAutori, String titolo, String editore) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'lstAutori_titolo_editore',
+              lower: [lstAutori, titolo],
+              upper: [lstAutori, titolo, editore],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'lstAutori_titolo_editore',
+              lower: [lstAutori, titolo, editore],
+              includeLower: false,
+              upper: [lstAutori, titolo],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'lstAutori_titolo_editore',
+              lower: [lstAutori, titolo, editore],
+              includeLower: false,
+              upper: [lstAutori, titolo],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'lstAutori_titolo_editore',
+              lower: [lstAutori, titolo],
+              upper: [lstAutori, titolo, editore],
+              includeUpper: false,
+            ));
+      }
     });
   }
 }
@@ -3068,7 +3245,129 @@ extension LibroIsarModelQueryObject
     on QueryBuilder<LibroIsarModel, LibroIsarModel, QFilterCondition> {}
 
 extension LibroIsarModelQueryLinks
-    on QueryBuilder<LibroIsarModel, LibroIsarModel, QFilterCondition> {}
+    on QueryBuilder<LibroIsarModel, LibroIsarModel, QFilterCondition> {
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition> links(
+      FilterQuery<LinkIsarModule> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'links');
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+      linksLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'links', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+      linksIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'links', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+      linksIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'links', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+      linksLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'links', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+      linksLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'links', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+      linksLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'links', lower, includeLower, upper, includeUpper);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition> setPdf(
+      FilterQuery<PdfIsarModule> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'setPdf');
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+      setPdfLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'setPdf', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+      setPdfIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'setPdf', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+      setPdfIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'setPdf', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+      setPdfLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'setPdf', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+      setPdfLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'setPdf', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+      setPdfLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'setPdf', lower, includeLower, upper, includeUpper);
+    });
+  }
+}
 
 extension LibroIsarModelQuerySortBy
     on QueryBuilder<LibroIsarModel, LibroIsarModel, QSortBy> {

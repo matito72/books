@@ -1,5 +1,8 @@
 // import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/bloc/libreria.bloc.dart';
 import 'package:books/features/libreria/bloc/libreria_events.bloc.dart';
@@ -14,11 +17,8 @@ import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/appbar/appbar_default.dart';
 import 'package:books/widgets/form_libreria_new.dart';
 import 'package:books/widgets/single_card_libreria.dart';
-// import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../config/constant.dart';
-// import 'dart:convert' show utf8;
 
 /// 
 /// Pagina con la lista delle librerie salvate
@@ -105,46 +105,51 @@ class HomeLibreriaScreen extends StatelessWidget {
       context: context,
       txtLabel: '${Constant.titoloApp} - Librerie',
       showIconSx: false,
-      // popupMenuButton: PopupMenuButton(
-      //   // add icon, by default "3 dot" icon
-      //   // icon: Icon(Icons.book)
-      //   padding: EdgeInsets.zero,
-      //   itemBuilder: (context) {
-      //     return [
-      //           // PopupMenuItem<int>(value: 1, child: Text("Settings")),
-      //           const PopupMenuItem<int>(
-      //             value: 0, 
-      //             child: Row(
-      //               children: [
-      //                 Icon(Icons.sentiment_very_dissatisfied_outlined),
-      //                 Padding(padding: EdgeInsets.only(right: 15.0)),
-      //                 Text("Cancella tutte le librerie !")
-      //               ],
-      //             )
-      //           ),
-      //           const PopupMenuItem<int>(
-      //             value: 1, 
-      //             child: Row(
-      //               children: [
-      //                 Icon(Icons.sentiment_very_dissatisfied_outlined),
-      //                 Padding(padding: EdgeInsets.only(right: 15.0)),
-      //                 Text("TEST....")
-      //               ],
-      //             )
-      //           ),
-      //       ];
-      //   },
-      //   onSelected:(value){
-      //     if (value == 0) {
-      //       BlocProvider.of<LibreriaBloc>(context).add(DeleteAllLibreriaEvent());
-      //     } 
-      //     else if(value == 1) {
-      //       _test();
-      //     }
-      //     // else if(value == 2){print("Logout menu is selected.");}
-      //   }
-      // ),
+      popupMenuButton: PopupMenuButton(
+        // add icon, by default "3 dot" icon
+        // icon: Icon(Icons.book)
+        padding: EdgeInsets.zero,
+        itemBuilder: (context) {
+          return [
+                // PopupMenuItem<int>(value: 1, child: Text("Settings")),
+                // const PopupMenuItem<int>(
+                //   value: 0, 
+                //   child: Row(
+                //     children: [
+                //       Icon(Icons.sentiment_very_dissatisfied_outlined),
+                //       Padding(padding: EdgeInsets.only(right: 15.0)),
+                //       Text("Cancella tutte le librerie !")
+                //     ],
+                //   )
+                // ),
+                const PopupMenuItem<int>(
+                  value: 1, 
+                  child: Row(
+                    children: [
+                      Icon(Icons.sentiment_very_dissatisfied_outlined),
+                      Padding(padding: EdgeInsets.only(right: 15.0)),
+                      Text("TEST....")
+                    ],
+                  )
+                ),
+            ];
+        },
+        onSelected:(value) {
+          if (value == 0) {
+            BlocProvider.of<LibreriaBloc>(context).add(DeleteAllLibreriaEvent());
+          } 
+          else if(value == 1) {
+            _test();
+          }
+          // else if(value == 2){print("Logout menu is selected.");}
+        }
+      ),
     );
+  }
+
+  _test() async {
+    debugPrint("TEST........");
+    // const TestopenCv(title: 'opencv_4 Demo');
   }
 
   // _test() async {
@@ -200,6 +205,8 @@ class HomeLibreriaScreen extends StatelessWidget {
           ),
       );
   }
+
+
   
   Widget _blocBody(BuildContext context) {
     return BlocListener<LibreriaBloc, LibreriaState>(

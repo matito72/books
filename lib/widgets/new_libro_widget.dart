@@ -50,38 +50,35 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
           libri = await LibroSearchService.simpleGoogleBooksSearch(googleSearchModel);
         } catch (errore) {
           if (errore is HandshakeException && errore.type == "HandshakeException") {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Problemi di connessione, riprovare più tardi !')));
-            }
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Problemi di connessione, riprovare più tardi !')));
           }
           else {
-            if (mounted) {
+            if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Errore chiamata al Google !')));
-            }
           }
         }
         
         if (libri.isNotEmpty) {
-          if (mounted) {
-            Navigator.of(context).pop();
+          if (!context.mounted) return;
 
-            LibroDettaglioResult? libroDettaglioResult = await Navigator.pushNamed<dynamic> (
-              context, 
-              SearchListBookPage.pagePath, 
-              arguments: {'googleSearchModel': googleSearchModel, 'libreriaSel': ComArea.libreriaInUso! /* 'libri': libri, 'nrTot': totalFindedBooks*/}
-            );
-            
-            if (libroDettaglioResult != null) {
-              LibroIsarToSaveModel libroToSaveModel = LibroIsarToSaveModel(libroDettaglioResult.libroViewModel);
-              widget._libroBloc.add(AddLibroEvent(ComArea.libreriaInUso!, libroToSaveModel));
-              // widget.appBarBloc.add(SwithToTextAppBarEvent());
-            }
-          }        
+          Navigator.of(context).pop();
+
+          LibroDettaglioResult? libroDettaglioResult = await Navigator.pushNamed<dynamic> (
+            context, 
+            SearchListBookPage.pagePath, 
+            arguments: {'googleSearchModel': googleSearchModel, 'libreriaSel': ComArea.libreriaInUso! /* 'libri': libri, 'nrTot': totalFindedBooks*/}
+          );
+          
+          if (libroDettaglioResult != null) {
+            LibroIsarToSaveModel libroToSaveModel = LibroIsarToSaveModel(libroDettaglioResult.libro, lstLinkIsarModule: libroDettaglioResult.lstLinkIsarModule);
+            widget._libroBloc.add(AddLibroEvent(ComArea.libreriaInUso!, libroToSaveModel));
+            // widget.appBarBloc.add(SwithToTextAppBarEvent());
+          }
         } else {
-          if (mounted) {
+          if (!context.mounted) return;
             Navigator.of(context).pop();  
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Nessun libro trovato !')));
-          }
         }
       }
     }

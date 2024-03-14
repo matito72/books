@@ -8,34 +8,12 @@ part 'libreria_isar.module.g.dart';
 class LibreriaIsarModel {
   Id sigla = Isar.autoIncrement;
 
-  // String? sigla;
+  @Index(unique: true, caseSensitive: false)
   String nome;
+
   int nrLibriCaricati;
   bool isLibreriaDefault;
 
-  // LibreriaModelIsar({this.nome = '-', this.nrLibriCaricati = 0, this.isLibreriaDefault = false});
-
-  // LibreriaModelIsar copyWith({
-  //   String? nome,
-  //   int? nrLibriCaricati,
-  //   bool? isLibreriaDefault
-  // }) =>
-  //     LibreriaModelIsar(
-  //       nome: nome ?? this.nome,
-  //       nrLibriCaricati: nrLibriCaricati ?? this.nrLibriCaricati,
-  //       isLibreriaDefault: isLibreriaDefault ?? this.isLibreriaDefault
-  //     );
-
   LibreriaIsarModel({this.nome = '-', this.nrLibriCaricati = 0, this.isLibreriaDefault = false});
 
-  LibreriaIsarModel copyWith({
-    String? nome,
-    int? nrLibriCaricati,
-    bool? isLibreriaDefault
-  }) =>
-      LibreriaIsarModel(
-        nome: nome ?? this.nome,
-        nrLibriCaricati: nrLibriCaricati ?? this.nrLibriCaricati,
-        isLibreriaDefault: isLibreriaDefault ?? this.isLibreriaDefault
-      );
 }

@@ -1,9 +1,12 @@
-import 'package:books/utilities/utils.dart';
-import 'package:isar/isar.dart';
+import 'dart:convert';
+
 import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
+import 'package:books/features/libro/data/models/link_isar.module.dart';
+import 'package:books/features/libro/data/models/pdf_isar.module.dart';
 import 'package:books/resources/bisac_codes.dart';
-import 'dart:convert';
+import 'package:books/utilities/utils.dart';
+import 'package:isar/isar.dart';
 
 part 'libro_isar.module.g.dart';
 
@@ -18,9 +21,12 @@ class LibroIsarModel  {
   // Google-Book
   late String googleBookId;
   late String isbn;
+
   late String titolo;
-  late List<String> lstAutori;
   late String editore;
+
+  @Index(composite: [CompositeIndex('titolo', caseSensitive: false), CompositeIndex('editore', caseSensitive: false)])
+  late List<String> lstAutori;
   late String descrizione;
   late String immagineCopertina;
   late String dataPubblicazione;
@@ -33,17 +39,20 @@ class LibroIsarModel  {
   late double prezzo;
 
   // view
-  int stars;
+  late int stars;
   String? pathImmagineCopertina;  // Campo usato come 'backup' del campo 'immagineCopertina' originale
-  int siglaLibreria; 
-  String note;
-  String dataInserimento;
-  String dataUltimaModifica;
+  late int siglaLibreria; 
+  late String note;
+  late String dataInserimento;
+  late String dataUltimaModifica;
+  
+  final IsarLinks<LinkIsarModule> lstLinkIsarModule = IsarLinks<LinkIsarModule>();
+  final IsarLinks<PdfIsarModule> lstPdfIsarModule = IsarLinks<PdfIsarModule>();
 
   LibroIsarModel(this.siglaLibreria, this.dataInserimento, this.dataUltimaModifica, 
-    {this.googleBookId='', required this.isbn, this.titolo='', this.lstAutori=const [], this.editore='', 
-      this.descrizione='', this.immagineCopertina='', this.dataPubblicazione='', this.nrPagine=0, this.lstCategoria=const [], 
-      this.previewLink='', this.isEbook=false, this.country='', this.valuta='',  this.prezzo=0, this.stars = 0, this.pathImmagineCopertina, this.note = ''}) {
+    {this.googleBookId='', required this.isbn, this.titolo='', this.lstAutori=const [], this.editore='', this.descrizione='', 
+    this.immagineCopertina='', this.dataPubblicazione='', this.nrPagine=0, this.lstCategoria=const [], this.previewLink='', 
+    this.isEbook=false, this.country='', this.valuta='',  this.prezzo=0, this.stars = 0, this.pathImmagineCopertina, this.note = ''}) {
         if (lstCategoria.isEmpty) {
           lstCategoria = [BisacList.nonClassifiable];
         }
@@ -114,53 +123,6 @@ class LibroIsarModel  {
     
   }
 
-  LibroIsarModel copyWith({
-    int? siglaLibreria,
-    String? dataInserimento,
-    String? dataUltimaModifica,
-    String? note,
-    String? googleBookId,
-    String? isbn,
-    String? titolo,
-    List<String>? lstAutori,
-    String? editore,
-    String? descrizione,
-    String? immagineCopertina,
-    String? dataPubblicazione,
-    int? nrPagine,
-    List<String>? lstCategoria,
-    String? previewLink,
-    bool? isEbook,
-    String? country,
-    String? valuta,
-    double? prezzo,  
-    int? stars,
-    String? pathImmagineCopertina
-  }) => 
-    LibroIsarModel(
-      siglaLibreria ?? this.siglaLibreria,
-      dataInserimento ?? this.dataInserimento,
-      dataUltimaModifica ?? this.dataUltimaModifica,
-      note: note ?? this.note,
-      googleBookId: googleBookId ?? this.googleBookId,
-      isbn: isbn ?? this.isbn, 
-      titolo: titolo ?? this.titolo,
-      lstAutori: lstAutori ?? this.lstAutori,
-      editore: editore ?? this.editore,
-      descrizione: descrizione ?? this.descrizione,
-      immagineCopertina: immagineCopertina ?? this.immagineCopertina,
-      dataPubblicazione: dataPubblicazione ?? this.dataPubblicazione,
-      nrPagine: nrPagine ?? this.nrPagine,
-      lstCategoria: lstCategoria ?? this.lstCategoria,
-      previewLink: previewLink ?? this.previewLink,
-      isEbook: isEbook ?? this.isEbook,
-      country: country ?? this.country,
-      valuta: valuta ?? this.valuta,
-      prezzo: prezzo ?? this.prezzo,
-      stars: stars ?? this.stars,
-      pathImmagineCopertina: pathImmagineCopertina ?? this.pathImmagineCopertina,
-    );
-
   LibroIsarModel clonaLibro() => LibroIsarModel(
     siglaLibreria,
     dataInserimento,
@@ -182,7 +144,7 @@ class LibroIsarModel  {
     valuta: valuta,
     prezzo: prezzo,
     stars: stars,
-    pathImmagineCopertina: pathImmagineCopertina,
+    pathImmagineCopertina: pathImmagineCopertina
   );
 
   /// Al salvataggio del Libro, dalla lista dei libri cercati:

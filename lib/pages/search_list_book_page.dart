@@ -68,7 +68,7 @@ class PagewiseListViewExample extends StatelessWidget  {
   Widget _itemBuilder(context, LibroIsarModel entry, index) {
 
     viewDettaglioLibro() async {
-      LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, libreriaSel, entry, false, false);
+      LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, libreriaSel, entry, [], [], false, false);
 
       if (ret != null) {
         Navigator.pop(context, ret);

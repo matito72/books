@@ -2,6 +2,8 @@ import 'package:books/config/com_area.dart';
 import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:books/features/libro/data/models/libro_isar.module.dart';
+import 'package:books/features/libro/data/models/link_isar.module.dart';
+import 'package:books/features/libro/data/models/pdf_isar.module.dart';
 import 'package:books/pages/dettaglio_libro.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -37,7 +39,14 @@ abstract class LibroUtils {
     return out;
   }
 
-  static viewDettaglioLibro(BuildContext context, LibreriaIsarModel libreriaIsarDefault, LibroIsarModel libroViewModel, bool showDelete, bool isInsertByUserInterface) async {
+  static viewDettaglioLibro(BuildContext context, 
+      LibreriaIsarModel libreriaIsarDefault, 
+      LibroIsarModel libroViewModel, 
+      List<LinkIsarModule> lstLinks,
+      List<PdfIsarModule> lstPdf,
+      bool showDelete, 
+      bool isInsertByUserInterface
+  ) async {
     LibroDettaglioResult? ret = await Navigator.pushNamed(
       context, 
       showDelete 
@@ -45,37 +54,37 @@ abstract class LibroUtils {
         : isInsertByUserInterface
           ? DettaglioLibro.pageNewBookPath
           : DettaglioLibro.pagePath, 
-      arguments: {'libroViewModel': libroViewModel}
+      arguments: {'libroViewModel': libroViewModel, 'lstLinkIsarModule': lstLinks, 'lstPdfIsarModule': lstPdf}
       ) as LibroDettaglioResult?;
 
     return ret;
   }
 
-  static LibroIsarModel cloneLibroViewModel(LibroIsarModel libroViewModel) {
-    LibroIsarModel cloneLibroViewModel = LibroIsarModel(
-      libroViewModel.siglaLibreria, 
-      libroViewModel.dataInserimento,
-      libroViewModel.dataUltimaModifica,
-      googleBookId: libroViewModel.googleBookId,
-      isbn: libroViewModel.isbn,
-      country: libroViewModel.country, 
-      titolo: libroViewModel.titolo,
-      editore: libroViewModel.editore,
-      descrizione: libroViewModel.descrizione,
-      immagineCopertina: libroViewModel.immagineCopertina,
-      dataPubblicazione: libroViewModel.dataPubblicazione,
-      previewLink: libroViewModel.previewLink,
-      valuta: libroViewModel.valuta,
-      prezzo: libroViewModel.prezzo,
-      nrPagine: libroViewModel.nrPagine, 
-      lstCategoria: libroViewModel.lstCategoria, 
-      isEbook: libroViewModel.isEbook, 
-      lstAutori: libroViewModel.lstAutori,
-      stars: libroViewModel.stars
-    );
+  // static LibroIsarModel cloneLibroViewModel(LibroIsarModel libroViewModel) {
+  //   LibroIsarModel cloneLibroViewModel = LibroIsarModel(
+  //     libroViewModel.siglaLibreria, 
+  //     libroViewModel.dataInserimento,
+  //     libroViewModel.dataUltimaModifica,
+  //     googleBookId: libroViewModel.googleBookId,
+  //     isbn: libroViewModel.isbn,
+  //     country: libroViewModel.country, 
+  //     titolo: libroViewModel.titolo,
+  //     editore: libroViewModel.editore,
+  //     descrizione: libroViewModel.descrizione,
+  //     immagineCopertina: libroViewModel.immagineCopertina,
+  //     dataPubblicazione: libroViewModel.dataPubblicazione,
+  //     previewLink: libroViewModel.previewLink,
+  //     valuta: libroViewModel.valuta,
+  //     prezzo: libroViewModel.prezzo,
+  //     nrPagine: libroViewModel.nrPagine, 
+  //     lstCategoria: libroViewModel.lstCategoria, 
+  //     isEbook: libroViewModel.isEbook, 
+  //     lstAutori: libroViewModel.lstAutori,
+  //     stars: libroViewModel.stars
+  //   );
     
-    return cloneLibroViewModel;
-  }
+  //   return cloneLibroViewModel;
+  // }
 
   static addNrLibriCaricatiInCache(int siglaLibreria, {int nrToAdd = 1}) {
     for (LibreriaIsarModel libreriaIsarModel in ComArea.lstLibrerieInUso) {

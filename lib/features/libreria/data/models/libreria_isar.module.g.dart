@@ -38,7 +38,21 @@ const LibreriaIsarModelSchema = CollectionSchema(
   deserialize: _libreriaIsarModelDeserialize,
   deserializeProp: _libreriaIsarModelDeserializeProp,
   idName: r'sigla',
-  indexes: {},
+  indexes: {
+    r'nome': IndexSchema(
+      id: -3554607249464315131,
+      name: r'nome',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'nome',
+          type: IndexType.hash,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {},
   getId: _libreriaIsarModelGetId,
@@ -113,6 +127,61 @@ List<IsarLinkBase<dynamic>> _libreriaIsarModelGetLinks(
 void _libreriaIsarModelAttach(
     IsarCollection<dynamic> col, Id id, LibreriaIsarModel object) {
   object.sigla = id;
+}
+
+extension LibreriaIsarModelByIndex on IsarCollection<LibreriaIsarModel> {
+  Future<LibreriaIsarModel?> getByNome(String nome) {
+    return getByIndex(r'nome', [nome]);
+  }
+
+  LibreriaIsarModel? getByNomeSync(String nome) {
+    return getByIndexSync(r'nome', [nome]);
+  }
+
+  Future<bool> deleteByNome(String nome) {
+    return deleteByIndex(r'nome', [nome]);
+  }
+
+  bool deleteByNomeSync(String nome) {
+    return deleteByIndexSync(r'nome', [nome]);
+  }
+
+  Future<List<LibreriaIsarModel?>> getAllByNome(List<String> nomeValues) {
+    final values = nomeValues.map((e) => [e]).toList();
+    return getAllByIndex(r'nome', values);
+  }
+
+  List<LibreriaIsarModel?> getAllByNomeSync(List<String> nomeValues) {
+    final values = nomeValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'nome', values);
+  }
+
+  Future<int> deleteAllByNome(List<String> nomeValues) {
+    final values = nomeValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'nome', values);
+  }
+
+  int deleteAllByNomeSync(List<String> nomeValues) {
+    final values = nomeValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'nome', values);
+  }
+
+  Future<Id> putByNome(LibreriaIsarModel object) {
+    return putByIndex(r'nome', object);
+  }
+
+  Id putByNomeSync(LibreriaIsarModel object, {bool saveLinks = true}) {
+    return putByIndexSync(r'nome', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByNome(List<LibreriaIsarModel> objects) {
+    return putAllByIndex(r'nome', objects);
+  }
+
+  List<Id> putAllByNomeSync(List<LibreriaIsarModel> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'nome', objects, saveLinks: saveLinks);
+  }
 }
 
 extension LibreriaIsarModelQueryWhereSort
@@ -191,6 +260,51 @@ extension LibreriaIsarModelQueryWhere
         upper: upperSigla,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterWhereClause>
+      nomeEqualTo(String nome) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'nome',
+        value: [nome],
+      ));
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterWhereClause>
+      nomeNotEqualTo(String nome) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'nome',
+              lower: [],
+              upper: [nome],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'nome',
+              lower: [nome],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'nome',
+              lower: [nome],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'nome',
+              lower: [],
+              upper: [nome],
+              includeUpper: false,
+            ));
+      }
     });
   }
 }

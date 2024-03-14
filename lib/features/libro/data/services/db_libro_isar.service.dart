@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:books/config/com_area.dart';
-import 'package:books/config/constant.dart';
 import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:books/features/libro/data/models/libro_isar.module.dart';
+// import 'package:books/features/libro/data/models/libro_isar.module.util.dart';
+import 'package:books/features/libro/data/models/link_isar.module.dart';
+import 'package:books/features/libro/data/models/pdf_isar.module.dart';
 import 'package:books/models/libro_isar_to_save.module.dart';
 import 'package:books/resources/bisac_codes.dart';
 import 'package:books/resources/item_exception.dart';
@@ -24,7 +26,7 @@ class DbLibroIsarService {
       }
       return await Isar.open(
         name: nomeLibreria, 
-        [LibroIsarModelSchema], 
+        [LibroIsarModelSchema, LinkIsarModuleSchema, PdfIsarModuleSchema], 
         directory: _appDocumentDir.path
       );
     }
@@ -129,8 +131,20 @@ class DbLibroIsarService {
         .findAll();
     }
 
-    await isarLibro.close();
 
+    // if (lstLibroViewSaved.isNotEmpty) {
+    //   for (LibroIsarModel libro in lstLibroViewSaved) {
+    //     await libro.links.load();
+    //     int nr = await libro.links.count();
+    //     if (nr != 0) {
+    //       print('----------------> count: ${libro.titolo} - $nr ');
+    //       print('----------------> URL = "${libro.links.elementAt(0).url}"');
+    //     }
+    //   }
+    // }
+    // final lst = isarLibro.linkIsarModules.where().findAll();
+
+    await isarLibro.close();
     return lstLibroViewSaved;
   }
 
@@ -153,6 +167,34 @@ class DbLibroIsarService {
     }
 
     return ret;
+  }
+
+  Future<LibroIsarModel?> getLibroById(int id, {int? siglaLibreria, Isar? isarLibro}) async {
+    siglaLibreria = siglaLibreria ?? ComArea.libreriaInUso!.sigla;
+
+    String nomeLibreria = ComArea.mapCodDescLibreria[siglaLibreria]!;
+    bool isOpenIsar = false;
+
+    if (isarLibro == null) {
+      isOpenIsar = true;
+      isarLibro = await _openBoxLibro(nomeLibreria);
+    }
+    
+    LibroIsarModel? libro = await isarLibro.libroIsarModels.filter()
+      .siglaLibreriaEqualTo(siglaLibreria)
+      .idEqualTo(id)
+      .findFirst();
+
+    if (libro != null) {
+      libro.lstLinkIsarModule.load();
+      libro.lstPdfIsarModule.load();
+    }
+
+    if (isOpenIsar) {
+      await isarLibro.close();
+    }
+    
+    return libro;
   }
 
   Future<LibroIsarModel?> getLibroBySiglaLibreriaAndIsbn(int siglaLibreria, String isbn, {Isar? isarLibro}) async {
@@ -181,7 +223,10 @@ class DbLibroIsarService {
   }
 
   Future<void> saveLibroToDb(LibroIsarToSaveModel libroToSaveModel, bool isNew) async {
+    LibroIsarModel? libroDbOld = await getLibroById(libroToSaveModel.libroViewModel.id, siglaLibreria: libroToSaveModel.siglaLibreriaOld);
+
     Isar isarLibroNew = await _openBoxLibro(ComArea.libreriaInUso!.nome);
+
     libroToSaveModel.libroViewModel.siglaLibreria = (libroToSaveModel.libroViewModel.siglaLibreria == 0)
       ? ComArea.libreriaInUso!.sigla
       : libroToSaveModel.libroViewModel.siglaLibreria;
@@ -200,10 +245,65 @@ class DbLibroIsarService {
       await isarLibroNew.close();
       throw ItemPresentException(ItemType.libro, "Libreria '${ComArea.mapCodDescLibreria[libroToSaveModel.libroViewModel.siglaLibreria]!}':\n libro ${libroToSaveModel.libroViewModel.isbn}-${libroToSaveModel.libroViewModel.titolo} già presente!");  
     } 
-    
+
+    List<LinkIsarModule> lstLinkOld = (libroDbOld != null) ? libroDbOld.lstLinkIsarModule.toList() : [];
+    List<PdfIsarModule> lstPdfOld = (libroDbOld != null) ? libroDbOld.lstPdfIsarModule.toList() : [];
+    List<int> lstLinkIdToDelete = [];
+    List<int> lstPdfIdToDelete = [];
+
     await isarLibroNew.writeTxn(() async {
+      // LINKs
+      if (libroToSaveModel.lstLinkIsarModule != null && libroToSaveModel.lstLinkIsarModule!.isNotEmpty) {        
+        if (libroDbOld != null) {
+          for (LinkIsarModule lk in lstLinkOld) {
+            if (libroToSaveModel.lstLinkIsarModule!.toList().map((e) => e.url).contains(lk.url)) {
+              libroToSaveModel.lstLinkIsarModule!.removeWhere((e) => e.url == lk.url);
+            } else {
+              lstLinkIdToDelete.add(lk.id);
+            }
+          }
+          if (lstLinkIdToDelete.isNotEmpty) {
+            await isarLibroNew.linkIsarModules.deleteAll(lstLinkIdToDelete);
+          }
+        }
+        await isarLibroNew.linkIsarModules.putAll(libroToSaveModel.lstLinkIsarModule!);
+        libroToSaveModel.libroViewModel.lstLinkIsarModule.addAll(libroToSaveModel.lstLinkIsarModule!);
+      } else if (lstLinkOld.isNotEmpty) {
+         await isarLibroNew.linkIsarModules.deleteAll(lstLinkOld.toList().map((e) => e.id).toList());
+      }
+
+      // PDFs
+      if (libroToSaveModel.lstPdfIsarModule != null && libroToSaveModel.lstPdfIsarModule!.isNotEmpty) {        
+        if (libroDbOld != null) {
+          for (PdfIsarModule pdf in lstPdfOld) {
+            if (libroToSaveModel.lstPdfIsarModule!.toList().map((e) => e.pathNameFile).contains(pdf.pathNameFile)) {
+              libroToSaveModel.lstPdfIsarModule!.removeWhere((e) => e.pathNameFile == pdf.pathNameFile);
+            } else {
+              lstPdfIdToDelete.add(pdf.id);
+            }
+          }
+          if (lstPdfIdToDelete.isNotEmpty) {
+            await isarLibroNew.pdfIsarModules.deleteAll(lstPdfIdToDelete);
+          }
+        }
+        await isarLibroNew.pdfIsarModules.putAll(libroToSaveModel.lstPdfIsarModule!);
+        libroToSaveModel.libroViewModel.lstPdfIsarModule.addAll(libroToSaveModel.lstPdfIsarModule!);      
+      } else if (lstPdfOld.isNotEmpty) {
+         await isarLibroNew.pdfIsarModules.deleteAll(lstPdfOld.toList().map((e) => e.id).toList());
+      }
+      
       await isarLibroNew.libroIsarModels.put(libroToSaveModel.libroViewModel);
+
+      if (libroToSaveModel.lstLinkIsarModule != null && libroToSaveModel.lstLinkIsarModule!.isNotEmpty) {
+        libroToSaveModel.libroViewModel.lstLinkIsarModule.save();
+      }
+
+      if (libroToSaveModel.lstPdfIsarModule != null && libroToSaveModel.lstPdfIsarModule!.isNotEmpty) {
+        libroToSaveModel.libroViewModel.lstPdfIsarModule.save();
+      }
     });
+
+
     await isarLibroNew.close();
 
     if (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria) {

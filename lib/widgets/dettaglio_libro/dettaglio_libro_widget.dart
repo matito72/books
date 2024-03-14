@@ -1,8 +1,12 @@
 import 'package:books/config/com_area.dart';
 import 'package:books/config/constant.dart';
+import 'package:books/features/libro/data/models/libro_isar.module.util.dart';
 import 'package:books/features/libro/data/models/libro_isar.module.dart';
+import 'package:books/features/libro/data/models/link_isar.module.dart';
+import 'package:books/models/widget_desc.module.dart';
 import 'package:books/pages/immagine_copertina.dart';
 import 'package:books/resources/libro_field_selected.dart';
+import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/utilities/utils.dart';
 import 'package:books/widgets/bisac_dropdown_menu.dart';
 import 'package:books/widgets/dettaglio_libro/fields_libro/descrizione_field.dart';
@@ -17,15 +21,20 @@ class DettaglioLibroWidget extends StatefulWidget {
   final LibroIsarModel libroViewModel;
   final bool _isNewDettaglio;
   final bool isInsertByUserInterface;
+  final List<LinkIsarModule> lstLinkIsarModule;
   
-  const DettaglioLibroWidget(this.libroViewModel, this._isNewDettaglio, {super.key, this.isInsertByUserInterface = false});
+  const DettaglioLibroWidget(
+    this.libroViewModel, 
+    this._isNewDettaglio, 
+    this.lstLinkIsarModule,
+    {super.key, this.isInsertByUserInterface = false}
+  );
 
   @override
   State<DettaglioLibroWidget> createState() => _DettaglioLibroWidget();
 }
 
 class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
-  // final DbLibroIsarService dbLibroService = sl<DbLibroIsarService>();
 
   void _goToImageview(BuildContext context, LibroIsarModel libroViewModel) async {
     String? immagineCopertinaPre = libroViewModel.immagineCopertina;
@@ -162,7 +171,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                               widget.libroViewModel.lstAutori.add(strDesc);
                             })
                           }
-                        ),                        // 
+                        ),  
                       ],
                     ),
                   ),
@@ -308,6 +317,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     );
   }
 
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -355,7 +365,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                         fontSize: 14,
                         color: Colors.lightBlue.shade100,
                         fontWeight: FontWeight.bold
-                      ),                                          
+                      ), 
                     ),
                     BisacDropdownMenu(
                       widget.libroViewModel.lstCategoria[0].toUpperCase(),
@@ -371,12 +381,52 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                         widget.libroViewModel.descrizione = strDesc;
                       })
                     }),
-                    // const Padding(padding: EdgeInsets.only(top: 10)),
-                    // getDescrizioneField(context, widget, (strDesc) => {
-                    //   setState(() {
-                    //     widget.libroViewModel.descrizione = strDesc;
-                    //   })
-                    // }),
+                    const Padding(padding: EdgeInsets.only(top: 20)),
+                    // const Padding(padding: EdgeInsets.only(top: 15)),
+                    getWidgetLink(
+                      context, 'Google Book preview', '', widget.libroViewModel.previewLink, null, 
+                      () => {
+                        _fnDeleteLink(context, null)
+                      },
+                      null
+                    ),
+                    Column(
+                      children: widget.lstLinkIsarModule.map((item) {
+                          return getWidgetLink(context, null, null, null, item,
+                            () => {
+                              _fnDeleteLink(context, item)
+                            },
+                            () => {
+                              _fnEditLink(context, item)
+                            }
+                          );
+                        }).toList()
+                    ),
+                    Divider(
+                      height: 5,
+                      thickness: 1,
+                      indent: 5,
+                      endIndent: 5,
+                      color: Colors.lime[100],
+                    ),
+                    Center(
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.blue[400],
+                        ),
+                        onPressed: () async {
+                          String? strDesc = await _addNewLink(context, widget.libroViewModel);
+                          if (strDesc != null && strDesc.contains(';') && strDesc.split(';').length == 3) {
+                            List<String> lstStr = strDesc.split(';');
+                            setState(() {
+                              widget.lstLinkIsarModule.add(LibroIsarModuleUtil.createLinkIsarModule(lstStr[0].trim(), lstStr[2].trim(), descrizione: lstStr[1].trim()));
+                            });
+                          }
+                        },
+                        child: const Text("Aggiungi un nuovo Link"),
+                      ),
+                    ),
+                    const Padding(padding: EdgeInsets.only(top: 15, bottom: 15)),
                   ],
                 ),
               ),
@@ -385,6 +435,49 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
           ),
       ),
     );
+  }
+
+  _fnDeleteLink(BuildContext context, LinkIsarModule? item) async {
+    bool? isRemoveBook = await DialogUtils.showConfirmationSiNo(context, "Procedo all'eliminazione del link ?");
+    if (isRemoveBook == true) {
+      setState(() {
+        if (item == null) {
+          widget.libroViewModel.previewLink = '';
+        } else {
+          widget.lstLinkIsarModule.remove(item);
+        }
+      });
+    }
+  }
+
+  _fnEditLink(BuildContext context, LinkIsarModule item) async {
+    String? strDesc = await _editLink(context, item);
+    if (strDesc != null && strDesc.contains(';') && strDesc.split(';').length == 3) {
+      List<String> lstStr = strDesc.split(';');
+      setState(() {
+        item.name = lstStr[0].trim();
+        item.descrizione = lstStr[1].trim();
+        item.url = lstStr[2].trim();
+      });
+    }
+  }
+
+  Future<String?> _editLink(BuildContext context, LinkIsarModule item) async {
+    List<WidgetDescModel> lstWidgetDescModel = [
+      WidgetDescModel('Nome:', item.name, maxLines:1), 
+      WidgetDescModel('Descrizione:', item.descrizione, maxLines:1),
+      WidgetDescModel('URL:', item.url, maxLines:1),
+    ];
+    return await DialogUtils.getMultiDescrizione(context, lstWidgetDescModel);    
+  }
+
+  Future<String?> _addNewLink(BuildContext context, LibroIsarModel libro) async {
+    List<WidgetDescModel> lstWidgetDescModel = [
+      WidgetDescModel('Nome:', '', maxLines:1), 
+      WidgetDescModel('Descrizione:', '', maxLines:1),
+      WidgetDescModel('URL:', 'https://', maxLines:1),
+    ];
+    return await DialogUtils.getMultiDescrizione(context, lstWidgetDescModel);    
   }
   
   Future<Widget> _getImageNetwork(BuildContext context, LibroIsarModel libroViewModel) async {
@@ -431,4 +524,6 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
       ],
     );
   }
+  
+  
 }

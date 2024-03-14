@@ -1,6 +1,8 @@
 import 'package:backdrop/backdrop.dart';
 import 'package:books/config/com_area.dart';
 import 'package:books/features/libro/data/models/libro_isar.module.dart';
+import 'package:books/features/libro/data/models/link_isar.module.dart';
+import 'package:books/features/libro/data/models/pdf_isar.module.dart';
 import 'package:books/features/libro/data/services/db_libro_isar.service.dart';
 import 'package:books/features/list_items_select/bloc/list_items_select.bloc.dart';
 import 'package:books/features/list_items_select/bloc/list_items_select_events.bloc.dart';
@@ -493,7 +495,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       Utils.getDataNow(), 
       isbn: Utils.getIsbnGenAutoNotNull(),
       lstCategoria: [BisacList.nonClassifiable]
-      );
+    );
     _viewNewEditLibro(context, libroBloc, libroViewModel, false, showDelete: false, isInsertByUserInterface: true);
   }
 
@@ -634,17 +636,31 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   _viewNewEditLibro(BuildContext context, LibroBloc libroBloc, LibroIsarModel libroViewModel, bool isEdit, {bool showDelete = true, bool isInsertByUserInterface = false}) async {
     int siglaLibreriaOld = libroViewModel.siglaLibreria;
     String isbnLibroOld = libroViewModel.isbn;
-    LibroIsarModel libroViewModelClone = libroViewModel.clonaLibro();
+    
+    final DbLibroIsarService dbLibroService = sl<DbLibroIsarService>();
+    LibroIsarModel? libroViewModelDb = await dbLibroService.getLibroById(libroViewModel.id, siglaLibreria: libroViewModel.siglaLibreria);
+    if (!context.mounted) {
+      return;
+    }
+    LibroIsarModel libroViewModelClone = (libroViewModelDb != null) ? libroViewModelDb.clonaLibro() : libroViewModel.clonaLibro();
     libroViewModelClone.id = libroViewModel.id;
+    List<LinkIsarModule> lstLinkIsarModule = (libroViewModelDb != null) ? libroViewModelDb.lstLinkIsarModule.toList() : [];
+    List<PdfIsarModule> lstPdfIsarModule = (libroViewModelDb != null) ? libroViewModelDb.lstPdfIsarModule.toList() : [];
     String immagineCopertinaPre = libroViewModel.immagineCopertina;
-    LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModelClone, showDelete, isInsertByUserInterface);
+    LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModelClone, lstLinkIsarModule, lstPdfIsarModule, showDelete, isInsertByUserInterface);
     String immagineCopertinaPost = libroViewModelClone.immagineCopertina;
 
     if (ret != null) {
       if (ret.isDelete) {
-        libroBloc.add(DeleteLibroEvent(ComArea.libreriaInUso!, ret.libroViewModel));
+        libroBloc.add(DeleteLibroEvent(ComArea.libreriaInUso!, ret.libro));
       } else if (ret.isInsert) {
-        LibroIsarToSaveModel libroToSaveModel = LibroIsarToSaveModel(ret.libroViewModel, siglaLibreriaOld: siglaLibreriaOld, isbnLibroOld: isbnLibroOld);
+        LibroIsarToSaveModel libroToSaveModel = LibroIsarToSaveModel(
+          ret.libro, 
+          siglaLibreriaOld: siglaLibreriaOld, 
+          isbnLibroOld: isbnLibroOld, 
+          lstLinkIsarModule: ret.lstLinkIsarModule,
+          lstPdfIsarModule: ret.lstPdfIsarModule
+        );
         if (isEdit) {
           libroBloc.add(EditLibroEvent(ComArea.libreriaInUso!, libroToSaveModel));
         } else {
@@ -658,10 +674,10 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
   _viewDettaglioLibro(BuildContext context, LibroBloc libroBloc, LibroIsarModel libroViewModel) async {
     int siglaLibreriaOld = libroViewModel.siglaLibreria;
-    LibroDettaglioResult? libroDettaglioResult = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModel, false, true);
+    LibroDettaglioResult? libroDettaglioResult = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModel, [], [], false, true);
 
     if (libroDettaglioResult != null && libroDettaglioResult.isInsert) {
-      LibroIsarToSaveModel libroToSaveModel = LibroIsarToSaveModel(libroDettaglioResult.libroViewModel, siglaLibreriaOld: siglaLibreriaOld);
+      LibroIsarToSaveModel libroToSaveModel = LibroIsarToSaveModel(libroDettaglioResult.libro, siglaLibreriaOld: siglaLibreriaOld);
       libroBloc.add(AddLibroEvent(ComArea.libreriaInUso!, libroToSaveModel));
     }
   }
