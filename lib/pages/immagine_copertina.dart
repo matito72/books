@@ -120,17 +120,6 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
             ],
           ),
           lstWidgetDx: [getMenuBar(context)],
-          // lstWidgetDx: [
-          //   _getSwithSearchPhoneWeb(),
-          //   // swSearchWeb ? _getIconSearchImageFromWeb() : _getIconSearchImageFromPhone()
-          //   swSearchWeb 
-          //   ? const SizedBox(
-          //       width: 50,
-          //       height: 20,
-          //      child: Text(' ')
-          //     ) 
-          //   : _getIconSearchImageFromPhone()
-          // ]
         ),
         body: _getWidgetImageCopertina(),
       ),
@@ -171,9 +160,9 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
               child: const MenuAcceleratorLabel('Foto/Cerca nel telefono'),
             ),
             MenuItemButton(
-              onPressed: () {
-                setState(() async {
-                  String? newUrl = await DialogUtils.getDescrizione(context, 'URL', '', maxLines: 1);
+              onPressed: () async {
+                String? newUrl = await DialogUtils.getDescrizione(context, 'URL', '', maxLines: 1);
+                setState(() {
                   if (newUrl != null) {
                     widget._libroViewModel.immagineCopertina = newUrl;
                   }
@@ -198,51 +187,15 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
       ],
     );
   }
-
-  // Widget _getSwithSearchPhoneWeb() {
-  //   return Switch(
-  //     value: swSearchWeb,
-  //     trackColor: MaterialStateProperty.all(Colors.black38),
-  //     activeColor: Colors.greenAccent[400],
-  //     inactiveThumbColor: Colors.yellowAccent[700],
-  //     // when the switch is on, this image will be displayed
-  //     // activeThumbImage: const AssetImage('assets/happy_emoji.png'),
-  //     activeThumbImage: const AssetImage('assets/images/searchWeb.png'),
-  //     // when the switch is off, this image will be displayed
-  //     inactiveThumbImage: const AssetImage('assets/images/searchPhotoLibrary.png'),
-  //     onChanged: (value) => setState(
-  //       () => swSearchWeb = value
-  //     )
-  //   );
-  // }
-
-  // Widget _getIconSearchImageFromPhone() {
-  //   return IconButton(
-  //     icon: Icon(MdiIcons.imageSearch),
-  //     onPressed: () async {
-  //       Map<Permission, PermissionStatus> statuses = await [
-  //         Permission.manageExternalStorage, Permission.camera,
-  //       ].request();
-  //       if(statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
-  //         if (mounted) {
-  //           // _updateWidget(swithSearchPhone: true);
-  //           showImagePickerUtil.showImagePicker(context, _reloadImage);
-  //         }
-  //       } else {
-  //         debugPrint('no permission provided');
-  //       }
-  //     },
-  //     color: Colors.yellowAccent[700],
-  //   );
-  // }
-  
+ 
   Widget _getWidgetImageCopertina() {
     double heightPerc = 75;
     
-    return Center(
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
       child: SizedBox(
-        width: (MediaQuery.of(context).size.width * 100 / 100),
-        height: (MediaQuery.of(context).size.height * 85 / 100),
+        width: (MediaQuery.of(context).size.width * 95 / 100),
+        height: (MediaQuery.of(context).size.height * 95 / 100),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,

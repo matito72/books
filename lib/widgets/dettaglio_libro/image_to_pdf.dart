@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:books/features/libro/data/models/libro_isar.module.util.dart';
+import 'package:books/utilities/utils.dart';
 import 'package:edge_detection/edge_detection.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,6 +17,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/features/libro/data/models/pdf_isar.module.dart';
 import 'package:books/widgets/appbar/appbar_default.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
+
 
 class ImageToPdf extends StatefulWidget {
   static const String pagePath = '/imageToPdf';
@@ -65,7 +69,7 @@ class _ImageToPdf extends State<ImageToPdf> {
       if (pickedFile != null) {
         _image.add(File(pickedFile.path));
       } else {
-        print('No image selected');
+        debugPrint('No image selected');
       }
     });
   }
@@ -98,9 +102,9 @@ class _ImageToPdf extends State<ImageToPdf> {
         androidCropBlackWhiteTitle: 'Black White',
         androidCropReset: 'Reset',
       );
-      print("success: $success");
+      debugPrint("success: $success");
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -173,17 +177,19 @@ class _ImageToPdf extends State<ImageToPdf> {
     return IconButton(
       icon: const Icon(Icons.picture_as_pdf),
       onPressed: () async {
-        _createPDF(context);
+        String txt = await _createPDF(context);
         
-        PdfIsarModule? pdfFilePath = await _savePDF(context);
-        if (pdfFilePath != null) {
-          widget.lstPdfIsarModule.add(pdfFilePath);
-        }
-
         if (!context.mounted) {
           return;
         }
-        Navigator.pop(context); 
+
+        PdfIsarModule? pdfFilePath = await _savePDF(context, txt);
+        if (pdfFilePath != null) {
+          widget.lstPdfIsarModule.add(pdfFilePath);
+        }
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
       },
       style: ButtonStyle(
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -205,7 +211,9 @@ class _ImageToPdf extends State<ImageToPdf> {
     }
   }
 
-  _createPDF(BuildContext context) async {
+  Future<String> _createPDF(BuildContext context) async {
+    String text = '';
+
     for (var img in _image) {
       final image = pw.MemoryImage(img.readAsBytesSync());
 
@@ -216,10 +224,19 @@ class _ImageToPdf extends State<ImageToPdf> {
             return pw.Center(child: pw.Image(image));
           }
       ));
+
+      final inputImage = InputImage.fromFile(img);
+      final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+      String txt = recognizedText.text;
+      text += '/n/n$txt';
     }
+
+    return text;
   }
 
-  Future<PdfIsarModule?> _savePDF(BuildContext context) async {
+
+  Future<PdfIsarModule?> _savePDF(BuildContext context, String txt) async {
     PdfIsarModule? pdfIsarModule;
 
     try {
@@ -237,7 +254,7 @@ class _ImageToPdf extends State<ImageToPdf> {
       debugPrint('PDF salvato in ${file.path}');
 
       String pathNameFile = filePDF.absolute.path;
-      pdfIsarModule = LibroIsarModuleUtil.createPdfIsarModule(pdfFileName, pathNameFile);
+      pdfIsarModule = LibroIsarModuleUtil.createPdfIsarModule(pdfFileName, pathNameFile, testo: txt);
     } catch (e) {
       if (!context.mounted) {
         return pdfIsarModule;
@@ -264,10 +281,11 @@ class _ImageToPdf extends State<ImageToPdf> {
             onPressed: () {
               _getImageFromGallery();
             },
-            backgroundColor: const Color.fromARGB(166, 255, 235, 59),
+            backgroundColor: Colors.transparent,
             child: const Icon(
               Icons.photo_album_rounded,
-              size: 45,
+              color: Color.fromARGB(166, 255, 235, 59),
+              size: 55,
             ),
           ),
           const Spacer(),
@@ -276,11 +294,12 @@ class _ImageToPdf extends State<ImageToPdf> {
             onPressed: () {
               _getImageFromCamera();
             },
-            backgroundColor: const Color.fromARGB(183, 244, 67, 54),
+            backgroundColor: Colors.transparent,
             child: Icon(
-              // Icons.photo_camera_rounded,
               MdiIcons.cameraPlus,
-              size: 45
+              color: const Color.fromARGB(183, 244, 67, 54),
+              shadows: const [],
+              size: 55
             ),
           ),
         ],
@@ -348,14 +367,28 @@ class _ImageToPdf extends State<ImageToPdf> {
                     itemCount: _image.length,
                     itemBuilder: (context, index) {
                       _index = index;
-                      return Container(
-                        height: MediaQuery.of(context).size.height * 80 / 100,
-                        width: double.infinity,
-                        margin: const EdgeInsets.all(8),
-                        child: Image.file(
-                          _image[index],
-                          fit: BoxFit.cover,
-                        ));
+                      return InteractiveViewer(
+                        panEnabled: true,
+                        minScale: 1,
+                        maxScale: 10,
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 80 / 100,
+                          width: MediaQuery.of(context).size.width * 100 / 100,
+                          margin: const EdgeInsets.all(8),
+                          child: Image.file(
+                            _image[index],
+                            fit: BoxFit.contain,
+                          )
+                        ),
+                      );
+                      // return Container(
+                      //   height: MediaQuery.of(context).size.height * 80 / 100,
+                      //   width: MediaQuery.of(context).size.width * 100 / 100,
+                      //   margin: const EdgeInsets.all(8),
+                      //   child: Image.file(
+                      //     _image[index],
+                      //     fit: BoxFit.none,
+                      //   ));
                     },
                   )
                 : const Text(''),

@@ -1,11 +1,13 @@
+import 'dart:io';
+
 import 'package:books/features/libro/data/models/pdf_isar.module.dart';
+import 'package:books/models/widget_desc.module.dart';
+import 'package:books/utilities/dialog_utils.dart';
+import 'package:books/widgets/dettaglio_libro/fields_libro/descrizione_field.dart';
 import 'package:books/widgets/dettaglio_libro/image_to_pdf.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class Scansioni extends StatefulWidget {
   final LibroIsarModel _libroViewModel;
@@ -25,6 +27,37 @@ class _Scansioni extends State<Scansioni> {
     _textCtrlAddSearch.dispose();
     super.dispose();
   }
+
+  _fnDeleteLink(BuildContext context, PdfIsarModule item) async {
+    bool? isRemoveBook = await DialogUtils.showConfirmationSiNo(context, "Elimino il PDF '${item.name}' ?");
+    if (isRemoveBook == true) {
+      setState(() {
+        File file = File(item.pathNameFile);
+        file.deleteSync();
+        widget._lstPdfIsarModule.remove(item);
+      });
+    }
+  }
+
+  _fnEditLink(BuildContext context, PdfIsarModule item) async {
+    String? strDesc = await _editLink(context, item);
+
+    if (strDesc != null && strDesc.contains(';') && strDesc.split(';').length == 2) {
+      List<String> lstStr = strDesc.split(';');
+      setState(() {
+        item.name = lstStr[0].trim();
+        item.descrizione = lstStr[1].trim();
+      });
+    }
+  }
+
+  Future<String?> _editLink(BuildContext context, PdfIsarModule item) async {
+    List<WidgetDescModel> lstWidgetDescModel = [
+      WidgetDescModel('Nome:', item.name, maxLines:1), 
+      WidgetDescModel('Descrizione:', item.descrizione, maxLines:1),
+    ];
+    return await DialogUtils.getMultiDescrizione(context, lstWidgetDescModel);    
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -33,45 +66,19 @@ class _Scansioni extends State<Scansioni> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: _createFloatingActionButton(context),
       body: widget._lstPdfIsarModule.isNotEmpty
-          ? ListView.builder(
-              itemCount: widget._lstPdfIsarModule.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Text(widget._lstPdfIsarModule[index].name),
-                      TextButton(
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.blue[400],
-                        ),
-                        onPressed: () async {
-                          Map<Permission, PermissionStatus> statuses = await [Permission.manageExternalStorage].request();
-                            if (statuses[Permission.manageExternalStorage]!.isGranted) {
-                              if (mounted) {
-                                OpenFilex.open(widget._lstPdfIsarModule[index].pathNameFile);                                
-                              }
-                            } else {
-                              debugPrint('no permission provided');
-                            }
-                        },
-                        child: Text(
-                            widget._lstPdfIsarModule[index].pathNameFile,
-                            style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                              color: Colors.blue
-                            ),
-                            textAlign: TextAlign.left,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                      )
-                    ],
-                  ),
+        ? Column(
+            children: widget._lstPdfIsarModule.map((item) {
+              // (BuildContext context, PdfIsarModule pdfIsarModule, Function() fnDelete, Function()? fnEdit
+                return getWidgetPdf(context, item,
+                  () => {
+                    _fnDeleteLink(context, item)
+                  },
+                  () => {
+                    _fnEditLink(context, item)
+                  }
                 );
-              },
-            )
+              }).toList()
+          )
           : Center(
             child: Text(
               'Nessun PDF salvato',
@@ -104,7 +111,6 @@ class _Scansioni extends State<Scansioni> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              // child: Text(txtLabel),
               flex: 3,
               child: _createTextAddSearchPDF(context, _textCtrlAddSearch),
             ),
@@ -137,10 +143,11 @@ class _Scansioni extends State<Scansioni> {
             onPressed: () {
               _goToImageToPdf(context, isGallery: true);
             },
-            backgroundColor: const Color.fromARGB(166, 255, 235, 59),
+            backgroundColor: Colors.transparent,
             child: const Icon(
               Icons.photo_album_rounded,
-              size: 45,
+              color: Color.fromARGB(166, 255, 235, 59),
+              size: 55,
             ),
           ),
           const Spacer(),
@@ -149,11 +156,12 @@ class _Scansioni extends State<Scansioni> {
             onPressed: () {
               _goToImageToPdf(context, isCamera: true);
             },
-            backgroundColor: const Color.fromARGB(183, 244, 67, 54),
+            backgroundColor: Colors.transparent,
             child: Icon(
-              // Icons.photo_camera_rounded,
               MdiIcons.cameraPlus,
-              size: 45
+              color: const Color.fromARGB(183, 244, 67, 54),
+              shadows: const [],
+              size: 55
             ),
           ),
         ],
@@ -183,7 +191,7 @@ class _Scansioni extends State<Scansioni> {
         suffixIcon: IconButton(
           color: Colors.black,
           padding: EdgeInsets.zero,
-          icon: widget._lstPdfIsarModule.isEmpty ? const Icon(Icons.search) : const Icon(Icons.close),
+          icon: const Icon(Icons.search),
           onPressed: () {                  
             textCtrlSearch.clear();
             // ComArea.bookToSearch = '';

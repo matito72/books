@@ -4,6 +4,8 @@ import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/widgets/dettaglio_libro/dettaglio_libro_widget.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Widget _getDescrizioneEsistente(BuildContext context, DettaglioLibroWidget widget, Function(String) fn) {
@@ -132,7 +134,7 @@ Widget getWidgetLink(BuildContext context, String? linkName, String? linkDescrip
     return const Text('');
   }
 
-  return getWidgetLinkPdf(context, isGoogleLinkPreview, linkName!, linkDescription!, linkUrl, fnDelete, fnEdit);
+  return getWidgetLinkPdf(context, isGoogleLinkPreview, linkName!, linkDescription!, linkUrl: linkUrl, pdfPathFileName:'', fnDelete, fnEdit);
 }
 
 Widget getWidgetPdf(BuildContext context, PdfIsarModule pdfIsarModule, Function() fnDelete, Function()? fnEdit) {
@@ -141,10 +143,11 @@ Widget getWidgetPdf(BuildContext context, PdfIsarModule pdfIsarModule, Function(
   String linkDescription = pdfIsarModule.descrizione;
   String pdfPathFileName = pdfIsarModule.pathNameFile;  
 
-  return getWidgetLinkPdf(context, isGoogleLinkPreview, linkName, linkDescription, pdfPathFileName, fnDelete, fnEdit);
+  return getWidgetLinkPdf(context, isGoogleLinkPreview, linkName, linkDescription, linkUrl: '', pdfPathFileName: pdfPathFileName, fnDelete, fnEdit);
 }
 
-Widget getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String linkName, String linkDescription, String linkUrl, Function() fnDelete, Function()? fnEdit) {
+Widget getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String linkName, String linkDescription, Function() fnDelete, Function()? fnEdit,
+    {String linkUrl = '', String pdfPathFileName = ''}) {
   return Column(
     children: [
       const Padding(padding: EdgeInsets.only(top: 10)),
@@ -186,7 +189,11 @@ Widget getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String l
                           color: Colors.blue[400]
                         ),
                         onPressed: () => {
-                          openUrl(linkUrl!)
+                          if (linkUrl.isNotEmpty) {
+                            _openUrl(linkUrl)
+                          } else {
+                            _openFilePDF(context, pdfPathFileName)
+                          }
                         },
                       ),
                     )
@@ -203,7 +210,7 @@ Widget getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String l
                   collapseText: '<<',
                 ),
                 ExpandableText(
-                  linkUrl,
+                  linkUrl.isNotEmpty ? linkUrl : pdfPathFileName,
                   maxLines: 1,
                   style: const TextStyle(
                     fontSize: 14,
@@ -260,10 +267,21 @@ Widget getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String l
   );
 }
 
-openUrl(String url) async {
+_openUrl(String url) async {
   final Uri uri = Uri.parse(url);
   if (!await launchUrl(uri)) {
     throw Exception('Could not launch $url');
+  }
+}
+
+_openFilePDF(BuildContext context, pdfPathFileName) async {
+  Map<Permission, PermissionStatus> statuses = await [Permission.manageExternalStorage].request();
+  if (statuses[Permission.manageExternalStorage]!.isGranted) {
+    if (context.mounted) {
+      OpenFilex.open(pdfPathFileName);                                
+    }
+  } else {
+    debugPrint('no permission provided');
   }
 }
 

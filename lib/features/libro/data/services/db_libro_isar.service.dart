@@ -170,7 +170,7 @@ class DbLibroIsarService {
   }
 
   Future<LibroIsarModel?> getLibroById(int id, {int? siglaLibreria, Isar? isarLibro}) async {
-    siglaLibreria = siglaLibreria ?? ComArea.libreriaInUso!.sigla;
+    siglaLibreria = (siglaLibreria == null || siglaLibreria == 0) ? ComArea.libreriaInUso!.sigla : siglaLibreria;
 
     String nomeLibreria = ComArea.mapCodDescLibreria[siglaLibreria]!;
     bool isOpenIsar = false;
@@ -237,7 +237,9 @@ class DbLibroIsarService {
       isarLibro: isarLibroNew
     );
 
-    libroToSaveModel.siglaLibreriaOld = libroToSaveModel.siglaLibreriaOld ?? libroToSaveModel.libroViewModel.siglaLibreria;
+    libroToSaveModel.siglaLibreriaOld = (libroToSaveModel.siglaLibreriaOld == null || libroToSaveModel.siglaLibreriaOld == 0) 
+      ? libroToSaveModel.libroViewModel.siglaLibreria
+      : libroToSaveModel.siglaLibreriaOld;
 
     if ((libroDbNew != null)
         && (isNew || 
