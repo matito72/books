@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:books/features/libro/data/models/libro_isar.module.util.dart';
-import 'package:books/utilities/utils.dart';
 import 'package:edge_detection/edge_detection.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -192,10 +190,13 @@ class _ImageToPdf extends State<ImageToPdf> {
         }
       },
       style: ButtonStyle(
+        backgroundColor: const MaterialStatePropertyAll<Color>(Color.fromARGB(184, 94, 243, 101)),
+        iconColor: const MaterialStatePropertyAll<Color>(Color.fromARGB(176, 255, 28, 11)),
+        iconSize: MaterialStateProperty.all(30.0),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
-            side: const BorderSide(color: Colors.blueAccent)
+            side: const BorderSide(color: Color.fromARGB(188, 104, 236, 104))
           )
         )
       )
@@ -213,7 +214,7 @@ class _ImageToPdf extends State<ImageToPdf> {
 
   Future<String> _createPDF(BuildContext context) async {
     String text = '';
-
+    String sep = '';
     for (var img in _image) {
       final image = pw.MemoryImage(img.readAsBytesSync());
 
@@ -229,12 +230,12 @@ class _ImageToPdf extends State<ImageToPdf> {
       final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
       final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
       String txt = recognizedText.text;
-      text += '/n/n$txt';
+      text += txt + sep;
+      sep = '----------------------------------------------------------------------------------------------------------------';
     }
 
     return text;
   }
-
 
   Future<PdfIsarModule?> _savePDF(BuildContext context, String txt) async {
     PdfIsarModule? pdfIsarModule;

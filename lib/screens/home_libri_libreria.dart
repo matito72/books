@@ -345,30 +345,31 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           ],
         )
       ),
-      PopupMenuItem<int>(
-        value: MenuItemCode.switchSearchToUserInsert.cd, 
-        child: Row(
-          children: [
-            Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(MdiIcons.bookPlus, color: Colors.deepPurple),),
-            Text(
-              MenuItemCode.switchSearchToUserInsert.label,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+      ComArea.isBarcode
+        ? PopupMenuItem<int>(
+            value: MenuItemCode.switchSearchToUserInsert.cd, 
+            child: Row(
+              children: [
+                Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(MdiIcons.bookPlus, color: Colors.deepPurple),),
+                Text(
+                  MenuItemCode.switchSearchToUserInsert.label,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                )
+              ],
             )
-          ],
-        )
-      ),
-      PopupMenuItem<int>(
-        value: MenuItemCode.switchUserToSearchInsert.cd, 
-        child: Row(
-          children: [
-            Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(MdiIcons.barcodeScan, color: Colors.orange[400]),),
-            Text(
-              MenuItemCode.switchUserToSearchInsert.label,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+          )
+        : PopupMenuItem<int>(
+            value: MenuItemCode.switchUserToSearchInsert.cd, 
+            child: Row(
+              children: [
+                Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(MdiIcons.barcodeScan, color: Colors.orange[400]),),
+                Text(
+                  MenuItemCode.switchUserToSearchInsert.label,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                )
+              ],
             )
-          ],
-        )
-      ),
+          ),
       PopupMenuItem<int>(
         value: MenuItemCode.deleteAllBooksInLibreria.cd, 
         enabled: (ComArea.lstLibrerieInUso.length == 1 && ComArea.nrLibriInLibreriaInUso != 0),

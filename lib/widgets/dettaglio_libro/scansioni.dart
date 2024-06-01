@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:books/features/libro/data/models/libro_isar.module.dart';
 
+import '../../config/constant.dart';
+
 class Scansioni extends StatefulWidget {
   final LibroIsarModel _libroViewModel;
   final List<PdfIsarModule> _lstPdfIsarModule;
@@ -33,7 +35,9 @@ class _Scansioni extends State<Scansioni> {
     if (isRemoveBook == true) {
       setState(() {
         File file = File(item.pathNameFile);
-        file.deleteSync();
+        if (file.existsSync()) {
+          file.deleteSync();
+        }
         widget._lstPdfIsarModule.remove(item);
       });
     }
@@ -66,27 +70,25 @@ class _Scansioni extends State<Scansioni> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: _createFloatingActionButton(context),
       body: widget._lstPdfIsarModule.isNotEmpty
-        ? Column(
-            children: widget._lstPdfIsarModule.map((item) {
-              // (BuildContext context, PdfIsarModule pdfIsarModule, Function() fnDelete, Function()? fnEdit
-                return getWidgetPdf(context, item,
-                  () => {
-                    _fnDeleteLink(context, item)
-                  },
-                  () => {
-                    _fnEditLink(context, item)
-                  }
-                );
-              }).toList()
-          )
+        ? SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+              children: widget._lstPdfIsarModule.map((item) {
+                  return getWidgetPdf(context, widget._libroViewModel, item,
+                    () => {
+                      _fnDeleteLink(context, item)
+                    },
+                    () => {
+                      _fnEditLink(context, item)
+                    }
+                  );
+                }).toList()
+            ),
+        )
           : Center(
-            child: Text(
-              'Nessun PDF salvato',
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                color: Colors.blue,
-                fontSize: 24
-              ),
-            )),
+            child: Image.asset(Constant.assetImageDefault, fit: BoxFit.cover,),
+              // Text('Nessun PDF salvato',style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.blue, fontSize: 24),
+            )
     );
   } 
 

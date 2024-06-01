@@ -10,6 +10,7 @@ import 'package:books/screens/home_libreria.dart';
 import 'package:books/screens/home_libri_libreria.dart';
 import 'package:books/pages/search_list_book_page.dart';
 import 'package:books/widgets/dettaglio_libro/image_to_pdf.dart';
+import 'package:books/widgets/dettaglio_testo.dart';
 import 'package:flutter/material.dart';
 
 
@@ -61,6 +62,11 @@ class AppRoutes {
         final bool isCamera = arguments['isCamera'];
         final bool isGallery = arguments['isGallery'];
         return _materialRoute(ImageToPdf(libroViewModel: libroViewModel, lstPdfIsarModule: lstPdfIsarModule, isCamera: isCamera, isGallery: isGallery,));
+
+      case DettaglioTesto.pagePath:
+        final LibroIsarModel libroViewModel = arguments['libroViewModel'];
+        final String testo = arguments['testo'];
+        return _materialRoute(DettaglioTesto(libroViewModel: libroViewModel, testo: testo));
 
       default:
         return _materialRoute(const HomeLibreriaScreen());

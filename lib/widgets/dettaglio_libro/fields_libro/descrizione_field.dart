@@ -1,7 +1,9 @@
+import 'package:books/features/libro/data/models/libro_isar.module.dart';
 import 'package:books/features/libro/data/models/link_isar.module.dart';
 import 'package:books/features/libro/data/models/pdf_isar.module.dart';
 import 'package:books/utilities/dialog_utils.dart';
 import 'package:books/widgets/dettaglio_libro/dettaglio_libro_widget.dart';
+import 'package:books/widgets/dettaglio_testo.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
@@ -137,17 +139,34 @@ Widget getWidgetLink(BuildContext context, String? linkName, String? linkDescrip
   return getWidgetLinkPdf(context, isGoogleLinkPreview, linkName!, linkDescription!, linkUrl: linkUrl, pdfPathFileName:'', fnDelete, fnEdit);
 }
 
-Widget getWidgetPdf(BuildContext context, PdfIsarModule pdfIsarModule, Function() fnDelete, Function()? fnEdit) {
+Widget getWidgetPdf(BuildContext context, LibroIsarModel libroViewModel, PdfIsarModule pdfIsarModule, Function() fnDelete, Function()? fnEdit) {
   bool isGoogleLinkPreview = false;
+  String testoOcr = pdfIsarModule.testo;
   String linkName = pdfIsarModule.name;
   String linkDescription = pdfIsarModule.descrizione;
   String pdfPathFileName = pdfIsarModule.pathNameFile;  
 
-  return getWidgetLinkPdf(context, isGoogleLinkPreview, linkName, linkDescription, linkUrl: '', pdfPathFileName: pdfPathFileName, fnDelete, fnEdit);
+  return getWidgetLinkPdf(context, isGoogleLinkPreview, linkName, linkDescription, fnDelete, fnEdit,
+      linkUrl: '', 
+      pdfPathFileName: pdfPathFileName, 
+      testoOcr: testoOcr,
+      libroViewModel: libroViewModel);
+}
+
+_fnView(BuildContext context, LibroIsarModel libroViewModel, String testoOcr) async {
+    // List<WidgetDescModel> lstWidgetDescModel = [
+    //   WidgetDescModel('Test estratto:', testoOcr, maxLines: 10),
+    // ];
+    // return await DialogUtils.getMultiDescrizione(context, lstWidgetDescModel);
+
+    await Navigator.pushNamed(context, DettaglioTesto.pagePath, arguments: {
+      'libroViewModel': libroViewModel,
+      'testo': testoOcr
+    });
 }
 
 Widget getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String linkName, String linkDescription, Function() fnDelete, Function()? fnEdit,
-    {String linkUrl = '', String pdfPathFileName = ''}) {
+    {String linkUrl = '', String pdfPathFileName = '', String testoOcr = '', LibroIsarModel? libroViewModel}) {
   return Column(
     children: [
       const Padding(padding: EdgeInsets.only(top: 10)),
@@ -246,6 +265,23 @@ Widget getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String l
                       },
                     )
                   : const Text(''),
+                (testoOcr == '')
+                  ? const Text('')
+                  : IconButton(
+                      // iconSize: 20,
+                      padding: const EdgeInsets.all(0),
+                      alignment: Alignment.topRight,
+                      icon: Icon(
+                        size: 20,
+                        Icons.view_headline,
+                        color: Colors.yellowAccent[700]
+                      ),
+                      onPressed: () => {
+                        if (fnEdit != null) {
+                          _fnView(context, libroViewModel!, testoOcr)
+                        }
+                      },
+                    ),
                 IconButton(
                   padding: const EdgeInsets.all(0),
                   alignment: Alignment.topRight,
