@@ -1,0 +1,80 @@
+
+import 'package:book/config/com_area.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/features/libro/bloc/libro.bloc.dart';
+import 'package:book/features/libro/bloc/libro_events.bloc.dart';
+import 'package:book/resources/libro_field_selected.dart';
+import 'package:book/widgets/group_by_menu.dart';
+import 'package:flutter/material.dart';
+
+class GroupByWidget extends StatefulWidget {
+  final LibroBloc _libroBloc;
+  final List<LibreriaIsarModel> _lstLibreriaSel;
+  
+  const GroupByWidget(this._libroBloc, this._lstLibreriaSel, {super.key});
+
+  @override
+  State<GroupByWidget> createState() => _GroupByWidgetState();
+}
+
+class _GroupByWidgetState extends State<GroupByWidget> {
+  TextStyle defaultStyle = TextStyle(color: Colors.grey[200], fontSize: 18);
+  TextStyle linkStyle = TextStyle(color: Colors.lightGreen[100]);
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Expanded(
+      flex: 10,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10, left: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+             Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(padding: EdgeInsets.only(top: 0)),
+                Text('Raggruppato per: ', style: defaultStyle),
+                const Padding(padding: EdgeInsets.only(top: 75, left: 20)),
+                Text('Ordinato per: ', style: defaultStyle),
+              ],
+            ),
+            const Padding(padding: EdgeInsets.only(top: 85, left: 20)),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GroupByMenu(
+                  initOrdinamentoLibri: ComArea.groupComparatorField,
+                  onPressed: (value) {
+                    setState(() {
+                      ComArea.groupComparatorField = LibroFieldSelected.byName(value);
+                      widget._libroBloc.add(LoadLibroEvent(widget._lstLibreriaSel));
+                    });
+                  },
+                ),
+                const Padding(padding: EdgeInsets.only(top: 55)),
+                GroupByMenu(
+                  initOrdinamentoLibri: ComArea.itemComparatorField,
+                  onPressed: (value) {
+                    setState(() {
+                      ComArea.itemComparatorField = LibroFieldSelected.byName(value);
+                      widget._libroBloc.add(LoadLibroEvent(widget._lstLibreriaSel));
+                    });
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+}

@@ -1,0 +1,155 @@
+
+import 'package:book/config/com_area.dart';
+import 'package:book/features/import_export/data/models/file_backup.module.dart';
+import 'package:book/features/import_export/data/services/import_export.service.dart';
+import 'package:book/features/libreria/data/services/db_libreria.isar.service.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/features/libro/data/services/db_libro_isar.service.dart';
+import 'package:book/injection_container.dart';
+import 'package:book/models/libro_isar_to_save.module.dart';
+import 'package:book/resources/item_exception.dart';
+import 'package:book/utilities/libro_utils.dart';
+import 'package:book/utilities/utils.dart';
+import 'package:book/widgets/download/download_button.dart';
+import 'package:flutter/widgets.dart';
+
+abstract class DownloadController implements ChangeNotifier {
+  DownloadStatus get downloadStatus;
+  double get progress;
+  int get nrRecordCaricati;
+  List<LibroIsarModel> get lstLibriGiaPresenti;
+
+  void startDownload();
+  void stopDownload();
+  void openDownload(bool ok);
+}
+
+class FileLibreriaDownloadController extends DownloadController with ChangeNotifier {
+  
+  FileLibreriaDownloadController({
+    DownloadStatus downloadStatus = DownloadStatus.notDownloaded,
+    required Function onOpenDownload,
+    required FileBackupModel fileBackupModel
+  })  : _downloadStatus = downloadStatus,
+        _progress = 0.0,
+        _nrRecordCaricati = 0,
+        _lstLibriGiaPresenti = [],
+        _onOpenDownload = onOpenDownload,
+        _fileBackupModel = fileBackupModel;
+
+  DownloadStatus _downloadStatus;
+
+  @override
+  DownloadStatus get downloadStatus => _downloadStatus;
+
+  double _progress;
+  @override
+  double get progress => _progress;
+
+  int _nrRecordCaricati;
+  @override
+  int get nrRecordCaricati => _nrRecordCaricati;
+
+  final List<LibroIsarModel> _lstLibriGiaPresenti;
+  @override
+  List<LibroIsarModel> get lstLibriGiaPresenti => _lstLibriGiaPresenti;
+
+  final Function _onOpenDownload;
+  final FileBackupModel _fileBackupModel;
+
+  // int get nrRecordCaricati => 
+
+  bool _isDownloading = false;
+
+  @override
+  void startDownload() {
+    if (downloadStatus == DownloadStatus.notDownloaded) {
+      _caricaLibriInLibreria();
+    }
+  }
+
+  @override
+  void stopDownload() {
+    if (_isDownloading) {
+      _isDownloading = false;
+      _downloadStatus = DownloadStatus.notDownloaded;
+      _progress = 0.0;
+      notifyListeners();
+    }
+  }
+
+  @override
+  void openDownload(bool ok) {
+    if (downloadStatus == DownloadStatus.downloaded) {
+      _onOpenDownload(ok);
+    }
+  }
+
+  Future<void> _caricaLibriInLibreria() async {
+    _isDownloading = true;
+    _downloadStatus = DownloadStatus.fetchingDownload;
+    notifyListeners();
+
+    // Wait a second to simulate fetch time.
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    // If the user chose to cancel the download, stop the simulation.
+    if (!_isDownloading) {
+      return;
+    }
+
+    // Shift to the downloading phase.
+    _downloadStatus = DownloadStatus.downloading;
+    notifyListeners();
+
+    // INIT
+    int nrRecordTot = _fileBackupModel.nrRecord;
+
+    ImportExportService importExportService = sl<ImportExportService>();
+    List<LibroIsarModel> lstLibroViewModel = await importExportService.restoreFileBackup(null, _fileBackupModel.fileName);
+    
+    if (lstLibroViewModel.isNotEmpty) {
+      DbLibroIsarService dbLibroService = sl<DbLibroIsarService>();
+      DbLibreriaIsarService dbLibreriaIsarService = sl<DbLibreriaIsarService>();
+
+      List downloadProgressStops =  List.generate(nrRecordTot, (i) => (i * 100/nrRecordTot).roundToDouble() / 100);
+      int siglaLibreria = ComArea.libreriaInUso!.sigla;
+
+      int i = 0;
+      for (var libroModelNew in lstLibroViewModel) {
+        libroModelNew.siglaLibreria = siglaLibreria;
+        libroModelNew.dataInserimento = Utils.getDataNow();
+        libroModelNew.dataUltimaModifica = Utils.getDataNow();
+
+        try {
+          await dbLibroService.saveLibroToDb(LibroIsarToSaveModel(libroModelNew), true);
+          await dbLibreriaIsarService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 1);
+          LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
+
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          _nrRecordCaricati++;
+        } on ItemPresentException {
+          _lstLibriGiaPresenti.add(libroModelNew);
+        } catch (e) {
+          rethrow;
+        }
+
+        _progress = downloadProgressStops[i++];
+        notifyListeners();
+      }
+    }
+
+    // Wait a second to simulate a final delay.
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    // If the user chose to cancel the download, stop the simulation.
+    if (!_isDownloading) {
+      return;
+    }
+
+    // Shift to the downloaded state, completing the simulation.
+    _downloadStatus = DownloadStatus.downloaded;
+    _isDownloading = false;
+    notifyListeners();
+  }
+}
