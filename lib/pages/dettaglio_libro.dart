@@ -11,6 +11,8 @@ import 'package:book/widgets/appbar/appbar_default.dart';
 import 'package:book/widgets/dettaglio_libro/dettaglio_libro_widget.dart';
 import 'package:book/widgets/dettaglio_libro/note_libro.dart';
 import 'package:book/widgets/dettaglio_libro/scansioni.dart';
+// import 'package:buttons_tabbar/buttons_tabbar.dart';
+import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 import 'package:flutter/material.dart';
 // import 'package:isar_community/isar.dart';
 import 'package:flutter_quill/flutter_quill.dart';
@@ -96,7 +98,8 @@ class DettaglioLibro extends StatelessWidget {
       ..id = item.id
       ..name = item.name
       ..descrizione = item.descrizione
-      ..testo = item.testo).toList();
+      ..testo = item.testo
+        ..pathNameFile = item.pathNameFile).toList();
   }
 
   @override
@@ -132,13 +135,48 @@ class DettaglioLibro extends StatelessWidget {
         icon: const Icon(Icons.check),
         // onPressed: () => returnToScreen(false),
         onPressed: () {
-          // if (DefaultTabController.of(context).index != 2) {  // 2==Scansioni
-          libroViewModel.note = txtNoteLibroCtrl.pastePlainText;
+          libroViewModel.note = jsonEncode(txtNoteLibroCtrl.document.toDelta().toJson());
           returnToScreen(false);
-          // }
         },
         color: Colors.greenAccent,
       );
+    }
+
+    goBack() async {
+      // libroViewModel.note = txtNoteLibroCtrl.document.toPlainText();
+      // libroViewModel.note = txtNoteLibroCtrl.document.toPlainText();
+      if (txtNoteLibroCtrl.document.getPlainText(0, txtNoteLibroCtrl.document.length) == "\n") {
+        libroViewModel.note = "";
+      } else {
+        libroViewModel.note = jsonEncode(txtNoteLibroCtrl.document.toDelta().toJson());
+      }
+
+      // libroViewModel.note = libroViewModel.note.substring(0, libroViewModel.note.length - 1);
+      String hashLibro = libroViewModel.calcolaHash();
+
+      bool isLinkEqual = LibroUtils.areLinkIsarModuleListsEqual(lstLinkIsarModuleInit, lstLinkIsarModule);
+      bool isListPdfEqual = LibroUtils.arePdfIsarModuleListsEqual(lstPdfIsarModuleInit, lstPdfIsarModule);
+      // if (!isLinkEqual) {
+      //   libroViewModel.lstLinkIsarModule.clear();
+      //   libroViewModel.lstLinkIsarModule.addAll(lstLinkIsarModule);
+      // }
+
+      if (hashLibro != hashLibroViewModelClone || !isLinkEqual || !isListPdfEqual) {
+        bool? isUpdateBook = await DialogUtils.showConfirmationSiNo(
+          context,
+          'Vuoi salvare le modifiche ?',
+        );
+        if (isUpdateBook != null && isUpdateBook) {
+          // Update
+          // libroViewModel.note = txtNoteLibroCtrl.document.toPlainText();
+          returnToScreen(false);
+        } else {
+          if (!context.mounted) return;
+          Navigator.pop(context);
+        }
+      } else {
+        Navigator.pop(context);
+      }
     }
 
     // <=
@@ -149,35 +187,7 @@ class DettaglioLibro extends StatelessWidget {
         color: Theme.of(context).colorScheme.tertiary,
       ),
       onPressed: () async {
-        // libroViewModel.note = txtNoteLibroCtrl.document.toPlainText();
-        // libroViewModel.note = txtNoteLibroCtrl.document.toPlainText();
-        libroViewModel.note = jsonEncode(txtNoteLibroCtrl.document.toDelta().toJson());
-        // libroViewModel.note = libroViewModel.note.substring(0, libroViewModel.note.length - 1);
-        String hashLibro = libroViewModel.calcolaHash();
-
-        bool isLinkEqual = LibroUtils.areLinkIsarModuleListsEqual(lstLinkIsarModuleInit, lstLinkIsarModule);
-        bool isListPdfEqual = LibroUtils.arePdfIsarModuleListsEqual(lstPdfIsarModuleInit, lstPdfIsarModule);
-        // if (!isLinkEqual) {
-        //   libroViewModel.lstLinkIsarModule.clear();
-        //   libroViewModel.lstLinkIsarModule.addAll(lstLinkIsarModule);
-        // }
-
-        if (hashLibro != hashLibroViewModelClone || !isLinkEqual || !isListPdfEqual) {
-          bool? isUpdateBook = await DialogUtils.showConfirmationSiNo(
-            context,
-            'Vuoi salvare le modifiche ?',
-          );
-          if (isUpdateBook != null && isUpdateBook) {
-            // Update
-            // libroViewModel.note = txtNoteLibroCtrl.document.toPlainText();
-            returnToScreen(false);
-          } else {
-            if (!context.mounted) return;
-            Navigator.pop(context);
-          }
-        } else {
-          Navigator.pop(context);
-        }
+        goBack();
       },
     );
 
@@ -188,73 +198,144 @@ class DettaglioLibro extends StatelessWidget {
       color: Colors.orangeAccent,
     );
 
-    TabBar tabBar = TabBar(
-      isScrollable: false,
-      labelColor: Colors.yellow,
-      unselectedLabelColor: Theme.of(context).colorScheme.tertiary,
-      indicatorPadding: EdgeInsets.zero,
-      automaticIndicatorColorAdjustment: true,
+    Widget tabBarDettaglioLibro = TabBar(
+      indicatorColor: Colors.green,
       tabs: const [
-        Tab(text: 'Dettaglio'),
-        Tab(text: 'Note'),
-        Tab(text: 'Scansioni'),
+        Tab(text: "Dettaglio"),
+        Tab(text: " N o t e "),
+        Tab(text: "Scansioni"),
       ],
+      unselectedLabelColor: Theme.of(context).colorScheme.tertiary,
+      labelColor: Colors.yellow,
+      indicator: MaterialIndicator(
+          color: Colors.green,
+          height: 5,
+          topLeftRadius: 8,
+          topRightRadius: 8,
+          horizontalPadding: 0.0,
+          tabPosition: TabPosition.bottom,
+          strokeWidth: 10
+      ),
     );
 
-    return SafeArea(
-      child: DefaultTabController(
-        length: 3,
-        child: Builder(
-          builder: (BuildContext context) {
-            return Scaffold(
-              appBar: AppBarDefault(
-                context: context,
-                percHeight: 4,
-                // secondaryColor: const Color.fromARGB(115, 0, 143, 88),
-                // colors: <Color>[Color.fromARGB(255, 33, 44, 49), Colors.blue],
-                primaryColor: const Color.fromARGB(255, 33, 44, 49),
-                secondaryColor: Colors.blue,
-                txtLabel: libroViewModel.titolo,
-                lstWidgetDx: showDelete
-                    ? [iconDeleteLibro, iconCheckAddLibro(context)]
-                    : [iconCheckAddLibro(context)],
-                iconSx: iconButtonBack,
-              ),
-              body: Column(
-                children: [
-                  PreferredSize(
-                    preferredSize: Size.fromHeight(
-                      (MediaQuery.of(context).size.height * 4 / 100),
-                    ),
-                    child: Material(
-                      color: const Color.fromARGB(110, 27, 69, 90),
-                      surfaceTintColor: Colors.deepOrange[100],
-                      child: tabBar,
-                    ),
+    // Vedi: buttons_tabbar: 1.3.15
+    // ButtonsTabBar tabBarDettaglioLibro =  ButtonsTabBar(
+    //   backgroundColor: Colors.red,
+    //   unselectedBackgroundColor: Colors.blue[700], //[300],
+    //   unselectedLabelStyle: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold),
+    //   labelStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    //   contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+    //   contentCenter: false,
+    //   center: false,
+    //   elevation: 0.5,
+    //   buttonMargin: EdgeInsets.symmetric(horizontal: 30, vertical: 0),
+    //   physics: const NeverScrollableScrollPhysics(),
+    //   splashColor: Colors.lightBlueAccent,
+    //   tabs: [
+    //     Tab(
+    //       icon: Icon(Icons.book),
+    //       text: "Dettaglio",
+    //     ),
+    //     Tab(
+    //       icon: Icon(Icons.note),
+    //       text: "Note",
+    //     ),
+    //     Tab(
+    //       icon: Icon(Icons.picture_as_pdf),
+    //       text: "Scansioni",
+    //     ),
+    //   ],
+    // );
+
+    // TabBar tabBarDettaglioLibro = TabBar(
+    //   isScrollable: false,
+    //   labelColor: Colors.yellow,
+    //   unselectedLabelColor: Theme.of(context).colorScheme.tertiary,
+    //   indicatorPadding: EdgeInsets.zero,
+    //   labelPadding: EdgeInsets.zero,
+    //   padding: EdgeInsets.zero,
+    //   automaticIndicatorColorAdjustment: true,
+    //   overlayColor: WidgetStateProperty.resolveWith<Color?>(
+    //         (Set<WidgetState> states) {
+    //       if (states.contains(WidgetState.hovered)) {
+    //         return Colors.amberAccent; //<-- SEE HERE
+    //       }
+    //       return null;
+    //     },
+    //   ),
+    //   indicator: BoxDecoration(
+    //     // shape: BoxShape.circle,
+    //     borderRadius: BorderRadius.circular(0), // Creates border
+    //     color: Colors.blueGrey,
+    //   ),
+    //   tabs: const [
+    //     Tab(text: 'D e t t a g l i o'),
+    //     Tab(text: '-  N o t e  -'),
+    //     Tab(text: 'S c a n s i o n i'),
+    //   ],
+    // );
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) {
+          return;
+        }
+        goBack();
+      },
+      child: SafeArea(
+          child: DefaultTabController(
+            length: 3,
+            child: Builder(
+              builder: (BuildContext context) {
+                return Scaffold(
+                  appBar: AppBarDefault(
+                    context: context,
+                    percHeight: 4,
+                    primaryColor: const Color.fromARGB(255, 33, 44, 49),
+                    secondaryColor: Colors.blue,
+                    txtLabel: libroViewModel.titolo,
+                    lstWidgetDx: showDelete
+                        ? [iconDeleteLibro, iconCheckAddLibro(context)]
+                        : [iconCheckAddLibro(context)],
+                    iconSx: iconButtonBack,
                   ),
-                  Expanded(
-                    child: TabBarView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      viewportFraction: 1,
-                      children: [
-                        DettaglioLibroWidget(
-                          libroViewModel,
-                          !showDelete,
-                          lstLinkIsarModule,
-                          isInsertByUserInterface: isInsertByUserInterface,
+                  body: Column(
+                    children: [
+                      PreferredSize(
+                        preferredSize: Size.fromHeight(
+                          (MediaQuery.of(context).size.height * 4 / 100),
                         ),
-                        NoteLibro(libroViewModel, txtNoteLibroCtrl),
-                        // NoteLibro(txtNoteLibroCtrl),
-                        Scansioni(libroViewModel, lstPdfIsarModule),
-                      ],
-                    ),
+                        child: Material(
+                          color: const Color.fromARGB(110, 27, 69, 90),
+                          surfaceTintColor: Colors.deepOrange[100],
+                          child: tabBarDettaglioLibro, // Assumendo che questo contenga la tua TabBar
+                        ),
+                      ),
+                      Expanded(
+                        child: TabBarView(
+                          // Rimuovendo 'physics: const NeverScrollableScrollPhysics()'
+                          // si ripristina la funzionalità di swipe predefinita.
+                          viewportFraction: 1,
+                          children: [
+                            DettaglioLibroWidget(
+                              libroViewModel,
+                              !showDelete,
+                              lstLinkIsarModule,
+                              isInsertByUserInterface: isInsertByUserInterface,
+                            ),
+                            NoteLibro(libroViewModel, txtNoteLibroCtrl),
+                            Scansioni(libroViewModel, lstPdfIsarModule),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
+                );
+              },
+            ),
+          ),
+        )
     );
   }
 }

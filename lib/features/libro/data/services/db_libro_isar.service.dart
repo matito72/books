@@ -289,7 +289,12 @@ class DbLibroIsarService {
         if (libroDbOld != null) {
           for (PdfIsarModule pdf in lstPdfOld) {
             if (libroToSaveModel.lstPdfIsarModule!.toList().map((e) => e.pathNameFile).contains(pdf.pathNameFile)) {
-              libroToSaveModel.lstPdfIsarModule!.removeWhere((e) => e.pathNameFile == pdf.pathNameFile);
+              // libroToSaveModel.lstPdfIsarModule!.removeWhere((e) => e.pathNameFile == pdf.pathNameFile);
+              PdfIsarModule? pdfIsarModule = libroToSaveModel.lstPdfIsarModule!.firstWhereOrNull((e) => (e.pathNameFile == pdf.pathNameFile));
+              if (pdfIsarModule != null) {
+                pdf.name = pdfIsarModule.name;
+                pdf.descrizione = pdfIsarModule.descrizione;
+              }
             } else {
               lstPdfIdToDelete.add(pdf.id);
             }

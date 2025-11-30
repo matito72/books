@@ -11,8 +11,6 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
@@ -123,6 +121,7 @@ class _ImageToPdf extends State<ImageToPdf> {
 
   Widget _createTextAddSearchPDF(BuildContext context, TextEditingController textCtrlSearch) {
     return TextField(
+      textCapitalization: TextCapitalization.words,
       textInputAction: TextInputAction.search,
       controller: textCtrlSearch,
       textAlignVertical: TextAlignVertical.center,
@@ -282,32 +281,70 @@ class _ImageToPdf extends State<ImageToPdf> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
       child: Row(
         children: [
-          FloatingActionButton(
-            heroTag: "GALLERY",
-            onPressed: () {
-              _getImageFromGallery();
-            },
-            backgroundColor: Colors.transparent,
-            child: const Icon(
-              Icons.photo_album_rounded,
-              color: Color.fromARGB(166, 255, 235, 59),
-              size: 55,
+          GestureDetector(
+            onTap: () {},
+            behavior: HitTestBehavior.translucent,
+            child: FloatingActionButton(
+              heroTag: "btnImageAlbum",
+              onPressed: () {
+                _getImageFromGallery();
+              },
+              // backgroundColor: Colors.transparent,
+              backgroundColor: const Color.fromARGB(176, 0, 97, 100),
+              child: Icon(
+                MdiIcons.imageAlbum,
+                // color: const Color.fromARGB(183, 244, 67, 54),
+                color: Theme.of(context).colorScheme.onSecondary,
+                shadows: const [],
+                size: 55,
+              ),
             ),
           ),
+          // FloatingActionButton(
+          //   heroTag: "GALLERY",
+          //   onPressed: () {
+          //     _getImageFromGallery();
+          //   },
+          //   backgroundColor: Colors.transparent,
+          //   child: const Icon(
+          //     Icons.photo_album_rounded,
+          //     color: Color.fromARGB(166, 255, 235, 59),
+          //     size: 55,
+          //   ),
+          // ),
           const Spacer(),
-          FloatingActionButton(
-            heroTag: "CAMERA",
-            onPressed: () {
-              _getImageFromCamera();
-            },
-            backgroundColor: Colors.transparent,
-            child: Icon(
-              MdiIcons.cameraPlus,
-              color: const Color.fromARGB(183, 244, 67, 54),
-              shadows: const [],
-              size: 55
+          GestureDetector(
+            onTap: () {},
+            behavior: HitTestBehavior.translucent,
+            child: FloatingActionButton(
+              heroTag: "btn2",
+              onPressed: () {
+                _getImageFromCamera();
+              },
+              // backgroundColor: Colors.transparent,
+              backgroundColor: const Color.fromARGB(176, 0, 97, 100),
+              child: Icon(
+                MdiIcons.cameraPlus,
+                // color: const Color.fromARGB(183, 244, 67, 54),
+                color: Theme.of(context).colorScheme.onSecondary,
+                shadows: const [],
+                size: 55,
+              ),
             ),
           ),
+          // FloatingActionButton(
+          //   heroTag: "CAMERA",
+          //   onPressed: () {
+          //     _getImageFromCamera();
+          //   },
+          //   backgroundColor: Colors.transparent,
+          //   child: Icon(
+          //     MdiIcons.cameraPlus,
+          //     color: const Color.fromARGB(183, 244, 67, 54),
+          //     shadows: const [],
+          //     size: 55
+          //   ),
+          // ),
         ],
       ),
     );

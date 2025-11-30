@@ -120,8 +120,7 @@ abstract class LibroUtils {
     return equality.equals(list1.toSet(), list2.toSet());
   }
 
-  static bool arePdfIsarModuleListsEqual(List<PdfIsarModule> list1,
-      List<PdfIsarModule> list2) {
+  static bool arePdfIsarModuleListsEqual(List<PdfIsarModule> list1, List<PdfIsarModule> list2) {
     final equality = SetEquality<PdfIsarModule>();
     return equality.equals(list1.toSet(), list2.toSet());
   }

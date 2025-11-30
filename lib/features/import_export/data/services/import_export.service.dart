@@ -15,15 +15,18 @@ import 'package:book/utilities/libro_utils.dart';
 import 'package:book/utilities/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart' as p;
+// import 'package:share_extend/share_extend.dart';
+import 'package:share_plus/share_plus.dart';
+// import 'dart:io'; // Necessario per usare File
 
+import 'package:path/path.dart' as p;
 class ImportExportService {
   final String pathFolderDefault;
 
   ImportExportService(dynamic appDocumentDir)
     : pathFolderDefault = p.join(appDocumentDir.path, Constant.jsonFilesPath);
 
-  dynamic get shareExtend => null;
+  // dynamic get shareExtend => null;
 
   Future<void> init() async {
     Directory dir = Directory(pathFolderDefault);
@@ -147,7 +150,23 @@ class ImportExportService {
     final String pathFolder = pathFolderDefault;
     final File file = File('$pathFolder/${fileBackupModel.fileName}');
 
-    shareExtend.share(file.path, "file");
+    // ShareExtend.share(file.path, "file");
+
+    final xFile = XFile(file.path);
+    // Crea i parametri di condivisione
+    final params = ShareParams(
+      files: [xFile], // Array di XFile
+      text: 'Ecco il mio file di libreria.', // Testo opzionale da allegare
+      // Aggiungi qui altre opzioni come 'subject' o 'title'
+    );
+
+    // Chiama il metodo 'share' sulla nuova istanza
+    final ShareResult result = await SharePlus.instance.share(params);
+
+    // Puoi anche gestire il risultato della condivisione (opzionale)
+    if (result.status == ShareResultStatus.success) {
+      debugPrint('Condivisione avvenuta con successo!');
+    }
 
     // Share.shareFile(File('/screenshot.png'),
     //     subject: 'Share ScreenShot',

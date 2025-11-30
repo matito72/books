@@ -10,6 +10,9 @@ import 'package:open_filex/open_filex.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:any_link_preview/any_link_preview.dart';
+import 'dart:typed_data';
+
+import 'package:book/utilities/pdf_utils.dart';
 
 
 Widget _getDescrizioneEsistente(BuildContext context, DettaglioLibroWidget widget, Function(String) fn) {
@@ -138,7 +141,7 @@ Widget getWidgetLink(BuildContext context, String? linkName, String? linkDescrip
     return const Text('');
   }
 
-  return getWidgetLinkPdf(context, isGoogleLinkPreview, linkName!, linkDescription!, linkUrl: linkUrl, pdfPathFileName:'', fnDelete, fnEdit);
+  return _getWidgetLinkPdf(context, isGoogleLinkPreview, linkName!, linkDescription!, linkUrl: linkUrl, pdfPathFileName:'', fnDelete, fnEdit);
 }
 
 Widget getWidgetPdf(BuildContext context, LibroIsarModel libroViewModel, PdfIsarModule pdfIsarModule, Function() fnDelete, Function()? fnEdit) {
@@ -148,7 +151,7 @@ Widget getWidgetPdf(BuildContext context, LibroIsarModel libroViewModel, PdfIsar
   String linkDescription = pdfIsarModule.descrizione;
   String pdfPathFileName = pdfIsarModule.pathNameFile;  
 
-  return getWidgetLinkPdf(context, isGoogleLinkPreview, linkName, linkDescription, fnDelete, fnEdit,
+  return _getWidgetLinkPdf(context, isGoogleLinkPreview, linkName, linkDescription, fnDelete, fnEdit,
       linkUrl: '', 
       pdfPathFileName: pdfPathFileName, 
       testoOcr: testoOcr,
@@ -167,7 +170,7 @@ Future<void> _fnView(BuildContext context, LibroIsarModel libroViewModel, String
     });
 }
 
-Widget getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String linkName, String linkDescription,
+Widget _getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String linkName, String linkDescription,
     Function() fnDelete, Function()? fnEdit, {String linkUrl = '', String pdfPathFileName = '', String testoOcr = '', LibroIsarModel? libroViewModel}) {
   return Center(
     child: Card(
@@ -198,7 +201,9 @@ Widget getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String l
                       }
                     },
                     child: Text(
-                      linkName,
+                      linkDescription.isEmpty
+                        ? linkName
+                        : "$linkName: $linkDescription",
                       style: TextStyle(
                           fontSize: 15,
                           color: Colors.lightBlue.shade100,
@@ -218,215 +223,276 @@ Widget getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String l
               )
             ],
           ),
-          (linkUrl.isNotEmpty) ? Container(
-            width: MediaQuery.of(context).size.width * 0.95,
-            height: 130, // dimensione verticale fissa
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-            child: AnyLinkPreview(
-              link: linkUrl.startsWith('http://') ? linkUrl.replaceFirst('http://', 'https://') : linkUrl, // "https://books.google.it/books?id=1z09EQAAQBAJ&printsec=frontcover&dq=intitle:Pippo&hl=&cd=2&source=gbs_api", // """https://www.arcane.com/it-it/", // linkUrl
-              displayDirection: UIDirection.uiDirectionHorizontal,
-              showMultimedia: true,
-              bodyMaxLines: 5,
-              bodyTextOverflow: TextOverflow.ellipsis,
-              titleStyle: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-              ),
-              // bodyStyle: TextStyle(color: Colors.grey, fontSize: 12),
-                bodyStyle: TextStyle(color: Colors.grey[700], fontSize: 12),
-              errorBody: 'Show my custom error body',
-              errorTitle: 'Show my custom error title',
-              errorWidget: Container(
-                color: Colors.grey[300],
-                child: Text('Oops!'),
-              ),
-              errorImage: "https://google.com/",
-              cache: Duration(days: 7),
-              // backgroundColor: Colors.grey[300],
-                backgroundColor: Colors.blueGrey[100],
-              borderRadius: 12,
-              removeElevation: false,
-              // userAgent: 'WhatsApp/2.21.12.21 A',
-              boxShadow: [BoxShadow(blurRadius: 3, color: Colors.grey)],
-              onTap: () => {
-                _openUrl(linkUrl)
-              }, // This disables tap event
-              urlLaunchMode: LaunchMode.platformDefault
-            ),
+          (linkUrl.isNotEmpty)
+              ? _getPreviewLinkContainer(context, linkUrl)
+              : _getPreviewPdfContainer(context, pdfPathFileName, fnEdit, testoOcr, libroViewModel),
+          Divider(
+            height: 5,
+            thickness: 0.7,
+            indent: 50,
+            endIndent: 50,
+            color: Colors.lime[100],
           )
-          :
-          Row(
-            children: [
-              Text(
-                "Apri il PDF",
-                style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.lightBlue.shade100,
-                    fontWeight: FontWeight.bold
-                ),
-              ),
-              SizedBox(
-                width: 25,
-                height: 20,
-                child: IconButton(
-                  padding: const EdgeInsets.all(0),
-                  alignment: Alignment.topRight,
-                  icon: Icon(
-                      Icons.open_in_browser,
-                      size: 20,
-                      color: Colors.blue[400]
-                  ),
-                  onPressed: () => {
-                    _openFilePDF(context, pdfPathFileName)
-                  },
-                ),
-              )
-            ],
-          ),
         ],
       )
     ),
   );
 }
 
-Widget getWidgetLinkPdf_OLD(BuildContext context, bool isGoogleLinkPreview, String linkName, String linkDescription, Function() fnDelete, Function()? fnEdit,
-    {String linkUrl = '', String pdfPathFileName = '', String testoOcr = '', LibroIsarModel? libroViewModel}) {
-  return Column(
-    children: [
-      const Padding(padding: EdgeInsets.only(top: 10)),
-      Divider(
-        height: 5,
-        thickness: 1,
-        indent: 5,
-        endIndent: 5,
-        color: Colors.orange[100],
-      ),
-      const Padding(padding: EdgeInsets.only(top: 20)),
-      Stack(
-        children: [
-          SizedBox(
-            width: (MediaQuery.of(context).size.width * 95 / 100),
-            height: (MediaQuery.of(context).size.height * 15 / 100),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  children: [
-                    Text(
-                      linkName,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.lightBlue.shade100,
-                        fontWeight: FontWeight.bold
-                      ),                                          
-                    ),
-                    SizedBox(
-                      width: 25,
-                      height: 20,
-                      child: IconButton(
-                        padding: const EdgeInsets.all(0),
-                        alignment: Alignment.topRight,
-                        icon: Icon(
-                          Icons.open_in_browser,
-                          size: 20,
-                          color: Colors.blue[400]
-                        ),
-                        onPressed: () => {
-                          if (linkUrl.isNotEmpty) {
-                            _openUrl(linkUrl)
-                          } else {
-                            _openFilePDF(context, pdfPathFileName)
-                          }
-                        },
-                      ),
-                    )
-                  ],
-                ),
-                ExpandableText(
-                  linkDescription.isNotEmpty ? linkDescription : '',
-                  maxLines: 2,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.lime[100],
-                  ),
-                  expandText: '>>',
-                  collapseText: '<<',
-                ),
-                ExpandableText(
-                  linkUrl.isNotEmpty ? linkUrl : pdfPathFileName,
-                  maxLines: 1,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                  expandText: '>>',
-                  collapseText: '<<',
-                ),
-              ],
-            ),
+Container _getPreviewPdfContainer(BuildContext context, String pdfPathFileName, Function()? fnEdit, String testoOcr, LibroIsarModel? libroViewModel) {
+  return Container(
+    width: MediaQuery.of(context).size.width * 0.95,
+    height: 130, // dimensione verticale fissa
+    padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+    // Utilizziamo Row per disporre gli elementi orizzontalmente
+    child: Row(
+      textDirection: TextDirection.ltr,
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 10,
+      children: [
+        Expanded(
+          flex: 1,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: _getPdfPreviewWidget(context, pdfPathFileName),
           ),
-          Align(
-            alignment: Alignment.topRight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                !isGoogleLinkPreview
-                  ? IconButton(
-                      // iconSize: 20,
-                      padding: const EdgeInsets.all(0),
-                      alignment: Alignment.topRight,
-                      icon: Icon(
-                        size: 20,
-                        Icons.edit,
-                        color: Colors.yellowAccent[700]
-                      ),
-                      onPressed: () => {
-                        if (fnEdit != null) {
-                          fnEdit()
-                        }
-                      },
-                    )
-                  : const Text(''),
-                (testoOcr == '')
-                  ? const Text('')
-                  : IconButton(
-                      // iconSize: 20,
-                      padding: const EdgeInsets.all(0),
-                      alignment: Alignment.topRight,
-                      icon: Icon(
-                        size: 20,
-                        Icons.view_headline,
-                        color: Colors.yellowAccent[700]
-                      ),
-                      onPressed: () => {
-                        if (fnEdit != null) {
-                          _fnView(context, libroViewModel!, testoOcr)
-                        }
-                      },
-                    ),
-                IconButton(
-                  padding: const EdgeInsets.all(0),
-                  alignment: Alignment.topRight,
-                  icon: Icon(
-                    Icons.delete,
-                    size: 20,
-                    color: Colors.red[400],
-                  ),
-                  onPressed: () => {
-                    fnDelete()
-                  },
-                )
-              ],
-            )
-          )
-        ],
-      ),
-    ],
+        ),
+        Expanded(
+          flex: 4,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: _getPdfOcrPreviewWidget(context, fnEdit, testoOcr, libroViewModel),
+          ),
+        ),
+      ],
+    ),
   );
 }
+
+Widget _getPdfOcrPreviewWidget(BuildContext context, Function()? fnEdit, String testoOcr, LibroIsarModel? libroViewModel) {
+  return InkWell(
+    splashColor: Colors.transparent,
+    onDoubleTap: () {
+      if (fnEdit != null) {
+        _fnView(context, libroViewModel!, testoOcr);
+      }
+    },
+    child: RichText(
+      textAlign: TextAlign.justify,
+      text: TextSpan(
+          text: testoOcr,
+          style: TextStyle(
+              fontSize: 14,
+              color: Colors.white // Colors.lightBlue.shade100,
+            // fontWeight: FontWeight.bold
+          )// TextStyle(color: Colors.lightGreen[100]), // decoration: TextDecoration.underline,),
+      )
+    ),
+  );
+}
+
+Widget _getPdfPreviewWidget(BuildContext context, String pdfPathFileName) {
+  return FutureBuilder<Uint8List?>(
+    future: PdfUtils.getPdfThumbnail(pdfPathFileName),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const CircularProgressIndicator();
+      }
+      if (snapshot.hasError || snapshot.data == null) {
+        return const Text("Impossibile caricare l'anteprima.");
+      }
+
+      // Se i dati sono presenti, visualizza l'immagine
+      return InkWell(
+        splashColor: Colors.transparent,
+        onDoubleTap: () {
+          _openFilePDF(context, pdfPathFileName);
+        },
+        child: Image.memory(snapshot.data!, width: 90, height: 120, fit: BoxFit.fitHeight,)
+      );
+    },
+  );
+}
+
+Container _getPreviewLinkContainer(BuildContext context, String linkUrl) {
+  return Container(
+    width: MediaQuery.of(context).size.width * 0.95,
+    height: 130, // dimensione verticale fissa
+    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+    child: AnyLinkPreview(
+        link: linkUrl.startsWith('http://') ? linkUrl.replaceFirst('http://', 'https://') : linkUrl, // "https://books.google.it/books?id=1z09EQAAQBAJ&printsec=frontcover&dq=intitle:Pippo&hl=&cd=2&source=gbs_api", // """https://www.arcane.com/it-it/", // linkUrl
+        displayDirection: UIDirection.uiDirectionHorizontal,
+        showMultimedia: true,
+        bodyMaxLines: 5,
+        bodyTextOverflow: TextOverflow.ellipsis,
+        titleStyle: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 15,
+        ),
+        // bodyStyle: TextStyle(color: Colors.grey, fontSize: 12),
+        bodyStyle: TextStyle(color: Colors.grey[700], fontSize: 12),
+        errorBody: 'Show my custom error body',
+        errorTitle: 'Show my custom error title',
+        errorWidget: Container(
+          color: Colors.grey[300],
+          child: Text('Oops!'),
+        ),
+        errorImage: "https://google.com/",
+        cache: Duration(days: 7),
+        // backgroundColor: Colors.grey[300],
+        backgroundColor: Colors.blueGrey[100],
+        borderRadius: 12,
+        removeElevation: false,
+        // userAgent: 'WhatsApp/2.21.12.21 A',
+        boxShadow: [BoxShadow(blurRadius: 3, color: Colors.grey)],
+        onTap: () => {
+          _openUrl(linkUrl)
+        }, // This disables tap event
+        urlLaunchMode: LaunchMode.platformDefault
+    ),
+  );
+}
+
+// Widget getWidgetLinkPdf_OLD(BuildContext context, bool isGoogleLinkPreview, String linkName, String linkDescription, Function() fnDelete, Function()? fnEdit,
+//     {String linkUrl = '', String pdfPathFileName = '', String testoOcr = '', LibroIsarModel? libroViewModel}) {
+//   return Column(
+//     children: [
+//       const Padding(padding: EdgeInsets.only(top: 10)),
+//       Divider(
+//         height: 5,
+//         thickness: 1,
+//         indent: 5,
+//         endIndent: 5,
+//         color: Colors.orange[100],
+//       ),
+//       const Padding(padding: EdgeInsets.only(top: 20)),
+//       Stack(
+//         children: [
+//           SizedBox(
+//             width: (MediaQuery.of(context).size.width * 95 / 100),
+//             height: (MediaQuery.of(context).size.height * 15 / 100),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: <Widget>[
+//                 Row(
+//                   children: [
+//                     Text(
+//                       linkName,
+//                       style: TextStyle(
+//                         fontSize: 14,
+//                         color: Colors.lightBlue.shade100,
+//                         fontWeight: FontWeight.bold
+//                       ),
+//                     ),
+//                     SizedBox(
+//                       width: 25,
+//                       height: 20,
+//                       child: IconButton(
+//                         padding: const EdgeInsets.all(0),
+//                         alignment: Alignment.topRight,
+//                         icon: Icon(
+//                           Icons.open_in_browser,
+//                           size: 20,
+//                           color: Colors.blue[400]
+//                         ),
+//                         onPressed: () => {
+//                           if (linkUrl.isNotEmpty) {
+//                             _openUrl(linkUrl)
+//                           } else {
+//                             _openFilePDF(context, pdfPathFileName)
+//                           }
+//                         },
+//                       ),
+//                     )
+//                   ],
+//                 ),
+//                 ExpandableText(
+//                   linkDescription.isNotEmpty ? linkDescription : '',
+//                   maxLines: 2,
+//                   style: TextStyle(
+//                     fontSize: 14,
+//                     color: Colors.lime[100],
+//                   ),
+//                   expandText: '>>',
+//                   collapseText: '<<',
+//                 ),
+//                 ExpandableText(
+//                   linkUrl.isNotEmpty ? linkUrl : pdfPathFileName,
+//                   maxLines: 1,
+//                   style: const TextStyle(
+//                     fontSize: 14,
+//                     color: Colors.white,
+//                   ),
+//                   expandText: '>>',
+//                   collapseText: '<<',
+//                 ),
+//               ],
+//             ),
+//           ),
+//           Align(
+//             alignment: Alignment.topRight,
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.end,
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               mainAxisSize: MainAxisSize.max,
+//               children: [
+//                 !isGoogleLinkPreview
+//                   ? IconButton(
+//                       // iconSize: 20,
+//                       padding: const EdgeInsets.all(0),
+//                       alignment: Alignment.topRight,
+//                       icon: Icon(
+//                         size: 20,
+//                         Icons.edit,
+//                         color: Colors.yellowAccent[700]
+//                       ),
+//                       onPressed: () => {
+//                         if (fnEdit != null) {
+//                           fnEdit()
+//                         }
+//                       },
+//                     )
+//                   : const Text(''),
+//                 (testoOcr == '')
+//                   ? const Text('')
+//                   : IconButton(
+//                       // iconSize: 20,
+//                       padding: const EdgeInsets.all(0),
+//                       alignment: Alignment.topRight,
+//                       icon: Icon(
+//                         size: 20,
+//                         Icons.view_headline,
+//                         color: Colors.yellowAccent[700]
+//                       ),
+//                       onPressed: () => {
+//                         if (fnEdit != null) {
+//                           _fnView(context, libroViewModel!, testoOcr)
+//                         }
+//                       },
+//                     ),
+//                 IconButton(
+//                   padding: const EdgeInsets.all(0),
+//                   alignment: Alignment.topRight,
+//                   icon: Icon(
+//                     Icons.delete,
+//                     size: 20,
+//                     color: Colors.red[400],
+//                   ),
+//                   onPressed: () => {
+//                     fnDelete()
+//                   },
+//                 )
+//               ],
+//             )
+//           )
+//         ],
+//       ),
+//     ],
+//   );
+// }
 
 Future<void> _openUrl(String url) async {
   final Uri uri = Uri.parse(url);
