@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:book/features/libro/data/models/libro_dettaglio_result.dart';
@@ -79,6 +78,9 @@ class DettaglioLibro extends StatelessWidget {
     }
 
     libroViewModelClone = libroViewModel.clonaLibro();
+    if (libroViewModelClone.note != "" && jsonDecode(libroViewModelClone.note).toString() == jsonDecode("[{\"insert\":\"\\n\"}]").toString()) {
+      libroViewModelClone.note = "";
+    }
     hashLibroViewModelClone = libroViewModelClone.calcolaHash();
 
     lstLinkIsarModuleInit = cloneLstLinkIsarModule(lstLinkIsarModule);

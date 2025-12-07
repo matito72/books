@@ -149,7 +149,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
                 Map<Permission, PermissionStatus> statuses = await [
                   Permission.manageExternalStorage, Permission.camera,
                 ].request();
-                if(statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
+                if (statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
                   if (!context.mounted) return;
                     // _updateWidget(swithSearchPhone: true);
                     showImagePickerUtil.showImagePicker(context, _reloadImage);

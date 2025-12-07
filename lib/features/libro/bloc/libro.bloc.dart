@@ -44,7 +44,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         List<LibroIsarModel> lstLibroView = [];
         List<LibreriaIsarModel> lstLibreriaSel = event.lstLibreriaIsarSel;
         for (LibreriaIsarModel libreriaModel in lstLibreriaSel) {
-          List<LibroIsarModel> lstTmp = await _dbLibroService.readLstLibroFromDb(libreriaModel);
+          List<LibroIsarModel> lstTmp = await _dbLibroService.readLstLibroFromDb(libreriaModel, false);
           lstLibroView.addAll(lstTmp);
           ComArea.nrLibriInLibreriaInUso += libreriaModel.nrLibriCaricati;  // Tot. Nr. libri contenuti nella libreria
           ComArea.nrLibriVisibiliInLista += lstTmp.length;                  //      Nr. libri che corrispondono al filtro <= Tot.Nr.Libri Libreria
@@ -108,7 +108,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
     on<ExportAllLibriLibreriaEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
-        final List<LibroIsarModel> lstLibroView = await _dbLibroService.readLstLibroFromDb(event.libreriaIsarModel);
+        final List<LibroIsarModel> lstLibroView = await _dbLibroService.readLstLibroFromDb(event.libreriaIsarModel, true);
         int nrRecordExported = await sl<ImportExportService>().exportLibriLibreria('libreria', event.libreriaIsarModel.sigla.toString(), lstLibroView);
 
         emit(ExportedFileState(nrRecordExported, 'Nr. $nrRecordExported: libri esportati.'));

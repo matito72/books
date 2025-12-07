@@ -13,6 +13,12 @@ class LinkIsarModule {
   @Index(unique: true, caseSensitive: true)
   late String url;
 
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'descrizione': descrizione
+  };
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;

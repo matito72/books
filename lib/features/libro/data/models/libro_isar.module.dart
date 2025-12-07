@@ -9,6 +9,8 @@ import 'package:book/utilities/utils.dart';
 import 'package:isar_community/isar.dart';
 import 'package:crypto/crypto.dart';
 
+// import 'libro_isar.module.util.dart';
+
 part 'libro_isar.module.g.dart';
 
 /// Modello like-GOOGLE-BOOK
@@ -55,6 +57,8 @@ class LibroIsarModel {
 
   final IsarLinks<LinkIsarModule> lstLinkIsarModule = IsarLinks<LinkIsarModule>();
   final IsarLinks<PdfIsarModule> lstPdfIsarModule = IsarLinks<PdfIsarModule>();
+
+  final List<PdfIsarModule> lstPdfModule = [];
 
   LibroIsarModel(
     this.siglaLibreria,
@@ -109,6 +113,8 @@ class LibroIsarModel {
     'note': note,
     'dataInserimento': dataInserimento,
     'ultimaModifica': dataUltimaModifica,
+    'lstPdfIsarModule': lstPdfIsarModule.map((pdf) => pdf.toJson()).toList(),
+    'lstLinkIsarModule': lstLinkIsarModule.map((link) => link.toJson()).toList(),
   };
 
   LibroIsarModel.fromMap(
@@ -142,6 +148,15 @@ class LibroIsarModel {
     pathImmagineCopertina = mappa['pathImmagineCopertina'];
     siglaLibreria = ComArea.libreriaInUso!.sigla;
     note = mappa['note'] ?? '';
+
+    final List<dynamic>? pdfMaps = mappa['lstPdfIsarModule'];
+    if (pdfMaps != null) {
+      for (final map in pdfMaps) {
+        // Si assume l'esistenza di PdfIsarModule.fromMap
+        PdfIsarModule pdfIsarModule = PdfIsarModule.fromMap(map as Map<String, dynamic>);
+        lstPdfModule.add(pdfIsarModule);
+      }
+    }
   }
 
   List<String> _getListaCategoriaFromMap(dynamic lstCategoria) {
@@ -281,7 +296,7 @@ class LibroIsarModel {
   }
 
   String calcolaHash() {
-    // Crei una mappa con i campi da considerare per l'hash
+    // Crea una mappa con i campi da considerare per l'hash
     final mapPerHash = {
       'googleBookId': googleBookId,
       'isbn': isbn.trim(),

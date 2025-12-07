@@ -295,7 +295,7 @@ Widget _getPdfOcrPreviewWidget(BuildContext context, Function()? fnEdit, String 
 
 Widget _getPdfPreviewWidget(BuildContext context, String pdfPathFileName) {
   return FutureBuilder<Uint8List?>(
-    future: PdfUtils.getPdfThumbnail(pdfPathFileName),
+    future: PdfUtils.getPdfThumbnail(pdfPathFileName.replaceAll("//", "/")),
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
         return const CircularProgressIndicator();

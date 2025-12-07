@@ -1,13 +1,13 @@
 import 'dart:io';
 
 
+// import 'package:path/path.dart';
+// import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class ShowImagePickerUtil {
   final picker = ImagePicker();
@@ -41,7 +41,8 @@ class ShowImagePickerUtil {
           IOSUiSettings(
             title: "Image Cropper",
           )
-        ]);
+        ]
+    );
 
     if (croppedFile != null) {
       imageCache.clear();
@@ -57,7 +58,7 @@ class ShowImagePickerUtil {
     await picker.pickImage(
         source: ImageSource.gallery, imageQuality: 50
     ).then((value){
-      if(value != null){
+      if (value != null){
         _cropImage(File(value.path), fn);
       }
     });
@@ -85,8 +86,8 @@ class ShowImagePickerUtil {
     }
 
     // Generate filepath for saving
-    String imagePath = join((await getApplicationSupportDirectory()).path,
-        "${(DateTime.now().millisecondsSinceEpoch / 1000).round()}.jpeg");
+    // String imagePath = join((await getApplicationSupportDirectory()).path,
+    //     "${(DateTime.now().millisecondsSinceEpoch / 1000).round()}.jpeg");
       
     bool success = false;
 
@@ -105,10 +106,10 @@ class ShowImagePickerUtil {
     // } catch (e) {
     //   debugPrint(e.toString());
     // }
-
+    List<String> scannedImages = [];
     try {
       // Mostra l'interfaccia scanner e attende il risultato
-      List<String> scannedImages = await CunningDocumentScanner.getPictures(
+      scannedImages = await CunningDocumentScanner.getPictures(
         iosScannerOptions: IosScannerOptions(
           imageFormat: IosImageFormat.jpg,
           jpgCompressionQuality: 0.9,
@@ -119,6 +120,10 @@ class ShowImagePickerUtil {
       debugPrint("success: $success");
     } catch (e) {
       debugPrint(e.toString());
+    }
+
+    if (success && scannedImages.isNotEmpty) {
+      fn(File(scannedImages[0]));
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -132,7 +137,7 @@ class ShowImagePickerUtil {
     //   }
     // });
 
-    fn(File(imagePath));
+    // fn(File(imagePath));
   }
 
   void showImagePicker(BuildContext context, Function fn) {

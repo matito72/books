@@ -5,6 +5,7 @@ import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:book/features/libro/data/models/libro_isar.module.util.dart';
 import 'package:book/features/libro/data/models/pdf_isar.module.dart';
 import 'package:book/widgets/appbar/appbar_default.dart';
+import 'package:book/widgets/dettaglio_libro/pdf_creation_button.dart';
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -175,36 +176,70 @@ class _ImageToPdf extends State<ImageToPdf> {
   }
 
   Widget _createSavePDF(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.picture_as_pdf),
-      onPressed: () async {
-        String txt = await _createPDF(context);
-        
-        if (!context.mounted) {
-          return;
-        }
+      IconButton btn = IconButton(
+        icon: const Icon(Icons.picture_as_pdf),
+        onPressed: () async {
+          String txt = await _createPDF(context);
 
-        PdfIsarModule? pdfFilePath = await _savePDF(context, txt);
-        if (pdfFilePath != null) {
-          widget.lstPdfIsarModule.add(pdfFilePath);
-        }
-        if (context.mounted) {
-          Navigator.pop(context);
-        }
-      },
-      style: ButtonStyle(
-        backgroundColor: const WidgetStatePropertyAll<Color>(Color.fromARGB(184, 94, 243, 101)),
-        iconColor: const WidgetStatePropertyAll<Color>(Color.fromARGB(176, 255, 28, 11)),
-        iconSize: WidgetStateProperty.all(30.0),
-        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            side: const BorderSide(color: Color.fromARGB(188, 104, 236, 104))
-          )
+          if (!context.mounted) {
+            return;
+          }
+
+          PdfIsarModule? pdfFilePath = await _savePDF(context, txt);
+          if (pdfFilePath != null) {
+            widget.lstPdfIsarModule.add(pdfFilePath);
+          }
+          if (context.mounted) {
+            Navigator.pop(context);
+          }
+        },
+        style: ButtonStyle(
+            backgroundColor: const WidgetStatePropertyAll<Color>(Color.fromARGB(184, 94, 243, 101)),
+            iconColor: const WidgetStatePropertyAll<Color>(Color.fromARGB(176, 255, 28, 11)),
+            iconSize: WidgetStateProperty.all(30.0),
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: const BorderSide(color: Color.fromARGB(188, 104, 236, 104))
+                )
+            )
         )
-      )
-    );
+      );
+
+      return PDFCreationButton(lstPdfIsarModule: widget.lstPdfIsarModule, createPDF: _createPDF, savePDF: _savePDF);
   }
+
+  // Widget _createSavePDF(BuildContext context) {
+  //   return IconButton(
+  //     icon: const Icon(Icons.picture_as_pdf),
+  //     onPressed: () async {
+  //       String txt = await _createPDF(context);
+  //
+  //       if (!context.mounted) {
+  //         return;
+  //       }
+  //
+  //       PdfIsarModule? pdfFilePath = await _savePDF(context, txt);
+  //       if (pdfFilePath != null) {
+  //         widget.lstPdfIsarModule.add(pdfFilePath);
+  //       }
+  //       if (context.mounted) {
+  //         Navigator.pop(context);
+  //       }
+  //     },
+  //     style: ButtonStyle(
+  //       backgroundColor: const WidgetStatePropertyAll<Color>(Color.fromARGB(184, 94, 243, 101)),
+  //       iconColor: const WidgetStatePropertyAll<Color>(Color.fromARGB(176, 255, 28, 11)),
+  //       iconSize: WidgetStateProperty.all(30.0),
+  //       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+  //         RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(8.0),
+  //           side: const BorderSide(color: Color.fromARGB(188, 104, 236, 104))
+  //         )
+  //       )
+  //     )
+  //   );
+  // }
 
   void _removePDF() {
     if (_image.isNotEmpty) {

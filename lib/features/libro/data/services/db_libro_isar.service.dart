@@ -52,7 +52,7 @@ class DbLibroIsarService {
     return count;
   }
 
-  Future<List<LibroIsarModel>> readLstLibroFromDb(LibreriaIsarModel libreriaSel) async {
+  Future<List<LibroIsarModel>> readLstLibroFromDb(LibreriaIsarModel libreriaSel, bool isLoadLinkAndPdf) async {
     Isar isarLibro = await _openBoxLibro(libreriaSel.nome);
 
     List<LibroIsarModel> lstLibroViewSaved = [];
@@ -133,16 +133,18 @@ class DbLibroIsarService {
     }
 
 
-    // if (lstLibroViewSaved.isNotEmpty) {
-    //   for (LibroIsarModel libro in lstLibroViewSaved) {
+    if (lstLibroViewSaved.isNotEmpty && isLoadLinkAndPdf) {
+      for (LibroIsarModel libro in lstLibroViewSaved) {
+        libro.lstLinkIsarModule.load();
+        libro.lstPdfIsarModule.load();
     //     await libro.links.load();
     //     int nr = await libro.links.count();
     //     if (nr != 0) {
     //       print('----------------> count: ${libro.titolo} - $nr ');
     //       print('----------------> URL = "${libro.links.elementAt(0).url}"');
     //     }
-    //   }
-    // }
+      }
+    }
     // final lst = isarLibro.linkIsarModules.where().findAll();
 
     await isarLibro.close();
@@ -242,6 +244,10 @@ class DbLibroIsarService {
       isarLibro: isarLibroNew
     );
 
+    if (libroToSaveModel.libroViewModel.isbn == "GEN0059439338") {
+      print("");
+    }
+
     libroToSaveModel.siglaLibreriaOld = (libroToSaveModel.siglaLibreriaOld == null || libroToSaveModel.siglaLibreriaOld == 0) 
       ? libroToSaveModel.libroViewModel.siglaLibreria
       : libroToSaveModel.siglaLibreriaOld;
@@ -303,8 +309,21 @@ class DbLibroIsarService {
             await isarLibroNew.pdfIsarModules.deleteAll(lstPdfIdToDelete);
           }
         }
-        await isarLibroNew.pdfIsarModules.putAll(libroToSaveModel.lstPdfIsarModule!);
-        libroToSaveModel.libroViewModel.lstPdfIsarModule.addAll(libroToSaveModel.lstPdfIsarModule!);      
+        for (PdfIsarModule pdf in libroToSaveModel.lstPdfIsarModule!) {
+          // PdfIsarModule? pdfOld = await isarLibroNew.pdfIsarModules.get(pdf.id);
+          PdfIsarModule? pdfOld = await isarLibroNew.pdfIsarModules
+              .filter()
+              .pathNameFileEqualTo(pdf.pathNameFile, caseSensitive: true) // Usa il campo unico per la ricerca
+              .findFirst();
+
+          if (pdfOld != null) {
+            await isarLibroNew.pdfIsarModules.delete(pdfOld.id);
+          }
+          await isarLibroNew.pdfIsarModules.put(pdf);
+          libroToSaveModel.libroViewModel.lstPdfIsarModule.add(pdf);
+        }
+        // await isarLibroNew.pdfIsarModules.putAll(libroToSaveModel.lstPdfIsarModule!);
+        // libroToSaveModel.libroViewModel.lstPdfIsarModule.addAll(libroToSaveModel.lstPdfIsarModule!);
       } else if (lstPdfOld.isNotEmpty) {
          await isarLibroNew.pdfIsarModules.deleteAll(lstPdfOld.toList().map((e) => e.id).toList());
       }
@@ -319,7 +338,6 @@ class DbLibroIsarService {
         libroToSaveModel.libroViewModel.lstPdfIsarModule.save();
       }
     });
-
 
     await isarLibroNew.close();
 
@@ -355,8 +373,23 @@ class DbLibroIsarService {
       await isarLibro.close();
       throw 'Libro ${libroToDelete.isbn}-${libroToDelete.titolo} non presente!';
     }
-    
+
+    await isarLibro.txn(() async {
+      await libroIsarModel.lstLinkIsarModule.load();
+      await libroIsarModel.lstPdfIsarModule.load();
+    });
+
+    // 2. Estrai gli ID (operazione Dart veloce)
+    final linkIds = libroIsarModel.lstLinkIsarModule.map((l) => l.id).toList();
+    final pdfIds = libroIsarModel.lstPdfIsarModule.map((p) => p.id).toList();
+
     await isarLibro.writeTxn(() async {
+      // 1. Elimina tutti gli oggetti collegati in lstLinkIsarModule
+      await isarLibro.linkIsarModules.deleteAll(linkIds);
+
+      // 2. Elimina tutti gli oggetti collegati in lstPdfIsarModule
+      await isarLibro.pdfIsarModules.deleteAll(pdfIds);
+
       await isarLibro.libroIsarModels.delete(libroToDelete.id);
     });
 
@@ -381,9 +414,24 @@ class DbLibroIsarService {
       .siglaLibreriaEqualTo(libreriaModel.sigla)
       .findAll();
 
+    List<int> linkIdsTot = [];
+    List<int> pdfIdsTot = [];
+
+    await isarLibro.txn(() async {
+      for(LibroIsarModel libro in lstLibro) {
+        await libro.lstLinkIsarModule.load();
+        await libro.lstPdfIsarModule.load();
+
+        linkIdsTot.addAll(libro.lstLinkIsarModule.map((l) => l.id).toList());
+        pdfIdsTot.addAll(libro.lstPdfIsarModule.map((p) => p.id).toList());
+      }
+    });
+
     final List<int> lstIdLibro = lstLibro.map((libro) => libro.id).toList(growable: false);
 
     await isarLibro.writeTxn(() async {
+      await isarLibro.linkIsarModules.deleteAll(linkIdsTot);
+      await isarLibro.pdfIsarModules.deleteAll(pdfIdsTot);
       await isarLibro.libroIsarModels.deleteAll(lstIdLibro);
     });
 

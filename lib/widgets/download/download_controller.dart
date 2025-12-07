@@ -121,8 +121,15 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
         libroModelNew.dataInserimento = Utils.getDataNow();
         libroModelNew.dataUltimaModifica = Utils.getDataNow();
 
+        LibroIsarToSaveModel libroIsarToSaveModel = LibroIsarToSaveModel(libroModelNew);
+
         try {
-          await dbLibroService.saveLibroToDb(LibroIsarToSaveModel(libroModelNew), true);
+          if (libroModelNew.lstPdfModule.isNotEmpty) {
+            libroIsarToSaveModel.libroViewModel.lstPdfIsarModule.addAll(libroModelNew.lstPdfIsarModule);
+            libroIsarToSaveModel.lstPdfIsarModule = libroModelNew.lstPdfModule;
+          }
+          await dbLibroService.saveLibroToDb(libroIsarToSaveModel, true);
+
           await dbLibreriaIsarService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 1);
           LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
 

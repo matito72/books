@@ -14,6 +14,34 @@ class PdfIsarModule {
   @Index(unique: true, caseSensitive: true)
   late String pathNameFile;
 
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'descrizione': descrizione,
+    'testo': testo,
+    'pathNameFile': pathNameFile,
+  };
+
+  PdfIsarModule() {
+    name = '';
+    descrizione = '';
+    testo = '';
+    pathNameFile = '';
+  }
+
+  PdfIsarModule.fromMap(
+      Map<String, dynamic> mappa, {
+        name = '',
+        descrizione = '',
+        testo = '',
+        pathNameFile = '',
+      }) {
+    name = mappa['name'];
+    descrizione = mappa['descrizione'];
+    testo = mappa['testo'];
+    pathNameFile = mappa['pathNameFile'];
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
