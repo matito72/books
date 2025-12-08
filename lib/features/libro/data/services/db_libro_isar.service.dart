@@ -272,8 +272,8 @@ class DbLibroIsarService {
               // libroToSaveModel.lstLinkIsarModule!.removeWhere((e) => e.url == lk.url);
               LinkIsarModule? linkIsarModule = libroToSaveModel.lstLinkIsarModule!.firstWhereOrNull((e) => (e.url == lk.url));
               if (linkIsarModule != null) {
-                lk.name = linkIsarModule.name??"";
-                lk.descrizione = linkIsarModule.descrizione??"";
+                lk.name = linkIsarModule.name;
+                lk.descrizione = linkIsarModule.descrizione;
               }
             } else {
               lstLinkIdToDelete.add(lk.id);
@@ -321,18 +321,16 @@ class DbLibroIsarService {
           }
         }
         for (PdfIsarModule pdf in libroToSaveModel.lstPdfIsarModule!) {
-          if (pdf.pathNameFile != null) {
-            PdfIsarModule? pdfOld = await isarLibroNew.pdfIsarModules
-                .filter()
-                .pathNameFileEqualTo(pdf.pathNameFile, caseSensitive: true) // Usa il campo unico per la ricerca
-                .findFirst();
+          PdfIsarModule? pdfOld = await isarLibroNew.pdfIsarModules
+              .filter()
+              .pathNameFileEqualTo(pdf.pathNameFile, caseSensitive: true) // Usa il campo unico per la ricerca
+              .findFirst();
 
-            if (pdfOld != null) {
-              await isarLibroNew.pdfIsarModules.delete(pdfOld.id);
-            }
-            await isarLibroNew.pdfIsarModules.put(pdf);
-            libroToSaveModel.libroViewModel.lstPdfIsarModule.add(pdf);
+          if (pdfOld != null) {
+            await isarLibroNew.pdfIsarModules.delete(pdfOld.id);
           }
+          await isarLibroNew.pdfIsarModules.put(pdf);
+          libroToSaveModel.libroViewModel.lstPdfIsarModule.add(pdf);
         }
         // await isarLibroNew.pdfIsarModules.putAll(libroToSaveModel.lstPdfIsarModule!);
         // libroToSaveModel.libroViewModel.lstPdfIsarModule.addAll(libroToSaveModel.lstPdfIsarModule!);
