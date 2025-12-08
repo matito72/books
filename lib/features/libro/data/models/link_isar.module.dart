@@ -14,10 +14,28 @@ class LinkIsarModule {
   late String url;
 
   Map<String, dynamic> toJson() => {
-    'id': id,
+    // 'id': id,
     'name': name,
-    'descrizione': descrizione
+    'descrizione': descrizione,
+    'url': url
   };
+
+  LinkIsarModule({
+    this.name = '', // Usa i valori predefiniti nel costruttore
+    this.descrizione = '',
+    this.url = '',
+    // Non includere l'ID, Isar lo gestisce
+  });
+
+  LinkIsarModule.fromMap(Map<String, dynamic> mappa)
+      : name = mappa['name'] as String,
+        descrizione = mappa['descrizione'] as String,
+        url = mappa['url'] as String {
+    // Se la mappa contiene l'ID, assegnamolo (opzionale se l'oggetto viene sempre da Isar)
+    if (mappa.containsKey('id')) {
+      id = mappa['id'] as Id;
+    }
+  }
 
   @override
   bool operator ==(Object other) {

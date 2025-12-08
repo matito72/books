@@ -59,6 +59,7 @@ class LibroIsarModel {
   final IsarLinks<PdfIsarModule> lstPdfIsarModule = IsarLinks<PdfIsarModule>();
 
   final List<PdfIsarModule> lstPdfModule = [];
+  final List<LinkIsarModule> lstLinkModule = [];
 
   LibroIsarModel(
     this.siglaLibreria,
@@ -155,6 +156,14 @@ class LibroIsarModel {
         // Si assume l'esistenza di PdfIsarModule.fromMap
         PdfIsarModule pdfIsarModule = PdfIsarModule.fromMap(map as Map<String, dynamic>);
         lstPdfModule.add(pdfIsarModule);
+      }
+    }
+
+    final List<dynamic>? linkMaps = mappa['lstLinkIsarModule'];
+    if (linkMaps != null) {
+      for (final map in linkMaps) {
+        LinkIsarModule linkIsarModule = LinkIsarModule.fromMap(map as Map<String, dynamic>);
+        lstLinkModule.add(linkIsarModule);
       }
     }
   }

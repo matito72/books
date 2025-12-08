@@ -119,6 +119,10 @@ class ImportExportService {
             libroIsarToSaveModel.libroViewModel.lstPdfIsarModule.addAll(libroModelNew.lstPdfIsarModule);
             libroIsarToSaveModel.lstPdfIsarModule = libroModelNew.lstPdfModule;
           }
+          if (libroModelNew.lstLinkModule.isNotEmpty) {
+            libroIsarToSaveModel.libroViewModel.lstLinkIsarModule.addAll(libroModelNew.lstLinkIsarModule);
+            libroIsarToSaveModel.lstLinkIsarModule = libroModelNew.lstLinkModule;
+          }
           await dbLibroService.saveLibroToDb(libroIsarToSaveModel, true);
 
           nrLibriCaricati++;
@@ -222,9 +226,7 @@ class ImportExportService {
       }
       for (var element in entities) {
         // <prefisso_nome_file>_<nr_record>_<siglaLibreria>_<yyyyMMdd>.json
-        String fileName = element.path.substring(
-          element.path.lastIndexOf(Platform.pathSeparator) + 1,
-        );
+        String fileName = element.path.substring(element.path.lastIndexOf(Platform.pathSeparator) + 1);
         List<String> lstSegmentFileName = fileName.split("_");
 
         FileStat fileStat = await element.stat();
@@ -237,6 +239,9 @@ class ImportExportService {
             fileSize: fileStat.size,
           ),
         );
+        lstFileBackup.sort((a, b) {
+          return b.dtUltimaModifica.compareTo(a.dtUltimaModifica);
+        });
 
         if (printDebug != null && printDebug) {
           debugPrint(

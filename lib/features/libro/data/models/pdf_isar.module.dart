@@ -15,32 +15,44 @@ class PdfIsarModule {
   late String pathNameFile;
 
   Map<String, dynamic> toJson() => {
-    'id': id,
+    // 'id': id,
     'name': name,
     'descrizione': descrizione,
     'testo': testo,
     'pathNameFile': pathNameFile,
   };
 
-  PdfIsarModule() {
-    name = '';
-    descrizione = '';
-    testo = '';
-    pathNameFile = '';
+  PdfIsarModule({
+    name = '',
+    descrizione = '',
+    testo = '',
+    pathNameFile = ''
+    // Non includere l'ID, Isar lo gestisce
+  });
+
+  PdfIsarModule.fromMap(Map<String, dynamic> mappa)
+      : name = mappa['name'] as String,
+        descrizione = mappa['descrizione'] as String,
+        testo = mappa['testo'] as String,
+        pathNameFile = mappa['pathNameFile'] as String {
+    // Se la mappa contiene l'ID, assegnamolo (opzionale se l'oggetto viene sempre da Isar)
+    if (mappa.containsKey('id')) {
+      id = mappa['id'] as Id;
+    }
   }
 
-  PdfIsarModule.fromMap(
-      Map<String, dynamic> mappa, {
-        name = '',
-        descrizione = '',
-        testo = '',
-        pathNameFile = '',
-      }) {
-    name = mappa['name'];
-    descrizione = mappa['descrizione'];
-    testo = mappa['testo'];
-    pathNameFile = mappa['pathNameFile'];
-  }
+  // PdfIsarModule.fromMap(
+  //     Map<String, dynamic> mappa, {
+  //       name = '',
+  //       descrizione = '',
+  //       testo = '',
+  //       pathNameFile = '',
+  //     }) {
+  //   name = mappa['name'];
+  //   descrizione = mappa['descrizione'];
+  //   testo = mappa['testo'];
+  //   pathNameFile = mappa['pathNameFile'];
+  // }
 
   @override
   bool operator ==(Object other) {
