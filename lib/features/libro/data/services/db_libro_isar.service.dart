@@ -243,10 +243,6 @@ class DbLibroIsarService {
       isarLibro: isarLibroNew
     );
 
-    if (libroToSaveModel.libroViewModel.isbn == "GEN0059439338") {
-      print("");
-    }
-
     libroToSaveModel.siglaLibreriaOld = (libroToSaveModel.siglaLibreriaOld == null || libroToSaveModel.siglaLibreriaOld == 0) 
       ? libroToSaveModel.libroViewModel.siglaLibreria
       : libroToSaveModel.siglaLibreriaOld;

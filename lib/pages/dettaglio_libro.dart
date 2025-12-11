@@ -220,62 +220,6 @@ class DettaglioLibro extends StatelessWidget {
       ),
     );
 
-    // Vedi: buttons_tabbar: 1.3.15
-    // ButtonsTabBar tabBarDettaglioLibro =  ButtonsTabBar(
-    //   backgroundColor: Colors.red,
-    //   unselectedBackgroundColor: Colors.blue[700], //[300],
-    //   unselectedLabelStyle: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold),
-    //   labelStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-    //   contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-    //   contentCenter: false,
-    //   center: false,
-    //   elevation: 0.5,
-    //   buttonMargin: EdgeInsets.symmetric(horizontal: 30, vertical: 0),
-    //   physics: const NeverScrollableScrollPhysics(),
-    //   splashColor: Colors.lightBlueAccent,
-    //   tabs: [
-    //     Tab(
-    //       icon: Icon(Icons.book),
-    //       text: "Dettaglio",
-    //     ),
-    //     Tab(
-    //       icon: Icon(Icons.note),
-    //       text: "Note",
-    //     ),
-    //     Tab(
-    //       icon: Icon(Icons.picture_as_pdf),
-    //       text: "Scansioni",
-    //     ),
-    //   ],
-    // );
-
-    // TabBar tabBarDettaglioLibro = TabBar(
-    //   isScrollable: false,
-    //   labelColor: Colors.yellow,
-    //   unselectedLabelColor: Theme.of(context).colorScheme.tertiary,
-    //   indicatorPadding: EdgeInsets.zero,
-    //   labelPadding: EdgeInsets.zero,
-    //   padding: EdgeInsets.zero,
-    //   automaticIndicatorColorAdjustment: true,
-    //   overlayColor: WidgetStateProperty.resolveWith<Color?>(
-    //         (Set<WidgetState> states) {
-    //       if (states.contains(WidgetState.hovered)) {
-    //         return Colors.amberAccent; //<-- SEE HERE
-    //       }
-    //       return null;
-    //     },
-    //   ),
-    //   indicator: BoxDecoration(
-    //     // shape: BoxShape.circle,
-    //     borderRadius: BorderRadius.circular(0), // Creates border
-    //     color: Colors.blueGrey,
-    //   ),
-    //   tabs: const [
-    //     Tab(text: 'D e t t a g l i o'),
-    //     Tab(text: '-  N o t e  -'),
-    //     Tab(text: 'S c a n s i o n i'),
-    //   ],
-    // );
 
     return PopScope(
       canPop: false,

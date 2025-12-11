@@ -340,8 +340,8 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                             _headerBook(context),
-                            _headerBook_1(context),
-                            _dataHeaderBook(context),
+                            // _headerBook_1(context),
+                            // _dataHeaderBook(context),
                   ]
                 )
               )
@@ -354,6 +354,8 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
+                    _headerBook_1(context),
+                    _dataHeaderBook(context),
                     Text(
                       'Libreria',
                       style: TextStyle(

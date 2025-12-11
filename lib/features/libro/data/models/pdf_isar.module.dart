@@ -23,10 +23,10 @@ class PdfIsarModule {
   };
 
   PdfIsarModule({
-    name = '',
-    descrizione = '',
-    testo = '',
-    pathNameFile = ''
+    this.name = '',
+    this.descrizione = '',
+    this.testo = '',
+    this.pathNameFile = ''
     // Non includere l'ID, Isar lo gestisce
   });
 

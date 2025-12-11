@@ -62,7 +62,7 @@ class AppRoutes {
         final List<PdfIsarModule> lstPdfIsarModule = arguments['lstPdfIsarModule'];
         final bool isCamera = arguments['isCamera'];
         final bool isGallery = arguments['isGallery'];
-        return _materialRoute(ImageToPdf(libroViewModel: libroViewModel, lstPdfIsarModule: lstPdfIsarModule, isCamera: isCamera, isGallery: isGallery,));
+        return _materialRoute(ImageToPdf(libroViewModel: libroViewModel, lstPdfIsarModule: lstPdfIsarModule, isCamera: isCamera, isGallery: isGallery));
 
       case DettaglioTesto.pagePath:
         final LibroIsarModel libroViewModel = arguments['libroViewModel'];

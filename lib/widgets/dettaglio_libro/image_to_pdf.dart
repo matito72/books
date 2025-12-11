@@ -25,11 +25,11 @@ class ImageToPdf extends StatefulWidget {
   final bool isCamera;
   final bool isGallery;
 
-  const ImageToPdf({super.key, 
-    required this.libroViewModel, 
+  const ImageToPdf({super.key,
+    required this.libroViewModel,
     required this.lstPdfIsarModule,
     required this.isCamera,
-    required this.isGallery
+    required this.isGallery,
   });
 
   @override
@@ -41,8 +41,9 @@ class _ImageToPdf extends State<ImageToPdf> {
   final _picker = ImagePicker();
   final List<File> _image = [];
   final _pdf = pw.Document();
-  int _index = 0;
-  
+  // int _index = 0;
+  bool _isCameraPlusAndImageAlbumVisible = true;
+
   @override
   void initState() {
     super.initState();
@@ -82,11 +83,6 @@ class _ImageToPdf extends State<ImageToPdf> {
       // Have not permission to camera
       return;
     }
-
-    // Generate filepath for saving
-    // String imagePath = join((await getApplicationDocumentsDirectory()).path,
-    //     "${(DateTime.now().millisecondsSinceEpoch / 1000).round()}.jpeg");
-    // debugPrint("imagePath: >$imagePath<");
 
     List<String> scannedImages = [];
     bool success = false;
@@ -144,7 +140,7 @@ class _ImageToPdf extends State<ImageToPdf> {
           color: Colors.black,
           padding: EdgeInsets.zero,
           icon: const Icon(Icons.close),
-          onPressed: () {                  
+          onPressed: () {
             textCtrlSearch.clear();
             // ComArea.bookToSearch = '';
             // widget._libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
@@ -163,92 +159,68 @@ class _ImageToPdf extends State<ImageToPdf> {
   List<Widget> _createListInconButton(BuildContext context) {
     return _image.isEmpty
       ? [const Text("")]
-      : [_removeIconButton(), _createSavePDF(context)];
+      // : [_removeIconButton(), _createSavePDF(context)];
+      : [_createSavePDF(context)];
   }
 
-  Widget _removeIconButton() {
-    return IconButton(
-      icon: const Icon(Icons.highlight_remove),
-      onPressed: () {
-        _removePDF();
-      }
-    );
-  }
-
-  Widget _createSavePDF(BuildContext context) {
-      // IconButton btn = IconButton(
-      //   icon: const Icon(Icons.picture_as_pdf),
-      //   onPressed: () async {
-      //     String txt = await _createPDF(context);
-      //
-      //     if (!context.mounted) {
-      //       return;
-      //     }
-      //
-      //     PdfIsarModule? pdfFilePath = await _savePDF(context, txt);
-      //     if (pdfFilePath != null) {
-      //       widget.lstPdfIsarModule.add(pdfFilePath);
-      //     }
-      //     if (context.mounted) {
-      //       Navigator.pop(context);
-      //     }
-      //   },
-      //   style: ButtonStyle(
-      //       backgroundColor: const WidgetStatePropertyAll<Color>(Color.fromARGB(184, 94, 243, 101)),
-      //       iconColor: const WidgetStatePropertyAll<Color>(Color.fromARGB(176, 255, 28, 11)),
-      //       iconSize: WidgetStateProperty.all(30.0),
-      //       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-      //           RoundedRectangleBorder(
-      //               borderRadius: BorderRadius.circular(8.0),
-      //               side: const BorderSide(color: Color.fromARGB(188, 104, 236, 104))
-      //           )
-      //       )
-      //   )
-      // );
-
-      return PDFCreationButton(lstPdfIsarModule: widget.lstPdfIsarModule, createPDF: _createPDF, savePDF: _savePDF);
-  }
-
-  // Widget _createSavePDF(BuildContext context) {
+  // Widget _removeIconButton() {
   //   return IconButton(
-  //     icon: const Icon(Icons.picture_as_pdf),
-  //     onPressed: () async {
-  //       String txt = await _createPDF(context);
-  //
-  //       if (!context.mounted) {
-  //         return;
-  //       }
-  //
-  //       PdfIsarModule? pdfFilePath = await _savePDF(context, txt);
-  //       if (pdfFilePath != null) {
-  //         widget.lstPdfIsarModule.add(pdfFilePath);
-  //       }
-  //       if (context.mounted) {
-  //         Navigator.pop(context);
-  //       }
-  //     },
-  //     style: ButtonStyle(
-  //       backgroundColor: const WidgetStatePropertyAll<Color>(Color.fromARGB(184, 94, 243, 101)),
-  //       iconColor: const WidgetStatePropertyAll<Color>(Color.fromARGB(176, 255, 28, 11)),
-  //       iconSize: WidgetStateProperty.all(30.0),
-  //       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-  //         RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(8.0),
-  //           side: const BorderSide(color: Color.fromARGB(188, 104, 236, 104))
-  //         )
-  //       )
-  //     )
+  //     icon: const Icon(Icons.highlight_remove),
+  //     onPressed: () {
+  //       _removePDF();
+  //     }
   //   );
   // }
 
-  void _removePDF() {
-    if (_image.isNotEmpty) {
-      setState(() {
-        _image.remove(_image[_index]);
-        // _image.removeLast();
-      });
-    }
+  Widget _createSavePDF(BuildContext context) {
+      // return PDFCreationButton(addPdfIsarModuleToLstPdfIsarModule: _addPdfIsarModuleToLstPdfIsarModule, createPDF: _createPDF, savePDF: _savePDF, showHiddenButton: _showHiddenButton);
+    return PDFCreationButton(lstPdfIsarModule: widget.lstPdfIsarModule, createPDF: _createPDF, savePDF: _savePDF, showHiddenButton: _showHiddenButton, checkNomePdf: _checkNomePdf);
   }
+
+  // void _removePDF() {
+  //   if (_image.isNotEmpty) {
+  //     setState(() {
+  //       _image.remove(_image[_index]);
+  //       // _image.removeLast();
+  //     });
+  //   }
+  // }
+
+  _showHiddenButton(bool isVisible) {
+    if (!mounted) return;
+    setState(() {
+      _isCameraPlusAndImageAlbumVisible = isVisible;
+    });
+  }
+
+  bool _checkNomePdf(BuildContext context) {
+    bool ok = true;
+
+    if (_textCtrlAddSearch.text.trim().isEmpty) {
+      ok = false;
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text("Attenzione:"),
+          content: const Text("Nessun 'Nome PDF' inserito."),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ok;
+  }
+
+  // _addPdfIsarModuleToLstPdfIsarModule(PdfIsarModule pdfIsarModule) {
+  //   widget.lstPdfIsarModule.add(pdfIsarModule);
+  // }
 
   Future<String> _createPDF(BuildContext context) async {
     String text = '';
@@ -303,7 +275,7 @@ class _ImageToPdf extends State<ImageToPdf> {
           backgroundColor: (Colors.red),
           content: Text('error: ${e.toString()}'),
           duration: const Duration(seconds: 5),
-        ), 
+        ),
       );
     }
 
@@ -319,70 +291,71 @@ class _ImageToPdf extends State<ImageToPdf> {
           GestureDetector(
             onTap: () {},
             behavior: HitTestBehavior.translucent,
-            child: FloatingActionButton(
-              heroTag: "btnImageAlbum",
-              onPressed: () {
-                _getImageFromGallery();
-              },
-              // backgroundColor: Colors.transparent,
-              backgroundColor: const Color.fromARGB(176, 0, 97, 100),
-              child: Icon(
-                MdiIcons.imageAlbum,
-                // color: const Color.fromARGB(183, 244, 67, 54),
-                color: Theme.of(context).colorScheme.onSecondary,
-                shadows: const [],
-                size: 55,
-              ),
+            child: Visibility(
+                visible: _isCameraPlusAndImageAlbumVisible,
+                maintainInteractivity: false,
+                maintainState: false,
+                maintainFocusability: false,
+                maintainSize: false,
+                maintainAnimation: false,
+                child: FloatingActionButton(
+                    heroTag: "btnImageAlbum",
+                    onPressed: () {
+                      _getImageFromGallery();
+                    },
+                    // backgroundColor: Colors.transparent,
+                    backgroundColor: const Color.fromARGB(176, 0, 97, 100),
+                    child: Icon(
+                      MdiIcons.imageAlbum,
+                      // color: const Color.fromARGB(183, 244, 67, 54),
+                      color: Theme.of(context).colorScheme.onSecondary,
+                      shadows: const [],
+                      size: 55,
+                    )
+                )
             ),
           ),
-          // FloatingActionButton(
-          //   heroTag: "GALLERY",
-          //   onPressed: () {
-          //     _getImageFromGallery();
-          //   },
-          //   backgroundColor: Colors.transparent,
-          //   child: const Icon(
-          //     Icons.photo_album_rounded,
-          //     color: Color.fromARGB(166, 255, 235, 59),
-          //     size: 55,
-          //   ),
-          // ),
           const Spacer(),
           GestureDetector(
             onTap: () {},
             behavior: HitTestBehavior.translucent,
-            child: FloatingActionButton(
-              heroTag: "btn2",
-              onPressed: () {
-                _getImageFromCamera();
-              },
-              // backgroundColor: Colors.transparent,
-              backgroundColor: const Color.fromARGB(176, 0, 97, 100),
-              child: Icon(
-                MdiIcons.cameraPlus,
-                // color: const Color.fromARGB(183, 244, 67, 54),
-                color: Theme.of(context).colorScheme.onSecondary,
-                shadows: const [],
-                size: 55,
-              ),
-            ),
+            child: Visibility(
+                visible: _isCameraPlusAndImageAlbumVisible,
+                maintainInteractivity: false,
+                maintainState: false,
+                maintainFocusability: false,
+                maintainSize: false,
+                maintainAnimation: false,
+                child: FloatingActionButton(
+                  heroTag: "btn2",
+                  onPressed: () {
+                    _getImageFromCamera();
+                  },
+                  // backgroundColor: Colors.transparent,
+                  backgroundColor: const Color.fromARGB(176, 0, 97, 100),
+                  child: Icon(
+                    MdiIcons.cameraPlus,
+                    // color: const Color.fromARGB(183, 244, 67, 54),
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    shadows: const [],
+                    size: 55,
+                  ),
+                )
+            )
           ),
-          // FloatingActionButton(
-          //   heroTag: "CAMERA",
-          //   onPressed: () {
-          //     _getImageFromCamera();
-          //   },
-          //   backgroundColor: Colors.transparent,
-          //   child: Icon(
-          //     MdiIcons.cameraPlus,
-          //     color: const Color.fromARGB(183, 244, 67, 54),
-          //     shadows: const [],
-          //     size: 55
-          //   ),
-          // ),
         ],
       ),
     );
+  }
+
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      final File item = _image.removeAt(oldIndex);
+      _image.insert(newIndex, item);
+    });
   }
 
   @override
@@ -407,7 +380,7 @@ class _ImageToPdf extends State<ImageToPdf> {
               Expanded(
                 flex: 1,
                 child: Text(
-                  widget.libroViewModel.lstAutori.join(', '), 
+                  widget.libroViewModel.lstAutori.join(', '),
                   style: TextStyle(color: Colors.amber[300]),
                   overflow: TextOverflow.ellipsis,
                 )
@@ -434,42 +407,63 @@ class _ImageToPdf extends State<ImageToPdf> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: _createListInconButton(context),
-                ), 
+                ),
                 const Text('')
               ]
             ),
             Expanded(
               flex: 3,
               child: _image.isNotEmpty
-                ? ListView.builder(
-                    itemCount: _image.length,
-                    itemBuilder: (context, index) {
-                      _index = index;
-                      return InteractiveViewer(
-                        panEnabled: true,
-                        minScale: 1,
-                        maxScale: 10,
-                        child: Container(
-                          height: MediaQuery.of(context).size.height * 80 / 100,
-                          width: MediaQuery.of(context).size.width * 100 / 100,
-                          margin: const EdgeInsets.all(8),
-                          child: Image.file(_image[index],fit: BoxFit.contain,)
+                  ? ReorderableListView.builder(
+                onReorder: _onReorder,
+                itemCount: _image.length,
+                itemBuilder: (context, index) {
+                  final file = _image[index];
+                  // Utilizziamo un Key basato sul percorso del File (o un ID univoco se disponibile)
+                  final key = ValueKey(file.path);
 
-                        ),
+                  return Dismissible(
+                    key: key, // Chiave univoca per Dismissible
+                    direction: DismissDirection.endToStart,
+
+                    // Funzione di eliminazione
+                    onDismissed: (direction) {
+                      setState(() {
+                        _image.removeAt(index);
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Immagine rimossa')),
                       );
-                      // return Container(
-                      //   height: MediaQuery.of(context).size.height * 80 / 100,
-                      //   width: MediaQuery.of(context).size.width * 100 / 100,
-                      //   margin: const EdgeInsets.all(8),
-                      //   child: Image.file(
-                      //     _image[index],
-                      //     fit: BoxFit.none,
-                      //   ));
                     },
-                  )
-                : const Text(''),
+
+                    // Sfondo che appare durante lo swipe (opzionale)
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: const Icon(Icons.delete, color: Colors.white),
+                    ),
+
+                    // Contenuto dell'elemento della lista
+                    child: Container(
+                      key: key, // Chiave univoca per ReorderableListView
+                      // Altezza fissa per mantenere gli elementi compatti
+                      height: 250.0,
+                      width: MediaQuery.of(context).size.width * 1.0,
+                      margin: const EdgeInsets.all(8),
+
+                      // L'immagine stessa, che ora è l'unico contenuto del Container
+                      child: Image.file(
+                        file,
+                        fit: BoxFit.contain, // O BoxFit.cover, a seconda del look desiderato
+                      ),
+                    ),
+                  );
+                },
+              )
+                  : const Text('Nessuna immagine selezionata'),
             ),
-              ],
+          ],
         )
       ),
     );

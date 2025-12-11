@@ -16,7 +16,7 @@ class PdfUtils {
   /// Restituisce la thumbnail (immagine) della prima pagina di un PDF.
   ///
   /// @param pdfPath Il percorso completo del file PDF.
-  /// @return Un Future<Uint8List?> contenente i dati dell'immagine (PNG) o null in caso di errore.
+  /// @return Un oggetto contenente i dati dell'immagine (PNG) o null in caso di errore.
   static Future<Uint8List?> getPdfThumbnail(String pdfPath) async {
     // if (await Permission.storage.request().isDenied) {
     //   print('🚨 Permessi di storage negati. Impossibile leggere il file.');
@@ -60,5 +60,6 @@ class PdfUtils {
       print('Stack Trace: $stackTrace'); // Utile per capire da dove viene l'errore nativo
       return null;
     }
+    return null;
   }
 }

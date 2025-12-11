@@ -3,14 +3,19 @@ import 'package:book/features/libro/data/models/pdf_isar.module.dart';
 
 class PDFCreationButton extends StatefulWidget {
   final List<PdfIsarModule> lstPdfIsarModule;
+  // final Function(PdfIsarModule) addPdfIsarModuleToLstPdfIsarModule;
   final Future<String> Function(BuildContext context) createPDF;
   final Future<PdfIsarModule?> Function(BuildContext context, String txt) savePDF;
+  final Function(bool isVisible) showHiddenButton;
+  final Function(BuildContext context) checkNomePdf;
 
   const PDFCreationButton({
     super.key,
     required this.lstPdfIsarModule,
     required this.createPDF,
     required this.savePDF,
+    required this.showHiddenButton,
+    required this.checkNomePdf
   });
 
   @override
@@ -23,15 +28,19 @@ class _PDFCreationButtonState extends State<PDFCreationButton> {
 
   // 2. Metodo che avvia l'elaborazione
   Future<void> _startCreationProcess() async {
-    setState(() {
-      // Inizializza il Future che verrà monitorato dal FutureBuilder
-      _pdfCreationFuture = _processPDF();
-    });
+    if (widget.checkNomePdf(context)) {
+      setState(() {
+        // Inizializza il Future che verrà monitorato dal FutureBuilder
+        _pdfCreationFuture = _processPDF();
+      });
+    }
   }
 
   // 3. La tua logica originale trasformata in un metodo privato
   Future<void> _processPDF() async {
     try {
+      widget.showHiddenButton(false);
+
       // 3a. Chiamata _createPDF
       final String txt = await widget.createPDF(context);
 
@@ -42,6 +51,7 @@ class _PDFCreationButtonState extends State<PDFCreationButton> {
 
       if (pdfFilePath != null) {
         widget.lstPdfIsarModule.add(pdfFilePath);
+        // widget.addPdfIsarModuleToLstPdfIsarModule(pdfFilePath);
       }
 
       // 3c. Chiusura del pop-up o navigazione (se ancora montato)
@@ -58,6 +68,8 @@ class _PDFCreationButtonState extends State<PDFCreationButton> {
           const SnackBar(content: Text('Errore durante la creazione del PDF.')),
         );
       }
+    } finally {
+      widget.showHiddenButton(true);
     }
   }
 

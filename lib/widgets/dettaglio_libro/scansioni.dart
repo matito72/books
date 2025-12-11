@@ -96,43 +96,7 @@ class _Scansioni extends State<Scansioni> {
     );
   }
 
-  // PreferredSize _createPreferredSize(BuildContext context) {
-  //   const num percHeight = 5;
-  //   const Color primaryColor = Color.fromARGB(132, 33, 149, 243);
-  //   const Color secondaryColor = Color.fromARGB(166, 3, 163, 175);
-  //
-  //   return PreferredSize(
-  //     preferredSize: Size.fromHeight(
-  //       (MediaQuery.of(context).size.height * percHeight / 100),
-  //     ),
-  //     child: Container(
-  //       height: MediaQuery.of(context).size.height * percHeight / 100,
-  //       alignment: const Alignment(-0.9, 0.0),
-  //       decoration: const BoxDecoration(
-  //         gradient: LinearGradient(
-  //           colors: <Color>[primaryColor, secondaryColor],
-  //           tileMode: TileMode.clamp,
-  //           begin: Alignment.centerLeft,
-  //         ),
-  //       ),
-  //       child: Row(
-  //         crossAxisAlignment: CrossAxisAlignment.center,
-  //         children: [
-  //           Expanded(
-  //             flex: 3,
-  //             child: _createTextAddSearchPDF(context, _textCtrlAddSearch),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  void _goToImageToPdf(
-    BuildContext context, {
-    bool isCamera = false,
-    bool isGallery = false,
-  }) async {
+  void _goToImageToPdf(BuildContext context, {bool isCamera = false, bool isGallery = false,}) async {
     await Navigator.pushNamed(
       context,
       ImageToPdf.pagePath,
@@ -140,7 +104,7 @@ class _Scansioni extends State<Scansioni> {
         'libroViewModel': widget._libroViewModel,
         'lstPdfIsarModule': widget._lstPdfIsarModule,
         'isCamera': isCamera,
-        'isGallery': isGallery,
+        'isGallery': isGallery
       },
     );
 
@@ -163,7 +127,7 @@ class _Scansioni extends State<Scansioni> {
                 _goToImageToPdf(context, isGallery: true);
               },
               // backgroundColor: Colors.transparent,
-              backgroundColor: const Color.fromARGB(176, 0, 97, 100),
+              backgroundColor: const Color.fromARGB(38, 50, 56, 100),
               child: Icon(
                 MdiIcons.imageAlbum,
                 // color: const Color.fromARGB(183, 244, 67, 54),
@@ -173,21 +137,6 @@ class _Scansioni extends State<Scansioni> {
               ),
             ),
           ),
-          // FloatingActionButton(
-          //   heroTag: "btn1",
-          //   onPressed: () {
-          //     _goToImageToPdf(context, isGallery: true);
-          //   },
-          //   // backgroundColor: Colors.transparent,
-          //   backgroundColor: const Color.fromARGB(176, 0, 97, 100),
-          //   child: Icon(
-          //     // Icons.photo_album_rounded,
-          //     // color: Color.fromARGB(166, 255, 235, 59),
-          //     MdiIcons.imageAlbum,
-          //     color: Theme.of(context).colorScheme.onSecondary,
-          //     size: 55,
-          //   ),
-          // ),
           const Spacer(),
           GestureDetector(
             onTap: () {},
@@ -198,13 +147,23 @@ class _Scansioni extends State<Scansioni> {
                 _goToImageToPdf(context, isCamera: true);
               },
               // backgroundColor: Colors.transparent,
-              backgroundColor: const Color.fromARGB(173, 0, 97, 100),
-              child: Icon(
-                MdiIcons.cameraPlus,
-                // color: const Color.fromARGB(183, 244, 67, 54),
-                color: Theme.of(context).colorScheme.onSecondary,
-                shadows: const [],
-                size: 55,
+              backgroundColor: const Color.fromARGB(38, 50, 56, 100),
+              elevation: 6,
+              hoverElevation: 8,
+              highlightElevation: 12,
+              enableFeedback: true,
+              child: Visibility(
+                maintainSize: true,
+                maintainAnimation: true,
+                maintainState: true,
+                visible: true,
+                child: Icon(
+                  MdiIcons.cameraPlus,
+                  // color: const Color.fromARGB(183, 244, 67, 54),
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  shadows: const [],
+                  size: 55,
+                ),
               ),
             ),
           ),
@@ -213,45 +172,5 @@ class _Scansioni extends State<Scansioni> {
     );
   }
 
-  // Widget _createTextAddSearchPDF(
-  //   BuildContext context,
-  //   TextEditingController textCtrlSearch,
-  // ) {
-  //   return TextField(
-  //     textInputAction: TextInputAction.search,
-  //     controller: textCtrlSearch,
-  //     textAlignVertical: TextAlignVertical.center,
-  //     // autofocus: true,
-  //     cursorColor: Colors.black,
-  //     style: const TextStyle(color: Colors.black),
-  //     onSubmitted: (value) {
-  //       // ComArea.bookToSearch = textCtrlSearch.text;
-  //       // widget._libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
-  //       FocusScope.of(context).unfocus();
-  //     },
-  //     decoration: InputDecoration(
-  //       filled: true,
-  //       fillColor: const Color.fromARGB(255, 180, 218, 228),
-  //       hintText: 'cerca...',
-  //       hintStyle: const TextStyle(color: Colors.black),
-  //       border: const OutlineInputBorder(),
-  //       suffixIcon: IconButton(
-  //         color: Colors.black,
-  //         padding: EdgeInsets.zero,
-  //         icon: const Icon(Icons.search),
-  //         onPressed: () {
-  //           textCtrlSearch.clear();
-  //           // ComArea.bookToSearch = '';
-  //           // widget._libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
-  //           FocusScope.of(context).unfocus();
-  //           setState(() {
-  //             // ComArea.appBarStateText = true;
-  //           });
-  //         },
-  //       ),
-  //       isCollapsed: true,
-  //       isDense: true,
-  //     ),
-  //   );
-  // }
+
 }
