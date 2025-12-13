@@ -13,6 +13,7 @@ import 'package:book/utilities/libro_utils.dart';
 import 'package:book/utilities/list_items_utils.dart';
 import 'package:book/utilities/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:book/models/libro_isar_to_save.module.dart';
 
 class LibroBloc extends Bloc<LibroEvent, LibroState> {
   final DbLibroIsarService _dbLibroService;
@@ -218,6 +219,38 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
 
         // print("=====> ${Constant.libreriaInUso!.nrLibriCaricati}");
         emit(DeleteBookSelectedState(nrDel, 'Eliminato nr. $nrDel libri.'));
+      } catch (e) {
+        emit(LibroErrorState(e.toString()));
+      }
+    });
+
+    on<CambiaLibreriaBookSelectedEvent>((event, emit) async {
+      emit(const LibroWaitingState());
+      try {
+        int nrAddToLibreriaNew = 0;
+        for (SelectedItem<LibroIsarModel> selectedItem in event.lstSelectedItem) {
+          int siglaLibreriaOld = selectedItem.item.siglaLibreria;
+          if (siglaLibreriaOld != event.siglaLibreriaNew) {
+            int siglaLibreriaOld = selectedItem.item.siglaLibreria;
+            selectedItem.item.siglaLibreria = event.siglaLibreriaNew;
+            LibroIsarToSaveModel libroIsarViewModel = LibroIsarToSaveModel(selectedItem.item);
+            libroIsarViewModel.siglaLibreriaOld = siglaLibreriaOld;
+
+            await _dbLibroService.cambiaLibreriaLibroToDb(libroIsarViewModel);
+            nrAddToLibreriaNew++;
+
+            await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(siglaLibreriaOld);
+            LibroUtils.removeNrLibriCaricatiInCache(siglaLibreriaOld);
+            ComArea.nrLibriInLibreriaInUso--;
+
+            await sl<DbLibreriaIsarService>().addLibriInLibreriaInUso(event.siglaLibreriaNew, 1);
+            LibroUtils.addNrLibriCaricatiInCache(event.siglaLibreriaNew);
+            ComArea.nrLibriInLibreriaInUso++;
+          }
+        }
+
+        // print("=====> ${Constant.libreriaInUso!.nrLibriCaricati}");
+        emit(CambiaLibreriaBookSelectedState(nrAddToLibreriaNew, 'Nr. $nrAddToLibreriaNew libri sono passati alla libreria selezionata.'));
       } catch (e) {
         emit(LibroErrorState(e.toString()));
       }

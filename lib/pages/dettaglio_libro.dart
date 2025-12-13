@@ -83,25 +83,8 @@ class DettaglioLibro extends StatelessWidget {
     }
     hashLibroViewModelClone = libroViewModelClone.calcolaHash();
 
-    lstLinkIsarModuleInit = cloneLstLinkIsarModule(lstLinkIsarModule);
-    lstPdfIsarModuleInit = cloneLstPdfIsarModule(lstPdfIsarModule);
-  }
-
-  List<LinkIsarModule> cloneLstLinkIsarModule(List<LinkIsarModule> original) {
-    return original.map((item) => LinkIsarModule()
-      ..id = item.id
-      ..name = item.name
-      ..descrizione = item.descrizione
-      ..url = item.url).toList();
-  }
-
-  List<PdfIsarModule> cloneLstPdfIsarModule(List<PdfIsarModule> original) {
-    return original.map((item) => PdfIsarModule()
-      ..id = item.id
-      ..name = item.name
-      ..descrizione = item.descrizione
-      ..testo = item.testo
-        ..pathNameFile = item.pathNameFile).toList();
+    lstLinkIsarModuleInit = LibroUtils.cloneLstLinkIsarModule(lstLinkIsarModule);
+    lstPdfIsarModuleInit = LibroUtils.cloneLstPdfIsarModule(lstPdfIsarModule);
   }
 
   @override

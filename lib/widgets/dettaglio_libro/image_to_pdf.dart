@@ -186,7 +186,7 @@ class _ImageToPdf extends State<ImageToPdf> {
   //   }
   // }
 
-  _showHiddenButton(bool isVisible) {
+  void _showHiddenButton(bool isVisible) {
     if (!mounted) return;
     setState(() {
       _isCameraPlusAndImageAlbumVisible = isVisible;

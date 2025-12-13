@@ -61,6 +61,32 @@ abstract class LibroUtils {
     return ret;
   }
 
+  static List<LinkIsarModule> cloneLstLinkIsarModule(List<LinkIsarModule> original) {
+    return original.map((item) => LinkIsarModule()
+      // ..id = item.id
+      ..name = item.name
+      ..descrizione = item.descrizione
+      ..url = item.url).toList();
+  }
+
+  static List<PdfIsarModule> cloneLstPdfIsarModule(List<PdfIsarModule> original) {
+    return original.map((item) => PdfIsarModule()
+      // ..id = item.id
+      ..name = item.name
+      ..descrizione = item.descrizione
+      ..testo = item.testo
+      ..pathNameFile = item.pathNameFile).toList();
+  }
+
+  LinkIsarModule clonaLink(LinkIsarModule linkIsarModule) {
+    return LinkIsarModule(
+        url: linkIsarModule.url,
+        name: linkIsarModule.name,
+        descrizione: linkIsarModule.descrizione
+    );
+  }
+
+
   // static LibroIsarModel cloneLibroViewModel(LibroIsarModel libroViewModel) {
   //   LibroIsarModel cloneLibroViewModel = LibroIsarModel(
   //     libroViewModel.siglaLibreria, 

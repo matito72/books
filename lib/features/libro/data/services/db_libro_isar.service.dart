@@ -224,7 +224,84 @@ class DbLibroIsarService {
     return lstLibro.isNotEmpty ? lstLibro[0] : null;
   }
 
-  Future<void> saveLibroToDb(LibroIsarToSaveModel libroToSaveModel, bool isNew) async {
+  Future<void> cambiaLibreriaLibroToDb(LibroIsarToSaveModel libroIsarViewModel) async {
+    LibroIsarModel libroViewModel = libroIsarViewModel.libroViewModel;
+
+    // 1. Recupera il libro vecchio
+    LibroIsarModel? libroDbOld = await getLibroById(libroViewModel.id, siglaLibreria: libroIsarViewModel.siglaLibreriaOld);
+    if (libroDbOld == null) {
+      throw ItemPresentException(ItemType.libro, "Il libro '${libroViewModel.isbn}' non si trova più!");
+    }
+
+    // Clona il LIBRO
+    LibroIsarModel libroNew = libroDbOld.clonaLibro();
+    libroNew.siglaLibreria = libroViewModel.siglaLibreria;
+
+    // Lista temporanea per i cloni, poiché lstLinkIsarModule è final e lo popoleremo dopo
+    // oppure usiamo direttamente l'IsarLinks come segue:
+
+    // 2. Clona e aggiungi tutti i LINK al nuovo IsarLinks
+    List<LinkIsarModule> linksToSave = [];
+    if (libroDbOld.lstLinkIsarModule.isNotEmpty) {
+      for (final link in libroDbOld.lstLinkIsarModule) {
+        final clonedLink = link.clonaLink();
+        linksToSave.add(clonedLink);
+        // NON aggiungerlo ancora all'IsarLink, perché non ha ancora un ID nel DB
+      }
+    }
+
+    // 3. Clona e aggiungi tutti i PDF al nuovo IsarLinks
+    List<PdfIsarModule> pdfsToSave = [];
+    if (libroDbOld.lstPdfIsarModule.isNotEmpty) {
+      for (final pdf in libroDbOld.lstPdfIsarModule) {
+        final clonedPdf = pdf.clonaPdf();
+        pdfsToSave.add(clonedPdf);
+        // NON aggiungerlo ancora all'IsarLink, perché non ha ancora un ID nel DB
+      }
+    }
+
+    // 4. Apri la nuova box Isar
+    Isar isarLibroNew = await _openBoxLibro(ComArea.mapCodDescLibreria[libroNew.siglaLibreria]!);
+
+    // Esegui la transazione di scrittura
+    await isarLibroNew.writeTxn(() async {
+
+      // 5. Salva prima gli oggetti correlati (Link e PDF)
+      // Questo assegna un nuovo ID Isar a ciascun Link e PDF nel nuovo store.
+      if (linksToSave.isNotEmpty) {
+        // Isar putAll è più efficiente
+        await isarLibroNew.linkIsarModules.putAll(linksToSave);
+        // Aggiungi gli oggetti ora salvati (con ID valido) all'IsarLinks del nuovo libro
+        libroNew.lstLinkIsarModule.addAll(linksToSave);
+      }
+
+      if (pdfsToSave.isNotEmpty) {
+        await isarLibroNew.pdfIsarModules.putAll(pdfsToSave);
+        // Aggiungi gli oggetti ora salvati (con ID valido) all'IsarLinks del nuovo libro
+        libroNew.lstPdfIsarModule.addAll(pdfsToSave);
+      }
+
+      // 6. Salva il LIBRO
+      // Questo assegna un nuovo ID al libro.
+      // L'ID del libro è necessario per il passo successivo.
+      await isarLibroNew.libroIsarModels.put(libroNew);
+
+      // 7. Salva esplicitamente le relazioni IsarLinks
+      // Questo è il passo cruciale per rendere permanente la relazione nel DB.
+      if (linksToSave.isNotEmpty) {
+        await libroNew.lstLinkIsarModule.save();
+      }
+      if (pdfsToSave.isNotEmpty) {
+        await libroNew.lstPdfIsarModule.save();
+      }
+    });
+
+    isarLibroNew.close();
+
+    await deleteLibroToDb(libroDbOld);
+  }
+
+  Future<void> saveLibroToDbNew(LibroIsarToSaveModel libroToSaveModel, bool isNew) async {
     if (libroToSaveModel.libroViewModel.isbn.isEmpty) {
       libroToSaveModel.libroViewModel.isbn = generateShortUuid13();
     }
@@ -234,31 +311,32 @@ class DbLibroIsarService {
     Isar isarLibroNew = await _openBoxLibro(ComArea.libreriaInUso!.nome);
 
     libroToSaveModel.libroViewModel.siglaLibreria = (libroToSaveModel.libroViewModel.siglaLibreria == 0)
-      ? ComArea.libreriaInUso!.sigla
-      : libroToSaveModel.libroViewModel.siglaLibreria;
+        ? ComArea.libreriaInUso!.sigla
+        : libroToSaveModel.libroViewModel.siglaLibreria;
 
     LibroIsarModel? libroDbNew = await getLibroBySiglaLibreriaAndIsbn(
-      libroToSaveModel.libroViewModel.siglaLibreria, 
-      libroToSaveModel.libroViewModel.isbn,
-      isarLibro: isarLibroNew
+        libroToSaveModel.libroViewModel.siglaLibreria,
+        libroToSaveModel.libroViewModel.isbn,
+        isarLibro: isarLibroNew
     );
 
-    libroToSaveModel.siglaLibreriaOld = (libroToSaveModel.siglaLibreriaOld == null || libroToSaveModel.siglaLibreriaOld == 0) 
-      ? libroToSaveModel.libroViewModel.siglaLibreria
-      : libroToSaveModel.siglaLibreriaOld;
+    libroToSaveModel.siglaLibreriaOld = (libroToSaveModel.siglaLibreriaOld == null || libroToSaveModel.siglaLibreriaOld == 0)
+        ? libroToSaveModel.libroViewModel.siglaLibreria
+        : libroToSaveModel.siglaLibreriaOld;
 
     if ((libroDbNew != null)
-        && (isNew || 
-          (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria) || (libroToSaveModel.isbnLibroOld != libroToSaveModel.libroViewModel.isbn))) {
+        && (isNew ||
+            (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria) || (libroToSaveModel.isbnLibroOld != libroToSaveModel.libroViewModel.isbn))) {
       await isarLibroNew.close();
-      throw ItemPresentException(ItemType.libro, "Libreria '${ComArea.mapCodDescLibreria[libroToSaveModel.libroViewModel.siglaLibreria]!}':\n libro ${libroToSaveModel.libroViewModel.isbn}-${libroToSaveModel.libroViewModel.titolo} già presente!");  
-    } 
+      throw ItemPresentException(ItemType.libro, "Libreria '${ComArea.mapCodDescLibreria[libroToSaveModel.libroViewModel.siglaLibreria]!}':\n libro ${libroToSaveModel.libroViewModel.isbn}-${libroToSaveModel.libroViewModel.titolo} già presente!");
+    }
 
     List<LinkIsarModule> lstLinkOld = (libroDbOld != null) ? libroDbOld.lstLinkIsarModule.toList() : [];
     List<PdfIsarModule> lstPdfOld = (libroDbOld != null) ? libroDbOld.lstPdfIsarModule.toList() : [];
     List<int> lstLinkIdToDelete = [];
     List<int> lstPdfIdToDelete = [];
 
+    // Save Links e PDF
     await isarLibroNew.writeTxn(() async {
       // LINKs
       if (libroToSaveModel.lstLinkIsarModule != null && libroToSaveModel.lstLinkIsarModule!.isNotEmpty) {
@@ -294,7 +372,7 @@ class DbLibroIsarService {
         // await isarLibroNew.linkIsarModules.putAll(libroToSaveModel.lstLinkIsarModule!);
         // libroToSaveModel.libroViewModel.lstLinkIsarModule.addAll(libroToSaveModel.lstLinkIsarModule!);
       } else if (lstLinkOld.isNotEmpty) {
-         await isarLibroNew.linkIsarModules.deleteAll(lstLinkOld.toList().map((e) => e.id).toList());
+        await isarLibroNew.linkIsarModules.deleteAll(lstLinkOld.toList().map((e) => e.id).toList());
       }
 
       // PDFs
@@ -331,7 +409,7 @@ class DbLibroIsarService {
         // await isarLibroNew.pdfIsarModules.putAll(libroToSaveModel.lstPdfIsarModule!);
         // libroToSaveModel.libroViewModel.lstPdfIsarModule.addAll(libroToSaveModel.lstPdfIsarModule!);
       } else if (lstPdfOld.isNotEmpty) {
-         await isarLibroNew.pdfIsarModules.deleteAll(lstPdfOld.toList().map((e) => e.id).toList());
+        await isarLibroNew.pdfIsarModules.deleteAll(lstPdfOld.toList().map((e) => e.id).toList());
       }
 
       await isarLibroNew.libroIsarModels.put(libroToSaveModel.libroViewModel);
@@ -353,21 +431,319 @@ class DbLibroIsarService {
 
       await isarLibroOld.writeTxn(() async {
         libroDbOld = await getLibroBySiglaLibreriaAndIsbn(
-          libroToSaveModel.siglaLibreriaOld!, 
-          libroToSaveModel.libroViewModel.isbn,
-          isarLibro: isarLibroOld
+            libroToSaveModel.siglaLibreriaOld!,
+            libroToSaveModel.libroViewModel.isbn,
+            isarLibro: isarLibroOld
         );
       });
       if (libroDbOld == null) {
-        await isarLibroOld.close();
-        throw ItemPresentException(ItemType.libro, "Il libro '${libroToSaveModel.libroViewModel.isbn}' oggetto della modifica non esiste più!");
+        // await isarLibroOld.close();
+        // throw ItemPresentException(ItemType.libro, "Il libro '${libroToSaveModel.libroViewModel.isbn}' oggetto della modifica non esiste più!");
+      } else {
+        await isarLibroOld.writeTxn(() async {
+          await isarLibroOld.libroIsarModels.delete(libroDbOld!.id);
+        });
       }
-      await isarLibroOld.writeTxn(() async {
-        await isarLibroOld.libroIsarModels.delete(libroDbOld!.id);
-      });
+
       await isarLibroOld.close();
     }
   }
+
+  Future<void> saveLibroToDb(LibroIsarToSaveModel libroToSaveModel, bool isNew) async {
+    if (libroToSaveModel.libroViewModel.isbn.isEmpty) {
+      libroToSaveModel.libroViewModel.isbn = generateShortUuid13();
+    }
+
+    LibroIsarModel? libroDbOld = await getLibroById(libroToSaveModel.libroViewModel.id, siglaLibreria: libroToSaveModel.siglaLibreriaOld);
+
+    Isar isarLibroNew = await _openBoxLibro(ComArea.libreriaInUso!.nome);
+
+    libroToSaveModel.libroViewModel.siglaLibreria = (libroToSaveModel.libroViewModel.siglaLibreria == 0)
+        ? ComArea.libreriaInUso!.sigla
+        : libroToSaveModel.libroViewModel.siglaLibreria;
+
+    LibroIsarModel? libroDbNew = await getLibroBySiglaLibreriaAndIsbn(
+        libroToSaveModel.libroViewModel.siglaLibreria,
+        libroToSaveModel.libroViewModel.isbn,
+        isarLibro: isarLibroNew
+    );
+
+    libroToSaveModel.siglaLibreriaOld = (libroToSaveModel.siglaLibreriaOld == null || libroToSaveModel.siglaLibreriaOld == 0)
+        ? libroToSaveModel.libroViewModel.siglaLibreria
+        : libroToSaveModel.siglaLibreriaOld;
+
+    if ((libroDbNew != null)
+        && (isNew ||
+            (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria) || (libroToSaveModel.isbnLibroOld != libroToSaveModel.libroViewModel.isbn))) {
+      await isarLibroNew.close();
+      throw ItemPresentException(ItemType.libro, "Libreria '${ComArea.mapCodDescLibreria[libroToSaveModel.libroViewModel.siglaLibreria]!}':\n libro ${libroToSaveModel.libroViewModel.isbn}-${libroToSaveModel.libroViewModel.titolo} già presente!");
+    }
+
+    List<LinkIsarModule> lstLinkOld = (libroDbOld != null) ? libroDbOld.lstLinkIsarModule.toList() : [];
+    List<PdfIsarModule> lstPdfOld = (libroDbOld != null) ? libroDbOld.lstPdfIsarModule.toList() : [];
+    List<int> lstLinkIdToDelete = [];
+    List<int> lstPdfIdToDelete = [];
+
+    // Save Links e PDF
+    await isarLibroNew.writeTxn(() async {
+      // LINKs
+      if (libroToSaveModel.lstLinkIsarModule != null && libroToSaveModel.lstLinkIsarModule!.isNotEmpty) {
+        if (libroDbOld != null) {
+          for (LinkIsarModule lk in lstLinkOld) {
+            if (libroToSaveModel.lstLinkIsarModule!.toList().map((e) => e.url).contains(lk.url)) {
+              // libroToSaveModel.lstLinkIsarModule!.removeWhere((e) => e.url == lk.url);
+              LinkIsarModule? linkIsarModule = libroToSaveModel.lstLinkIsarModule!.firstWhereOrNull((e) => (e.url == lk.url));
+              if (linkIsarModule != null) {
+                lk.name = linkIsarModule.name;
+                lk.descrizione = linkIsarModule.descrizione;
+              }
+            } else {
+              lstLinkIdToDelete.add(lk.id);
+            }
+          }
+          if (lstLinkIdToDelete.isNotEmpty) {
+            await isarLibroNew.linkIsarModules.deleteAll(lstLinkIdToDelete);
+          }
+        }
+        for (LinkIsarModule link in libroToSaveModel.lstLinkIsarModule!) {
+          LinkIsarModule? linkOld = await isarLibroNew.linkIsarModules
+              .filter()
+              .urlEqualTo(link.url, caseSensitive: true) // Usa il campo unico per la ricerca
+              .findFirst();
+
+          if (linkOld != null) {
+            await isarLibroNew.linkIsarModules.delete(linkOld.id);
+          }
+          await isarLibroNew.linkIsarModules.put(link);
+          libroToSaveModel.libroViewModel.lstLinkIsarModule.add(link);
+        }
+        // await isarLibroNew.linkIsarModules.putAll(libroToSaveModel.lstLinkIsarModule!);
+        // libroToSaveModel.libroViewModel.lstLinkIsarModule.addAll(libroToSaveModel.lstLinkIsarModule!);
+      } else if (lstLinkOld.isNotEmpty) {
+        await isarLibroNew.linkIsarModules.deleteAll(lstLinkOld.toList().map((e) => e.id).toList());
+      }
+
+      // PDFs
+      if (libroToSaveModel.lstPdfIsarModule != null && libroToSaveModel.lstPdfIsarModule!.isNotEmpty) {
+        if (libroDbOld != null) {
+          for (PdfIsarModule pdf in lstPdfOld) {
+            if (libroToSaveModel.lstPdfIsarModule!.toList().map((e) => e.pathNameFile).contains(pdf.pathNameFile)) {
+              // libroToSaveModel.lstPdfIsarModule!.removeWhere((e) => e.pathNameFile == pdf.pathNameFile);
+              PdfIsarModule? pdfIsarModule = libroToSaveModel.lstPdfIsarModule!.firstWhereOrNull((e) => (e.pathNameFile == pdf.pathNameFile));
+              if (pdfIsarModule != null) {
+                pdf.name = pdfIsarModule.name;
+                pdf.descrizione = pdfIsarModule.descrizione;
+              }
+            } else {
+              lstPdfIdToDelete.add(pdf.id);
+            }
+          }
+          if (lstPdfIdToDelete.isNotEmpty) {
+            await isarLibroNew.pdfIsarModules.deleteAll(lstPdfIdToDelete);
+          }
+        }
+        for (PdfIsarModule pdf in libroToSaveModel.lstPdfIsarModule!) {
+          PdfIsarModule? pdfOld = await isarLibroNew.pdfIsarModules
+              .filter()
+              .pathNameFileEqualTo(pdf.pathNameFile, caseSensitive: true) // Usa il campo unico per la ricerca
+              .findFirst();
+
+          if (pdfOld != null) {
+            await isarLibroNew.pdfIsarModules.delete(pdfOld.id);
+          }
+          await isarLibroNew.pdfIsarModules.put(pdf);
+          libroToSaveModel.libroViewModel.lstPdfIsarModule.add(pdf);
+        }
+        // await isarLibroNew.pdfIsarModules.putAll(libroToSaveModel.lstPdfIsarModule!);
+        // libroToSaveModel.libroViewModel.lstPdfIsarModule.addAll(libroToSaveModel.lstPdfIsarModule!);
+      } else if (lstPdfOld.isNotEmpty) {
+        await isarLibroNew.pdfIsarModules.deleteAll(lstPdfOld.toList().map((e) => e.id).toList());
+      }
+
+      await isarLibroNew.libroIsarModels.put(libroToSaveModel.libroViewModel);
+
+      if (libroToSaveModel.lstLinkIsarModule != null && libroToSaveModel.lstLinkIsarModule!.isNotEmpty) {
+        libroToSaveModel.libroViewModel.lstLinkIsarModule.save();
+      }
+
+      if (libroToSaveModel.lstPdfIsarModule != null && libroToSaveModel.lstPdfIsarModule!.isNotEmpty) {
+        libroToSaveModel.libroViewModel.lstPdfIsarModule.save();
+      }
+    });
+
+    await isarLibroNew.close();
+
+    if (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria) {
+      Isar isarLibroOld = await _openBoxLibro(ComArea.mapCodDescLibreria[libroToSaveModel.siglaLibreriaOld]!);
+      LibroIsarModel? libroDbOld;
+
+      await isarLibroOld.writeTxn(() async {
+        libroDbOld = await getLibroBySiglaLibreriaAndIsbn(
+            libroToSaveModel.siglaLibreriaOld!,
+            libroToSaveModel.libroViewModel.isbn,
+            isarLibro: isarLibroOld
+        );
+      });
+      if (libroDbOld == null) {
+        // await isarLibroOld.close();
+        // throw ItemPresentException(ItemType.libro, "Il libro '${libroToSaveModel.libroViewModel.isbn}' oggetto della modifica non esiste più!");
+      } else {
+        await isarLibroOld.writeTxn(() async {
+          await isarLibroOld.libroIsarModels.delete(libroDbOld!.id);
+        });
+      }
+
+      await isarLibroOld.close();
+    }
+  }
+
+  // Future<void> saveLibroToDb(LibroIsarToSaveModel libroToSaveModel, bool isNew) async {
+  //   if (libroToSaveModel.libroViewModel.isbn.isEmpty) {
+  //     libroToSaveModel.libroViewModel.isbn = generateShortUuid13();
+  //   }
+  //
+  //   LibroIsarModel? libroDbOld = await getLibroById(libroToSaveModel.libroViewModel.id, siglaLibreria: libroToSaveModel.siglaLibreriaOld);
+  //
+  //   Isar isarLibroNew = await _openBoxLibro(ComArea.libreriaInUso!.nome);
+  //
+  //   libroToSaveModel.libroViewModel.siglaLibreria = (libroToSaveModel.libroViewModel.siglaLibreria == 0)
+  //     ? ComArea.libreriaInUso!.sigla
+  //     : libroToSaveModel.libroViewModel.siglaLibreria;
+  //
+  //   LibroIsarModel? libroDbNew = await getLibroBySiglaLibreriaAndIsbn(
+  //     libroToSaveModel.libroViewModel.siglaLibreria,
+  //     libroToSaveModel.libroViewModel.isbn,
+  //     isarLibro: isarLibroNew
+  //   );
+  //
+  //   libroToSaveModel.siglaLibreriaOld = (libroToSaveModel.siglaLibreriaOld == null || libroToSaveModel.siglaLibreriaOld == 0)
+  //     ? libroToSaveModel.libroViewModel.siglaLibreria
+  //     : libroToSaveModel.siglaLibreriaOld;
+  //
+  //   if ((libroDbNew != null)
+  //       && (isNew ||
+  //         (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria) || (libroToSaveModel.isbnLibroOld != libroToSaveModel.libroViewModel.isbn))) {
+  //     await isarLibroNew.close();
+  //     throw ItemPresentException(ItemType.libro, "Libreria '${ComArea.mapCodDescLibreria[libroToSaveModel.libroViewModel.siglaLibreria]!}':\n libro ${libroToSaveModel.libroViewModel.isbn}-${libroToSaveModel.libroViewModel.titolo} già presente!");
+  //   }
+  //
+  //   List<LinkIsarModule> lstLinkOld = (libroDbOld != null) ? libroDbOld.lstLinkIsarModule.toList() : [];
+  //   List<PdfIsarModule> lstPdfOld = (libroDbOld != null) ? libroDbOld.lstPdfIsarModule.toList() : [];
+  //   List<int> lstLinkIdToDelete = [];
+  //   List<int> lstPdfIdToDelete = [];
+  //
+  //   // Save Links e PDF
+  //   await isarLibroNew.writeTxn(() async {
+  //     // LINKs
+  //     if (libroToSaveModel.lstLinkIsarModule != null && libroToSaveModel.lstLinkIsarModule!.isNotEmpty) {
+  //       if (libroDbOld != null) {
+  //         for (LinkIsarModule lk in lstLinkOld) {
+  //           if (libroToSaveModel.lstLinkIsarModule!.toList().map((e) => e.url).contains(lk.url)) {
+  //             // libroToSaveModel.lstLinkIsarModule!.removeWhere((e) => e.url == lk.url);
+  //             LinkIsarModule? linkIsarModule = libroToSaveModel.lstLinkIsarModule!.firstWhereOrNull((e) => (e.url == lk.url));
+  //             if (linkIsarModule != null) {
+  //               lk.name = linkIsarModule.name;
+  //               lk.descrizione = linkIsarModule.descrizione;
+  //             }
+  //           } else {
+  //             lstLinkIdToDelete.add(lk.id);
+  //           }
+  //         }
+  //         if (lstLinkIdToDelete.isNotEmpty) {
+  //           await isarLibroNew.linkIsarModules.deleteAll(lstLinkIdToDelete);
+  //         }
+  //       }
+  //       for (LinkIsarModule link in libroToSaveModel.lstLinkIsarModule!) {
+  //         LinkIsarModule? linkOld = await isarLibroNew.linkIsarModules
+  //             .filter()
+  //             .urlEqualTo(link.url, caseSensitive: true) // Usa il campo unico per la ricerca
+  //             .findFirst();
+  //
+  //         if (linkOld != null) {
+  //           await isarLibroNew.linkIsarModules.delete(linkOld.id);
+  //         }
+  //         await isarLibroNew.linkIsarModules.put(link);
+  //         libroToSaveModel.libroViewModel.lstLinkIsarModule.add(link);
+  //       }
+  //       // await isarLibroNew.linkIsarModules.putAll(libroToSaveModel.lstLinkIsarModule!);
+  //       // libroToSaveModel.libroViewModel.lstLinkIsarModule.addAll(libroToSaveModel.lstLinkIsarModule!);
+  //     } else if (lstLinkOld.isNotEmpty) {
+  //        await isarLibroNew.linkIsarModules.deleteAll(lstLinkOld.toList().map((e) => e.id).toList());
+  //     }
+  //
+  //     // PDFs
+  //     if (libroToSaveModel.lstPdfIsarModule != null && libroToSaveModel.lstPdfIsarModule!.isNotEmpty) {
+  //       if (libroDbOld != null) {
+  //         for (PdfIsarModule pdf in lstPdfOld) {
+  //           if (libroToSaveModel.lstPdfIsarModule!.toList().map((e) => e.pathNameFile).contains(pdf.pathNameFile)) {
+  //             // libroToSaveModel.lstPdfIsarModule!.removeWhere((e) => e.pathNameFile == pdf.pathNameFile);
+  //             PdfIsarModule? pdfIsarModule = libroToSaveModel.lstPdfIsarModule!.firstWhereOrNull((e) => (e.pathNameFile == pdf.pathNameFile));
+  //             if (pdfIsarModule != null) {
+  //               pdf.name = pdfIsarModule.name;
+  //               pdf.descrizione = pdfIsarModule.descrizione;
+  //             }
+  //           } else {
+  //             lstPdfIdToDelete.add(pdf.id);
+  //           }
+  //         }
+  //         if (lstPdfIdToDelete.isNotEmpty) {
+  //           await isarLibroNew.pdfIsarModules.deleteAll(lstPdfIdToDelete);
+  //         }
+  //       }
+  //       for (PdfIsarModule pdf in libroToSaveModel.lstPdfIsarModule!) {
+  //         PdfIsarModule? pdfOld = await isarLibroNew.pdfIsarModules
+  //             .filter()
+  //             .pathNameFileEqualTo(pdf.pathNameFile, caseSensitive: true) // Usa il campo unico per la ricerca
+  //             .findFirst();
+  //
+  //         if (pdfOld != null) {
+  //           await isarLibroNew.pdfIsarModules.delete(pdfOld.id);
+  //         }
+  //         await isarLibroNew.pdfIsarModules.put(pdf);
+  //         libroToSaveModel.libroViewModel.lstPdfIsarModule.add(pdf);
+  //       }
+  //       // await isarLibroNew.pdfIsarModules.putAll(libroToSaveModel.lstPdfIsarModule!);
+  //       // libroToSaveModel.libroViewModel.lstPdfIsarModule.addAll(libroToSaveModel.lstPdfIsarModule!);
+  //     } else if (lstPdfOld.isNotEmpty) {
+  //        await isarLibroNew.pdfIsarModules.deleteAll(lstPdfOld.toList().map((e) => e.id).toList());
+  //     }
+  //
+  //     await isarLibroNew.libroIsarModels.put(libroToSaveModel.libroViewModel);
+  //
+  //     if (libroToSaveModel.lstLinkIsarModule != null && libroToSaveModel.lstLinkIsarModule!.isNotEmpty) {
+  //       libroToSaveModel.libroViewModel.lstLinkIsarModule.save();
+  //     }
+  //
+  //     if (libroToSaveModel.lstPdfIsarModule != null && libroToSaveModel.lstPdfIsarModule!.isNotEmpty) {
+  //       libroToSaveModel.libroViewModel.lstPdfIsarModule.save();
+  //     }
+  //   });
+  //
+  //   await isarLibroNew.close();
+  //
+  //   if (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria) {
+  //     Isar isarLibroOld = await _openBoxLibro(ComArea.mapCodDescLibreria[libroToSaveModel.siglaLibreriaOld]!);
+  //     LibroIsarModel? libroDbOld;
+  //
+  //     await isarLibroOld.writeTxn(() async {
+  //       libroDbOld = await getLibroBySiglaLibreriaAndIsbn(
+  //         libroToSaveModel.siglaLibreriaOld!,
+  //         libroToSaveModel.libroViewModel.isbn,
+  //         isarLibro: isarLibroOld
+  //       );
+  //     });
+  //     if (libroDbOld == null) {
+  //       // await isarLibroOld.close();
+  //       // throw ItemPresentException(ItemType.libro, "Il libro '${libroToSaveModel.libroViewModel.isbn}' oggetto della modifica non esiste più!");
+  //     } else {
+  //       await isarLibroOld.writeTxn(() async {
+  //         await isarLibroOld.libroIsarModels.delete(libroDbOld!.id);
+  //       });
+  //     }
+  //
+  //     await isarLibroOld.close();
+  //   }
+  // }
 
   Future<void> deleteLibroToDb(LibroIsarModel libroToDelete) async {
     String nomeLibreria = ComArea.mapCodDescLibreria[libroToDelete.siglaLibreria]!;

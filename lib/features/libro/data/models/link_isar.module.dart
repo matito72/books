@@ -37,6 +37,14 @@ class LinkIsarModule {
     }
   }
 
+  LinkIsarModule clonaLink() {
+    return LinkIsarModule(
+      url: url,
+      name: name,
+      descrizione: descrizione
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;

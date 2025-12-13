@@ -48,6 +48,14 @@ class DeleteBookSelectedEvent extends LibroEvent {
   const DeleteBookSelectedEvent(this.lstSelectedItem);
 }
 
+//* CAMBIA LIBRERIA AI LIBRI SELEZIONATI
+class CambiaLibreriaBookSelectedEvent extends LibroEvent {
+  final List<SelectedItem<LibroIsarModel>> lstSelectedItem;
+  final int siglaLibreriaNew;
+
+  const CambiaLibreriaBookSelectedEvent(this.lstSelectedItem, this.siglaLibreriaNew);
+}
+
 //* DELETE ALL LIBRI 
 class DeleteAllLibriEvent extends LibroEvent { 
   const DeleteAllLibriEvent();

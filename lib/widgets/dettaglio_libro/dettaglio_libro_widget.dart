@@ -260,13 +260,14 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     FieldDettLibro fieldDettLibro = FieldDettLibro(context, widget.libroViewModel);
 
     return Padding(
-      padding: const EdgeInsets.only(top: 10, bottom: 10),
-      // Ho racchiuso i FieldDettLibro in Expanded per distribuire lo spazio
+      padding: const EdgeInsets.only(top: 10, bottom: 10, left: 16.0, right: 0.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Expanded( // Aggiunto Expanded
+          Expanded(
+            flex: 3,
             child: fieldDettLibro.getField(
                 Colors.lime[100],
                 LibroFieldSelected.isbn().label, 1, false,
@@ -277,8 +278,10 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                 }
             ),
           ),
-          const SizedBox(width: 8.0), // Spazio tra i campi
-          Expanded( // Aggiunto Expanded
+          // Uso SizedBox per uno spazio fisso tra i campi
+          const SizedBox(width: 15.0),
+          Expanded(
+            flex: 1,
             child: fieldDettLibro.getField(
                 Colors.lime[100],
                 LibroFieldSelected.dtPubblicazione().label, 1, false,
@@ -287,8 +290,10 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                 }
             ),
           ),
-          const SizedBox(width: 8.0), // Spazio tra i campi
-          Expanded( // Aggiunto Expanded
+          // Uso SizedBox per uno spazio fisso tra i campi
+          const SizedBox(width: 15.0),
+          Expanded(
+            flex: 2,
             child: fieldDettLibro.getField(
                 Colors.lime[100],
                 LibroFieldSelected.nrPagine().label, 1, false,
@@ -300,8 +305,8 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                 }
             ),
           ),
-          const SizedBox(width: 8.0), // Spazio tra i campi
-          Expanded( // Aggiunto Expanded
+          Expanded(
+            flex: 2,
             child: fieldDettLibro.getField(
                 Colors.lime[100],
                 LibroFieldSelected.prezzo().label, 1, false,
@@ -349,6 +354,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
             Expanded(
               // height: (MediaQuery.of(context).size.height * 50 / 100),
               child: SingleChildScrollView(
+                padding: EdgeInsets.only(left: 4),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,

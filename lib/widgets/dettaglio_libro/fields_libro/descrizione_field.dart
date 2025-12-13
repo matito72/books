@@ -36,32 +36,20 @@ Widget _getDescrizioneEsistente(BuildContext context, DettaglioLibroWidget widge
           ),                                          
         ),
       ),
-      ExpandableText(
-        widget.libroViewModel.descrizione,
-        maxLines: 10,
-        style: const TextStyle(
-          fontSize: 14,
-          color: Colors.white,
+      Padding(
+        // Applichiamo solo il padding orizzontale (sinistra e destra)
+        padding: const EdgeInsets.symmetric(horizontal: 8.0), // Puoi cambiare il valore (es. 8.0, 20.0)
+        child: ExpandableText(
+          widget.libroViewModel.descrizione,
+          maxLines: 10,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.white,
+          ),
+          expandText: '>>',
+          collapseText: '<<',
         ),
-        expandText: '>>',
-        collapseText: '<<',
-      ),
-      // ReadMoreText.selectable(
-      //   widget._libroViewModel.descrizione,
-      //   numLines: 10,
-      //   style: const TextStyle(
-      //     fontSize: 14,
-      //     color: Colors.white,
-      //   ),
-      //   readMoreTextStyle: TextStyle(color: Colors.blue.shade200,),
-      //   readMoreIcon: Icon(Icons.more_horiz, color: Colors.blue.shade200),
-      //   readLessIcon: Icon(Icons.keyboard_arrow_up, color: Colors.blue.shade200),
-      //   readMoreText: '',
-      //   readLessText: '',
-      //   cursorColor: Colors.blue.shade200,
-      //   cursorRadius: const Radius.circular(1),
-      //   readMoreAlign: AlignmentDirectional.topEnd,
-      // )
+      )
     ],
   );
 }

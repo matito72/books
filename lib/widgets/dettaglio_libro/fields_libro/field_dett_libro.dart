@@ -46,7 +46,7 @@ class FieldDettLibro {
     if (isHorizontal) {
       return _getValueFieldWidgetEsistente(color, label, fieldValue, maxLines, fnString, fn);
     } else {
-      return _geInkWellWidgetEsistente(color, label, fieldValue, maxLines, fnString, fn);
+      return _getInkWellWidgetEsistente(color, label, fieldValue, maxLines, fnString, fn);
     }
   }
 
@@ -105,7 +105,7 @@ class FieldDettLibro {
     );
   }
 
-  Widget _geInkWellWidgetEsistente(Color? color, String label, dynamic fieldValue, int maxLines, Function(String)? fnString, Function()? fn) {
+  Widget _getInkWellWidgetEsistente(Color? color, String label, dynamic fieldValue, int maxLines, Function(String)? fnString, Function()? fn) {
     return InkWell(
       splashColor: Colors.transparent,
       onDoubleTap: () => _execFnString(label, fieldValue, maxLines, fnString, fn),
@@ -117,7 +117,7 @@ class FieldDettLibro {
              ? LibroUtils.getDataFormattata(libroViewModel.dataPubblicazione)
              : fieldValue.toString(),
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 14, // (label == LibroFieldSelected.isbn().label) ? 12 : 14,
               color: color,
             ),
           ),

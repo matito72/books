@@ -91,10 +91,7 @@ class HomeLibreriaScreen extends StatelessWidget {
     }
   }
 
-  void _goToHomeLibriLibreria(
-    BuildContext context,
-    LibreriaIsarModel? libreriaIsarModelSel,
-  ) async {
+  void _goToHomeLibriLibreria(BuildContext context, LibreriaIsarModel? libreriaIsarModelSel) async {
     if (_fn != null) {
       LibreriaBloc libreriaBloc = BlocProvider.of<LibreriaBloc>(context);
       // await _fn!();

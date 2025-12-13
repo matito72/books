@@ -24,3 +24,4 @@ class RefreshListItemsSelectEvent extends ListItemsSelectEvent {
 
   const RefreshListItemsSelectEvent(this.lstLibroViewModel);
 }
+

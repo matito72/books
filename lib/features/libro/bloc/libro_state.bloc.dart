@@ -76,6 +76,11 @@ class DeleteBookSelectedState<T extends int> extends LibroSuccessState {
     : super(data: data, msg: msg);
 }
 
+class CambiaLibreriaBookSelectedState<T extends int> extends LibroSuccessState {
+  const CambiaLibreriaBookSelectedState(int data, String msg)
+      : super(data: data, msg: msg);
+}
+
 //* ERRORE
 class LibroErrorState extends LibroState {
   const LibroErrorState(String msg)

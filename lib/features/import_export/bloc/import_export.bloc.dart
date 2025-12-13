@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:book/config/com_area.dart';
 import 'package:book/features/import_export/bloc/import_export_events.bloc.dart';
 import 'package:book/features/import_export/bloc/import_export_state.bloc.dart';
 import 'package:book/features/import_export/data/models/file_backup.module.dart';
 import 'package:book/features/import_export/data/services/import_export.service.dart';
+// import 'package:book/utilities/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
@@ -53,12 +55,30 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
     on<ImportFileBackupEvent>((event, emit) async {
       emit(const ImportExportWaitingState());
       try {
-        ImportedFileBackupState importedFileBackupState = await _importExportService.importIntoDbFileBackup(event.pathFolderFile, event.fileBackupModel.fileName);
-        emit(importedFileBackupState);
+        // Utils.copiaFile(
+        //     pathFolderFileSorgente: event.pathFolderFile!, nomeFileSorgente: event.fileBackupModel.fileName,
+        //     pathFolderDestinazione: pathFolderDefault, nomeFileDestinazione: nomeFileDestinazione);
+        int siglaLibreria = ComArea.libreriaInUso!.sigla;
+        List<FileBackupModel> lstFileBackupView = await _importExportService.copiaFile(event.pathFolderFile!, event.fileBackupModel.fileName, siglaLibreria);
+
+        String msg = lstFileBackupView.isEmpty ? 'Nessun file di backup presente' : 'Nr. ${lstFileBackupView.length}, file caricati correttamente';
+        emit(ListaFileBackupLoadedState(lstFileBackupView, msg));
+        // ImportedFileBackupState importedFileBackupState = await _importExportService.importIntoDbFileBackup(event.pathFolderFile, event.fileBackupModel.fileName);
+        // emit(importedFileBackupState);
       } catch (e) {
         emit(ImportExportErrorState(e.toString()));
       }
     });
+
+    // on<ImportFileBackupEvent>((event, emit) async {
+    //   emit(const ImportExportWaitingState());
+    //   try {
+    //     ImportedFileBackupState importedFileBackupState = await _importExportService.importIntoDbFileBackup(event.pathFolderFile, event.fileBackupModel.fileName);
+    //     emit(importedFileBackupState);
+    //   } catch (e) {
+    //     emit(ImportExportErrorState(e.toString()));
+    //   }
+    // });
 
   }
 }

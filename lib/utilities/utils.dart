@@ -12,6 +12,49 @@ import 'package:intl/intl.dart';
 
 class Utils {
 
+  static Future<bool> copiaFile({
+    required String pathFolderFileSorgente, required String nomeFileSorgente,
+    required String pathFolderDestinazione, required String nomeFileDestinazione}) async {
+      // 1. Costruisci i percorsi completi
+      final pathSorgenteCompleto = '$pathFolderFileSorgente/$nomeFileSorgente';
+      final pathDestinazioneCompleto = '$pathFolderDestinazione/$nomeFileDestinazione';
+
+      try {
+        final fileSorgente = File(pathSorgenteCompleto);
+
+        // Verifica se il file sorgente esiste
+        if (!await fileSorgente.exists()) {
+          print('ERRORE: File sorgente non trovato: $pathSorgenteCompleto');
+          return false;
+        }
+
+        // 2. Assicurati che la directory di destinazione esista
+        // final directoryDestinazione = Directory(pathFolderDestinazione);
+        // if (!await directoryDestinazione.exists()) {
+        //   // Crea la directory di destinazione (con eventuali directory padre)
+        //   await directoryDestinazione.create(recursive: true);
+        //   print('Creata la directory di destinazione: $pathFolderDestinazione');
+        // }
+
+        // 3. Esegui la copia del file
+        // Il metodo .copy() è efficiente e restituisce un nuovo oggetto File
+        final fileDestinazione = await fileSorgente.copy(pathDestinazioneCompleto);
+
+        print('Copia completata con successo!');
+        print('Destinazione: ${fileDestinazione.path}');
+        return true;
+
+      } on FileSystemException catch (e) {
+        // Gestione di errori specifici del filesystem (es. permessi negati)
+        print('ERRORE di I/O durante la copia: ${e.message}');
+        return false;
+      } catch (e) {
+        // Gestione di altri errori non previsti
+        print('ERRORE inatteso durante la copia: $e');
+        return false;
+      }
+  }
+
   static Future<Image> getImageFromUrlFile(LibroIsarModel libroViewModel, {double? w, double? h}) async {
     late Image image;
 

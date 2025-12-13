@@ -71,9 +71,9 @@ class DbLibreriaIsarService {
 
     final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(siglaLibreria).findFirst();
     libreria!.nrLibriCaricati--;
-        await isarLibreria.writeTxn(() async {
-          await isarLibreria.libreriaIsarModels.put(libreria);
-        });
+    await isarLibreria.writeTxn(() async {
+      await isarLibreria.libreriaIsarModels.put(libreria);
+    });
     
     await isarLibreria.close();
   }

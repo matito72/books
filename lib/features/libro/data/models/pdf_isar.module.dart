@@ -41,18 +41,14 @@ class PdfIsarModule {
     }
   }
 
-  // PdfIsarModule.fromMap(
-  //     Map<String, dynamic> mappa, {
-  //       name = '',
-  //       descrizione = '',
-  //       testo = '',
-  //       pathNameFile = '',
-  //     }) {
-  //   name = mappa['name'];
-  //   descrizione = mappa['descrizione'];
-  //   testo = mappa['testo'];
-  //   pathNameFile = mappa['pathNameFile'];
-  // }
+  PdfIsarModule clonaPdf() {
+    return PdfIsarModule(
+      name: name,
+      descrizione: descrizione,
+      testo: testo,
+      pathNameFile: pathNameFile,
+    );
+  }
 
   @override
   bool operator ==(Object other) {

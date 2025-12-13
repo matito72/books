@@ -43,11 +43,27 @@ class ImportExportService {
   //   }
   // }
 
-  Future<int> exportLibriLibreria(
-    String prefixNomeBackup,
-    String siglaLibreria,
-    List<LibroIsarModel> lstLibriLibreria,
-  ) async {
+  Future<List<FileBackupModel>> copiaFile(String pathFolderFileSorgente, String nomeFileSorgente, int siglaLibreria) async {
+    List<LibroIsarModel> lstLibroViewModel = await restoreFileBackup(pathFolderFileSorgente, nomeFileSorgente);
+    int nrLibri = lstLibroViewModel.length;
+    String nomeFileDestinazione = _getNomeFile('libreria', siglaLibreria.toString(), nrLibri);
+
+    bool ok = await Utils.copiaFile(
+        pathFolderFileSorgente: pathFolderFileSorgente, nomeFileSorgente: nomeFileSorgente,
+        pathFolderDestinazione: pathFolderDefault, nomeFileDestinazione: nomeFileDestinazione);
+    List<FileBackupModel> lstFileBackupView = [];
+    if (ok) {
+      lstFileBackupView = await getListImportExportFile(
+          filterWhere: '_${siglaLibreria}_',
+          printDebug: true
+      );
+    }
+
+    // String msg = lstFileBackupView.isEmpty ? 'Nessun file di backup presente' : 'Nr. ${lstFileBackupView.length}, file caricati correttamente';
+    return lstFileBackupView;
+  }
+
+  Future<int> exportLibriLibreria(String prefixNomeBackup, String siglaLibreria, List<LibroIsarModel> lstLibriLibreria) async {
     final String pathFolder = pathFolderDefault;
 
     // Check esistenza folder
@@ -89,10 +105,7 @@ class ImportExportService {
     return lstLibriLibreria;
   }
 
-  Future<ImportedFileBackupState> importIntoDbFileBackup(
-    String? pathFolderFile,
-    String nomeFile,
-  ) async {
+  Future<ImportedFileBackupState> importIntoDbFileBackup(String? pathFolderFile, String nomeFile) async {
     List<LibroIsarModel> lstLibroViewModel = await restoreFileBackup(
       pathFolderFile,
       nomeFile,
@@ -255,11 +268,7 @@ class ImportExportService {
   }
 
   // <prefisso_nome_file>_<nr_record>_<siglaLibreria>_<yyyyMMdd>.json
-  String _getNomeFile(
-    String prefixNomeBackup,
-    String siglaLibreria,
-    int nrLibri,
-  ) {
+  String _getNomeFile(String prefixNomeBackup, String siglaLibreria, int nrLibri) {
     String dtAttaule = DateFormat('yyyyMMdd').format(DateTime.now());
     return '${prefixNomeBackup}_${nrLibri}_${siglaLibreria}_$dtAttaule.json';
   }
