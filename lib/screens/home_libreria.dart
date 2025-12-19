@@ -6,12 +6,14 @@ import 'package:book/features/libreria/bloc/libreria.bloc.dart';
 import 'package:book/features/libreria/bloc/libreria_events.bloc.dart';
 import 'package:book/features/libreria/bloc/libreria_state.bloc.dart';
 import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/features/libreria/data/services/db_libreria.isar.service.dart';
+import 'package:book/features/libro/bloc/libro_state.bloc.dart';
+import 'package:book/injection_container.dart';
 import 'package:book/models/selected_item.module.dart';
 import 'package:book/models/widget_desc.module.dart';
 import 'package:book/resources/action_result.dart';
 import 'package:book/utilities/dialog_utils.dart';
 import 'package:book/utilities/list_items_utils.dart';
-import 'package:book/utilities/utils.dart';
 import 'package:book/widgets/appbar/appbar_default.dart';
 import 'package:book/widgets/form_libreria_new.dart';
 import 'package:book/widgets/single_card_libreria.dart';
@@ -94,16 +96,12 @@ class HomeLibreriaScreen extends StatelessWidget {
   void _goToHomeLibriLibreria(BuildContext context, LibreriaIsarModel? libreriaIsarModelSel) async {
     if (_fn != null) {
       LibreriaBloc libreriaBloc = BlocProvider.of<LibreriaBloc>(context);
-      // await _fn!();
+
       if (context.mounted) {
         if (libreriaIsarModelSel != null) {
           ComArea.libreriaInUso = libreriaIsarModelSel;
-          ComArea.lstLibrerieInUso = ListItemsUtils.getSelectedListItems(
-            libreriaBloc.state.data,
-          );
-          ComArea.mapCodDescLibreria = Utils.getMapCodDescLibreria(
-            ComArea.lstLibrerieInUso,
-          );
+          ComArea.lstLibrerieInUso = ListItemsUtils.getSelectedListItems(libreriaBloc.state.data);
+          // ComArea.mapCodDescLibreria = Utils.getMapCodDescLibreria(ComArea.lstLibrerieInUso);
         }
         await _fn();
         if (context.mounted) {
@@ -205,21 +203,74 @@ class HomeLibreriaScreen extends StatelessWidget {
   // }
 
   Widget _widgetListaLibrerie(
+      BuildContext context,
+      List<SelectedItem<LibreriaIsarModel>> lstSelectedItem,
+      ) {
+    // 1. Definisci il Future
+    Future<List<LibreriaIsarModel>> futureLibrerie = sl<DbLibreriaIsarService>().readLstLibreriaFromDb();
+
+    return FutureBuilder<List<LibreriaIsarModel>>(
+      future: futureLibrerie,
+      builder: (BuildContext context, AsyncSnapshot<List<LibreriaIsarModel>> snapshot) {
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Errore: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          List<LibreriaIsarModel> lstLibreriaViewModel = snapshot.data!;
+          LibreriaBloc libreriaBloc = BlocProvider.of<LibreriaBloc>(context);
+
+          if (ComArea.lstLibrerieInUso.isNotEmpty) {
+            for (SelectedItem<LibreriaIsarModel> selItem in lstSelectedItem) {
+              LibreriaIsarModel? libreriaCheck = lstLibreriaViewModel
+                  .cast<LibreriaIsarModel?>()
+                  .firstWhere(
+                    (element) => element!.sigla == selItem.item.sigla,
+                orElse: () => null,
+              );
+
+              if (libreriaCheck != null) {
+                // Qui stai usando lstLibreriaViewModel, ma nel tuo codice originale
+                // stavi lavorando su lstSelectedItem, assicurati di usare il dato corretto
+                selItem.item.nrLibriCaricati = libreriaCheck.nrLibriCaricati;
+              }
+            }
+          }
+
+          // === FINE LOGICA ===
+
+          return Center(
+              child: lstSelectedItem.isEmpty
+                  ? const Text('Nessuna Libreria presente')
+                  : ListView(
+                children: lstSelectedItem.map((selectedItem) {
+                  return SingleCardLibreria(
+                    libreriaBloc,
+                    selectedItem,
+                    _goToHomeLibriLibreria,
+                    _editLibreria,
+                    _deleteLibreria,
+                  );
+                }).toList(),
+              )
+          );
+        }
+        // Stato di default
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget _widgetListaLibrerie_OLD(
     BuildContext context,
     List<SelectedItem<LibreriaIsarModel>> lstSelectedItem,
   ) {
     LibreriaBloc libreriaBloc = BlocProvider.of<LibreriaBloc>(context);
-    // LibreriaModel? libreriaInUso = ComArea.libreriaInUso;
-    // if (libreriaInUso != null && lstSelectedItem.isNotEmpty) {
-    //   for (var selectedItem in lstSelectedItem) {
-    //     // debugPrint('==============================> ${libreriaInUso.nome}');
-    //     if (selectedItem.item.sigla == libreriaInUso.sigla) {
-    //       // libreria = libreriaInUso!;
-    //       selectedItem.item.nrLibriCaricati = libreriaInUso.nrLibriCaricati;
-    //     }
-    //   }
-    // }
     if (ComArea.lstLibrerieInUso.isNotEmpty) {
+
+      // List<LibreriaIsarModel> lstLibreriaViewModel = sl<DbLibreriaIsarService>().readLstLibreriaFromDb();
+
       for (SelectedItem<LibreriaIsarModel> selItem in lstSelectedItem) {
         LibreriaIsarModel? libreriaCheck = ComArea.lstLibrerieInUso
             .cast<LibreriaIsarModel?>()

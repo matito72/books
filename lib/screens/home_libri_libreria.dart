@@ -1,6 +1,10 @@
 import 'package:backdrop/backdrop.dart';
 import 'package:book/config/com_area.dart';
+import 'package:book/features/libreria/bloc/libreria.bloc.dart';
+import 'package:book/features/libreria/bloc/libreria_events.bloc.dart';
 import 'package:book/features/libreria/bloc/libreria_state.bloc.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/features/libreria/data/services/db_libreria.isar.service.dart';
 import 'package:book/features/libro/bloc/libro.bloc.dart';
 import 'package:book/features/libro/bloc/libro_events.bloc.dart';
 import 'package:book/features/libro/bloc/libro_state.bloc.dart';
@@ -492,7 +496,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
                     ),
                   ),
                   LibreriaSelDropdown(
-                    -1, //ComArea.libreriaInUso!.sigla,
+                    -1,
                     onPressed: (value) {
                       siglaLibreriaNew = value;
                     },
@@ -734,7 +738,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     List<PdfIsarModule> lstPdfIsarModule = (libroViewModelDb != null) ? libroViewModelDb.lstPdfIsarModule.toList() : [];
     String immagineCopertinaPre = libroViewModel.immagineCopertina;
     LibroDettaglioResult? ret = await LibroUtils.viewDettaglioLibro(context, ComArea.libreriaInUso!, libroViewModelClone, lstLinkIsarModule, lstPdfIsarModule, showDelete, isInsertByUserInterface);
-    // String hashLibroClone = libroViewModelClone.calcolaHash();
     String immagineCopertinaPost = libroViewModelClone.immagineCopertina;
 
     if (ret != null) {
@@ -755,25 +758,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         }
       }
     }
-    //else if (hashLibroClone != hashLibroDb) {
-      // bool? isUpdateBook = await DialogUtils.showConfirmationSiNo(
-      //   context,
-      //   'Vuoi salvare le modifiche ?',
-      // );
-
-      // if (isUpdateBook == null || !isUpdateBook) {
-      //   return;
-      // } else if (context.mounted) {
-      //   LibroIsarToSaveModel libroToSaveModel = LibroIsarToSaveModel(
-      //       libroViewModelClone,
-      //       siglaLibreriaOld: siglaLibreriaOld,
-      //       isbnLibroOld: isbnLibroOld,
-      //       lstLinkIsarModule: (libroViewModelClone.lstLinkIsarModule.isNotEmpty) ? libroViewModelClone.lstLinkIsarModule.toList() : [],
-      //       lstPdfIsarModule: (libroViewModelClone.lstPdfIsarModule.isNotEmpty) ? libroViewModelClone.lstPdfIsarModule.toList() : []
-      //   );
-      //   libroBloc.add(EditLibroEvent(ComArea.libreriaInUso!, libroToSaveModel));
-      // }
-    // }
     else if (immagineCopertinaPre != immagineCopertinaPost) {
       libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
     }

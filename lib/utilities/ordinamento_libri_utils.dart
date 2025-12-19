@@ -21,13 +21,6 @@ class OrdinamentoLibriUtils {
       return libroViewModel.dataPubblicazione;
     } else if (label == LibroFieldSelected.prezzo().label) {
       double prezzo = libroViewModel.prezzo;
-      // if (libroViewModel.prezzo.isNotEmpty) {
-      //   try {
-      //     prezzo = double.parse(libroViewModel.prezzo);
-      //   } on Exception catch (e) {
-      //     debugPrint('--->${libroViewModel.prezzo}<--- : $e');
-      //   }
-      // }
       return prezzo;
     } else if (label == LibroFieldSelected.dtInserimento().label) {
       return libroViewModel.dataInserimento;

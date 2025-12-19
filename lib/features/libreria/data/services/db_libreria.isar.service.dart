@@ -4,33 +4,29 @@ import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:isar_community/isar.dart';
 
 
-
-
 class DbLibreriaIsarService {
-  
+  static const String nomeBoxLibreriaDefault = "boxLibreria";
   final Directory _appDocumentDir;  
   DbLibreriaIsarService(this._appDocumentDir);
 
   Future<Isar> _openBoxLibreria() async {
-    if (Isar.instanceNames.isEmpty || !Isar.instanceNames.contains('boxLibreria')) {
-      if (Isar.getInstance('boxLibreria') != null && Isar.getInstance('boxLibreria')!.isOpen) {
-        Isar.getInstance('boxLibreria')!.close();
+    if (Isar.instanceNames.isEmpty || !Isar.instanceNames.contains(nomeBoxLibreriaDefault)) {
+      if (Isar.getInstance(nomeBoxLibreriaDefault) != null && Isar.getInstance(nomeBoxLibreriaDefault)!.isOpen) {
+        Isar.getInstance(nomeBoxLibreriaDefault)!.close();
       }
-      return await Isar.open(
-        name: 'boxLibreria', 
+      return await Isar.openSync(
+        name: nomeBoxLibreriaDefault,
         [LibreriaIsarModelSchema], 
         directory: _appDocumentDir.path
       );
     }
 
-    return Future.value(Isar.getInstance('boxLibreria'));
+    return Future.value(Isar.getInstance(nomeBoxLibreriaDefault));
   }
 
   Future<List<LibreriaIsarModel>> readLstLibreriaFromDb() async {
     Isar isarLibreria = await _openBoxLibreria();
-
     List<LibreriaIsarModel> lstLibreriaSaved = isarLibreria.libreriaIsarModels.where().findAllSync();
-
     await isarLibreria.close();
 
     return lstLibreriaSaved;

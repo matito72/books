@@ -63,12 +63,9 @@ class _MyAppState extends State<MyApp> {
     );
     lstLibreriaSelClone.sort((a, b) => a.sigla.compareTo(b.sigla));
 
-    // if (ComArea.libreriaInUso == null || libreriaSel.sigla != ComArea.libreriaInUso!.sigla)   {
     await sl<DbLibreriaIsarService>().changeLibreriaDefault(
       lstLibreriaSelClone,
     );
-    //   ComArea.libreriaInUso = libreriaSel;
-    // }
 
     setState(() {
       if (widgetOptions.length == 2) {
@@ -137,7 +134,7 @@ class _MyAppState extends State<MyApp> {
           body: Center(
             child: PageView(
               controller: _pageController,
-              onPageChanged: (index) {
+              onPageChanged: (index) async {
                 pageChanged(index);
               },
               children: widgetOptions,

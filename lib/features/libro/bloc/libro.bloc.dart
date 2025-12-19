@@ -8,12 +8,12 @@ import 'package:book/features/libro/bloc/libro_state.bloc.dart';
 import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:book/features/libro/data/services/db_libro_isar.service.dart';
 import 'package:book/injection_container.dart';
+import 'package:book/models/libro_isar_to_save.module.dart';
 import 'package:book/models/selected_item.module.dart';
 import 'package:book/utilities/libro_utils.dart';
 import 'package:book/utilities/list_items_utils.dart';
 import 'package:book/utilities/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:book/models/libro_isar_to_save.module.dart';
 
 class LibroBloc extends Bloc<LibroEvent, LibroState> {
   final DbLibroIsarService _dbLibroService;
@@ -241,11 +241,9 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
 
             await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(siglaLibreriaOld);
             LibroUtils.removeNrLibriCaricatiInCache(siglaLibreriaOld);
-            ComArea.nrLibriInLibreriaInUso--;
 
             await sl<DbLibreriaIsarService>().addLibriInLibreriaInUso(event.siglaLibreriaNew, 1);
             LibroUtils.addNrLibriCaricatiInCache(event.siglaLibreriaNew);
-            ComArea.nrLibriInLibreriaInUso++;
           }
         }
 

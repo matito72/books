@@ -38,9 +38,15 @@ class LibreriaSelDropdown extends StatelessWidget {
       onSelected: (int? value) {
         onPressed(value!);
       },
-      dropdownMenuEntries: ComArea.lstLibrerieInUso.map<DropdownMenuEntry<int>>((LibreriaIsarModel libreriaModel) {
-        return DropdownMenuEntry<int>(value: libreriaModel.sigla, label: libreriaModel.nome);
-      }).toList(),
+        dropdownMenuEntries: ComArea.mapCodDescLibreria.entries.map<DropdownMenuEntry<int>>((entry) {
+          return DropdownMenuEntry<int>(
+              value: entry.key,
+              label: entry.value
+          );
+        }).toList()
+      // dropdownMenuEntries: ComArea.lstLibrerieInUso.map<DropdownMenuEntry<int>>((LibreriaIsarModel libreriaModel) {
+      //   return DropdownMenuEntry<int>(value: libreriaModel.sigla, label: libreriaModel.nome);
+      // }).toList(),
     );
   }
 }
