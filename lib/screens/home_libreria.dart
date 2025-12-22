@@ -7,7 +7,7 @@ import 'package:book/features/libreria/bloc/libreria_events.bloc.dart';
 import 'package:book/features/libreria/bloc/libreria_state.bloc.dart';
 import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:book/features/libreria/data/services/db_libreria.isar.service.dart';
-import 'package:book/features/libro/bloc/libro_state.bloc.dart';
+// import 'package:book/features/libro/bloc/libro_state.bloc.dart';
 import 'package:book/injection_container.dart';
 import 'package:book/models/selected_item.module.dart';
 import 'package:book/models/widget_desc.module.dart';
@@ -19,6 +19,7 @@ import 'package:book/widgets/form_libreria_new.dart';
 import 'package:book/widgets/single_card_libreria.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 ///
 /// Pagina con la lista delle librerie salvate
@@ -67,17 +68,17 @@ class HomeLibreriaScreen extends StatelessWidget {
     if (strDesc != null &&
         strDesc.contains(';') &&
         strDesc.split(';').length == 2) {
-      LibreriaIsarModel libreriaModelNew = LibreriaIsarModel(
-        nome: strDesc.split(';')[0].trim(),
-        nrLibriCaricati: libreria.nrLibriCaricati,
-      );
+          LibreriaIsarModel libreriaModelNew = LibreriaIsarModel(
+            nome: strDesc.split(';')[0].trim(),
+            nrLibriCaricati: libreria.nrLibriCaricati,
+          );
 
-      if (context.mounted) {
-        BlocProvider.of<LibreriaBloc>(
-          context,
-        ).add(EditLibreriaEvent(libreria, libreriaModelNew));
-      }
-    }
+          if (context.mounted) {
+            BlocProvider.of<LibreriaBloc>(
+              context,
+            ).add(EditLibreriaEvent(libreria, libreriaModelNew));
+          }
+        }
   }
 
   Future<void> _deleteLibreria(
@@ -115,6 +116,7 @@ class HomeLibreriaScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppbar(context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () => _addNewLibreria(context),
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -127,57 +129,152 @@ class HomeLibreriaScreen extends StatelessWidget {
     );
   }
 
+  Widget _createFloatingActionButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      child: Row(
+        children: [
+          // GestureDetector(
+          //   onTap: () {},
+          //   behavior: HitTestBehavior.translucent,
+          //   child: FloatingActionButton(
+          //     heroTag: "btnCameraPlus",
+          //     onPressed: () {
+          //       // ...
+          //     },
+          //     // backgroundColor: Colors.transparent,
+          //     backgroundColor: Theme.of(context).colorScheme.surface,
+          //     elevation: 6,
+          //     hoverElevation: 8,
+          //     highlightElevation: 12,
+          //     enableFeedback: true,
+          //     child: Visibility(
+          //       maintainSize: true,
+          //       maintainAnimation: true,
+          //       maintainState: true,
+          //       visible: true,
+          //       child: Icon(
+          //         Icons.done_all_outlined,
+          //         // color: const Color.fromARGB(183, 244, 67, 54),
+          //         color: Theme.of(context).colorScheme.onSecondary,
+          //         shadows: const [],
+          //         size: 55,
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          // const Spacer(),
+          GestureDetector(
+            onTap: () {},
+            behavior: HitTestBehavior.translucent,
+            child: FloatingActionButton(
+              heroTag: "btnImageAlbum",
+              onPressed: () {
+                _addNewLibreria(context);
+              },
+              // backgroundColor: Colors.transparent,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              child: Icon(
+                Icons.add,
+                // color: const Color.fromARGB(183, 244, 67, 54),
+                color: Theme.of(context).colorScheme.onSecondary,
+                shadows: const [],
+                size: 55,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   AppBarDefault _buildAppbar(BuildContext context) {
     return AppBarDefault(
       context: context,
       txtLabel: '${Constant.titoloApp} - Librerie',
       showIconSx: false,
-      popupMenuButton: PopupMenuButton(
-        // add icon, by default "3 dot" icon
-        // icon: Icon(Icons.book)
-        padding: EdgeInsets.zero,
-        itemBuilder: (context) {
-          return [
-            // PopupMenuItem<int>(value: 1, child: Text("Settings")),
-            // const PopupMenuItem<int>(
-            //   value: 0,
-            //   child: Row(
-            //     children: [
-            //       Icon(Icons.sentiment_very_dissatisfied_outlined),
-            //       Padding(padding: EdgeInsets.only(right: 15.0)),
-            //       Text("Cancella tutte le librerie !")
-            //     ],
-            //   )
-            // ),
-            const PopupMenuItem<int>(
-              value: 1,
-              child: Row(
-                children: [
-                  Icon(Icons.sentiment_very_dissatisfied_outlined),
-                  Padding(padding: EdgeInsets.only(right: 15.0)),
-                  Text("TEST...."),
-                ],
-              ),
-            ),
-          ];
-        },
-        onSelected: (value) {
-          if (value == 0) {
-            BlocProvider.of<LibreriaBloc>(
-              context,
-            ).add(DeleteAllLibreriaEvent());
-          } else if (value == 1) {
-            _test();
-          }
-          // else if(value == 2){print("Logout menu is selected.");}
-        },
-      ),
+      // popupMenuButton: PopupMenuButton(
+      //   padding: EdgeInsets.zero,
+      //   offset: const Offset(0, 35),
+      //   elevation: 20,
+      //   splashRadius: 200,
+      //   shadowColor: Colors.blueGrey[800],
+      //   surfaceTintColor: Colors.blueGrey[700],
+      //   color: const Color.fromARGB(224, 88, 136, 182),
+      //   shape: RoundedRectangleBorder(
+      //     side: BorderSide.lerp(BorderSide.none, BorderSide.none, 12),
+      //     borderRadius: BorderRadius.circular(12),
+      //   ),
+      //   icon: const Icon(Icons.more_vert, color: Colors.white),
+        // itemBuilder: (context) {
+        //   return [
+        //     const PopupMenuItem<int>(
+        //       value: 5,
+        //       child: Row(
+        //         children: [
+        //           Icon(Icons.sentiment_very_dissatisfied_outlined),
+        //           Padding(padding: EdgeInsets.only(right: 15.0)),
+        //           Text("TEST...."),
+        //         ],
+        //       ),
+        //     ),
+        //     PopupMenuItem<int>(
+        //         value: 10,
+        //         // enabled: (ListItemsUtils.countSelectedItems(libroBloc.state.data) != 0),
+        //         child: Row(
+        //           children: [
+        //             Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.done_all_outlined, color: Colors.green[100]),),
+        //             Text(
+        //               "Seleziona tutti",
+        //               style: const TextStyle(fontWeight: FontWeight.bold),
+        //             )
+        //           ],
+        //         )
+        //     ),
+        //     PopupMenuItem<int>(
+        //         value: 10,
+        //         // enabled: (ListItemsUtils.countSelectedItems(libroBloc.state.data) != 0),
+        //         child: Row(
+        //           children: [
+        //             Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(MdiIcons.selectionOff, color: Colors.lightGreen),),
+        //             Text(
+        //               "Deseleziona tutti",
+        //               style: const TextStyle(fontWeight: FontWeight.bold),
+        //             )
+        //           ],
+        //         )
+        //     ),
+        //   ];
+        // },
+        // onSelected: (value) {
+        //   if (value == 0) {
+        //     BlocProvider.of<LibreriaBloc>(
+        //       context,
+        //     ).add(DeleteAllLibreriaEvent());
+        //   } else if (value == 5) {
+        //     _test();
+        //   } else if (value == 10) {
+        //     _selezionaTutti();
+        //   } else if (value == 5) {
+        //     _deselezionaTutti();
+        //   }
+        //   // else if(value == 2){print("Logout menu is selected.");}
+        // },
+      // ),
     );
   }
 
   Future<void> _test() async {
     debugPrint("TEST........");
     // const TestopenCv(title: 'opencv_4 Demo');
+  }
+
+  Future<void> _selezionaTutti() async {
+    ComArea.isLibreriaSelectedAll = true;
+  }
+
+  Future<void> _deselezionaTutti() async {
+    ComArea.isLibreriaSelectedAll = false;
   }
 
   // _test() async {
@@ -204,8 +301,7 @@ class HomeLibreriaScreen extends StatelessWidget {
 
   Widget _widgetListaLibrerie(
       BuildContext context,
-      List<SelectedItem<LibreriaIsarModel>> lstSelectedItem,
-      ) {
+      List<SelectedItem<LibreriaIsarModel>> lstSelectedItem) {
     // 1. Definisci il Future
     Future<List<LibreriaIsarModel>> futureLibrerie = sl<DbLibreriaIsarService>().readLstLibreriaFromDb();
 
@@ -231,13 +327,10 @@ class HomeLibreriaScreen extends StatelessWidget {
               );
 
               if (libreriaCheck != null) {
-                // Qui stai usando lstLibreriaViewModel, ma nel tuo codice originale
-                // stavi lavorando su lstSelectedItem, assicurati di usare il dato corretto
                 selItem.item.nrLibriCaricati = libreriaCheck.nrLibriCaricati;
               }
             }
           }
-
           // === FINE LOGICA ===
 
           return Center(
@@ -259,45 +352,6 @@ class HomeLibreriaScreen extends StatelessWidget {
         // Stato di default
         return const SizedBox.shrink();
       },
-    );
-  }
-
-  Widget _widgetListaLibrerie_OLD(
-    BuildContext context,
-    List<SelectedItem<LibreriaIsarModel>> lstSelectedItem,
-  ) {
-    LibreriaBloc libreriaBloc = BlocProvider.of<LibreriaBloc>(context);
-    if (ComArea.lstLibrerieInUso.isNotEmpty) {
-
-      // List<LibreriaIsarModel> lstLibreriaViewModel = sl<DbLibreriaIsarService>().readLstLibreriaFromDb();
-
-      for (SelectedItem<LibreriaIsarModel> selItem in lstSelectedItem) {
-        LibreriaIsarModel? libreriaCheck = ComArea.lstLibrerieInUso
-            .cast<LibreriaIsarModel?>()
-            .firstWhere(
-              (element) => element!.sigla == selItem.item.sigla,
-              orElse: () => null,
-            );
-        if (libreriaCheck != null) {
-          selItem.item.nrLibriCaricati = libreriaCheck.nrLibriCaricati;
-        }
-      }
-    }
-
-    return Center(
-      child: lstSelectedItem.isEmpty
-          ? const Text('Nessuna Libreria presente')
-          : ListView(
-              children: lstSelectedItem.map((selectedItem) {
-                return SingleCardLibreria(
-                  libreriaBloc,
-                  selectedItem,
-                  _goToHomeLibriLibreria,
-                  _editLibreria,
-                  _deleteLibreria,
-                );
-              }).toList(),
-            ),
     );
   }
 

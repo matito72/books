@@ -14,7 +14,7 @@ class DbLibreriaIsarService {
       if (Isar.getInstance(nomeBoxLibreriaDefault) != null && Isar.getInstance(nomeBoxLibreriaDefault)!.isOpen) {
         Isar.getInstance(nomeBoxLibreriaDefault)!.close();
       }
-      return await Isar.openSync(
+      return Isar.openSync(
         name: nomeBoxLibreriaDefault,
         [LibreriaIsarModelSchema], 
         directory: _appDocumentDir.path
@@ -102,17 +102,18 @@ class DbLibreriaIsarService {
     await isarLibreria.close();
   }
 
-  Future<void> updateLibreria(LibreriaIsarModel libreriaNew) async {
+  Future<void> updateNomeLibreria(int siglaLibreria, String nomelibreriaOld, String nomelibreriaNew) async {
     Isar isarLibreria = await _openBoxLibreria();
 
-    final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(libreriaNew.sigla).findFirst();
+    final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(siglaLibreria).findFirst();
     if (libreria == null) {
       await isarLibreria.close();
-      throw 'Libreria ${libreriaNew.nome} già presente!';
-    }  
-    
+      throw "Libreria da modificare '$nomelibreriaOld' non trovata!";
+    }
+    libreria.nome = nomelibreriaNew;
     await isarLibreria.writeTxn(() async {
-      await isarLibreria.libreriaIsarModels.put(libreriaNew);
+      // isarLibreria.libreriaIsarModels.
+      await isarLibreria.libreriaIsarModels.put(libreria);
     });
 
     await isarLibreria.close();

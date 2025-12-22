@@ -62,7 +62,7 @@ class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
     on<EditLibreriaEvent>((event, emit) async {
       emit(const LibreriaWaitingState());
       try {
-        await _dbLibreriaIsarService.updateLibreria(event.libreriaIsarModelNew);
+        await _dbLibreriaIsarService.updateNomeLibreria(event.libreriaIsarModelOld.sigla, event.libreriaIsarModelOld.nome, event.libreriaIsarModelNew.nome);
         emit(EditLibreriaState('Libreria ${event.libreriaIsarModelOld} modificata in ${event.libreriaIsarModelNew} correttamente.'));
       } catch (e) {
         emit(LibreriaErrorState(e.toString()));

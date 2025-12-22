@@ -8,7 +8,7 @@ import 'package:book/models/parameter_google_search.module.dart';
 import 'package:book/services/libro_search_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-// import 'package:flutter/widgets.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Utils {
 
@@ -322,5 +322,14 @@ class Utils {
       }
     }
     return mapCodDescLibreria;
+  }
+
+  static Future<bool> hasPlatformPermissions() async {
+    if (!Platform.isAndroid && !Platform.isIOS) return true;
+
+    Map<Permission, PermissionStatus> status = await [
+      Permission.manageExternalStorage, Permission.camera,
+    ].request();
+    return status.values.every((s) => s.isGranted);
   }
 }

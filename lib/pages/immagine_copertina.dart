@@ -146,10 +146,11 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
             MenuItemButton(
               onPressed: () async {
                 swSearchWeb = false;
-                Map<Permission, PermissionStatus> statuses = await [
-                  Permission.manageExternalStorage, Permission.camera,
-                ].request();
-                if (statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
+                // Map<Permission, PermissionStatus> statuses = await [
+                //   Permission.manageExternalStorage, Permission.camera,
+                // ].request();
+                // if (statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
+                if (await Utils.hasPlatformPermissions()) {
                   if (!context.mounted) return;
                     // _updateWidget(swithSearchPhone: true);
                     showImagePickerUtil.showImagePicker(context, _reloadImage);

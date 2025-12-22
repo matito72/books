@@ -15,20 +15,38 @@ import 'package:book/utilities/libro_utils.dart';
 import 'package:book/utilities/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
-// import 'package:share_extend/share_extend.dart';
-import 'package:share_plus/share_plus.dart';
-// import 'dart:io'; // Necessario per usare File
-
 import 'package:path/path.dart' as p;
+import 'package:share_plus/share_plus.dart';
+// import 'package:share_extend/share_extend.dart';
+// import 'dart:io'; // Necessario per usare File
+import 'package:path_provider/path_provider.dart' as path_provider;
+
 class ImportExportService {
+  final String pathFolderRootDefault;
   final String pathFolderDefault;
 
-  ImportExportService(dynamic appDocumentDir)
-    : pathFolderDefault = p.join(appDocumentDir.path, Constant.jsonFilesPath);
+  // Factory constructor che fa i calcoli
+  factory ImportExportService(dynamic appDocumentDir) {
+    final root = p.join(appDocumentDir.path, Constant.books);
+    final folder = p.join(root, Constant.jsonFilesPath);
 
-  // dynamic get shareExtend => null;
+    return ImportExportService._internal(root, folder);
+  }
+
+  // Costruttore privato
+  ImportExportService._internal(this.pathFolderRootDefault, this.pathFolderDefault);
 
   Future<void> init() async {
+    Directory dirRoot = Directory(pathFolderRootDefault);
+    if (!await dirRoot.exists()) {
+      await dirRoot.create();
+    }
+    final Directory path1 = await path_provider.getApplicationCacheDirectory();
+    final Directory path2 = await path_provider.getApplicationDocumentsDirectory();
+    final Directory? path3 = await path_provider.getDownloadsDirectory();
+    final List<Directory>? path4 = await path_provider.getExternalStorageDirectories();
+    final Directory? path5 = await path_provider.getExternalStorageDirectory();
+
     Directory dir = Directory(pathFolderDefault);
     if (!await dir.exists()) {
       await dir.create();

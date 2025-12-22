@@ -2,6 +2,7 @@ import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:intl/intl.dart';
 
 class Constant {
+  static const String books = "books";
   static const String titoloApp = "BOOKs";
   static const String googleapisDominio = 'www.googleapis.com';
   static const String googleapisPercorso = '/books/v1/volumes';

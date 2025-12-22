@@ -27,4 +27,6 @@ class ComArea {
   static BooksSearchParameters booksSearchParameters = BooksSearchParameters();
 
   static bool isBarcode = true;
+
+  static bool isLibreriaSelectedAll = false;
 }

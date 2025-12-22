@@ -1,10 +1,7 @@
 import 'package:backdrop/backdrop.dart';
 import 'package:book/config/com_area.dart';
-import 'package:book/features/libreria/bloc/libreria.bloc.dart';
-import 'package:book/features/libreria/bloc/libreria_events.bloc.dart';
 import 'package:book/features/libreria/bloc/libreria_state.bloc.dart';
-import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:book/features/libreria/data/services/db_libreria.isar.service.dart';
+
 import 'package:book/features/libro/bloc/libro.bloc.dart';
 import 'package:book/features/libro/bloc/libro_events.bloc.dart';
 import 'package:book/features/libro/bloc/libro_state.bloc.dart';
@@ -63,7 +60,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   
   const HomeLibriLibreriaScreen({super.key});
 
-   @override
+  @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
@@ -145,13 +142,13 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
             ComArea.isBarcode = true;
           }
 
-          return createFloatingActionButton(context, state.nrItemSel, state.isAllSel);
+          return _createFloatingActionButton(context, state.nrItemSel, state.isAllSel);
         },
       )
     );
   }
 
-  Widget createFloatingActionButton(BuildContext context, int? nrItemSel, bool? isAllSel) {
+  Widget _createFloatingActionButton(BuildContext context, int? nrItemSel, bool? isAllSel) {
     LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
 
     if (nrItemSel == 0) {
@@ -410,26 +407,27 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           enabled: (ListItemsUtils.countSelectedItems(libroBloc.state.data) != 0),
           child: Row(
             children: [
-              Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.swap_horiz_outlined , color: Colors.lightBlueAccent[100]),),
-              Text(
-                MenuItemCode.cambiaLibreria.label,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              )
+              Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: Icon(
+                  Icons.swap_horiz_outlined,
+                  color: Colors.lightBlueAccent[100],
+                ),
+              ),
+              // L'Expanded costringe il testo a stare nello spazio rimanente
+              Expanded(
+                child: Text(
+                  MenuItemCode.cambiaLibreria.label,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  // Opzionale: aggiunge "..." se il testo è ancora troppo lungo per le righe a disposizione
+                  overflow: TextOverflow.ellipsis,
+                  // Opzionale: decidi quante righe massime mostrare prima di tagliare
+                  maxLines: 2,
+                ),
+              ),
             ],
           )
-      ),
-      // PopupMenuItem<int>(
-      //   value: MenuItemCode.deleteAllBooksInAllLibrerie.cd, 
-      //   child: Row(
-      //     children: [
-      //       const Padding(padding: EdgeInsets.only(right: 10.0), child:  Icon(Icons.sentiment_very_dissatisfied_outlined, color: Color.fromARGB(255, 245, 28, 28),),),
-      //       Text(
-      //         MenuItemCode.deleteAllBooksInAllLibrerie.label,
-      //         style: const TextStyle(fontWeight: FontWeight.bold),
-      //       )
-      //     ],
-      //   )
-      // ),
+      )
     ];
   }
 

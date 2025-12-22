@@ -34,6 +34,57 @@ class _SingleCardLibreria extends State<SingleCardLibreria> {
     SelectedItem selectedItem = widget._selItem;
     // LibreriaModel? libreriaInUso = ComArea.libreriaInUso;
 
+    _createListMenuItemButton() {
+      List<MenuItemButton> lstMenuItemButton = [];
+
+      lstMenuItemButton.add(MenuItemButton(
+        trailingIcon: Text(
+          "Entra nella Libreria",
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        onPressed: () => {
+          selectedItem.sel = true,
+          widget._goToHomeLibriLibreria(context, selectedItem.item)
+        },
+        child: Icon(MdiIcons.locationEnter, color: Colors.lightGreenAccent[100],),
+      ));
+
+      if (selectedItem.item.nrLibriCaricati == 0) {
+        lstMenuItemButton.add(MenuItemButton(
+          trailingIcon: Text(
+            "Modifica Libreria",
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          onPressed: () => widget._editLibreria(context, selectedItem.item),
+          child: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
+        ));
+      }
+
+      lstMenuItemButton.add(MenuItemButton(
+        trailingIcon: Text(
+          "Seleziona Libreria",
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        onPressed: () => {
+          setState(() {
+            selectedItem.sel = !selectedItem.sel;
+          })
+        },
+        child: const Icon(Icons.check_circle, color: Colors.lightGreenAccent),
+      ));
+
+      lstMenuItemButton.add(MenuItemButton(
+        trailingIcon: Text(
+          "Elimina Libreria",
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        onPressed: () => widget._deleteLibreria(context, selectedItem.item),
+        child: Icon(Icons.delete, color: Colors.orange.shade800),
+      ));
+
+      return lstMenuItemButton;
+    }
+
     Widget getMenu() {
       return MenuAnchor(
         crossAxisUnconstrained: false,
@@ -57,47 +108,7 @@ class _SingleCardLibreria extends State<SingleCardLibreria> {
             tooltip: 'Show menu',
           );
         },
-        menuChildren: <MenuItemButton>[
-          MenuItemButton(
-            trailingIcon: Text(
-              "Entra nella Libreria",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            onPressed: () => {
-              selectedItem.sel = true,
-              widget._goToHomeLibriLibreria(context, selectedItem.item)
-            },
-            child: Icon(MdiIcons.locationEnter, color: Colors.lightGreenAccent[100],),
-          ),
-          MenuItemButton(
-            trailingIcon: Text(
-              "Modifica Libreria",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            onPressed: () => widget._editLibreria(context, selectedItem.item),
-            child: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
-          ),
-          MenuItemButton(
-            trailingIcon: Text(
-              "Seleziona Libreria",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            onPressed: () => {
-              setState(() {
-                  selectedItem.sel = !selectedItem.sel;
-              })
-            },
-            child: const Icon(Icons.check_circle, color: Colors.lightGreenAccent),
-          ),
-          MenuItemButton(
-            trailingIcon: Text(
-              "Elimina Libreria",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            onPressed: () => widget._deleteLibreria(context, selectedItem.item),
-            child: Icon(Icons.delete, color: Colors.orange.shade800),
-          ),
-        ],
+        menuChildren: _createListMenuItemButton(),
       );
     }
 

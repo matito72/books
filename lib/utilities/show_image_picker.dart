@@ -13,36 +13,24 @@ class ShowImagePickerUtil {
   final picker = ImagePicker();
   
   Future<void> _cropImage(File imgFile, Function fn) async {
-    final croppedFile = await ImageCropper().cropImage(
-        sourcePath: imgFile.path,
-        // aspectRatioPresets: Platform.isAndroid
-        //     ? [
-        //   CropAspectRatioPreset.square,
-        //   CropAspectRatioPreset.ratio3x2,
-        //   CropAspectRatioPreset.original,
-        //   CropAspectRatioPreset.ratio4x3,
-        //   CropAspectRatioPreset.ratio16x9
-        // ] : [
-        //   CropAspectRatioPreset.original,
-        //   CropAspectRatioPreset.square,
-        //   CropAspectRatioPreset.ratio3x2,
-        //   CropAspectRatioPreset.ratio4x3,
-        //   CropAspectRatioPreset.ratio5x3,
-        //   CropAspectRatioPreset.ratio5x4,
-        //   CropAspectRatioPreset.ratio7x5,
-        //   CropAspectRatioPreset.ratio16x9
-        // ],
-        uiSettings: [AndroidUiSettings(
-            toolbarTitle: "Image Cropper",
-            toolbarColor: Colors.deepOrange,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false),
-          IOSUiSettings(
-            title: "Image Cropper",
-          )
-        ]
-    );
+    CroppedFile? croppedFile;
+    if (Platform.isAndroid || Platform.isIOS) {
+      croppedFile = await ImageCropper().cropImage(
+          sourcePath: imgFile.path,
+          uiSettings: [AndroidUiSettings(
+              toolbarTitle: "Image Cropper",
+              toolbarColor: Colors.deepOrange,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: false),
+            IOSUiSettings(
+              title: "Image Cropper",
+            )
+          ]
+      );
+    } else {
+      croppedFile = CroppedFile(imgFile.path);
+    }
 
     if (croppedFile != null) {
       imageCache.clear();

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 
+import 'package:book/config/constant.dart';
 import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:book/features/libro/data/models/libro_isar.module.util.dart';
 import 'package:book/features/libro/data/models/pdf_isar.module.dart';
@@ -15,6 +16,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:path/path.dart' as p;
 
 
 class ImageToPdf extends StatefulWidget {
@@ -163,28 +166,10 @@ class _ImageToPdf extends State<ImageToPdf> {
       : [_createSavePDF(context)];
   }
 
-  // Widget _removeIconButton() {
-  //   return IconButton(
-  //     icon: const Icon(Icons.highlight_remove),
-  //     onPressed: () {
-  //       _removePDF();
-  //     }
-  //   );
-  // }
-
   Widget _createSavePDF(BuildContext context) {
       // return PDFCreationButton(addPdfIsarModuleToLstPdfIsarModule: _addPdfIsarModuleToLstPdfIsarModule, createPDF: _createPDF, savePDF: _savePDF, showHiddenButton: _showHiddenButton);
     return PDFCreationButton(lstPdfIsarModule: widget.lstPdfIsarModule, createPDF: _createPDF, savePDF: _savePDF, showHiddenButton: _showHiddenButton, checkNomePdf: _checkNomePdf);
   }
-
-  // void _removePDF() {
-  //   if (_image.isNotEmpty) {
-  //     setState(() {
-  //       _image.remove(_image[_index]);
-  //       // _image.removeLast();
-  //     });
-  //   }
-  // }
 
   void _showHiddenButton(bool isVisible) {
     if (!mounted) return;
@@ -218,10 +203,6 @@ class _ImageToPdf extends State<ImageToPdf> {
     return ok;
   }
 
-  // _addPdfIsarModuleToLstPdfIsarModule(PdfIsarModule pdfIsarModule) {
-  //   widget.lstPdfIsarModule.add(pdfIsarModule);
-  // }
-
   Future<String> _createPDF(BuildContext context) async {
     String text = '';
     String sep = '';
@@ -236,11 +217,17 @@ class _ImageToPdf extends State<ImageToPdf> {
           }
       ));
 
-      final inputImage = InputImage.fromFile(img);
-      final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
-      String txt = recognizedText.text;
-      text += txt + sep;
+      if (Platform.isAndroid || Platform.isIOS) {
+        final inputImage = InputImage.fromFile(img);
+        final textRecognizer = TextRecognizer(
+            script: TextRecognitionScript.latin);
+        final RecognizedText recognizedText = await textRecognizer.processImage(
+            inputImage);
+        String txt = recognizedText.text;
+        text += txt + sep;
+      } else {
+        debugPrint("Il riconoscimento del testo non è supportato su Linux.");
+      }
       sep = '----------------------------------------------------------------------------------------------------------------';
     }
 
@@ -251,7 +238,15 @@ class _ImageToPdf extends State<ImageToPdf> {
     PdfIsarModule? pdfIsarModule;
 
     try {
-      const String pathFolderDefault = '/storage/emulated/0/Download/';
+      final Directory appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
+      final String pathFolderRootDefault = p.join(appDocumentDir.path, Constant.books);
+      final String pathFolderDefault = p.join(pathFolderRootDefault, Constant.pdfFilesPath);
+      // const String pathFolderDefault = '/storage/emulated/0/Download/';
+
+      Directory dirRoot = Directory(pathFolderRootDefault);
+      if (!await dirRoot.exists()) {
+        await dirRoot.create();
+      }
 
       Directory dir = Directory(pathFolderDefault);
       if (! await dir.exists()) {

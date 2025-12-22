@@ -278,13 +278,14 @@ class _SingleCardBook extends State<SingleCardBook> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
+        // Rimosso mainAxisSize: MainAxisSize.min perché Expanded richiede uno spazio definito
         children: <Widget>[
           getCoverBook(),
-          SizedBox(
-            width: (MediaQuery.of(context).size.width * 70 / 100),
-            height: cardBookHeight,  
-            child: Padding(
+          // Sostituiamo il SizedBox con larghezza fissa con Expanded
+          Padding(padding: EdgeInsetsGeometry.only(left: 5)),
+          Expanded(
+            child: Container( // Usiamo Container o lasciamo il Padding
+              height: cardBookHeight,
               padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -292,44 +293,40 @@ class _SingleCardBook extends State<SingleCardBook> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 9,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            getTitolo(),
-                            getAutore()
-                          ],
+                      children: <Widget>[
+                        Expanded(
+                          flex: 9,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              getTitolo(),
+                              getAutore()
+                            ],
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: getMenuAnchor()
-                      ),
-                    ]
+                        Expanded(
+                            flex: 1,
+                            child: getMenuAnchor()
+                        ),
+                      ]
                   ),
                   getCategoria(),
                   getCasaEditrice(),
+                  // Spingiamo il prezzo e la data in fondo se necessario
+                  const Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
                     children: [
                       getPrezzo(),
                       getDtInserimentoCounter()
                     ],
                   )
                 ],
-              )
-            )
+              ),
+            ),
           ),
-        ]
+        ],
       );
     }
 
