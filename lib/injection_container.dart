@@ -13,7 +13,7 @@ final sl = GetIt.instance;
 Future<void> initializeDependencies() async {
 
   // ** Service HIVE
-  final Directory appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
+  final Directory appDocumentDir =  (!Platform.isAndroid && !Platform.isIOS) ? await path_provider.getApplicationDocumentsDirectory() : Directory('/storage/emulated/0/Download/');
   sl.registerSingleton<DbLibreriaIsarService>(DbLibreriaIsarService(appDocumentDir));
   sl.registerSingleton<DbLibroIsarService>(DbLibroIsarService(appDocumentDir));
 

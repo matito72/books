@@ -238,15 +238,17 @@ class _ImageToPdf extends State<ImageToPdf> {
     PdfIsarModule? pdfIsarModule;
 
     try {
-      final Directory appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
-      final String pathFolderRootDefault = p.join(appDocumentDir.path, Constant.books);
+      // final Directory appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
+      // final String pathFolderRootDefault = p.join(appDocumentDir.path, Constant.books);
+      // final String pathFolderDefault = p.join(pathFolderRootDefault, Constant.pdfFilesPath);
+      const String appDownloadDir = '/storage/emulated/0/Download/';
+      final String pathFolderRootDefault = p.join(appDownloadDir, Constant.books);
       final String pathFolderDefault = p.join(pathFolderRootDefault, Constant.pdfFilesPath);
-      // const String pathFolderDefault = '/storage/emulated/0/Download/';
 
-      Directory dirRoot = Directory(pathFolderRootDefault);
-      if (!await dirRoot.exists()) {
-        await dirRoot.create();
-      }
+      // Directory dirRoot = Directory(pathFolderRootDefault);
+      // if (!await dirRoot.exists()) {
+      //   await dirRoot.create();
+      // }
 
       Directory dir = Directory(pathFolderDefault);
       if (! await dir.exists()) {
