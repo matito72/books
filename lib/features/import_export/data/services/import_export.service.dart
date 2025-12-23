@@ -41,11 +41,6 @@ class ImportExportService {
     if (!await dirRoot.exists()) {
       await dirRoot.create();
     }
-    final Directory path1 = await path_provider.getApplicationCacheDirectory();
-    final Directory path2 = await path_provider.getApplicationDocumentsDirectory();
-    final Directory? path3 = await path_provider.getDownloadsDirectory();
-    final List<Directory>? path4 = await path_provider.getExternalStorageDirectories();
-    final Directory? path5 = await path_provider.getExternalStorageDirectory();
 
     Directory dir = Directory(pathFolderDefault);
     if (!await dir.exists()) {
@@ -146,6 +141,12 @@ class ImportExportService {
         LibroIsarToSaveModel libroIsarToSaveModel = LibroIsarToSaveModel(libroModelNew);
 
         try {
+          LibroIsarModel? libroDb =  await dbLibroService.getLibroBySiglaLibreriaAndIsbn(siglaLibreria, libroIsarToSaveModel.libroViewModel.isbn);
+          if (libroDb != null) {
+            lstLibriGiaPresenti.add(libroModelNew);
+            continue;
+          }
+
           if (libroModelNew.lstPdfModule.isNotEmpty) {
             libroIsarToSaveModel.libroViewModel.lstPdfIsarModule.addAll(libroModelNew.lstPdfIsarModule);
             libroIsarToSaveModel.lstPdfIsarModule = libroModelNew.lstPdfModule;

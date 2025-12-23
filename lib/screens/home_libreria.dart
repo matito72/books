@@ -334,19 +334,26 @@ class HomeLibreriaScreen extends StatelessWidget {
           // === FINE LOGICA ===
 
           return Center(
-              child: lstSelectedItem.isEmpty
-                  ? const Text('Nessuna Libreria presente')
-                  : ListView(
-                children: lstSelectedItem.map((selectedItem) {
-                  return SingleCardLibreria(
-                    libreriaBloc,
-                    selectedItem,
-                    _goToHomeLibriLibreria,
-                    _editLibreria,
-                    _deleteLibreria,
-                  );
-                }).toList(),
-              )
+            widthFactor: 1,
+            child: lstSelectedItem.isEmpty
+                ? Center(
+                    child: Text(
+                      'Nessuna Libreria presente',
+                      style: Theme.of(context).textTheme.headlineLarge,
+                      overflow: TextOverflow.ellipsis,
+                    ) // const Text('Nessuna Libreria presente'),
+                  )
+                : ListView(
+              children: lstSelectedItem.map((selectedItem) {
+                return SingleCardLibreria(
+                  libreriaBloc,
+                  selectedItem,
+                  _goToHomeLibriLibreria,
+                  _editLibreria,
+                  _deleteLibreria,
+                );
+              }).toList(),
+            )
           );
         }
         // Stato di default

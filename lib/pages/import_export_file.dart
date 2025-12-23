@@ -69,8 +69,12 @@ class ImportExportFile extends StatelessWidget {
 
   Widget _widgetListaFileBackup(BuildContext context, ImportExportBloc importExportBloc, List<FileBackupModel> lstFileBackupModel) {
     if (lstFileBackupModel.isEmpty) {
-      return const Center(
-        child: Text('Nessun file di backup presente.'),
+      return Center(
+        child: Text(
+          'Nessun file di backup presente.',
+          style: Theme.of(context).textTheme.headlineMedium,
+          overflow: TextOverflow.ellipsis,
+        ) // Text('Nessun file di backup presente.'),
       );
     } else {
       return ListaFileBakcup(importExportBloc, lstFileBackupModel);

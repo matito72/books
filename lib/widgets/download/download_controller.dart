@@ -126,6 +126,7 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
         try {
           LibroIsarModel? libroDb =  await dbLibroService.getLibroBySiglaLibreriaAndIsbn(siglaLibreria, libroIsarToSaveModel.libroViewModel.isbn);
           if (libroDb != null) {
+            _lstLibriGiaPresenti.add(libroModelNew);
             continue;
           }
 

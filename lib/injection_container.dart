@@ -11,13 +11,14 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
+  final Directory dbAppDocumentDir = await path_provider.getApplicationDocumentsDirectory();
 
   // ** Service HIVE
-  final Directory appDocumentDir =  (!Platform.isAndroid && !Platform.isIOS) ? await path_provider.getApplicationDocumentsDirectory() : Directory('/storage/emulated/0/Download/');
-  sl.registerSingleton<DbLibreriaIsarService>(DbLibreriaIsarService(appDocumentDir));
-  sl.registerSingleton<DbLibroIsarService>(DbLibroIsarService(appDocumentDir));
+  sl.registerSingleton<DbLibreriaIsarService>(DbLibreriaIsarService(dbAppDocumentDir));
+  sl.registerSingleton<DbLibroIsarService>(DbLibroIsarService(dbAppDocumentDir));
 
   // ** Service BL
+  final Directory appDocumentDir =  (!Platform.isAndroid && !Platform.isIOS) ? await path_provider.getApplicationDocumentsDirectory() : Directory('/storage/emulated/0/Download/');
   sl.registerSingleton<ImportExportService>(ImportExportService(appDocumentDir));
 
   // ** Blocs
