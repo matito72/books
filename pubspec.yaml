@@ -35,17 +35,17 @@ dependencies:
   # edge_detection: ^1.1.3
   cunning_document_scanner: 1.3.1
   equatable: 2.0.7
-  file_picker: 10.3.3
+  file_picker: 10.3.8
 #  flutter_barcode_scanner: 2.0.0
   #  mobile_scanner: ^7.1.3
-  mobile_scanner: 7.1.3
+  mobile_scanner: 7.1.4
   flutter_bloc: 9.1.1
   flutter_pagewise: 2.0.4
   flutter_cache_manager: 3.4.1
   flutter_gallery_3d: 1.1.1
   flutter_quill: 11.5.0
-  get_it: 8.2.0
-  google_ml_kit: 0.20.0
+  get_it: 9.2.0
+  google_ml_kit: ^0.20.0
   grouped_list: 6.0.0
   http: 1.5.0
   hive: 2.2.3
