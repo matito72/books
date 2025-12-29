@@ -81,14 +81,16 @@ class FileBackupWidget extends StatelessWidget {
               ],
             ),
             trailing: Wrap(
-              // spacing: 0,
+              alignment: WrapAlignment.start, // Allineamento orizzontale
+              crossAxisAlignment: WrapCrossAlignment.center, // <--- Fondamentale per l'allineamento verticale
+              spacing: 8.0, // Aggiunge spazio tra i widget se necessario
               children: [
                 SizedBox(
+                  // Usare LayoutBuilder o definire altezze fisse è spesso più sicuro di MediaQuery
+                  // per piccoli elementi UI, ma manteniamo la tua logica:
                   width: (MediaQuery.of(context).size.width * 10 / 100),
                   height: (MediaQuery.of(context).size.height * 6 / 100),
                   child: Center(
-                    widthFactor: 1,
-                    heightFactor: 1,
                     child: AnimatedBuilder(
                       animation: downloadController,
                       builder: (context, child) {
@@ -99,21 +101,26 @@ class FileBackupWidget extends StatelessWidget {
                           onCancel: downloadController.stopDownload,
                           onOpen: downloadController.openDownload,
                           lstLibriGiaPresenti: downloadController.lstLibriGiaPresenti,
-                          fileBackupModel: _item
+                          fileBackupModel: _item,
                         );
                       },
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.share, color: Colors.lightGreen[200]), // Color.fromARGB(202, 176, 235, 158),),
-                  onPressed: () => {shareFileBackup(context, _item)},
+                  // Rimuovere il padding extra se vuoi che l'icona sia perfettamente centrata
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: Icon(Icons.share, color: Colors.lightGreen[200]),
+                  onPressed: () => shareFileBackup(context, _item),
                 ),
                 IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                   icon: Icon(Icons.delete, color: Colors.orange.shade800),
-                  onPressed: () => {deleteFileBackup(context, _item)},
+                  onPressed: () => deleteFileBackup(context, _item),
                 ),
-              ], 
+              ],
             ),
           ),
           Visibility(
