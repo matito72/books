@@ -198,7 +198,7 @@ class DbLibroIsarService {
   }
 
   Future<LibroIsarModel?> getLibroBySiglaLibreriaAndIsbn(int siglaLibreria, String isbn, {Isar? isarLibro}) async {
-    String nomeLibreria = ComArea.mapCodDescLibreria[siglaLibreria]!;
+    final String nomeLibreria = ComArea.mapCodDescLibreria[siglaLibreria]!;
     bool isOpenIsar = false;
 
     if (isarLibro == null) {
@@ -225,10 +225,17 @@ class DbLibroIsarService {
   Future<void> cambiaLibreriaLibroToDb(LibroIsarToSaveModel libroIsarViewModel) async {
     LibroIsarModel libroViewModel = libroIsarViewModel.libroViewModel;
 
+    // Nome Libreria New
+    int? siglaLibreriaNew = (libroViewModel.siglaLibreria == 0) ? ComArea.libreriaInUso!.sigla : libroViewModel.siglaLibreria;
+    String nomeLibreriaNew = ComArea.mapCodDescLibreria[siglaLibreriaNew]!;
+
     // 1. Recupera il libro vecchio
     LibroIsarModel? libroDbOld = await getLibroById(libroViewModel.id, siglaLibreria: libroIsarViewModel.siglaLibreriaOld);
     if (libroDbOld == null) {
       throw ItemPresentException(ItemType.libro, "Il libro '${libroViewModel.isbn}' non si trova più!");
+    }
+    if (libroDbOld.isbn == libroViewModel.isbn) {
+      throw ItemPresentException(ItemType.libro, "Il libro '[${libroViewModel.isbn}] - ${libroViewModel.titolo}' è già presente nella libreria '$nomeLibreriaNew'!");
     }
 
     // Clona il LIBRO
@@ -312,7 +319,7 @@ class DbLibroIsarService {
         ? ComArea.libreriaInUso!.sigla
         : libroToSaveModel.libroViewModel.siglaLibreria;
 
-    // Libro OLD
+    // Libro OLD: apre-chiude la connessione sulla libreria (che puo' essere diversa dall'attuale) libroToSaveModel.siglaLibreriaOld
     LibroIsarModel? libroDbOld = await getLibroById(libroToSaveModel.libroViewModel.id, siglaLibreria: libroToSaveModel.siglaLibreriaOld);
 
     int? siglaLibreriaToSave = (libroToSaveModel.libroViewModel.siglaLibreria == 0) ? ComArea.libreriaInUso!.sigla : libroToSaveModel.libroViewModel.siglaLibreria;
@@ -332,7 +339,14 @@ class DbLibroIsarService {
         await saveLibroWithInsertLinkAndPdf(libroToSaveModel, isarLibroNew);
       });
     }
-    else if (libroDbOld != null) { //  && libroDbNew != null) {
+    else if (libroDbOld != null) {
+      // UPDATE
+      int? siglaLibreriaNew = (libroDbNew!.siglaLibreria == 0) ? ComArea.libreriaInUso!.sigla : libroDbNew.siglaLibreria;
+      String nomeLibreriaNew = ComArea.mapCodDescLibreria[siglaLibreriaNew]!;
+      if (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria && libroDbOld.isbn == libroToSaveModel.libroViewModel.isbn) {
+        throw ItemPresentException(ItemType.libro, "Il libro '[${libroToSaveModel.libroViewModel.isbn}] - ${libroToSaveModel.libroViewModel.titolo}' è già presente nella libreria '${nomeLibreriaNew}'!");
+      }
+
       await isarLibroNew.writeTxn(() async {
         if (libroToSaveModel.libroViewModel.lstLinkIsarModule.isNotEmpty) {
           List<int> lstLinkId = libroToSaveModel.libroViewModel.lstLinkIsarModule.map((e) => e.id).toList();

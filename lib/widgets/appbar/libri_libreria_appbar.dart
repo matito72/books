@@ -31,13 +31,53 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
     return _createAppBar(textCtrlSearch);
   }
 
+  Widget refreshIconButton() {
+    return IconButton(
+      icon: Icon(
+          MdiIcons.refresh,
+          size: 20,
+          color: Colors.green
+      ),
+      alignment: Alignment.center,
+      visualDensity: VisualDensity.compact,
+      onPressed: () => {
+        setState(() {
+          ComArea.booksSearchParameters = BooksSearchParameters(
+              txtTitolo: '',
+              txtAutore: '',
+              txtEditore: '',
+              txtCategoria: '',
+              txtAnnoPubblicazioneDa: '',
+              txtAnnoPubblicazioneA: '',
+              txtPrezzoMin: '',
+              txtPrezzoMax: ''
+          );
+          widget._libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
+        })
+      },
+    );
+  }
+
   Widget _createAppBar(TextEditingController textCtrlSearch) {
     return BackdropAppbarDefault(
       context: context,
       showIconSx: false,
-      appBarContent: ComArea.appBarStateText 
-        ? _createTextTitle(context, textCtrlSearch)
-        : _createTextSearch(context, textCtrlSearch)
+      appBarContent: ComArea.appBarStateText
+          ? _createTextTitle(context, textCtrlSearch)
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              spacing: 0.0,
+              children: [
+                // Avvolgi il campo di ricerca in un Expanded
+                Expanded(
+                  child: _createTextSearch(context, textCtrlSearch),
+                ),
+                // Ora puoi scommentare questa riga senza problemi
+                refreshIconButton(),
+              ],
+          ),
     );
   }
 
@@ -74,6 +114,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
           )
         ),
         showFiltroAttivo
+            // FITRO ATTIVO
           ? Row(
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -108,10 +149,15 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
                 style: TextStyle(
                   color: Colors.white, fontSize: 13
                 ),
-              )
+              ),
             ],
           )
-          : const Text("")
+            // Filtro NON attivo
+          : Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [ refreshIconButton() ],
+        )
       ],
     );
   }
@@ -162,7 +208,8 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
           },
         ),
         isCollapsed: true,
-        isDense: true
+        isDense: true,
+        maintainHintSize: false
       ),
     );
   }

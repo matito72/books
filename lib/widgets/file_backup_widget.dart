@@ -35,11 +35,14 @@ class FileBackupWidget extends StatelessWidget {
       return LinearPercentIndicator(
         key: super.key,
         width: (MediaQuery.of(context).size.width * 85 / 100),
-        animation: true,
         lineHeight: 5.0,
         trailing: Text("${ctrl.nrRecordCaricati}/${_item.nrRecord}"),
+        progressBorderColor: Colors.redAccent,
         progressColor: Colors.greenAccent,
-        percent: ctrl.progress
+        percent: ctrl.progress,
+        animation: true,
+        animateFromLastPercent: true,
+        animateToInitialPercent: true,
       );
     }
 

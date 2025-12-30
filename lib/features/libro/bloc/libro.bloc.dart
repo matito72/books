@@ -224,12 +224,14 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       }
     });
 
+    // ** CAMBIA LIBRERIA
     on<CambiaLibreriaBookSelectedEvent>((event, emit) async {
       emit(const LibroWaitingState());
       try {
         int nrAddToLibreriaNew = 0;
         for (SelectedItem<LibroIsarModel> selectedItem in event.lstSelectedItem) {
           int siglaLibreriaOld = selectedItem.item.siglaLibreria;
+
           if (siglaLibreriaOld != event.siglaLibreriaNew) {
             int siglaLibreriaOld = selectedItem.item.siglaLibreria;
             selectedItem.item.siglaLibreria = event.siglaLibreriaNew;

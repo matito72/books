@@ -113,6 +113,9 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
       DbLibreriaIsarService dbLibreriaIsarService = sl<DbLibreriaIsarService>();
 
       List downloadProgressStops =  List.generate(nrRecordTot, (i) => (i * 100/nrRecordTot).roundToDouble() / 100);
+      if (downloadProgressStops.isNotEmpty && downloadProgressStops.length == nrRecordTot) {
+        downloadProgressStops[nrRecordTot - 1] = 1.00;
+      }
       int siglaLibreria = ComArea.libreriaInUso!.sigla;
 
       int i = 0;
