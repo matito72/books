@@ -107,6 +107,7 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
         crossAxisAlignment: CrossAxisAlignment.end,      
         children: <Widget>[
           TextField(
+            autofocus: true,
             decoration: const InputDecoration(labelText: 'Titolo'),
             controller: _titoloController,
             textCapitalization: TextCapitalization.sentences,

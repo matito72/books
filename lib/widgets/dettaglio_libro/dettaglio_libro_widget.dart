@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:book/config/com_area.dart';
 import 'package:book/config/constant.dart';
 import 'package:book/features/libro/data/models/libro_isar.module.dart';
@@ -106,6 +108,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
 
   Widget _headerBook(BuildContext context) {
     FieldDettLibro fieldDettLibro = FieldDettLibro(context, widget.libroViewModel);
+    final isSmartPhone = (Platform.isAndroid || Platform.isIOS);
 
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0),
@@ -116,8 +119,8 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
           children: [
             // COLONNA IMMAGINE (35% della larghezza)
             SizedBox(
-              width: (MediaQuery.of(context).size.width * 34 / 100),
-              height: (MediaQuery.of(context).size.height * 25 / 100),
+              width: isSmartPhone ? (MediaQuery.of(context).size.width * 34 / 100) : 200.00,
+              height: isSmartPhone ? (MediaQuery.of(context).size.height * 25 / 100) : 260.00,
               child: InkWell(
                 splashColor: Colors.transparent,
                 onDoubleTap: () {

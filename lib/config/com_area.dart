@@ -26,7 +26,7 @@ class ComArea {
   static String bookToSearch = '';
   static BooksSearchParameters booksSearchParameters = BooksSearchParameters();
 
-  static bool isBarcode = true;
+  static bool isBarcode = true; // (Platform.isAndroid || Platform.isIOS) ? true : false;
 
   static bool isLibreriaSelectedAll = false;
 }

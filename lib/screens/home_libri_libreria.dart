@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:backdrop/backdrop.dart';
 import 'package:book/config/com_area.dart';
 import 'package:book/features/libreria/bloc/libreria_state.bloc.dart';
@@ -158,7 +160,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           backgroundColor: const Color.fromARGB(176, 0, 97, 100),
           onPressed: () => _searchBookByBarcode(context),
           child: Icon(
-            MdiIcons.barcodeScan,
+            (Platform.isAndroid || Platform.isIOS) ? MdiIcons.barcodeScan : MdiIcons.bookSearch,
             color: Theme.of(context).colorScheme.onSecondary,
           ),        
         );
@@ -692,10 +694,15 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   Future<void> _searchBookByBarcode(BuildContext context) async {
+    bool isSmartPhone = (Platform.isAndroid || Platform.isIOS);
     LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
 
-    String scannedCode = await LibroSearchService.scanBarcodeNormal(context);
-    List<LibroIsarModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode( scannedCode );
+    List<LibroIsarModel> lstLibroViewModel = [];
+    if (isSmartPhone) {
+      String scannedCode = await LibroSearchService.scanBarcodeNormal(context);
+      lstLibroViewModel =
+      await LibroSearchService.searchBooksByBarcode(scannedCode);
+    }
 
     // List<LibroIsarModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode( await LibroSearchService.scanBarcodeNormal(context)); //** OK */
     // List<LibroViewModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode('9788807033247'); //('9788807014956') // ('9788804680604'); // !!! TEST !!!
