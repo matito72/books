@@ -46,9 +46,10 @@ enum MenuItemCode {
   exportAllBooksLibreria(10, "Crea file backup"),
   restoreFileBackup(25, "Gestione files backup"),
   deleteNrBooksFromList(30, 'Elimina i libri selezionati'),
-  cambiaLibreria(45, "Cambia Libreria ai libri selezionati"),
   switchSearchToUserInsert(35, "Attiva inserimento manuale"),
   switchUserToSearchInsert(40, "Attiva inserimento automatico"),
+  cambiaLibreria(45, "Cambia Libreria ai libri selezionati"),
+  exportInExcel(50, "Esporta in Excel"),
   // deleteAllBooksInAllLibrerie(30, "Elimina TUTTI i Libri."),
   ;
 
@@ -288,6 +289,9 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         else if (value == MenuItemCode.exportAllBooksLibreria.cd) {
           _exportLibriLibreria(context, libroBloc);
         }
+        else if (value == MenuItemCode.exportInExcel.cd) {
+          _exportInExcel(context, libroBloc);
+        }
         // else if(value == MenuItemCode.importaBooksInLibreria.cd) {
         //   importaLibriInLibreria(context, libroBloc);
         // }
@@ -429,7 +433,33 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
               ),
             ],
           )
-      )
+      ),
+      PopupMenuItem<int>(
+          value: MenuItemCode.exportInExcel.cd,
+          enabled: (ListItemsUtils.countSelectedItems(libroBloc.state.data) != 0),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: Icon(
+                  MdiIcons.fileExcel,
+                  color: Colors.lightGreen,
+                ),
+              ),
+              // L'Expanded costringe il testo a stare nello spazio rimanente
+              Expanded(
+                child: Text(
+                  MenuItemCode.exportInExcel.label,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  // Opzionale: aggiunge "..." se il testo è ancora troppo lungo per le righe a disposizione
+                  overflow: TextOverflow.ellipsis,
+                  // Opzionale: decidi quante righe massime mostrare prima di tagliare
+                  maxLines: 2,
+                ),
+              ),
+            ],
+          )
+      ),
     ];
   }
 
@@ -614,6 +644,37 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     return false;
   }
 
+  Future<bool?> _exportInExcel(BuildContext context, LibroBloc libroBloc) async {
+    if (context.mounted) {
+      return showDialog<bool>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Procedo con l'esportazione in Excel di nr.${ComArea.nrLibriVisibiliInLista} libri ?"),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Si'),
+                onPressed: () {
+                  libroBloc.add(ExportInExcelEvent(ComArea.lstLibrerieInUso));
+                  Navigator.pop(context, true);
+                },
+              ),
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    return false;
+  }
+
   Widget _blocBody(BuildContext context) {
     LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
     
@@ -639,7 +700,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         }
         if (state is AddedNewLibroState || state is EditLibroState || state is DeletedLibroState ||
             state is LibroInitializedState || state is DeleteAllLibroState || state is DeleteBookSelectedState ||
-            state is CambiaLibreriaBookSelectedState
+            state is CambiaLibreriaBookSelectedState || state is ExportedFileExcelState
         ) {
           libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
         } else  if (state is ExportedFileState) {

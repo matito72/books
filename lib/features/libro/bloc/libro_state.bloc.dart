@@ -51,6 +51,11 @@ class ExportedFileState<T extends int> extends LibroSuccessState {
   const ExportedFileState(int data, String msg) : super(data: data, msg: msg);
 }
 
+//* EXPORTED FILE EXCEL
+class ExportedFileExcelState<T extends int> extends LibroSuccessState {
+  const ExportedFileExcelState(int data, String msg) : super(data: data, msg: msg);
+}
+
 //* IMPORTED FILE
 class ImportedFileState<T extends int> extends LibroSuccessState {
   const ImportedFileState(int data, String msg) : super(data: data, msg: msg);

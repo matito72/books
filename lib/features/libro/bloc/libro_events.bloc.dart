@@ -27,6 +27,13 @@ class ExportAllLibriLibreriaEvent extends LibroEvent {
   const ExportAllLibriLibreriaEvent(this.libreriaIsarModel);
 }
 
+//* EXPORT IN EXCEL
+class ExportInExcelEvent extends LibroEvent {
+  final List<LibreriaIsarModel> lstLibreriaIsarSel;
+
+  const ExportInExcelEvent(this.lstLibreriaIsarSel);
+}
+
 //* IMPORT ALL BOOKS LIBRERIA
 class ImportAllLibriLibreriaEvent extends LibroEvent { 
   final LibreriaIsarModel libreriaIsarModel;

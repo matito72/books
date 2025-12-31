@@ -92,7 +92,7 @@ class LibroIsarModel {
     }
   }
 
-  Map toJson() => {
+  Map<String, dynamic> toJson() => {
     'googleBookId': googleBookId,
     'isbn': isbn.trim().isNotEmpty ? isbn : '',
     'titolo': titolo,
@@ -116,6 +116,32 @@ class LibroIsarModel {
     'ultimaModifica': dataUltimaModifica,
     'lstPdfIsarModule': lstPdfIsarModule.map((pdf) => pdf.toJson()).toList(),
     'lstLinkIsarModule': lstLinkIsarModule.map((link) => link.toJson()).toList(),
+  };
+
+  Map<String, dynamic> toJsonExcel() => {
+    'googleBookId': googleBookId,
+    'isbn': isbn.trim().isNotEmpty ? isbn : '',
+    'titolo': titolo,
+    'autori': jsonEncode(lstAutori),
+    'editore': editore,
+    'descrizione': descrizione,
+    'immagineCopertina': immagineCopertina,
+    'dataPubblicazione': dataPubblicazione,
+    'nrPagine': nrPagine,
+    'lstCategoria': jsonEncode(lstCategoria),
+    'previewLink': previewLink,
+    'isEbook': isEbook,
+    'country': country,
+    'valuta': valuta,
+    'prezzo': prezzo,
+    'stars': stars,
+    'pathImmagineCopertina': pathImmagineCopertina,
+    'siglaLibreria': siglaLibreria,
+    'note': note,
+    'dataInserimento': dataInserimento,
+    'ultimaModifica': dataUltimaModifica,
+    // 'lstPdfIsarModule': lstPdfIsarModule.map((pdf) => pdf.toJson()).toList(),
+    // 'lstLinkIsarModule': lstLinkIsarModule.map((link) => link.toJson()).toList(),
   };
 
   LibroIsarModel.fromMap(

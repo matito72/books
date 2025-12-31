@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:book/features/import_export/bloc/import_export.bloc.dart';
+import 'package:book/features/import_export/data/services/export_into_excel_service.dart';
 import 'package:book/features/import_export/data/services/import_export.service.dart';
 import 'package:book/features/libreria/bloc/libreria.bloc.dart';
 import 'package:book/features/libreria/data/services/db_libreria.isar.service.dart';
@@ -20,6 +21,7 @@ Future<void> initializeDependencies() async {
   // ** Service BL
   final Directory appDocumentDir =  (!Platform.isAndroid && !Platform.isIOS) ? await path_provider.getApplicationDocumentsDirectory() : Directory('/storage/emulated/0/Download/');
   sl.registerSingleton<ImportExportService>(ImportExportService(appDocumentDir));
+  sl.registerSingleton<ExportIntoExcelService>(ExportIntoExcelService(appDocumentDir));
 
   // ** Blocs
   sl.registerFactory<LibreriaBloc>(
