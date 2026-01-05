@@ -22,7 +22,7 @@ Widget _getDescrizioneEsistente(BuildContext context, DettaglioLibroWidget widge
       InkWell(
         splashColor: Colors.transparent,
         onDoubleTap: () async {
-          String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget.libroViewModel.descrizione);
+          String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget.libroViewModel.descrizione, isCapitalize: false);
           if (strDesc != null) {
             fn(strDesc);
           }
@@ -58,7 +58,7 @@ Widget _getDescrizioneDaDefinire(BuildContext context, DettaglioLibroWidget widg
   return InkWell(
     splashColor: Colors.transparent,
     onDoubleTap: () async {
-      String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget.libroViewModel.descrizione);
+      String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget.libroViewModel.descrizione, isCapitalize: true);
       if (strDesc != null) {
         fn(strDesc);
       }
@@ -107,7 +107,7 @@ Widget _getDescrizioneDaDefinire(BuildContext context, DettaglioLibroWidget widg
             ),
             alignment: Alignment.topRight,
             onPressed: () async {
-              String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget.libroViewModel.descrizione);
+              String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget.libroViewModel.descrizione, isCapitalize: true);
               if (strDesc != null) {
                 fn(strDesc);
               }

@@ -50,7 +50,7 @@ class FieldDettLibro {
     }
   }
 
-  Future<void> _execFnString(String label, dynamic fieldValue, int maxLines, Function(String)? fnString, Function()? fn) async {
+  Future<void> _execFnString(String label, dynamic fieldValue, int maxLines, Function(String)? fnString, Function()? fn, bool isCapitalize) async {
     String? strDesc = "";
 
     if (label == LibroFieldSelected.nrPagine().label) {
@@ -62,7 +62,7 @@ class FieldDettLibro {
         fn();
       }
     } else {
-      strDesc = await DialogUtils.getDescrizione(context, '$label:', fieldValue.toString(), maxLines: maxLines);
+      strDesc = await DialogUtils.getDescrizione(context, '$label:', fieldValue.toString(), maxLines: maxLines, isCapitalize: isCapitalize);
     }
 
     if ((fnString != null) && (strDesc != null)) {
@@ -75,7 +75,7 @@ class FieldDettLibro {
       padding: const EdgeInsets.only(top: 10, left: 15),
       child: InkWell(
         splashColor: Colors.transparent,
-        onDoubleTap: () => _execFnString(label, fieldValue, maxLines, fnString, fn),
+        onDoubleTap: () => _execFnString(label, fieldValue, maxLines, fnString, fn, false),
         child: ExpandableText(
           (label == LibroFieldSelected.autore().label)
             ? libroViewModel.lstAutori.join(', ')
@@ -108,7 +108,7 @@ class FieldDettLibro {
   Widget _getInkWellWidgetEsistente(Color? color, String label, dynamic fieldValue, int maxLines, Function(String)? fnString, Function()? fn) {
     return InkWell(
       splashColor: Colors.transparent,
-      onDoubleTap: () => _execFnString(label, fieldValue, maxLines, fnString, fn),
+      onDoubleTap: () => _execFnString(label, fieldValue, maxLines, fnString, fn, false),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -141,7 +141,7 @@ class FieldDettLibro {
       padding: const EdgeInsets.only(top: 10, left: 15),
       child: InkWell(
         splashColor: Colors.transparent,
-        onDoubleTap: () => _execFnString(label, '', maxLines, fnString, fn),
+        onDoubleTap: () => _execFnString(label, '', maxLines, fnString, fn, true),
         child: Stack(
           children: [
             Container(
@@ -179,7 +179,7 @@ class FieldDettLibro {
                       color: Colors.yellowAccent[700]
                     ),
                     alignment: Alignment.topRight,
-                    onPressed: () => _execFnString(label, '', maxLines, fnString, fn),
+                    onPressed: () => _execFnString(label, '', maxLines, fnString, fn, true),
                   ),
                 ),
               ),
@@ -193,7 +193,7 @@ class FieldDettLibro {
   Widget _getInkWellDaDefinire(Color? color, String label, dynamic fieldValue, int maxLines, Function(String)? fnString, Function()? fn) {
     return InkWell(
       splashColor: Colors.transparent,
-      onDoubleTap: () => _execFnString(label, '', maxLines, fnString, fn),
+      onDoubleTap: () => _execFnString(label, '', maxLines, fnString, fn, true),
       child: Stack(
         children: [
           Container(
@@ -242,7 +242,7 @@ class FieldDettLibro {
                   color: Colors.yellowAccent
                 ),
                 alignment: Alignment.topRight,
-                onPressed: () => _execFnString(label, '', maxLines, fnString, fn),
+                onPressed: () => _execFnString(label, '', maxLines, fnString, fn, true),
               ),
             ),
           ),

@@ -55,6 +55,41 @@ class Utils {
       }
   }
 
+  static Future<bool> copyFile({required String pathSorgenteCompleto, required String pathFolderDestinazione, required String nomeFileDestinazione}) async {
+    final pathDestinazioneCompleto = '$pathFolderDestinazione/$nomeFileDestinazione';
+
+    try {
+      final fileSorgente = File(pathSorgenteCompleto);
+      // Verifica se il file sorgente esiste
+      if (!await fileSorgente.exists()) {
+        print('ERRORE: File sorgente non trovato: $pathSorgenteCompleto');
+        return false;
+      }
+
+      final File fileDestinazioneTest = File(pathDestinazioneCompleto);
+      if (await fileDestinazioneTest.exists()) {
+        // Se il file destinazione esiste lo ca
+        fileDestinazioneTest.deleteSync();
+      }
+
+      // Eseguie la copia del file
+      // Il metodo .copy() è efficiente e restituisce un nuovo oggetto File
+      final File fileDestinazione = await fileSorgente.copy(pathDestinazioneCompleto);
+      // print('Copia completata con successo!');
+      print('Copia completata con successo nell destinazione: ${fileDestinazione.path}');
+      return true;
+
+    } on FileSystemException catch (e) {
+      // Gestione di errori specifici del filesystem (es. permessi negati)
+      print('ERRORE di I/O durante la copia: ${e.message}');
+      return false;
+    } catch (e) {
+      // Gestione di altri errori non previsti
+      print('ERRORE inatteso durante la copia: $e');
+      return false;
+    }
+  }
+
   static Future<Image> getImageFromUrlFile(LibroIsarModel libroViewModel, {double? w, double? h}) async {
     late Image image;
 

@@ -436,7 +436,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       ),
       PopupMenuItem<int>(
           value: MenuItemCode.exportInExcel.cd,
-          enabled: (ListItemsUtils.countSelectedItems(libroBloc.state.data) != 0),
+          enabled: true, // (ListItemsUtils.countSelectedItems(libroBloc.state.data) != 0),
           child: Row(
             children: [
               Padding(

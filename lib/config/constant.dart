@@ -9,6 +9,7 @@ class Constant {
   static const String jsonFilesPath = "jsonFiles";
   static const String pdfFilesPath = "pdfFiles";
   static const String excelFilesPath = "excelFiles";
+  static const String imageFilesPath = "imageFiles";
   static const String siglaLibreriaDaDefinire = '<Libreria da definire>';
   static const String editoreDaDefinire = '<Editore da definire>';
   static const String assetImageDefault = 'assets/images/waiting.png';

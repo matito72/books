@@ -57,78 +57,13 @@ class DbLibroIsarService {
     List<LibroIsarModel> lstLibroViewSaved = [];
 
     if (ComArea.booksSearchParameters.isNotEmpty()) {
-      lstLibroViewSaved = await isarLibro.libroIsarModels.filter()
-        .siglaLibreriaEqualTo(libreriaSel.sigla)
-        .optional(
-          ComArea.booksSearchParameters.txtTitolo != null && ComArea.booksSearchParameters.txtTitolo!.trim().isNotEmpty,
-          (q) => q.titoloMatches('*${ComArea.booksSearchParameters.txtTitolo}*', caseSensitive: false)
-        )
-        .optional(
-          ComArea.booksSearchParameters.txtAutore != null && ComArea.booksSearchParameters.txtAutore!.trim().isNotEmpty,
-          (q) => q.lstAutoriElementMatches('*${ComArea.booksSearchParameters.txtAutore}*', caseSensitive: false)
-        )
-        .optional(
-          ComArea.booksSearchParameters.txtEditore != null && ComArea.booksSearchParameters.txtEditore!.trim().isNotEmpty,
-          (q) => q.editoreMatches('*${ComArea.booksSearchParameters.txtEditore}*', caseSensitive: false)
-        )
-        .optional(
-          ComArea.booksSearchParameters.txtCategoria != null && ComArea.booksSearchParameters.txtCategoria!.trim().isNotEmpty 
-              && ComArea.booksSearchParameters.txtCategoria != BisacList.nonClassifiable,
-          (q) => q.lstCategoriaElementContains(ComArea.booksSearchParameters.txtCategoria!, caseSensitive: false)
-        )
-        .optional(
-          ComArea.booksSearchParameters.txtPrezzoMin != null && ComArea.booksSearchParameters.txtPrezzoMin!.trim().isNotEmpty,
-          (q) => q.prezzoGreaterThan(Utils.getPositiveDouble(Utils.getTrimUppercaseParameter(ComArea.booksSearchParameters.txtPrezzoMin))),
-        )
-        .optional(
-          ComArea.booksSearchParameters.txtPrezzoMax != null && ComArea.booksSearchParameters.txtPrezzoMax!.trim().isNotEmpty,
-          (q) => q.prezzoLessThan(Utils.getPositiveDouble(Utils.getTrimUppercaseParameter(ComArea.booksSearchParameters.txtPrezzoMax))),
-        )
-        .optional(
-          ComArea.booksSearchParameters.txtDescrizione != null && ComArea.booksSearchParameters.txtDescrizione!.trim().isNotEmpty,
-          (q) => q.descrizioneMatches('*${ComArea.booksSearchParameters.txtDescrizione}*', caseSensitive: false)
-        )
-        .findAll();
+      lstLibroViewSaved = await ricercaAvanzata(lstLibroViewSaved, isarLibro, libreriaSel);
+
+      if (ComArea.bookToSearch.trim().isNotEmpty) {
+        lstLibroViewSaved = await ricercaSemplice(lstLibroViewSaved, isarLibro, libreriaSel);
+      }
     } else {
-      lstLibroViewSaved = await isarLibro.libroIsarModels.filter()
-        .siglaLibreriaEqualTo(libreriaSel.sigla)
-        .group(
-          (q) => q
-          .optional(
-            ComArea.bookToSearch.trim().isNotEmpty,
-            (q) => q.titoloMatches('*${ComArea.bookToSearch}*', caseSensitive: false)
-          )
-          .or()
-          .optional(
-            ComArea.bookToSearch.trim().isNotEmpty,
-            (q) => q.lstAutoriElementMatches('*${ComArea.bookToSearch}*', caseSensitive: false)
-          )
-          .or()
-          .optional(
-            ComArea.bookToSearch.trim().isNotEmpty,
-            (q) => q.editoreMatches('*${ComArea.bookToSearch}*', caseSensitive: false)
-          )
-          .or()
-          .optional(
-            ComArea.bookToSearch.trim().isNotEmpty,
-            (q) => q.lstCategoriaElementContains(ComArea.bookToSearch, caseSensitive: false)
-          )
-          .or()
-          .optional(
-            ComArea.bookToSearch.trim().isNotEmpty && (double.tryParse(ComArea.bookToSearch) != null),
-            (q) => q.prezzoEqualTo(double.parse(ComArea.bookToSearch)),
-          )
-          .or()
-          .optional(
-            ComArea.bookToSearch.trim().isNotEmpty && (double.tryParse(ComArea.bookToSearch) != null),
-            (q) => q.prezzoEqualTo(double.parse(ComArea.bookToSearch)),
-          )
-          .or()
-          .optional(
-            ComArea.bookToSearch.trim().isNotEmpty, 
-            (q) => q.descrizioneMatches('*${ComArea.bookToSearch}*', caseSensitive: false))
-        )
-        .findAll();
+      lstLibroViewSaved = await ricercaSemplice(lstLibroViewSaved, isarLibro, libreriaSel);
     }
 
     if (lstLibroViewSaved.isNotEmpty && isLoadLinkAndPdf) {
@@ -146,6 +81,85 @@ class DbLibroIsarService {
     // final lst = isarLibro.linkIsarModules.where().findAll();
 
     await isarLibro.close();
+    return lstLibroViewSaved;
+  }
+
+  Future<List<LibroIsarModel>> ricercaSemplice(List<LibroIsarModel> lstLibroViewSaved, Isar isarLibro, LibreriaIsarModel libreriaSel) async {
+    lstLibroViewSaved = await isarLibro.libroIsarModels.filter()
+      .siglaLibreriaEqualTo(libreriaSel.sigla)
+      .group(
+        (q) => q
+        .optional(
+          ComArea.bookToSearch.trim().isNotEmpty,
+          (q) => q.titoloMatches('*${ComArea.bookToSearch}*', caseSensitive: false)
+        )
+        .or()
+        .optional(
+          ComArea.bookToSearch.trim().isNotEmpty,
+          (q) => q.lstAutoriElementMatches('*${ComArea.bookToSearch}*', caseSensitive: false)
+        )
+        .or()
+        .optional(
+          ComArea.bookToSearch.trim().isNotEmpty,
+          (q) => q.editoreMatches('*${ComArea.bookToSearch}*', caseSensitive: false)
+        )
+        .or()
+        .optional(
+          ComArea.bookToSearch.trim().isNotEmpty,
+          (q) => q.lstCategoriaElementContains(ComArea.bookToSearch, caseSensitive: false)
+        )
+        .or()
+        .optional(
+          ComArea.bookToSearch.trim().isNotEmpty && (double.tryParse(ComArea.bookToSearch) != null),
+          (q) => q.prezzoEqualTo(double.parse(ComArea.bookToSearch)),
+        )
+        .or()
+        .optional(
+          ComArea.bookToSearch.trim().isNotEmpty && (double.tryParse(ComArea.bookToSearch) != null),
+          (q) => q.prezzoEqualTo(double.parse(ComArea.bookToSearch)),
+        )
+        .or()
+        .optional(
+          ComArea.bookToSearch.trim().isNotEmpty, 
+          (q) => q.descrizioneMatches('*${ComArea.bookToSearch}*', caseSensitive: false))
+      )
+      .findAll();
+    return lstLibroViewSaved;
+  }
+
+  Future<List<LibroIsarModel>> ricercaAvanzata(List<LibroIsarModel> lstLibroViewSaved, Isar isarLibro, LibreriaIsarModel libreriaSel) async {
+    lstLibroViewSaved = await isarLibro.libroIsarModels.filter()
+      .siglaLibreriaEqualTo(libreriaSel.sigla)
+      .optional(
+        ComArea.booksSearchParameters.txtTitolo != null && ComArea.booksSearchParameters.txtTitolo!.trim().isNotEmpty,
+        (q) => q.titoloMatches('*${ComArea.booksSearchParameters.txtTitolo}*', caseSensitive: false)
+      )
+      .optional(
+        ComArea.booksSearchParameters.txtAutore != null && ComArea.booksSearchParameters.txtAutore!.trim().isNotEmpty,
+        (q) => q.lstAutoriElementMatches('*${ComArea.booksSearchParameters.txtAutore}*', caseSensitive: false)
+      )
+      .optional(
+        ComArea.booksSearchParameters.txtEditore != null && ComArea.booksSearchParameters.txtEditore!.trim().isNotEmpty,
+        (q) => q.editoreMatches('*${ComArea.booksSearchParameters.txtEditore}*', caseSensitive: false)
+      )
+      .optional(
+        ComArea.booksSearchParameters.txtCategoria != null && ComArea.booksSearchParameters.txtCategoria!.trim().isNotEmpty 
+            && ComArea.booksSearchParameters.txtCategoria != BisacList.nonClassifiable,
+        (q) => q.lstCategoriaElementContains(ComArea.booksSearchParameters.txtCategoria!, caseSensitive: false)
+      )
+      .optional(
+        ComArea.booksSearchParameters.txtPrezzoMin != null && ComArea.booksSearchParameters.txtPrezzoMin!.trim().isNotEmpty,
+        (q) => q.prezzoGreaterThan(Utils.getPositiveDouble(Utils.getTrimUppercaseParameter(ComArea.booksSearchParameters.txtPrezzoMin))),
+      )
+      .optional(
+        ComArea.booksSearchParameters.txtPrezzoMax != null && ComArea.booksSearchParameters.txtPrezzoMax!.trim().isNotEmpty,
+        (q) => q.prezzoLessThan(Utils.getPositiveDouble(Utils.getTrimUppercaseParameter(ComArea.booksSearchParameters.txtPrezzoMax))),
+      )
+      .optional(
+        ComArea.booksSearchParameters.txtDescrizione != null && ComArea.booksSearchParameters.txtDescrizione!.trim().isNotEmpty,
+        (q) => q.descrizioneMatches('*${ComArea.booksSearchParameters.txtDescrizione}*', caseSensitive: false)
+      )
+      .findAll();
     return lstLibroViewSaved;
   }
 

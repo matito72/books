@@ -9,7 +9,7 @@ import 'package:book/widgets/appbar/appbar_default.dart';
 import 'package:book/widgets/list_cover_book.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 
 
 class ImmagineCopertina extends StatefulWidget {
@@ -36,12 +36,19 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
   bool swMiSentoFortunato = false;
   bool swSearchWeb = false;
   // File? immagineCopertina;
-  ShowImagePickerUtil showImagePickerUtil = ShowImagePickerUtil();
+  late ShowImagePickerUtil showImagePickerUtil; // = ShowImagePickerUtil(widget._libroViewModel.isbn);
+
+  @override
+  void initState() {
+    super.initState();
+    showImagePickerUtil = ShowImagePickerUtil(widget._libroViewModel.isbn);
+  }
 
   void _updateWidget({File? imageFile, String? urlImage, bool? isMiSentoFortunato}) {
     if (imageFile != null) {
       setState(() {
         widget._libroViewModel.immagineCopertina = imageFile.path;
+        FileImage(File(imageFile.path)).evict();
       });
     } else if (urlImage != null) {
       setState(() {
@@ -346,7 +353,8 @@ Widget _getFutureImage() {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * heightPerc/100,
-                child: snapshot.data!
+                child: snapshot.data!,
+                key: ValueKey(DateTime.now().millisecondsSinceEpoch.toString()),
               ),
             );
           }

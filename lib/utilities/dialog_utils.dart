@@ -150,8 +150,9 @@ class DialogUtils {
     BuildContext context,
     String strHintText,
     String preValue, {
-    int maxLines = 15,
-  }) {
+      int maxLines = 15,
+      bool isCapitalize = false}
+  ) {
     TextEditingController textController = TextEditingController();
     textController.text = preValue;
 
@@ -174,6 +175,7 @@ class DialogUtils {
               decoration: InputDecoration(hintText: strHintText),
               controller: textController,
               style: Theme.of(context).textTheme.titleSmall,
+              textCapitalization: isCapitalize ? TextCapitalization.sentences : TextCapitalization.none,
             ),
           ),
           actions: [

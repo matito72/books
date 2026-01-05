@@ -153,7 +153,6 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Rimosso 'Flexible' che causava l'errore:
                     Container(
                       color: Colors.transparent,
                       child: Column(

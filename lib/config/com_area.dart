@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:book/models/books_search_parameters.module.dart';
 import 'package:book/resources/libro_field_selected.dart';
 
 class ComArea {
   static bool initApp = false;
+  static Directory appDocumentDir = Directory('/storage/emulated/0/Download/');
 
   // LIBRERIA IN USO : DATA
   static List<LibreriaIsarModel> lstLibrerieInUso = [];
