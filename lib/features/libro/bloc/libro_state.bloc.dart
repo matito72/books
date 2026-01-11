@@ -27,14 +27,24 @@ class LibroWaitingState extends LibroSuccessState {
   const LibroWaitingState();
 }
 
+//* WAIT for START DOWNLOAD EXCEL
+class LibroStartDownloadExcelState extends LibroSuccessState {
+  const LibroStartDownloadExcelState();
+}
+
+//* STO EXPORT EXCEL
+class LibroStopDownloadExcelState extends LibroSuccessState {
+  // const LibroStopDownloadExcelState();
+  const LibroStopDownloadExcelState(List<SelectedItem<LibroIsarModel>> data, String msg): super(data: data, msg: msg);
+}
+
 //* INIT
 class LibroInitializedState extends LibroSuccessState {
   const LibroInitializedState(String msg) : super(msg: msg);
 }
 
 //* LISTA
-class ListaLibroLoadedState<T extends List<SelectedItem<LibroIsarModel>>>
-    extends LibroSuccessState {
+class ListaLibroLoadedState<T extends List<SelectedItem<LibroIsarModel>>> extends LibroSuccessState {
   const ListaLibroLoadedState(
     List<SelectedItem<LibroIsarModel>> data,
     String msg,
@@ -51,10 +61,10 @@ class ExportedFileState<T extends int> extends LibroSuccessState {
   const ExportedFileState(int data, String msg) : super(data: data, msg: msg);
 }
 
-//* EXPORTED FILE EXCEL
-class ExportedFileExcelState<T extends int> extends LibroSuccessState {
-  const ExportedFileExcelState(int data, String msg) : super(data: data, msg: msg);
-}
+// //* EXPORTED FILE EXCEL
+// class ExportedFileExcelState<T extends int> extends LibroSuccessState {
+//   const ExportedFileExcelState(int data, String msg) : super(data: data, msg: msg);
+// }
 
 //* IMPORTED FILE
 class ImportedFileState<T extends int> extends LibroSuccessState {

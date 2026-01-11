@@ -10,26 +10,26 @@ class OrdinamentoLibriUtils {
 
   static dynamic getLibroViewModelValueByLabel(LibroIsarModel libroViewModel, String label) {
     if (label == LibroFieldSelected.titolo().label) {
-      return libroViewModel.titolo;
+      return libroViewModel.titolo.toUpperCase();
     } else if (label == LibroFieldSelected.autore().label) {
-      return libroViewModel.lstAutori.isNotEmpty ? libroViewModel.lstAutori[0] : '';
+      return libroViewModel.lstAutori.isNotEmpty ? libroViewModel.lstAutori[0].toUpperCase() : '';
     } else if (label == LibroFieldSelected.editore().label) {
-      return libroViewModel.editore;
+      return libroViewModel.editore.toUpperCase();
     } else if (label == LibroFieldSelected.categoria().label) {
-      return libroViewModel.lstCategoria[0];
+      return libroViewModel.lstCategoria[0].toUpperCase();
     } else if (label == LibroFieldSelected.dtPubblicazione().label) {
-      return libroViewModel.dataPubblicazione;
+      return libroViewModel.dataPubblicazione.toUpperCase();
     } else if (label == LibroFieldSelected.prezzo().label) {
       double prezzo = libroViewModel.prezzo;
       return prezzo;
     } else if (label == LibroFieldSelected.dtInserimento().label) {
-      return libroViewModel.dataInserimento;
+      return libroViewModel.dataInserimento.toUpperCase();
     } else if (label == LibroFieldSelected.dtUltimaModifica().label) {
-      return libroViewModel.dataUltimaModifica;
+      return libroViewModel.dataUltimaModifica.toUpperCase();
     } else if (label == LibroFieldSelected.libreria().label) {
       return ComArea.mapCodDescLibreria[libroViewModel.siglaLibreria];
     } else if (label == LibroFieldSelected.isbn().label) {
-       return libroViewModel.isbn;
+       return libroViewModel.isbn.toUpperCase();
     } else if (label == LibroFieldSelected.nrPagine().label) {
        return libroViewModel.nrPagine;
     }

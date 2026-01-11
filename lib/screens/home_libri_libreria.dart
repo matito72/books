@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:backdrop/backdrop.dart';
@@ -60,11 +61,12 @@ enum MenuItemCode {
 
 class HomeLibriLibreriaScreen extends StatelessWidget {
   static const String screenPath = "/HomeLibriLibreria";
-  
   const HomeLibriLibreriaScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    List<SelectedItem<LibroIsarModel>> dataPrec = [];
+
     return PopScope(
       canPop: false,
       child: MultiBlocProvider(
@@ -78,14 +80,14 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         ],
         child: BlocBuilder<LibroBloc, LibroState>(
           builder: (context, state) {
-            return _getMainScaffold(context);
+            return _getMainScaffold(context, dataPrec);
           }
         )
       ),
     );
   }
 
-  BackdropScaffold _getMainScaffold(BuildContext context) {
+  BackdropScaffold _getMainScaffold(BuildContext context, List<SelectedItem<LibroIsarModel>> dataPrec) {
     LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
 
     return BackdropScaffold(
@@ -126,7 +128,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         ),
       ),
       backLayer: _createBackLayer(context),
-      frontLayer: _blocBody(context),
+      frontLayer: _blocBody(context, dataPrec),
       floatingActionButton: _createFloatingActionButtonBloc(context),
       stickyFrontLayer: true,
     );
@@ -675,13 +677,13 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     return false;
   }
 
-  Widget _blocBody(BuildContext context) {
+  Widget _blocBody(BuildContext context, List<SelectedItem<LibroIsarModel>> dataPrec) {
     LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
-    
+
     return BlocListener<LibroBloc, LibroState> (
       listener: (context, LibroState state) {
-        if (state.actionResult != null && state.msg != null && (state.actionResult != ActionResult.success)) {
-          if (state is! LibreriaLoadedState && state is! LibroInitializedState) { // || state.actionResult != ActionResult.success) {
+        if (state.actionResult != null && state.msg != null && (state is LibroStopDownloadExcelState || (state.actionResult != ActionResult.success))) {
+          if (state is! LibreriaLoadedState && state is! LibroInitializedState) {
             // --------------------------------------------------------
             // GESTIONE MESSAGGI OK e d'ERRORE
             // --------------------------------------------------------
@@ -700,7 +702,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         }
         if (state is AddedNewLibroState || state is EditLibroState || state is DeletedLibroState ||
             state is LibroInitializedState || state is DeleteAllLibroState || state is DeleteBookSelectedState ||
-            state is CambiaLibreriaBookSelectedState || state is ExportedFileExcelState
+            state is CambiaLibreriaBookSelectedState // || state is ExportedFileExcelState
         ) {
           libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
         } else  if (state is ExportedFileState) {
@@ -708,21 +710,48 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         }
       },
       child: BlocBuilder<LibroBloc, LibroState>(
-        // buildWhen: (context, state) {
-        //   return state is ListaLibroLoadedState;
-        // },
         builder: (context, state) {
+          bool isLibroStartDownloadExcelState = state is LibroStartDownloadExcelState; // ComArea.isLibroStartDownloadExcel;
+
           if (state is LibroWaitingState) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
 
-          if (state is ListaLibroLoadedState) {
+          if (state is ListaLibroLoadedState || isLibroStartDownloadExcelState || state is LibroStopDownloadExcelState) {
             ListItemsSelectBloc listItemsSelectBloc = BlocProvider.of<ListItemsSelectBloc>(context);
-            listItemsSelectBloc.add(RefreshListItemsSelectEvent(libroBloc.state.data));
+            // listItemsSelectBloc.add(RefreshListItemsSelectEvent(libroBloc.state.data));
 
-            return _widgetListaLibriDataBase(context, libroBloc, listItemsSelectBloc, state.data);
+            // var listaDati = (state is ListaLibroLoadedState) ? state.data : dataPrec; // libroBloc.state.data;
+            if (state is ListaLibroLoadedState) {
+              // ListItemsSelectBloc listItemsSelectBloc = BlocProvider.of<ListItemsSelectBloc>(context);
+              listItemsSelectBloc.add(RefreshListItemsSelectEvent(libroBloc.state.data));
+              dataPrec.clear();
+              dataPrec.addAll(state.data);
+            }
+            var listaDati = dataPrec;
+
+            return Stack(
+              children: [
+                IgnorePointer(
+                  // Disabilita le interazioni quando il download è attivo
+                  ignoring: isLibroStartDownloadExcelState,
+                  child: AnimatedOpacity(
+                    // Valore dell'opacità con transizione fluida
+                    opacity: isLibroStartDownloadExcelState ? 0.2 : 1.0,
+                    duration: const Duration(milliseconds: 300), // Durata dell'animazione
+                    curve: Curves.easeInOut, // Tipo di curva di animazione
+                    child: _widgetListaLibriDataBase(context, libroBloc, listItemsSelectBloc, listaDati),
+                  ),
+                ),
+                // Mostriamo il caricamento solo se necessario
+                if (isLibroStartDownloadExcelState)
+                  const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+              ],
+            );
           } 
           
           if (state is LibroErrorState) {

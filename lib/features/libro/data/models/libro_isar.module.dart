@@ -291,7 +291,7 @@ class LibroIsarModel {
 
     if (mapVolumeInfo['categories'] != null) {
       lstCategoria = (mapVolumeInfo['categories'] as List)
-          .map((item) => item as String)
+          .map((item) => (item as String).toUpperCase())
           .toList();
       // if (lstCategoria.length > 1) {
       //   print('==============================================================> ${lstCategoria.toString()} <==========================================');

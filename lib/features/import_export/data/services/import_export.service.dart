@@ -19,7 +19,7 @@ import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 // import 'package:share_extend/share_extend.dart';
 // import 'dart:io'; // Necessario per usare File
-import 'package:path_provider/path_provider.dart' as path_provider;
+// import 'package:path_provider/path_provider.dart' as path_provider;
 
 class ImportExportService {
   final String pathFolderRootDefault;
@@ -72,7 +72,7 @@ class ImportExportService {
       );
     }
 
-    // String msg = lstFileBackupView.isEmpty ? 'Nessun file di backup presente' : 'Nr. ${lstFileBackupView.length}, file caricati correttamente';
+    // String msg = lstFileBackupView.isEmpty ? 'Nessun file di backup presente' : 'Nr. ${lstFileBackupView.length}, file caricati.';
     return lstFileBackupView;
   }
 

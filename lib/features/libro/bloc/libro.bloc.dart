@@ -52,7 +52,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
           ComArea.nrLibriVisibiliInLista += lstTmp.length;                  //      Nr. libri che corrispondono al filtro <= Tot.Nr.Libri Libreria
         }
 
-        String msg = lstLibroView.isEmpty ? 'Nessun Libro presente' : 'Nr. ${lstLibroView.length}, libri caricati correttamente';
+        String msg = lstLibroView.isEmpty ? 'Nessun Libro presente' : 'Nr. ${lstLibroView.length}, libri caricati.';
 
         // ORDER BY
         lstLibroView.sort((a, b) => _dbLibroService.libroViewModelSort(a, b, ComArea.lstBookOrderBy));
@@ -121,7 +121,9 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
 
     // ** EXPORT IN EXCEL
     on<ExportInExcelEvent>((event, emit) async {
-      emit(const LibroWaitingState());
+      // emit(const LibroWaitingState());
+      emit(const LibroStartDownloadExcelState());
+
       try {
         ComArea.nrLibriInLibreriaInUso = 0;
         ComArea.nrLibriVisibiliInLista = 0;
@@ -139,8 +141,11 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         // await sl<ExportIntoExcelService>().init();
         // String p = sl<ExportIntoExcelService>().excelPathFolder;
         int nrRecordExported = await sl<ExportIntoExcelService>().exportLibriInExcel('exportExel', lstLibroView);
+        // sl<ExportIntoExcelService>().exportLibriInExcel('exportExel', lstLibroView);
 
-        emit(ExportedFileExcelState(nrRecordExported, 'Nr. $nrRecordExported: libri esportati.'));
+        // ComArea.isLibroStartDownloadExcel = false;
+        // emit(ExportedFileExcelState(nrRecordExported, 'Nr. $nrRecordExported: libri esportati.'));
+        emit(LibroStopDownloadExcelState(ListItemsUtils.convertListToSelectedItems(lstLibroView), 'Nr. $nrRecordExported: libri esportati.'));
       } catch (e) {
         emit(LibroErrorState(e.toString()));
       }

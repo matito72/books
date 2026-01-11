@@ -56,7 +56,7 @@ class FieldDettLibro {
     if (label == LibroFieldSelected.nrPagine().label) {
       strDesc = await DialogUtils.getNumero(context, '$label:', fieldValue.toString(), true);
     } else if (label == LibroFieldSelected.prezzo().label) {
-      strDesc = await DialogUtils.getNumero(context, '$label:', fieldValue.toString(), false);
+      strDesc = await DialogUtils.getNumero(context, '$label:', fieldValue.toStringAsFixed(2), false);
     } else if (label == LibroFieldSelected.dtPubblicazione().label) {
       if (fn != null) {
         fn();
@@ -115,7 +115,9 @@ class FieldDettLibro {
           Text(
             (label == LibroFieldSelected.dtPubblicazione().label)
              ? LibroUtils.getDataFormattata(libroViewModel.dataPubblicazione)
-             : fieldValue.toString(),
+             : (label == LibroFieldSelected.prezzo().label)
+                ? fieldValue.toStringAsFixed(2)
+                : fieldValue.toString(),
             style: TextStyle(
               fontSize: 14, // (label == LibroFieldSelected.isbn().label) ? 12 : 14,
               color: color,

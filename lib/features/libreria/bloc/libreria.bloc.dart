@@ -39,7 +39,7 @@ class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
         }
         ComArea.mapCodDescLibreria = Utils.getMapCodDescLibreria(lstLibreriaViewModel);
 
-        String msg = lstLibreriaViewModel.isEmpty ? 'Nessuna Libreria presente' : 'Nr. ${lstLibreriaViewModel.length} Librerie caricate correttamente';
+        String msg = lstLibreriaViewModel.isEmpty ? 'Nessuna Libreria presente' : 'Nr. ${lstLibreriaViewModel.length} Librerie caricate.';
         emit(LibreriaLoadedState(lstLibreriaIsarModelSel, msg));
       } catch (e) {
         print(e);
@@ -63,7 +63,7 @@ class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
       emit(const LibreriaWaitingState());
       try {
         await _dbLibreriaIsarService.updateNomeLibreria(event.libreriaIsarModelOld.sigla, event.libreriaIsarModelOld.nome, event.libreriaIsarModelNew.nome);
-        emit(EditLibreriaState('Libreria ${event.libreriaIsarModelOld} modificata in ${event.libreriaIsarModelNew} correttamente.'));
+        emit(EditLibreriaState('Libreria ${event.libreriaIsarModelOld} modificata in ${event.libreriaIsarModelNew}.'));
       } catch (e) {
         emit(LibreriaErrorState(e.toString()));
       }
@@ -74,7 +74,7 @@ class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
       emit(const LibreriaWaitingState());
       try {
         await _dbLibreriaIsarService.deleteLibreria(event.libreriaIsarModelDelete);
-        emit(DeleteLibreriaState('Libreria ${event.libreriaIsarModelDelete.nome} eliminata correttamente'));
+        emit(DeleteLibreriaState('Libreria ${event.libreriaIsarModelDelete.nome} eliminata.'));
       } catch (e) {
         emit(LibreriaErrorState(e.toString()));
       }

@@ -231,7 +231,7 @@ class _SingleCardBook extends State<SingleCardBook> {
 
     Widget getPrezzo() {
       return Text(
-        '€ ${widget._selItem.item.prezzo}',
+        '€ ${widget._selItem.item.prezzo.toStringAsFixed(2)}',
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
           fontStyle: FontStyle.italic,
           color: Colors.orange[50]

@@ -32,7 +32,7 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
           filterWhere: '_${event.siglaLibreria}_',
           printDebug: true
         );
-        String msg = lstFileBackupView.isEmpty ? 'Nessun file di backup presente' : 'Nr. ${lstFileBackupView.length}, file caricati correttamente';
+        String msg = lstFileBackupView.isEmpty ? 'Nessun file di backup presente' : 'Nr. ${lstFileBackupView.length}, file caricati.';
         emit(ListaFileBackupLoadedState(lstFileBackupView, msg));
       } catch (e) {
         emit(ImportExportErrorState(e.toString()));
@@ -61,7 +61,7 @@ class ImportExportBloc extends Bloc<ImportExportEvent, ImportExportState> {
         int siglaLibreria = ComArea.libreriaInUso!.sigla;
         List<FileBackupModel> lstFileBackupView = await _importExportService.copiaFile(event.pathFolderFile!, event.fileBackupModel.fileName, siglaLibreria);
 
-        String msg = lstFileBackupView.isEmpty ? 'Nessun file di backup presente' : 'Nr. ${lstFileBackupView.length}, file caricati correttamente';
+        String msg = lstFileBackupView.isEmpty ? 'Nessun file di backup presente' : 'Nr. ${lstFileBackupView.length}, file caricati';
         emit(ListaFileBackupLoadedState(lstFileBackupView, msg));
         // ImportedFileBackupState importedFileBackupState = await _importExportService.importIntoDbFileBackup(event.pathFolderFile, event.fileBackupModel.fileName);
         // emit(importedFileBackupState);
