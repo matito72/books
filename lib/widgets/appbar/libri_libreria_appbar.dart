@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:book/config/com_area.dart';
 import 'package:book/features/libro/bloc/libro.bloc.dart';
 import 'package:book/features/libro/bloc/libro_events.bloc.dart';
@@ -163,15 +165,17 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
   }
 
   String getTextAppbar() {
+    int maxNrChar = (!Platform.isAndroid && !Platform.isIOS) ? 150 : 20;
+    String spaces = (!Platform.isAndroid && !Platform.isIOS) ? "           => " : ": ";
     String strNomeLibreriaSel = (ComArea.lstLibrerieInUso.isNotEmpty && ComArea.lstLibrerieInUso.length == 1)
-      ? Utils.getFirstSubstring(ComArea.libreriaInUso!.nome, 10)
+      ? Utils.getFirstSubstring(ComArea.libreriaInUso!.nome, maxNrChar)
       : '';
     
     // if (ComArea.nrLibriVisibiliInLista == ComArea.libreriaInUso!.nrLibriCaricati) {
     //   return '$strNomeLibreriaSel: ${ComArea.nrLibriInLibreriaInUso} libri';
     // }
 
-    return '$strNomeLibreriaSel: ${ComArea.nrLibriVisibiliInLista}/${ComArea.nrLibriInLibreriaInUso} libri';
+    return '$strNomeLibreriaSel${spaces} ${ComArea.nrLibriVisibiliInLista}/${ComArea.nrLibriInLibreriaInUso} libri';
   }
 
   Widget _createTextSearch(BuildContext context, TextEditingController textCtrlSearch) {

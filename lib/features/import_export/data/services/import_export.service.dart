@@ -109,10 +109,20 @@ class ImportExportService {
     final String pathFolder = pathFolderFile ?? pathFolderDefault;
     final File file = File('$pathFolder/$nomeFile');
 
+    bool isDesktop = (!Platform.isAndroid && !Platform.isIOS);
+
     String jsonFile = await file.readAsString();
     List<dynamic> lstJsonEntities = await json.decode(jsonFile);
     for (var json in lstJsonEntities) {
-      lstLibriLibreria.add(LibroIsarModel.fromMap(json));
+      LibroIsarModel libroToAdd = LibroIsarModel.fromMap(json);
+      if (isDesktop && libroToAdd.immagineCopertina.isNotEmpty &&
+          libroToAdd.immagineCopertina.startsWith("/storage/emulated/0/Download")) {
+        libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst("/storage/emulated/0/Download", ComArea.appDocumentDir.path);
+      } else if (!isDesktop && libroToAdd.immagineCopertina.isNotEmpty && !libroToAdd.immagineCopertina.startsWith("http") && !libroToAdd.immagineCopertina.startsWith("https") &&
+          !libroToAdd.immagineCopertina.startsWith("/storage/emulated/0/Download")) {
+        libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst(ComArea.appDocumentDir.path, "/storage/emulated/0/Download");
+      }
+      lstLibriLibreria.add(libroToAdd);
     }
 
     return lstLibriLibreria;

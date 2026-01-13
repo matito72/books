@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-class BackdropAppbarDefault extends StatelessWidget
-    implements PreferredSizeWidget {
+class BackdropAppbarDefault extends StatelessWidget implements PreferredSizeWidget {
   final num _percHeight;
   // final Color? primaryColor;
   // final Color? secondaryColor;
@@ -41,10 +40,10 @@ class BackdropAppbarDefault extends StatelessWidget
        _iconSx = iconSx,
        _showIconSx = showIconSx,
        _percHeight = percHeight {
-    preferredSize = Size.fromHeight(
-      (MediaQuery.of(_context).size.height * _percHeight / 100),
-    );
-  }
+          preferredSize = Size.fromHeight(
+            (MediaQuery.of(_context).size.height * _percHeight / 100),
+          );
+       }
 
   @override
   Widget build(BuildContext context) {
