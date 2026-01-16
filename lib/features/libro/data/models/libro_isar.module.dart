@@ -366,6 +366,41 @@ class LibroIsarModel {
     return digest.toString();
   }
 
+  String get normalizzaListaAutori {
+    // 1. Applichiamo la normalizzazione a ogni singolo autore della lista
+    List<String> autoriNormalizzati = lstAutori.map((autore) {
+      // Rimuove accenti e minuscolo
+      String pulita = _rimuoviAccenti(autore.toLowerCase());
+
+      // Divide per caratteri non alfanumerici e filtra i vuoti
+      List<String> parti = pulita.split(RegExp(r'[^a-z0-9]'))
+          .where((s) => s.isNotEmpty)
+          .toList();
+
+      // Ordina le parti del nome (es. "mario rossi" -> "mario rossi")
+      parti.sort();
+
+      return parti.join(' ');
+    }).toList();
+
+    // 2. Ordiniamo la lista degli autori stessi
+    // (Fondamentale: così "Dante, Petrarca" e "Petrarca, Dante" diventano uguali)
+    autoriNormalizzati.sort();
+
+    // 3. Uniamo tutti gli autori in un'unica stringa identificativa
+    return autoriNormalizzati.join(', ');
+  }
+
+  String _rimuoviAccenti(String testo) {
+    const conAccento = 'àáâãäåèéêëìíîïòóôõöùúûüñç';
+    const senzaAccento = 'aaaaaaeeeeiiiiooooouuuunc';
+
+    for (int i = 0; i < conAccento.length; i++) {
+      testo = testo.replaceAll(conAccento[i], senzaAccento[i]);
+    }
+    return testo;
+  }
+
   @override
   String toString() {
     return '''Libro.(

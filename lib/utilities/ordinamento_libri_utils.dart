@@ -12,7 +12,8 @@ class OrdinamentoLibriUtils {
     if (label == LibroFieldSelected.titolo().label) {
       return libroViewModel.titolo.toUpperCase();
     } else if (label == LibroFieldSelected.autore().label) {
-      return libroViewModel.lstAutori.isNotEmpty ? libroViewModel.lstAutori[0].toUpperCase() : '';
+      // return libroViewModel.lstAutori.isNotEmpty ? libroViewModel.lstAutori[0].toUpperCase() : '';
+      return libroViewModel.normalizzaListaAutori;
     } else if (label == LibroFieldSelected.editore().label) {
       return libroViewModel.editore.toUpperCase();
     } else if (label == LibroFieldSelected.categoria().label) {
