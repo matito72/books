@@ -142,7 +142,7 @@ class Utils {
     } else {
       image = Image.asset(Constant.assetImageDefault,fit: BoxFit.fill);
     }
-    debugPrint('image.hashCode: ${image.hashCode}');
+    // debugPrint('image.hashCode: ${image.hashCode}');
     return image;
   }
   
@@ -366,5 +366,17 @@ class Utils {
       Permission.manageExternalStorage, Permission.camera,
     ].request();
     return status.values.every((s) => s.isGranted);
+  }
+
+  static String stringConcat(String str) {
+    return str.split(" ").map((part) {
+      // Rimuoviamo eventuali spazi residui
+      String trimmed = part.trim();
+
+      if (trimmed.isEmpty || trimmed == "-") return "";
+
+      // Capitalizziamo la prima lettera e uniamo il resto
+      return trimmed[0].toUpperCase() + trimmed.substring(1);
+    }).join('');
   }
 }

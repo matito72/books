@@ -28,6 +28,11 @@ const LibreriaIsarModelSchema = CollectionSchema(
       name: r'nrLibriCaricati',
       type: IsarType.long,
     ),
+    r'valoreTot': PropertySchema(
+      id: 3,
+      name: r'valoreTot',
+      type: IsarType.double,
+    ),
   },
 
   estimateSize: _libreriaIsarModelEstimateSize,
@@ -78,6 +83,7 @@ void _libreriaIsarModelSerialize(
   writer.writeBool(offsets[0], object.isLibreriaDefault);
   writer.writeString(offsets[1], object.nome);
   writer.writeLong(offsets[2], object.nrLibriCaricati);
+  writer.writeDouble(offsets[3], object.valoreTot);
 }
 
 LibreriaIsarModel _libreriaIsarModelDeserialize(
@@ -90,6 +96,7 @@ LibreriaIsarModel _libreriaIsarModelDeserialize(
     isLibreriaDefault: reader.readBoolOrNull(offsets[0]) ?? false,
     nome: reader.readStringOrNull(offsets[1]) ?? '-',
     nrLibriCaricati: reader.readLongOrNull(offsets[2]) ?? 0,
+    valoreTot: reader.readDoubleOrNull(offsets[3]) ?? 0,
   );
   object.sigla = id;
   return object;
@@ -108,6 +115,8 @@ P _libreriaIsarModelDeserializeProp<P>(
       return (reader.readStringOrNull(offset) ?? '-') as P;
     case 2:
       return (reader.readLongOrNull(offset) ?? 0) as P;
+    case 3:
+      return (reader.readDoubleOrNull(offset) ?? 0) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -582,6 +591,81 @@ extension LibreriaIsarModelQueryFilter
       );
     });
   }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  valoreTotEqualTo(double value, {double epsilon = Query.epsilon}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'valoreTot',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  valoreTotGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'valoreTot',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  valoreTotLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'valoreTot',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  valoreTotBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'valoreTot',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
 }
 
 extension LibreriaIsarModelQueryObject
@@ -631,6 +715,20 @@ extension LibreriaIsarModelQuerySortBy
   sortByNrLibriCaricatiDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nrLibriCaricati', Sort.desc);
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
+  sortByValoreTot() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'valoreTot', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
+  sortByValoreTotDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'valoreTot', Sort.desc);
     });
   }
 }
@@ -692,6 +790,20 @@ extension LibreriaIsarModelQuerySortThenBy
       return query.addSortBy(r'sigla', Sort.desc);
     });
   }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
+  thenByValoreTot() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'valoreTot', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
+  thenByValoreTotDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'valoreTot', Sort.desc);
+    });
+  }
 }
 
 extension LibreriaIsarModelQueryWhereDistinct
@@ -715,6 +827,13 @@ extension LibreriaIsarModelQueryWhereDistinct
   distinctByNrLibriCaricati() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'nrLibriCaricati');
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QDistinct>
+  distinctByValoreTot() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'valoreTot');
     });
   }
 }
@@ -744,6 +863,13 @@ extension LibreriaIsarModelQueryProperty
   nrLibriCaricatiProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'nrLibriCaricati');
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, double, QQueryOperations>
+  valoreTotProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'valoreTot');
     });
   }
 }

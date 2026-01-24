@@ -58,7 +58,9 @@ class LibroIsarModel {
   final IsarLinks<LinkIsarModule> lstLinkIsarModule = IsarLinks<LinkIsarModule>();
   final IsarLinks<PdfIsarModule> lstPdfIsarModule = IsarLinks<PdfIsarModule>();
 
+  @ignore
   final List<PdfIsarModule> lstPdfModule = [];
+  @ignore
   final List<LinkIsarModule> lstLinkModule = [];
 
   LibroIsarModel(

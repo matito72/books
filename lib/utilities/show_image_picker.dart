@@ -15,15 +15,20 @@ class ShowImagePickerUtil {
   final picker = ImagePicker();
   final String isbn;
   final String folderImage;
+  final String folderLibInUsoCompatto;
 
   factory ShowImagePickerUtil(String isbn) {
     String root = p.join(ComArea.appDocumentDir.path, Constant.books);
     String folderImage = p.join(root, Constant.imageFilesPath);
-    return ShowImagePickerUtil._internal(isbn, folderImage);
+
+    String nomeLibInUsoCompatto = Utils.stringConcat(ComArea.libreriaInUso!.nome);
+    String folderLibInUsoCompatto = p.join(folderImage, nomeLibInUsoCompatto);
+
+    return ShowImagePickerUtil._internal(isbn, folderImage, folderLibInUsoCompatto);
   }
 
   // Costruttore privato
-  ShowImagePickerUtil._internal(this.isbn, this.folderImage);
+  ShowImagePickerUtil._internal(this.isbn, this.folderImage, this.folderLibInUsoCompatto);
   
   Future<void> _cropImage(File imgFile, Function fn) async {
     CroppedFile? croppedFile;
@@ -80,9 +85,14 @@ class ShowImagePickerUtil {
       await dirRoot.create();
     }
 
-    Directory dir = Directory(folderImage);
-    if (!await dir.exists()) {
-      await dir.create();
+    Directory dirImage = Directory(folderImage);
+    if (!await dirImage.exists()) {
+      await dirImage.create();
+    }
+
+    Directory dirLibInUsoCompatto = Directory(folderLibInUsoCompatto);
+    if (!await dirLibInUsoCompatto.exists()) {
+      await dirLibInUsoCompatto.create();
     }
   }
 
@@ -120,10 +130,10 @@ class ShowImagePickerUtil {
       String fileNamePhoto = basename(fileImage.path);
 
       String nomeFileDestinazione = this.isbn.isNotEmpty ? '${this.isbn}.jpg' : fileNamePhoto;
-      bool okCopy = await Utils.copyFile(pathSorgenteCompleto: fileImage.path, pathFolderDestinazione: folderImage, nomeFileDestinazione: nomeFileDestinazione);
+      bool okCopy = await Utils.copyFile(pathSorgenteCompleto: fileImage.path, pathFolderDestinazione: folderLibInUsoCompatto, nomeFileDestinazione: nomeFileDestinazione);
       if (okCopy) {
         await fileImage.delete();
-        fileImage = File('$folderImage/$nomeFileDestinazione');
+        fileImage = File('$folderLibInUsoCompatto/$nomeFileDestinazione');
         // fn(fileImage);
       }
       // image.copy(newPath)

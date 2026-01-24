@@ -13,7 +13,8 @@ class LibreriaIsarModel {
 
   int nrLibriCaricati;
   bool isLibreriaDefault;
+  double valoreTot;
 
-  LibreriaIsarModel({this.nome = '-', this.nrLibriCaricati = 0, this.isLibreriaDefault = false});
+  LibreriaIsarModel({this.nome = '-', this.nrLibriCaricati = 0, this.isLibreriaDefault = false, this.valoreTot = 0});
 
 }

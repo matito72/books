@@ -19,7 +19,7 @@ import 'package:book/widgets/form_libreria_new.dart';
 import 'package:book/widgets/single_card_libreria.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+// import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 ///
 /// Pagina con la lista delle librerie salvate
@@ -129,153 +129,53 @@ class HomeLibreriaScreen extends StatelessWidget {
     );
   }
 
-  Widget _createFloatingActionButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-      child: Row(
-        children: [
-          // GestureDetector(
-          //   onTap: () {},
-          //   behavior: HitTestBehavior.translucent,
-          //   child: FloatingActionButton(
-          //     heroTag: "btnCameraPlus",
-          //     onPressed: () {
-          //       // ...
-          //     },
-          //     // backgroundColor: Colors.transparent,
-          //     backgroundColor: Theme.of(context).colorScheme.surface,
-          //     elevation: 6,
-          //     hoverElevation: 8,
-          //     highlightElevation: 12,
-          //     enableFeedback: true,
-          //     child: Visibility(
-          //       maintainSize: true,
-          //       maintainAnimation: true,
-          //       maintainState: true,
-          //       visible: true,
-          //       child: Icon(
-          //         Icons.done_all_outlined,
-          //         // color: const Color.fromARGB(183, 244, 67, 54),
-          //         color: Theme.of(context).colorScheme.onSecondary,
-          //         shadows: const [],
-          //         size: 55,
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // const Spacer(),
-          GestureDetector(
-            onTap: () {},
-            behavior: HitTestBehavior.translucent,
-            child: FloatingActionButton(
-              heroTag: "btnImageAlbum",
-              onPressed: () {
-                _addNewLibreria(context);
-              },
-              // backgroundColor: Colors.transparent,
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              child: Icon(
-                Icons.add,
-                // color: const Color.fromARGB(183, 244, 67, 54),
-                color: Theme.of(context).colorScheme.onSecondary,
-                shadows: const [],
-                size: 55,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _createFloatingActionButton(BuildContext context) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+  //     child: Row(
+  //       children: [
+  //         GestureDetector(
+  //           onTap: () {},
+  //           behavior: HitTestBehavior.translucent,
+  //           child: FloatingActionButton(
+  //             heroTag: "btnImageAlbum",
+  //             onPressed: () {
+  //               _addNewLibreria(context);
+  //             },
+  //             backgroundColor: Theme.of(context).colorScheme.surface,
+  //             child: Icon(
+  //               Icons.add,
+  //               color: Theme.of(context).colorScheme.onSecondary,
+  //               shadows: const [],
+  //               size: 55,
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   AppBarDefault _buildAppbar(BuildContext context) {
     return AppBarDefault(
       context: context,
       txtLabel: '${Constant.titoloApp} - Librerie',
       showIconSx: false,
-      // popupMenuButton: PopupMenuButton(
-      //   padding: EdgeInsets.zero,
-      //   offset: const Offset(0, 35),
-      //   elevation: 20,
-      //   splashRadius: 200,
-      //   shadowColor: Colors.blueGrey[800],
-      //   surfaceTintColor: Colors.blueGrey[700],
-      //   color: const Color.fromARGB(224, 88, 136, 182),
-      //   shape: RoundedRectangleBorder(
-      //     side: BorderSide.lerp(BorderSide.none, BorderSide.none, 12),
-      //     borderRadius: BorderRadius.circular(12),
-      //   ),
-      //   icon: const Icon(Icons.more_vert, color: Colors.white),
-        // itemBuilder: (context) {
-        //   return [
-        //     const PopupMenuItem<int>(
-        //       value: 5,
-        //       child: Row(
-        //         children: [
-        //           Icon(Icons.sentiment_very_dissatisfied_outlined),
-        //           Padding(padding: EdgeInsets.only(right: 15.0)),
-        //           Text("TEST...."),
-        //         ],
-        //       ),
-        //     ),
-        //     PopupMenuItem<int>(
-        //         value: 10,
-        //         // enabled: (ListItemsUtils.countSelectedItems(libroBloc.state.data) != 0),
-        //         child: Row(
-        //           children: [
-        //             Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(Icons.done_all_outlined, color: Colors.green[100]),),
-        //             Text(
-        //               "Seleziona tutti",
-        //               style: const TextStyle(fontWeight: FontWeight.bold),
-        //             )
-        //           ],
-        //         )
-        //     ),
-        //     PopupMenuItem<int>(
-        //         value: 10,
-        //         // enabled: (ListItemsUtils.countSelectedItems(libroBloc.state.data) != 0),
-        //         child: Row(
-        //           children: [
-        //             Padding(padding: const EdgeInsets.only(right: 10.0), child: Icon(MdiIcons.selectionOff, color: Colors.lightGreen),),
-        //             Text(
-        //               "Deseleziona tutti",
-        //               style: const TextStyle(fontWeight: FontWeight.bold),
-        //             )
-        //           ],
-        //         )
-        //     ),
-        //   ];
-        // },
-        // onSelected: (value) {
-        //   if (value == 0) {
-        //     BlocProvider.of<LibreriaBloc>(
-        //       context,
-        //     ).add(DeleteAllLibreriaEvent());
-        //   } else if (value == 5) {
-        //     _test();
-        //   } else if (value == 10) {
-        //     _selezionaTutti();
-        //   } else if (value == 5) {
-        //     _deselezionaTutti();
-        //   }
-        //   // else if(value == 2){print("Logout menu is selected.");}
-        // },
-      // ),
     );
   }
 
-  Future<void> _test() async {
-    debugPrint("TEST........");
-    // const TestopenCv(title: 'opencv_4 Demo');
-  }
+  // Future<void> _test() async {
+  //   debugPrint("TEST........");
+  //   // const TestopenCv(title: 'opencv_4 Demo');
+  // }
 
-  Future<void> _selezionaTutti() async {
-    ComArea.isLibreriaSelectedAll = true;
-  }
+  // Future<void> _selezionaTutti() async {
+  //   ComArea.isLibreriaSelectedAll = true;
+  // }
 
-  Future<void> _deselezionaTutti() async {
-    ComArea.isLibreriaSelectedAll = false;
-  }
+  // Future<void> _deselezionaTutti() async {
+  //   ComArea.isLibreriaSelectedAll = false;
+  // }
 
   // _test() async {
   //   // https://drive.google.com/file/d/1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT/view?usp=sharing

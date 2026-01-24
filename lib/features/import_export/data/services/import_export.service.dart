@@ -285,11 +285,11 @@ class ImportExportService {
           return b.dtUltimaModifica.compareTo(a.dtUltimaModifica);
         });
 
-        if (printDebug != null && printDebug) {
-          debugPrint(
-            '${element.absolute} : ${element.isAbsolute} : ${element.path} : $fileStat',
-          );
-        }
+        // if (printDebug != null && printDebug) {
+        //   debugPrint(
+        //     '${element.absolute} : ${element.isAbsolute} : ${element.path} : $fileStat',
+        //   );
+        // }
       }
     }
 

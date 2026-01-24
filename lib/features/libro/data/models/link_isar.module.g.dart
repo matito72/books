@@ -22,8 +22,9 @@ const LinkIsarModuleSchema = CollectionSchema(
       name: r'descrizione',
       type: IsarType.string,
     ),
-    r'name': PropertySchema(id: 1, name: r'name', type: IsarType.string),
-    r'url': PropertySchema(id: 2, name: r'url', type: IsarType.string),
+    r'hashCode': PropertySchema(id: 1, name: r'hashCode', type: IsarType.long),
+    r'name': PropertySchema(id: 2, name: r'name', type: IsarType.string),
+    r'url': PropertySchema(id: 3, name: r'url', type: IsarType.string),
   },
 
   estimateSize: _linkIsarModuleEstimateSize,
@@ -87,8 +88,9 @@ void _linkIsarModuleSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.descrizione);
-  writer.writeString(offsets[1], object.name);
-  writer.writeString(offsets[2], object.url);
+  writer.writeLong(offsets[1], object.hashCode);
+  writer.writeString(offsets[2], object.name);
+  writer.writeString(offsets[3], object.url);
 }
 
 LinkIsarModule _linkIsarModuleDeserialize(
@@ -97,11 +99,12 @@ LinkIsarModule _linkIsarModuleDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = LinkIsarModule();
-  object.descrizione = reader.readString(offsets[0]);
+  final object = LinkIsarModule(
+    descrizione: reader.readStringOrNull(offsets[0]) ?? '',
+    name: reader.readStringOrNull(offsets[2]) ?? '',
+    url: reader.readStringOrNull(offsets[3]) ?? '',
+  );
   object.id = id;
-  object.name = reader.readString(offsets[1]);
-  object.url = reader.readString(offsets[2]);
   return object;
 }
 
@@ -113,11 +116,13 @@ P _linkIsarModuleDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
+    case 3:
+      return (reader.readStringOrNull(offset) ?? '') as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -530,6 +535,61 @@ extension LinkIsarModuleQueryFilter
     });
   }
 
+  QueryBuilder<LinkIsarModule, LinkIsarModule, QAfterFilterCondition>
+  hashCodeEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'hashCode', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<LinkIsarModule, LinkIsarModule, QAfterFilterCondition>
+  hashCodeGreaterThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'hashCode',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LinkIsarModule, LinkIsarModule, QAfterFilterCondition>
+  hashCodeLessThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'hashCode',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LinkIsarModule, LinkIsarModule, QAfterFilterCondition>
+  hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'hashCode',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
   QueryBuilder<LinkIsarModule, LinkIsarModule, QAfterFilterCondition> idEqualTo(
     Id value,
   ) {
@@ -886,6 +946,19 @@ extension LinkIsarModuleQuerySortBy
     });
   }
 
+  QueryBuilder<LinkIsarModule, LinkIsarModule, QAfterSortBy> sortByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LinkIsarModule, LinkIsarModule, QAfterSortBy>
+  sortByHashCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.desc);
+    });
+  }
+
   QueryBuilder<LinkIsarModule, LinkIsarModule, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -924,6 +997,19 @@ extension LinkIsarModuleQuerySortThenBy
   thenByDescrizioneDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'descrizione', Sort.desc);
+    });
+  }
+
+  QueryBuilder<LinkIsarModule, LinkIsarModule, QAfterSortBy> thenByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LinkIsarModule, LinkIsarModule, QAfterSortBy>
+  thenByHashCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.desc);
     });
   }
 
@@ -973,6 +1059,12 @@ extension LinkIsarModuleQueryWhereDistinct
     });
   }
 
+  QueryBuilder<LinkIsarModule, LinkIsarModule, QDistinct> distinctByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hashCode');
+    });
+  }
+
   QueryBuilder<LinkIsarModule, LinkIsarModule, QDistinct> distinctByName({
     bool caseSensitive = true,
   }) {
@@ -1001,6 +1093,12 @@ extension LinkIsarModuleQueryProperty
   QueryBuilder<LinkIsarModule, String, QQueryOperations> descrizioneProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'descrizione');
+    });
+  }
+
+  QueryBuilder<LinkIsarModule, int, QQueryOperations> hashCodeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hashCode');
     });
   }
 
