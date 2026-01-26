@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_pagewise/flutter_pagewise.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../config/constant.dart';
+
 class SearchListBookPage extends StatelessWidget {
   static const String pagePath = '/HomeLibriLibreria/searchListBook';
 
@@ -253,31 +255,75 @@ class PagewiseListViewExample extends StatelessWidget {
                         ),
                       ],
                     ),
-                    subtitle: Row(
+                    subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            // entry.lstAutori.join(', '),
-                            LibroUtils.getStrLstAutoriRidotta(entry, 250),
-                            overflow: TextOverflow.fade,
-                            style: entry.lstAutori.join(', ').length <= 90
-                                ? Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium!.copyWith(
-                                    fontStyle: FontStyle.italic,
-                                    color: Colors.white70,
-                                  )
-                                : Theme.of(
-                                    context,
-                                  ).textTheme.titleSmall!.copyWith(
-                                    fontStyle: FontStyle.italic,
-                                    color: Colors.white70,
-                                  ),
-                          ),
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                // entry.lstAutori.join(', '),
+                                LibroUtils.getStrLstAutoriRidotta(entry, 250),
+                                overflow: TextOverflow.fade,
+                                style: entry.lstAutori.join(', ').length <= 90
+                                    ? Theme.of(
+                                  context,
+                                ).textTheme.titleMedium!.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.white70,
+                                )
+                                    : Theme.of(
+                                  context,
+                                ).textTheme.titleSmall!.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              Constant.formatoEuro.format(entry.prezzo),
+                              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.orange[50]
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.only(right: 20),
+                            ),
+                            Text(
+                              'Pagine: ${entry.nrPagine}',
+                              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.orange[50]
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.only(right: 20),
+                            ),
+                            Text(
+                              'Editore: ${entry.editore}',
+                              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.orange[50]
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        )
                       ],
-                    ),
+                    )
                   ),
                 ),
               ),

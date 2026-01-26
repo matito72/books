@@ -50,23 +50,12 @@ class DbLibreriaIsarService {
     await isarLibreria.close();
   }
 
-  Future<void> addLibriInLibreriaInUso(int siglaLibreria, int nr) async {
+  Future<void> addLibriInLibreriaInUso(int siglaLibreria, int nr, double valore) async {
     Isar isarLibreria = await _openBoxLibreria();
 
     final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(siglaLibreria).findFirst();
     libreria!.nrLibriCaricati += nr;
-        await isarLibreria.writeTxn(() async {
-          await isarLibreria.libreriaIsarModels.put(libreria);
-        });
-    
-    await isarLibreria.close();
-  }
-
-  Future<void> removeLibroFromLibreriaInUso(int siglaLibreria) async {
-    Isar isarLibreria = await _openBoxLibreria();
-
-    final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(siglaLibreria).findFirst();
-    libreria!.nrLibriCaricati--;
+    libreria.valoreTot += valore;
     await isarLibreria.writeTxn(() async {
       await isarLibreria.libreriaIsarModels.put(libreria);
     });
@@ -74,14 +63,28 @@ class DbLibreriaIsarService {
     await isarLibreria.close();
   }
 
-  Future<void> setNrLibriInLibreriaInUso(int siglaLibreria, int nr) async {
+  Future<void> removeLibroFromLibreriaInUso(int siglaLibreria, double valore) async {
     Isar isarLibreria = await _openBoxLibreria();
 
     final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(siglaLibreria).findFirst();
-    libreria!.nrLibriCaricati = nr;
-        await isarLibreria.writeTxn(() async {
-          await isarLibreria.libreriaIsarModels.put(libreria);
-        });
+    libreria!.nrLibriCaricati--;
+    libreria.valoreTot -= valore;
+    await isarLibreria.writeTxn(() async {
+      await isarLibreria.libreriaIsarModels.put(libreria);
+    });
+    
+    await isarLibreria.close();
+  }
+
+  Future<void> azzeraNrLibriInLibreriaInUso(int siglaLibreria) async {
+    Isar isarLibreria = await _openBoxLibreria();
+
+    final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(siglaLibreria).findFirst();
+    libreria!.nrLibriCaricati = 0;
+    libreria.valoreTot = 0;
+    await isarLibreria.writeTxn(() async {
+      await isarLibreria.libreriaIsarModels.put(libreria);
+    });
     
     await isarLibreria.close();
   }

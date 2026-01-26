@@ -228,6 +228,7 @@ class HomeLibreriaScreen extends StatelessWidget {
 
               if (libreriaCheck != null) {
                 selItem.item.nrLibriCaricati = libreriaCheck.nrLibriCaricati;
+                selItem.item.valoreTot = libreriaCheck.valoreTot;
               }
             }
           }

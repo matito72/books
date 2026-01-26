@@ -7,6 +7,8 @@ import 'package:book/widgets/icon_check_item.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../config/constant.dart';
+
 class SingleCardLibreria extends StatefulWidget {
   final LibreriaBloc _libreriaBloc;
   final SelectedItem<LibreriaIsarModel> _selItem;
@@ -200,7 +202,7 @@ class _SingleCardLibreria extends State<SingleCardLibreria> {
             subtitle: Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
-                'Libri: ${selectedItem.item.nrLibriCaricati}',
+                'Libri: ${selectedItem.item.nrLibriCaricati} - Valore: ${Constant.formatoEuro.format(selectedItem.item.valoreTot)}',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),

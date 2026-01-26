@@ -143,8 +143,8 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
           }
           await dbLibroService.saveLibroToDb(libroIsarToSaveModel, true);
 
-          await dbLibreriaIsarService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 1);
-          LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
+          await dbLibreriaIsarService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 1, libroIsarToSaveModel.libroViewModel.prezzo);
+          LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla, valore: libroIsarToSaveModel.libroViewModel.prezzo);
 
           await Future<void>.delayed(const Duration(milliseconds: 50));
           _nrRecordCaricati++;

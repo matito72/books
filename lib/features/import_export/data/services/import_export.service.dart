@@ -68,7 +68,7 @@ class ImportExportService {
     if (ok) {
       lstFileBackupView = await getListImportExportFile(
           filterWhere: '_${siglaLibreria}_',
-          printDebug: true
+          printDebug: false
       );
     }
 
@@ -115,6 +115,7 @@ class ImportExportService {
     List<dynamic> lstJsonEntities = await json.decode(jsonFile);
     for (var json in lstJsonEntities) {
       LibroIsarModel libroToAdd = LibroIsarModel.fromMap(json);
+
       if (isDesktop && libroToAdd.immagineCopertina.isNotEmpty &&
           libroToAdd.immagineCopertina.startsWith("/storage/emulated/0/Download")) {
         libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst("/storage/emulated/0/Download", ComArea.appDocumentDir.path);
@@ -134,6 +135,7 @@ class ImportExportService {
       nomeFile,
     );
     int nrLibriCaricati = 0;
+    double valoreLibriCaricati = 0;
 
     if (lstLibroViewModel.isNotEmpty) {
       DbLibroIsarService dbLibroService = sl<DbLibroIsarService>();
@@ -167,6 +169,7 @@ class ImportExportService {
           }
           await dbLibroService.saveLibroToDb(libroIsarToSaveModel, true);
 
+          valoreLibriCaricati += libroIsarToSaveModel.libroViewModel.prezzo;
           nrLibriCaricati++;
         } on ItemPresentException {
           lstLibriGiaPresenti.add(libroModelNew);
@@ -179,10 +182,12 @@ class ImportExportService {
       await dbLibreriaService.addLibriInLibreriaInUso(
         ComArea.libreriaInUso!.sigla,
         nrLibriCaricati,
+        valoreLibriCaricati
       );
       LibroUtils.addNrLibriCaricatiInCache(
         ComArea.libreriaInUso!.sigla,
         nrToAdd: nrLibriCaricati,
+        valore: valoreLibriCaricati
       );
       if (errore != null) {
         throw errore;
@@ -285,11 +290,11 @@ class ImportExportService {
           return b.dtUltimaModifica.compareTo(a.dtUltimaModifica);
         });
 
-        // if (printDebug != null && printDebug) {
-        //   debugPrint(
-        //     '${element.absolute} : ${element.isAbsolute} : ${element.path} : $fileStat',
-        //   );
-        // }
+        if (printDebug != null && printDebug) {
+          debugPrint(
+            '${element.absolute} : ${element.isAbsolute} : ${element.path} : $fileStat',
+          );
+        }
       }
     }
 

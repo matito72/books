@@ -2,6 +2,8 @@ import 'package:book/config/com_area.dart';
 import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:book/resources/libro_field_selected.dart';
 
+import '../config/constant.dart';
+
 class OrdinamentoLibriUtils {
 
   static dynamic getLibroViewModelValue(LibroIsarModel libroViewModel, LibroFieldSelected ordinamentoLibri) {
@@ -22,7 +24,7 @@ class OrdinamentoLibriUtils {
       return libroViewModel.dataPubblicazione.toUpperCase();
     } else if (label == LibroFieldSelected.prezzo().label) {
       double prezzo = libroViewModel.prezzo;
-      return prezzo;
+      return Constant.formatoEuro.format(prezzo);
     } else if (label == LibroFieldSelected.dtInserimento().label) {
       return libroViewModel.dataInserimento.toUpperCase();
     } else if (label == LibroFieldSelected.dtUltimaModifica().label) {

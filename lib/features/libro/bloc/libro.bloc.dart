@@ -156,7 +156,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       emit(const LibroWaitingState());
       try {
         int nrRecordDeleted = await _dbLibroService.deleteAllLibriLibreria(event.libreriaIsarModel);
-        await sl<DbLibreriaIsarService>().setNrLibriInLibreriaInUso(event.libreriaIsarModel.sigla, 0);
+        await sl<DbLibreriaIsarService>().azzeraNrLibriInLibreriaInUso(event.libreriaIsarModel.sigla);
         ComArea.nrLibriVisibiliInLista = 0;
         LibroUtils.clearNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
 
@@ -171,7 +171,7 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       emit(const LibroWaitingState());
       try {
         int nrRecordDeleted = await _dbLibroService.deleteAllLibri();
-        await sl<DbLibreriaIsarService>().setNrLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 0);
+        await sl<DbLibreriaIsarService>().azzeraNrLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla);
         ComArea.nrLibriVisibiliInLista = 0;
         LibroUtils.clearNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
 
@@ -189,8 +189,10 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         event.libroToSaveModel.libroViewModel.dataUltimaModifica = Utils.getDataNow();
         await _dbLibroService.saveLibroToDb(event.libroToSaveModel, true);
         
-        await sl<DbLibreriaIsarService>().addLibriInLibreriaInUso(event.libroToSaveModel.libroViewModel.siglaLibreria, 1);
-        LibroUtils.addNrLibriCaricatiInCache(event.libroToSaveModel.libroViewModel.siglaLibreria);
+        await sl<DbLibreriaIsarService>().addLibriInLibreriaInUso(event.libroToSaveModel.libroViewModel.siglaLibreria,
+            1,
+            event.libroToSaveModel.libroViewModel.prezzo);
+        LibroUtils.addNrLibriCaricatiInCache(event.libroToSaveModel.libroViewModel.siglaLibreria, valore: event.libroToSaveModel.libroViewModel.prezzo);
 
         ComArea.nrLibriInLibreriaInUso++;
         emit(AddedNewLibroState('Libro ${event.libroToSaveModel.libroViewModel.titolo} caricato in Libreria.'));
@@ -209,11 +211,11 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         await _dbLibroService.saveLibroToDb(event.libroToSaveModel, false);
 
         if (siglaLibreriaOld != null && siglaLibreriaOld != event.libroToSaveModel.libroViewModel.siglaLibreria) {
-          await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(siglaLibreriaOld);
-          LibroUtils.removeNrLibriCaricatiInCache(siglaLibreriaOld);
+          await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(siglaLibreriaOld, event.libroToSaveModel.libroViewModel.prezzo);
+          LibroUtils.removeNrLibriCaricatiInCache(siglaLibreriaOld, event.libroToSaveModel.libroViewModel.prezzo);
 
-          await sl<DbLibreriaIsarService>().addLibriInLibreriaInUso(event.libroToSaveModel.libroViewModel.siglaLibreria, 1);
-          LibroUtils.addNrLibriCaricatiInCache(event.libroToSaveModel.libroViewModel.siglaLibreria);
+          await sl<DbLibreriaIsarService>().addLibriInLibreriaInUso(event.libroToSaveModel.libroViewModel.siglaLibreria, 1, event.libroToSaveModel.libroViewModel.prezzo);
+          LibroUtils.addNrLibriCaricatiInCache(event.libroToSaveModel.libroViewModel.siglaLibreria, valore: event.libroToSaveModel.libroViewModel.prezzo);
         }
         emit(EditLibroState('Libro ${event.libroToSaveModel.libroViewModel.titolo} modificato.'));
       } catch (e) {
@@ -226,9 +228,9 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
       emit(const LibroWaitingState());
       try {
         await _dbLibroService.deleteLibroToDb(event.libroModelDelete);
-        await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(event.libroModelDelete.siglaLibreria);
+        await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(event.libroModelDelete.siglaLibreria, event.libroModelDelete.prezzo);
         ComArea.nrLibriInLibreriaInUso--;
-        LibroUtils.removeNrLibriCaricatiInCache(event.libroModelDelete.siglaLibreria);
+        LibroUtils.removeNrLibriCaricatiInCache(event.libroModelDelete.siglaLibreria, event.libroModelDelete.prezzo);
 
         // print("=====> ${Constant.libreriaInUso!.nrLibriCaricati}");
         emit(DeletedLibroState('Libro ${event.libroModelDelete.titolo} eliminato.'));
@@ -243,10 +245,10 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
         int nrDel = 0;
         for (SelectedItem<LibroIsarModel> selectedItem in event.lstSelectedItem) {
           await _dbLibroService.deleteLibroToDb(selectedItem.item);
-          await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(selectedItem.item.siglaLibreria);
+          await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(selectedItem.item.siglaLibreria, selectedItem.item.prezzo);
           
           ComArea.nrLibriInLibreriaInUso--;
-          LibroUtils.removeNrLibriCaricatiInCache(selectedItem.item.siglaLibreria);
+          LibroUtils.removeNrLibriCaricatiInCache(selectedItem.item.siglaLibreria, selectedItem.item.prezzo);
           nrDel++;
         }
 
@@ -274,11 +276,11 @@ class LibroBloc extends Bloc<LibroEvent, LibroState> {
             await _dbLibroService.cambiaLibreriaLibroToDb(libroIsarViewModel);
             nrAddToLibreriaNew++;
 
-            await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(siglaLibreriaOld);
-            LibroUtils.removeNrLibriCaricatiInCache(siglaLibreriaOld);
+            await sl<DbLibreriaIsarService>().removeLibroFromLibreriaInUso(siglaLibreriaOld, libroIsarViewModel.libroViewModel.prezzo);
+            LibroUtils.removeNrLibriCaricatiInCache(siglaLibreriaOld, libroIsarViewModel.libroViewModel.prezzo);
 
-            await sl<DbLibreriaIsarService>().addLibriInLibreriaInUso(event.siglaLibreriaNew, 1);
-            LibroUtils.addNrLibriCaricatiInCache(event.siglaLibreriaNew);
+            await sl<DbLibreriaIsarService>().addLibriInLibreriaInUso(event.siglaLibreriaNew, 1, libroIsarViewModel.libroViewModel.prezzo);
+            LibroUtils.addNrLibriCaricatiInCache(event.siglaLibreriaNew, valore: libroIsarViewModel.libroViewModel.prezzo);
           }
         }
 

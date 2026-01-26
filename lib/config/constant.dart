@@ -18,4 +18,5 @@ class Constant {
 
  static const String dataDefault = '0000000000000000';
  static String now = DateFormat('yyyyMMdd').format(DateTime.now());
+ static NumberFormat formatoEuro = NumberFormat.currency(locale: 'it_IT', symbol: '€', customPattern: '¤ #,##0.00');
 }

@@ -113,24 +113,29 @@ abstract class LibroUtils {
   //   return cloneLibroViewModel;
   // }
 
-  static void addNrLibriCaricatiInCache(int siglaLibreria, {int nrToAdd = 1}) {
+  //
+  static void addNrLibriCaricatiInCache(int siglaLibreria, {int nrToAdd = 1, double valore = 0}) {
     for (LibreriaIsarModel libreriaIsarModel in ComArea.lstLibrerieInUso) {
       if (libreriaIsarModel.sigla == siglaLibreria) {
         libreriaIsarModel.nrLibriCaricati += nrToAdd;
+        libreriaIsarModel.valoreTot += valore;
         break;
       }
     }
   }
 
-  static void removeNrLibriCaricatiInCache(int siglaLibreria) {
+  //
+  static void removeNrLibriCaricatiInCache(int siglaLibreria, double valore) {
     for (LibreriaIsarModel libreriaIsarModel in ComArea.lstLibrerieInUso) {
       if (libreriaIsarModel.sigla == siglaLibreria) {
         libreriaIsarModel.nrLibriCaricati--;
+        libreriaIsarModel.valoreTot -= valore;
         break;
       }
     }
   }
 
+  //
   static void clearNrLibriCaricatiInCache(int siglaLibreria) {
     for (LibreriaIsarModel libreriaIsarModel in ComArea.lstLibrerieInUso) {
       if (libreriaIsarModel.sigla == siglaLibreria) {
