@@ -283,45 +283,46 @@ class PagewiseListViewExample extends StatelessWidget {
                             ),
                           ],
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text(
-                              Constant.formatoEuro.format(entry.prezzo),
-                              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                                  fontStyle: FontStyle.italic,
-                                  color: Colors.orange[50]
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.only(right: 20),
-                            ),
-                            Text(
-                              'Pagine: ${entry.nrPagine}',
-                              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                                  fontStyle: FontStyle.italic,
-                                  color: Colors.orange[50]
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.only(right: 20),
-                            ),
-                            Text(
-                              'Editore: ${entry.editore}',
-                              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                                  fontStyle: FontStyle.italic,
-                                  color: Colors.orange[50]
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        )
+                        // Row(
+                        //   mainAxisSize: MainAxisSize.min,
+                        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        //   children: [
+                        //     Text(
+                        //       Constant.formatoEuro.format(entry.prezzo),
+                        //       style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        //           fontStyle: FontStyle.italic,
+                        //           color: Colors.orange[50]
+                        //       ),
+                        //       maxLines: 1,
+                        //       overflow: TextOverflow.ellipsis,
+                        //     ),
+                        //     const Padding(
+                        //       padding: EdgeInsets.only(right: 20),
+                        //     ),
+                        //     Text(
+                        //       'Pagine: ${entry.nrPagine}',
+                        //       style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        //           fontStyle: FontStyle.italic,
+                        //           color: Colors.orange[50]
+                        //       ),
+                        //       maxLines: 1,
+                        //       overflow: TextOverflow.ellipsis,
+                        //     ),
+                        //     const Padding(
+                        //       padding: EdgeInsets.only(right: 20),
+                        //     ),
+                        //     Text(
+                        //       'Editore: ${entry.editore}',
+                        //       style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        //           fontStyle: FontStyle.italic,
+                        //           color: Colors.orange[50]
+                        //       ),
+                        //       maxLines: 1,
+                        //       overflow: TextOverflow.ellipsis,
+                        //     ),
+                        //   ],
+                        // )
+                        getPrezzoPagineEditore(context, entry),
                       ],
                     )
                   ),
@@ -337,6 +338,40 @@ class PagewiseListViewExample extends StatelessWidget {
         //   color: Color.fromARGB(255, 62, 63, 112),
         // )
         const Padding(padding: EdgeInsets.only(top: 5)),
+      ],
+    );
+  }
+
+  Widget getPrezzoPagineEditore(BuildContext context, LibroIsarModel entry) {
+    String anno = (entry.dataPubblicazione.isNotEmpty && entry.dataPubblicazione.length > 4) ? entry.dataPubblicazione.substring(0, 4) : entry.dataPubblicazione;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          '${Constant.formatoEuro.format(entry.prezzo)}  Pag. ${entry.nrPagine}   [$anno]',
+          style: Theme.of(context).textTheme.titleSmall!.copyWith(
+              fontStyle: FontStyle.italic,
+              color: Colors.orange[50]
+          ),
+        ),
+
+        const SizedBox(width: 8), // Spazio minimo di sicurezza
+
+        // Testo di destra: Libreria e Counter
+        // Expanded prenderà tutto lo spazio rimanente e textAlign: End lo sposterà a destra
+        Expanded(
+          child: Text(
+            entry.editore,
+            style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                fontStyle: FontStyle.italic,
+                color: Colors.orange[50]
+            ),
+            textAlign: TextAlign.end, // Forza il testo alla fine della riga
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis, // Se è troppo lungo, mette i puntini
+          ),
+        ),
       ],
     );
   }

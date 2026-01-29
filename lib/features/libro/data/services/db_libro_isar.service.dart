@@ -248,7 +248,17 @@ class DbLibroIsarService {
     if (libroDbOld == null) {
       throw ItemPresentException(ItemType.libro, "Il libro '${libroViewModel.isbn}' non si trova più!");
     }
-    if (libroDbOld.isbn == libroViewModel.isbn) {
+
+    // Libro NEW
+    Isar isarLibroNewTmp = await _openBoxLibro(nomeLibreriaNew);
+    LibroIsarModel? libroDbNew = await getLibroBySiglaLibreriaAndIsbn(
+        libroViewModel.siglaLibreria,
+        libroViewModel.isbn,
+        isarLibro: isarLibroNewTmp
+    );
+    await isarLibroNewTmp.close();
+
+    if (libroDbNew != null && libroDbOld.isbn == libroDbNew.isbn) {
       throw ItemPresentException(ItemType.libro, "Il libro '[${libroViewModel.isbn}] - ${libroViewModel.titolo}' è già presente nella libreria '$nomeLibreriaNew'!");
     }
 
@@ -355,10 +365,13 @@ class DbLibroIsarService {
     }
     else if (libroDbOld != null) {
       // UPDATE
-      int? siglaLibreriaNew = (libroDbNew!.siglaLibreria == 0) ? ComArea.libreriaInUso!.sigla : libroDbNew.siglaLibreria;
-      String nomeLibreriaNew = ComArea.mapCodDescLibreria[siglaLibreriaNew]!;
-      if (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria && libroDbOld.isbn == libroToSaveModel.libroViewModel.isbn) {
-        throw ItemPresentException(ItemType.libro, "Il libro '[${libroToSaveModel.libroViewModel.isbn}] - ${libroToSaveModel.libroViewModel.titolo}' è già presente nella libreria '${nomeLibreriaNew}'!");
+      if (libroDbNew != null) {
+        int? siglaLibreriaNew = (libroDbNew.siglaLibreria == 0) ? ComArea.libreriaInUso!.sigla : libroDbNew.siglaLibreria;
+        // int? siglaLibreriaNew = (libroDbNew == null || libroDbNew.siglaLibreria == 0) ? libroToSaveModel.libroViewModel.siglaLibreria : libroDbNew.siglaLibreria;
+        String nomeLibreriaNew = ComArea.mapCodDescLibreria[siglaLibreriaNew]!;
+        if (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria && libroDbOld.isbn == libroToSaveModel.libroViewModel.isbn) {
+          throw ItemPresentException(ItemType.libro, "Il libro '[${libroToSaveModel.libroViewModel.isbn}] - ${libroToSaveModel.libroViewModel.titolo}' è già presente nella libreria '${nomeLibreriaNew}'!");
+        }
       }
 
       await isarLibroNew.writeTxn(() async {

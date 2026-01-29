@@ -62,7 +62,7 @@ class GooleApisBooksService {
     // final Uri url = Uri.https(Constant.googleapisDominio, percorso, parametri);
     
     try {
-      // print('URL: ${url.toString()}');
+      print('URL: ${url.toString()}');
 
       await http.get(url).then((res) async {
         final resJson = json.decode(res.body);

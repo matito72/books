@@ -229,46 +229,88 @@ class _SingleCardBook extends State<SingleCardBook> {
       );
     }
 
-    Widget getPrezzo() {
-      return Text(
-        '€ ${widget._selItem.item.prezzo.toStringAsFixed(2)}',
-        style: Theme.of(context).textTheme.titleSmall!.copyWith(
-          fontStyle: FontStyle.italic,
-          color: Colors.orange[50]
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      );
-    }
+    // Widget getPrezzo() {
+    //   return Text(
+    //     Constant.formatoEuro.format(widget._selItem.item.prezzo),
+    //     style: Theme.of(context).textTheme.titleSmall!.copyWith(
+    //       fontStyle: FontStyle.italic,
+    //       color: Colors.orange[50]
+    //     ),
+    //     maxLines: 1,
+    //     overflow: TextOverflow.ellipsis,
+    //   );
+    // }
+    //
+    // Widget getPagine() {
+    //   return Text(
+    //     'Pagine: ${widget._selItem.item.nrPagine}',
+    //     style: Theme.of(context).textTheme.titleSmall!.copyWith(
+    //         fontStyle: FontStyle.italic,
+    //         color: Colors.orange[50]
+    //     ),
+    //     maxLines: 1,
+    //     overflow: TextOverflow.ellipsis,
+    //   );
+    // }
+    //
+    // Widget getDtInserimentoCounter() {
+    //   return Row(
+    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //     crossAxisAlignment: CrossAxisAlignment.center,
+    //     mainAxisSize: MainAxisSize.min,
+    //     children: [
+    //       Text(
+    //         '${ComArea.mapCodDescLibreria[widget._selItem.item.siglaLibreria]}',
+    //         style: TextStyle(
+    //           fontSize: 12.0,
+    //           fontStyle: FontStyle.normal,
+    //           fontWeight: FontWeight.bold,
+    //           color: Colors.orange[100]
+    //         ),
+    //         textAlign: TextAlign.right,
+    //         maxLines: 1,
+    //         overflow: TextOverflow.ellipsis,
+    //       ),
+    //       const Padding(
+    //         padding: EdgeInsets.only(right: 5)
+    //       ),
+    //       Text(
+    //         '- ${widget._index+1}/${widget.nrTot}',
+    //         style: Theme.of(context).textTheme.labelSmall,
+    //         textAlign: TextAlign.right,
+    //       ),
+    //       const Padding(
+    //         padding: EdgeInsets.only(right: 5)
+    //       ),
+    //     ],
+    //   );
+    // }
 
-    Widget getDtInserimentoCounter() {
+    Widget getPrezzoPagineLibreriaCounter() {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
         children: [
+          // Testo di sinistra: Prezzo e Pagine
+          // Non usiamo Expanded qui così occupa solo lo spazio necessario
           Text(
-            '${ComArea.mapCodDescLibreria[widget._selItem.item.siglaLibreria]}',
+            '${Constant.formatoEuro.format(widget._selItem.item.prezzo)}  Pag. ${widget._selItem.item.nrPagine}',
             style: TextStyle(
-              fontSize: 12.0, 
-              fontStyle: FontStyle.normal,
+              fontSize: 12.0,
               fontWeight: FontWeight.bold,
-              color: Colors.orange[100]
+              color: Colors.orange[100],
             ),
-            textAlign: TextAlign.right,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
-          const Padding(
-            padding: EdgeInsets.only(right: 5)
-          ),
-          Text(
-            '- ${widget._index+1}/${widget.nrTot}',
-            style: Theme.of(context).textTheme.labelSmall,
-            textAlign: TextAlign.right,
-          ),
-          const Padding(
-            padding: EdgeInsets.only(right: 5)
+          const SizedBox(width: 8), // Spazio minimo di sicurezza
+          // Testo di destra: Libreria e Counter
+          // Expanded prenderà tutto lo spazio rimanente e textAlign: End lo sposterà a destra
+          Expanded(
+            child: Text(
+              '${ComArea.mapCodDescLibreria[widget._selItem.item.siglaLibreria]} - ${widget._index + 1}/${widget.nrTot}',
+              style: Theme.of(context).textTheme.labelSmall,
+              textAlign: TextAlign.end, // Forza il testo alla fine della riga
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis, // Se è troppo lungo, mette i puntini
+            ),
           ),
         ],
       );
@@ -315,13 +357,15 @@ class _SingleCardBook extends State<SingleCardBook> {
                   getCasaEditrice(),
                   // Spingiamo il prezzo e la data in fondo se necessario
                   const Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      getPrezzo(),
-                      getDtInserimentoCounter()
-                    ],
-                  )
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     getPrezzo(),
+                  //     getPagine(),
+                  //     getDtInserimentoCounter()
+                  //   ],
+                  // )
+                  getPrezzoPagineLibreriaCounter()
                 ],
               ),
             ),

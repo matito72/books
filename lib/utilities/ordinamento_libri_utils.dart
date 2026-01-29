@@ -24,7 +24,7 @@ class OrdinamentoLibriUtils {
       return libroViewModel.dataPubblicazione.toUpperCase();
     } else if (label == LibroFieldSelected.prezzo().label) {
       double prezzo = libroViewModel.prezzo;
-      return Constant.formatoEuro.format(prezzo);
+      return prezzo; // Constant.formatoEuro.format(prezzo);
     } else if (label == LibroFieldSelected.dtInserimento().label) {
       return libroViewModel.dataInserimento.toUpperCase();
     } else if (label == LibroFieldSelected.dtUltimaModifica().label) {
