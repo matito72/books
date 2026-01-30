@@ -16,10 +16,6 @@ La libreria ISAR non è aggiornatissima e mal sopporta le ultime versioni di And
 
 <img src="imagesReadMe/compatibilita_android.png" style="width:300px; height:500px;">
 
-## Versione di Debug compilata:
-- LINUX [APK](build/app/outputs/flutter-apk/app-debug.apk) 
-- ANDROID [eseguibile](build/linux/x64/debug/bundle/book_test)
-
 
 ## Pagina iniziale da cui creare e selezionare le Librerie:
 <img src="imagesReadMe/es_librerie.png" style="width:300px; height:500px;">
