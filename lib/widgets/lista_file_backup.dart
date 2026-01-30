@@ -13,12 +13,12 @@ import 'package:flutter/material.dart';
 ///
 /// Widget
 ///
-class ListaFileBakcup extends StatelessWidget {
+class ListaFileBackup extends StatelessWidget {
   final ImportExportBloc _importExportBloc;
   final List<FileBackupModel> _lstFileBackupModel;
   final num _nrTot;
   
-  const ListaFileBakcup(
+  const ListaFileBackup(
     this._importExportBloc, this._lstFileBackupModel, {super.key}
   ) : _nrTot = _lstFileBackupModel.length;
 

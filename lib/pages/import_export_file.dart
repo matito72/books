@@ -13,6 +13,7 @@ import 'package:book/widgets/lista_file_backup.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 ///
 /// Pagina GESTIONE BACKUP
@@ -48,6 +49,10 @@ class ImportExportFile extends StatelessWidget {
   }
   
   Future<void> _importFile(BuildContext context, ImportExportBloc importExportBloc) async {
+    bool ok = await checkPermissions();
+    if (!ok) {
+      return;
+    }
     FilePickerResult? result = await FilePicker.platform.pickFiles();
 
     if (result != null) {
@@ -67,6 +72,21 @@ class ImportExportFile extends StatelessWidget {
     }
   }
 
+  Future<bool> checkPermissions() async {
+    if (Platform.isAndroid) {
+      // Per Android 11+ serve MANAGE_EXTERNAL_STORAGE per scrivere fuori dalle cartelle app
+      if (await Permission.manageExternalStorage.request().isGranted) {
+        // Permesso concesso
+        return true;
+      } else {
+        // Gestisci il rifiuto (l'app non potrà scrivere nei Download)
+        await Permission.storage.request();
+        return false;
+      }
+    }
+    return true;
+  }
+
   Widget _widgetListaFileBackup(BuildContext context, ImportExportBloc importExportBloc, List<FileBackupModel> lstFileBackupModel) {
     if (lstFileBackupModel.isEmpty) {
       return Center(
@@ -77,7 +97,7 @@ class ImportExportFile extends StatelessWidget {
         ) // Text('Nessun file di backup presente.'),
       );
     } else {
-      return ListaFileBakcup(importExportBloc, lstFileBackupModel);
+      return ListaFileBackup(importExportBloc, lstFileBackupModel);
     }
   }
   
