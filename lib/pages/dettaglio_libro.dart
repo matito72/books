@@ -6,6 +6,7 @@ import 'package:book/features/libro/data/models/link_isar.module.dart';
 import 'package:book/features/libro/data/models/pdf_isar.module.dart';
 import 'package:book/utilities/dialog_utils.dart';
 import 'package:book/utilities/libro_utils.dart';
+import 'package:book/utilities/utils.dart';
 import 'package:book/widgets/appbar/appbar_default.dart';
 import 'package:book/widgets/dettaglio_libro/dettaglio_libro_widget.dart';
 import 'package:book/widgets/dettaglio_libro/note_libro.dart';
@@ -223,7 +224,7 @@ class DettaglioLibro extends StatelessWidget {
                     percHeight: 4,
                     primaryColor: const Color.fromARGB(255, 33, 44, 49),
                     secondaryColor: Colors.blue,
-                    txtLabel: libroViewModel.titolo,
+                    txtLabel: Utils.rimuoviAccapo(libroViewModel.titolo),
                     lstWidgetDx: showDelete
                         ? [iconDeleteLibro, iconCheckAddLibro(context)]
                         : [iconCheckAddLibro(context)],

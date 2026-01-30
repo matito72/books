@@ -379,4 +379,20 @@ class Utils {
       return trimmed[0].toUpperCase() + trimmed.substring(1);
     }).join('');
   }
+
+  static String rimuoviAccapo(String testo) {
+    testo = testo.replaceAll("\n", "");
+    testo = testo.replaceAll("\t", "");
+    return testo;
+  }
+
+  static String rimuoviAccenti(String testo) {
+    const conAccento = 'àáâãäåèéêëìíîïòóôõöùúûüñç';
+    const senzaAccento = 'aaaaaaeeeeiiiiooooouuuunc';
+
+    for (int i = 0; i < conAccento.length; i++) {
+      testo = testo.replaceAll(conAccento[i], senzaAccento[i]);
+    }
+    return testo;
+  }
 }

@@ -112,7 +112,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
               Expanded(
                 flex: 1,
                 child: Text(
-                  widget._libroViewModel.titolo,
+                  Utils.rimuoviAccapo(widget._libroViewModel.titolo),
                   style: Theme.of(context).textTheme.titleSmall,
                   overflow: TextOverflow.ellipsis,
                 )
@@ -120,7 +120,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
               Expanded(
                 flex: 1,
                 child: Text(
-                  widget._libroViewModel.lstAutori.join(', '), 
+                  Utils.rimuoviAccapo(widget._libroViewModel.lstAutori.join(', ')),
                   style: TextStyle(color: Colors.amber[300]),
                   overflow: TextOverflow.ellipsis,
                 )
