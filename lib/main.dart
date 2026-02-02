@@ -27,6 +27,13 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
+/// LINUX
+///   Per fissare la dimensione iniziale della finestra:
+///     /home/titol/prj/book_test/linux/runner/my_application.cc   --> circa riga 56
+///     gtk_window_set_default_size(window, 1280, 720);
+///
+///   Per ottenere l'eseguibile:
+///     flutter build linux        =>   /home/titol/prj/book_test/build/linux/x64/release/bundle
 class _MyAppState extends State<MyApp> {
   // --------------------------------------------------
   // INIT

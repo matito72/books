@@ -1,9 +1,10 @@
 import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:book/models/parameter_google_search.module.dart';
 import 'package:book/services/goole_apis_books_service.dart';
+import 'package:book/widgets/dettaglio_libro/barcode_scanner_screen.dart';
 import 'package:flutter/material.dart';
+// import '../widgets/dettaglio_libro/barcode_scanner_screen.dart';
 
-import '../widgets/dettaglio_libro/barcode_scanner_screen.dart';
 class LibroSearchService {
 
   static Future<String> scanBarcodeNormal(BuildContext context) async {
