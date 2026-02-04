@@ -11,7 +11,7 @@ Progetto Flutter per il censimento libri.
 - Isar Community  [Isar Community](https://pub.dev/packages/isar_community)
   >- Crazy fast NoSQL database that is a joy to use.
 
-## Link da cui scaricare i compilati 
+## Link da cui scaricare i compilati:
 Compilati per smastphon e Linux:  [https://drive.google.com/drive/folders/1bMw7v48eIVR-BovkOfYxKA2ClekME_tE]
 
 ## Installazione:
