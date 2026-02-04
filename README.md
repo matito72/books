@@ -12,8 +12,8 @@ Progetto Flutter per il censimento libri.
   >- Crazy fast NoSQL database that is a joy to use.
 
 ## Link con i compilati:
-Compilati per Android e Linux:  
-<a href="https://drive.google.com/drive/folders/1bMw7v48eIVR-BovkOfYxKA2ClekME_tE" target="_blank">qui</a>
+- Compilati per Android e Linux:  
+- <a href="https://drive.google.com/drive/folders/1bMw7v48eIVR-BovkOfYxKA2ClekME_tE" target="_blank">qui</a>
 
 
 ## Installazione:
