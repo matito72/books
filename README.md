@@ -12,8 +12,9 @@ Progetto Flutter per il censimento libri.
   >- Crazy fast NoSQL database that is a joy to use.
 
 ## Link con i compilati:
-Compilati per smastphon e Linux:  
-[link](https://drive.google.com/drive/folders/1bMw7v48eIVR-BovkOfYxKA2ClekME_tE){:target="_blank"}
+Compilati per Android e Linux:  
+<a href="https://drive.google.com/drive/folders/1bMw7v48eIVR-BovkOfYxKA2ClekME_tE" target="_blank">qui</a>
+
 
 ## Installazione:
 La libreria ISAR non è aggiornatissima e mal sopporta le ultime versioni di Android, comunque funziona
