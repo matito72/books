@@ -33,7 +33,7 @@ Qui ci sono tutti i libri inseriti relativi alle librerie precedentemente selezi
 
 <img src="imagesReadMe/es_libro_inserito.png" style="width:300px; height:500px;">
 
-- Se la ricerca automatica non riesce, appare la ricerca manuale, che interroga sempre le API di Google
+- Se la ricerca automatica, tramite codice a barre, non riesce, appare la ricerca manuale, che interroga sempre le API di Google
 
 <img src="imagesReadMe/ricerca_libri_in_google.png" style="width:300px; height:500px;">
 
@@ -61,7 +61,7 @@ Sempre con un po' di fortuna, o con l'aiuto della fotocamera, è comunque possib
 
 ### Scansioni:
 Tramite fotocamera, o foto in galleria, è possibile creare PDF da associare al libro.
-Di seguito una fota gà associata, il suo PDF e il relativo testo, il quale è oggetto di ricerca qualora si cerchi un libro all'interno tra queli inseriti.
+Di seguito una fota gà associata, il suo PDF e il relativo testo, il quale è oggetto di ricerca qualora si cerchi un libro all'interno tra quelli inseriti.
  
 <img src="imagesReadMe/es_creazione_pdf_da_smartphone.png" style="width:300px; height:500px;">
 
@@ -71,7 +71,7 @@ Di seguito una fota gà associata, il suo PDF e il relativo testo, il quale è o
 
 ### Link
 E' possibile associare link al libro.<br>
-E se il libro era presente nel catalogo Google, gli viene associato un link in automatico.
+Se il libro era presente nel catalogo Google, gli viene associato un link in automatico.
 Tutti i link poi si apriranno nel browser 
 
 Qui un esempio di un link che punta al 'www.google.it/books' :<br>
