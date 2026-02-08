@@ -1,16 +1,17 @@
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/features/libro/data/models/link_isar.module.dart';
-import 'package:books/features/libro/data/models/pdf_isar.module.dart';
-import 'package:books/models/parameter_google_search.module.dart';
-import 'package:books/pages/dettaglio_libro.dart';
-import 'package:books/pages/immagine_copertina.dart';
-import 'package:books/pages/import_export_file.dart';
-import 'package:books/screens/home_libreria.dart';
-import 'package:books/screens/home_libri_libreria.dart';
-import 'package:books/pages/search_list_book_page.dart';
-import 'package:books/widgets/dettaglio_libro/image_to_pdf.dart';
-import 'package:books/widgets/dettaglio_testo.dart';
+
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/features/libro/data/models/link_isar.module.dart';
+import 'package:book/features/libro/data/models/pdf_isar.module.dart';
+import 'package:book/models/parameter_google_search.module.dart';
+import 'package:book/pages/dettaglio_libro.dart';
+import 'package:book/pages/immagine_copertina.dart';
+import 'package:book/pages/import_export_file.dart';
+import 'package:book/pages/search_list_book_page.dart';
+import 'package:book/screens/home_libreria.dart';
+import 'package:book/screens/home_libri_libreria.dart';
+import 'package:book/widgets/dettaglio_libro/image_to_pdf.dart';
+import 'package:book/widgets/dettaglio_testo.dart';
 import 'package:flutter/material.dart';
 
 
@@ -61,7 +62,7 @@ class AppRoutes {
         final List<PdfIsarModule> lstPdfIsarModule = arguments['lstPdfIsarModule'];
         final bool isCamera = arguments['isCamera'];
         final bool isGallery = arguments['isGallery'];
-        return _materialRoute(ImageToPdf(libroViewModel: libroViewModel, lstPdfIsarModule: lstPdfIsarModule, isCamera: isCamera, isGallery: isGallery,));
+        return _materialRoute(ImageToPdf(libroViewModel: libroViewModel, lstPdfIsarModule: lstPdfIsarModule, isCamera: isCamera, isGallery: isGallery));
 
       case DettaglioTesto.pagePath:
         final LibroIsarModel libroViewModel = arguments['libroViewModel'];

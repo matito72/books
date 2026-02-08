@@ -1,7 +1,8 @@
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/models/libro_isar_to_save.module.dart';
-import 'package:books/models/selected_item.module.dart';
+
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/models/libro_isar_to_save.module.dart';
+import 'package:book/models/selected_item.module.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -26,6 +27,13 @@ class ExportAllLibriLibreriaEvent extends LibroEvent {
   const ExportAllLibriLibreriaEvent(this.libreriaIsarModel);
 }
 
+//* EXPORT IN EXCEL
+class ExportInExcelEvent extends LibroEvent {
+  final List<LibreriaIsarModel> lstLibreriaIsarSel;
+
+  const ExportInExcelEvent(this.lstLibreriaIsarSel);
+}
+
 //* IMPORT ALL BOOKS LIBRERIA
 class ImportAllLibriLibreriaEvent extends LibroEvent { 
   final LibreriaIsarModel libreriaIsarModel;
@@ -45,6 +53,14 @@ class DeleteBookSelectedEvent extends LibroEvent {
   final List<SelectedItem<LibroIsarModel>> lstSelectedItem;
 
   const DeleteBookSelectedEvent(this.lstSelectedItem);
+}
+
+//* CAMBIA LIBRERIA AI LIBRI SELEZIONATI
+class CambiaLibreriaBookSelectedEvent extends LibroEvent {
+  final List<SelectedItem<LibroIsarModel>> lstSelectedItem;
+  final int siglaLibreriaNew;
+
+  const CambiaLibreriaBookSelectedEvent(this.lstSelectedItem, this.siglaLibreriaNew);
 }
 
 //* DELETE ALL LIBRI 

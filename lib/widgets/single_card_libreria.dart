@@ -1,11 +1,13 @@
-import 'package:books/config/com_area.dart';
-import 'package:books/features/libreria/bloc/libreria.bloc.dart';
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/models/selected_item.module.dart';
-import 'package:books/utilities/list_items_utils.dart';
-import 'package:books/widgets/icon_check_item.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/features/libreria/bloc/libreria.bloc.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/models/selected_item.module.dart';
+import 'package:book/utilities/list_items_utils.dart';
+import 'package:book/widgets/icon_check_item.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
+import '../config/constant.dart';
 
 class SingleCardLibreria extends StatefulWidget {
   final LibreriaBloc _libreriaBloc;
@@ -34,11 +36,76 @@ class _SingleCardLibreria extends State<SingleCardLibreria> {
     SelectedItem selectedItem = widget._selItem;
     // LibreriaModel? libreriaInUso = ComArea.libreriaInUso;
 
+    createListMenuItemButton() {
+      List<MenuItemButton> lstMenuItemButton = [];
+
+      // Helper per creare i bottoni con allineamento costante
+      MenuItemButton buildCustomMenuItem({
+        required Widget icon,
+        required String label,
+        required VoidCallback onPressed,
+      }) {
+        return MenuItemButton(
+          onPressed: onPressed,
+          // Usiamo 'leadingIcon' per l'icona a sinistra (standard Material)
+          // Se vuoi l'icona a sinistra, il testo va nel 'child'
+          leadingIcon: SizedBox(
+            width: 32, // Larghezza fissa per le icone per allineare i testi
+            child: icon,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.white, // Bianco per contrasto con lo sfondo blu del menu
+              ),
+            ),
+          ),
+        );
+      }
+
+      lstMenuItemButton.add(buildCustomMenuItem(
+        icon: Icon(MdiIcons.locationEnter, color: Colors.lightGreenAccent[100]),
+        label: "Entra nella Libreria",
+        onPressed: () {
+          selectedItem.sel = true;
+          widget._goToHomeLibriLibreria(context, selectedItem.item);
+        },
+      ));
+
+      if (selectedItem.item.nrLibriCaricati == 0) {
+        lstMenuItemButton.add(buildCustomMenuItem(
+          icon: Icon(Icons.edit, color: Colors.yellowAccent.shade100),
+          label: "Modifica Libreria",
+          onPressed: () => widget._editLibreria(context, selectedItem.item),
+        ));
+      }
+
+      lstMenuItemButton.add(buildCustomMenuItem(
+        icon: const Icon(Icons.check_circle, color: Colors.lightGreenAccent),
+        label: "Seleziona Libreria",
+        onPressed: () {
+          setState(() {
+            selectedItem.sel = !selectedItem.sel;
+          });
+        },
+      ));
+
+      lstMenuItemButton.add(buildCustomMenuItem(
+        icon: Icon(Icons.delete, color: Colors.orange.shade800),
+        label: "Elimina Libreria",
+        onPressed: () => widget._deleteLibreria(context, selectedItem.item),
+      ));
+
+      return lstMenuItemButton;
+    }
+
     Widget getMenu() {
       return MenuAnchor(
         crossAxisUnconstrained: false,
         style: const MenuStyle(
-          backgroundColor: MaterialStatePropertyAll<Color>(Color.fromARGB(224, 88, 136, 182)),
+          backgroundColor: WidgetStatePropertyAll<Color>(Color.fromARGB(224, 88, 136, 182)),
         ),
         clipBehavior: Clip.none,
         builder: (BuildContext context, MenuController controller, Widget? child) {
@@ -57,137 +124,118 @@ class _SingleCardLibreria extends State<SingleCardLibreria> {
             tooltip: 'Show menu',
           );
         },
-        menuChildren: <MenuItemButton>[
-          MenuItemButton(
-            trailingIcon: Text(
-              "Entra nella Libreria",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            onPressed: () => {
-              selectedItem.sel = true,
-              widget._goToHomeLibriLibreria(context, selectedItem.item)
-            },
-            child: Icon(MdiIcons.locationEnter, color: Colors.lightGreenAccent[100],),
-          ),
-          MenuItemButton(
-            trailingIcon: Text(
-              "Modifica Libreria",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            onPressed: () => widget._editLibreria(context, selectedItem.item),
-            child: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
-          ),
-          MenuItemButton(
-            trailingIcon: Text(
-              "Seleziona Libreria",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            onPressed: () => {
-              setState(() {
-                  selectedItem.sel = !selectedItem.sel;
-              })
-            },
-            child: const Icon(Icons.check_circle, color: Colors.lightGreenAccent),
-          ),
-          MenuItemButton(
-            trailingIcon: Text(
-              "Elimina Libreria",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            onPressed: () => widget._deleteLibreria(context, selectedItem.item),
-            child: Icon(Icons.delete, color: Colors.orange.shade800),
-          ),
-        ],
+        menuChildren: createListMenuItemButton(),
       );
     }
 
     Widget getCardLibreriaContent() {
-      return InkWell(
-        splashColor: Colors.lightBlue[50],
-        onLongPress: () => {
-          setState(() {
-              selectedItem.sel = !selectedItem.sel;
-          })
-        },
-        onTap: () => {
-          if (ListItemsUtils.isThereOneSelected(widget._libreriaBloc.state.data)) {
+      // Avvolgiamo tutto in MouseRegion per forzare il cursore su Desktop/Linux
+      return MouseRegion(
+        hitTestBehavior: HitTestBehavior.opaque,
+        cursor: SystemMouseCursors.click, // Cambiato in 'click' (la manina), più naturale per le liste,
+        child: InkWell(
+          // Manteniamo mouseCursor anche qui per ridondanza, ma MouseRegion è il driver principale
+          mouseCursor: SystemMouseCursors.click,
+          splashColor: Colors.lightBlue[50],
+          onLongPress: () {
             setState(() {
+              selectedItem.sel = !selectedItem.sel;
+            });
+          },
+          onTap: () {
+            if (ListItemsUtils.isThereOneSelected(widget._libreriaBloc.state.data)) {
+              setState(() {
                 selectedItem.sel = !selectedItem.sel;
-            })
-          } else {
-            selectedItem.sel = true,
-            widget._goToHomeLibriLibreria(context, selectedItem.item) // selezionata la riga libreria
-          }
-        },
-        child: ListTile(
-          style: ListTileStyle.list,
-          leading: Padding(
-              padding: const EdgeInsets.all(3),
-              child: FittedBox(
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.green[100],
-                  child: Text(
-                    // libreria.sigla,
-                    selectedItem.item.sigla.toString(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: Colors.black, // Colors.blue.shade900,
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold
-                    )
+              });
+            } else {
+              selectedItem.sel = true;
+              widget._goToHomeLibriLibreria(context, selectedItem.item);
+            }
+          },
+          child: ListTile(
+            isThreeLine: true, // Aiuta a prevenire overflow verticali
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            leading: SizedBox(
+              width: 50,
+              height: 50,
+              child: CircleAvatar(
+                radius: 25,
+                backgroundColor: Colors.green[100],
+                child: FittedBox(
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      selectedItem.item.sigla.toString(),
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
-              )
+              ),
             ),
-          title: (!ComArea.initApp) 
-            ? Text(selectedItem.item.nome, style: Theme.of(context).textTheme.headlineSmall)
-            : (selectedItem.sel) 
-              ? Text(
-                  selectedItem.item.nome.toUpperCase(),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold, 
-                    letterSpacing: 5,
-                    decoration: TextDecoration.underline,
-                    decorationStyle: TextDecorationStyle.double,
-                    color: Colors.white,
-                    decorationColor: Colors.white,
+            title: (!ComArea.initApp)
+                ? Text(
+              selectedItem.item.nome,
+              style: Theme.of(context).textTheme.headlineSmall,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            )
+                : (selectedItem.sel)
+                ? Text(
+              selectedItem.item.nome.toUpperCase(),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+                decoration: TextDecoration.underline,
+                decorationStyle: TextDecorationStyle.double,
+                color: Colors.white,
+              ),
+            )
+                : Text(
+              selectedItem.item.nome,
+              style: Theme.of(context).textTheme.headlineSmall,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                'Libri: ${selectedItem.item.nrLibriCaricati} - Valore: ${Constant.formatoEuro.format(selectedItem.item.valoreTot)}',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                selectedItem.sel
+                    ? SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: IconCheckItem(
+                    // Usiamo un valore fisso leggermente inferiore a 48 per sicurezza
+                    heightBox: 47.8,
+                    onPressed: () => setState(() {
+                      if (ListItemsUtils.isThereOneSelected(widget._libreriaBloc.state.data)) {
+                        widget._goToHomeLibriLibreria(context, selectedItem.item);
+                      } else {
+                        selectedItem.sel = !selectedItem.sel;
+                      }
+                    }),
+                    isItemSel: selectedItem.sel,
+                    selectedIcon: Icon(
+                      MdiIcons.locationEnter,
+                      color: Colors.green[200],
+                      size: 47, // Dimensione dell'icona più equilibrata
+                    ),
                   ),
-                ) 
-              : Text(
-                selectedItem.item.nome,
-                style: Theme.of(context).textTheme.headlineSmall
-              ),
-          subtitle: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(padding: EdgeInsets.only(top: 10)),
-              Text(
-                'Libri: ${selectedItem.item.nrLibriCaricati}',
-                style: Theme.of(context).textTheme.headlineSmall
-              ),
-            ],
+                )
+                : getMenu(),
+              ],
+            ),
           ),
-          trailing: selectedItem.sel
-            ? ColoredBox(
-                color: Colors.transparent,
-                child: IconCheckItem(
-                  heightBox: (MediaQuery.of(context).size.height * (selectedItem.sel ? 8 : 0) / 100),
-                  onPressed: () => setState(() {
-                    if (ListItemsUtils.isThereOneSelected(widget._libreriaBloc.state.data)) {
-                      widget._goToHomeLibriLibreria(context, selectedItem.item);
-                    } else {
-                      selectedItem.sel = !selectedItem.sel;
-                    }
-                  }), 
-                  isItemSel: selectedItem.sel,
-                  selectedIcon: Icon(
-                    MdiIcons.locationEnter,
-                    color: Colors.green[200],
-                  )
-                ),
-              )
-            : getMenu(),
         ),
       );
     }

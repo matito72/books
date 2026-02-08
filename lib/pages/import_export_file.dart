@@ -1,18 +1,19 @@
 import 'dart:io';
 
-import 'package:books/config/com_area.dart';
-import 'package:books/config/constant.dart';
-import 'package:books/features/import_export/bloc/import_export.bloc.dart';
-import 'package:books/features/import_export/bloc/import_export_events.bloc.dart';
-import 'package:books/features/import_export/bloc/import_export_state.bloc.dart';
-import 'package:books/features/import_export/data/models/file_backup.module.dart';
-import 'package:books/injection_container.dart';
-import 'package:books/resources/action_result.dart';
-import 'package:books/widgets/appbar/appbar_default.dart';
-import 'package:books/widgets/lista_file_backup.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/config/constant.dart';
+import 'package:book/features/import_export/bloc/import_export.bloc.dart';
+import 'package:book/features/import_export/bloc/import_export_events.bloc.dart';
+import 'package:book/features/import_export/bloc/import_export_state.bloc.dart';
+import 'package:book/features/import_export/data/models/file_backup.module.dart';
+import 'package:book/injection_container.dart';
+import 'package:book/resources/action_result.dart';
+import 'package:book/widgets/appbar/appbar_default.dart';
+import 'package:book/widgets/lista_file_backup.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 ///
 /// Pagina GESTIONE BACKUP
@@ -40,14 +41,18 @@ class ImportExportFile extends StatelessWidget {
     );
   }
   
-  _buildAppbar(BuildContext context) {
+  AppBarDefault _buildAppbar(BuildContext context) {
     return AppBarDefault(
       context: context,
       txtLabel: '${Constant.titoloApp} - Restore file backup'
     );
   }
   
-  _importFile(BuildContext context, ImportExportBloc importExportBloc) async {
+  Future<void> _importFile(BuildContext context, ImportExportBloc importExportBloc) async {
+    bool ok = await checkPermissions();
+    if (!ok) {
+      return;
+    }
     FilePickerResult? result = await FilePicker.platform.pickFiles();
 
     if (result != null) {
@@ -67,13 +72,32 @@ class ImportExportFile extends StatelessWidget {
     }
   }
 
+  Future<bool> checkPermissions() async {
+    if (Platform.isAndroid) {
+      // Per Android 11+ serve MANAGE_EXTERNAL_STORAGE per scrivere fuori dalle cartelle app
+      if (await Permission.manageExternalStorage.request().isGranted) {
+        // Permesso concesso
+        return true;
+      } else {
+        // Gestisci il rifiuto (l'app non potrà scrivere nei Download)
+        await Permission.storage.request();
+        return false;
+      }
+    }
+    return true;
+  }
+
   Widget _widgetListaFileBackup(BuildContext context, ImportExportBloc importExportBloc, List<FileBackupModel> lstFileBackupModel) {
     if (lstFileBackupModel.isEmpty) {
-      return const Center(
-        child: Text('Nessun file di backup presente.'),
+      return Center(
+        child: Text(
+          'Nessun file di backup presente.',
+          style: Theme.of(context).textTheme.headlineMedium,
+          overflow: TextOverflow.ellipsis,
+        ) // Text('Nessun file di backup presente.'),
       );
     } else {
-      return ListaFileBakcup(importExportBloc, lstFileBackupModel);
+      return ListaFileBackup(importExportBloc, lstFileBackupModel);
     }
   }
   

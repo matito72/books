@@ -1,9 +1,11 @@
-import 'package:books/config/com_area.dart';
-import 'package:books/features/libro/bloc/libro.bloc.dart';
-import 'package:books/features/libro/bloc/libro_events.bloc.dart';
-import 'package:books/models/books_search_parameters.module.dart';
-import 'package:books/utilities/utils.dart';
-import 'package:books/widgets/appbar/backdrop_appbar_default.dart';
+import 'dart:io' show Platform;
+
+import 'package:book/config/com_area.dart';
+import 'package:book/features/libro/bloc/libro.bloc.dart';
+import 'package:book/features/libro/bloc/libro_events.bloc.dart';
+import 'package:book/models/books_search_parameters.module.dart';
+import 'package:book/utilities/utils.dart';
+import 'package:book/widgets/appbar/backdrop_appbar_default.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -31,13 +33,53 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
     return _createAppBar(textCtrlSearch);
   }
 
+  Widget refreshIconButton() {
+    return IconButton(
+      icon: Icon(
+          MdiIcons.refresh,
+          size: 20,
+          color: Colors.green
+      ),
+      alignment: Alignment.center,
+      visualDensity: VisualDensity.compact,
+      onPressed: () => {
+        setState(() {
+          ComArea.booksSearchParameters = BooksSearchParameters(
+              txtTitolo: '',
+              txtAutore: '',
+              txtEditore: '',
+              txtCategoria: '',
+              txtAnnoPubblicazioneDa: '',
+              txtAnnoPubblicazioneA: '',
+              txtPrezzoMin: '',
+              txtPrezzoMax: ''
+          );
+          widget._libroBloc.add(LoadLibroEvent(ComArea.lstLibrerieInUso));
+        })
+      },
+    );
+  }
+
   Widget _createAppBar(TextEditingController textCtrlSearch) {
     return BackdropAppbarDefault(
       context: context,
       showIconSx: false,
-      appBarContent: ComArea.appBarStateText 
-        ? _createTextTitle(context, textCtrlSearch)
-        : _createTextSearch(context, textCtrlSearch)
+      appBarContent: ComArea.appBarStateText
+          ? _createTextTitle(context, textCtrlSearch)
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              spacing: 0.0,
+              children: [
+                // Avvolgi il campo di ricerca in un Expanded
+                Expanded(
+                  child: _createTextSearch(context, textCtrlSearch),
+                ),
+                // Ora puoi scommentare questa riga senza problemi
+                refreshIconButton(),
+              ],
+          ),
     );
   }
 
@@ -74,6 +116,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
           )
         ),
         showFiltroAttivo
+            // FITRO ATTIVO
           ? Row(
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -108,24 +151,31 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
                 style: TextStyle(
                   color: Colors.white, fontSize: 13
                 ),
-              )
+              ),
             ],
           )
-          : const Text("")
+            // Filtro NON attivo
+          : Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [ refreshIconButton() ],
+        )
       ],
     );
   }
 
   String getTextAppbar() {
+    int maxNrChar = (!Platform.isAndroid && !Platform.isIOS) ? 150 : 20;
+    String spaces = (!Platform.isAndroid && !Platform.isIOS) ? "           => " : ": ";
     String strNomeLibreriaSel = (ComArea.lstLibrerieInUso.isNotEmpty && ComArea.lstLibrerieInUso.length == 1)
-      ? Utils.getFirstSubstring(ComArea.libreriaInUso!.nome, 10)
+      ? Utils.getFirstSubstring(ComArea.libreriaInUso!.nome, maxNrChar)
       : '';
     
     // if (ComArea.nrLibriVisibiliInLista == ComArea.libreriaInUso!.nrLibriCaricati) {
     //   return '$strNomeLibreriaSel: ${ComArea.nrLibriInLibreriaInUso} libri';
     // }
 
-    return '$strNomeLibreriaSel: ${ComArea.nrLibriVisibiliInLista}/${ComArea.nrLibriInLibreriaInUso} libri';
+    return '$strNomeLibreriaSel${spaces} ${ComArea.nrLibriVisibiliInLista}/${ComArea.nrLibriInLibreriaInUso} libri';
   }
 
   Widget _createTextSearch(BuildContext context, TextEditingController textCtrlSearch) {
@@ -162,7 +212,8 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
           },
         ),
         isCollapsed: true,
-        isDense: true
+        isDense: true,
+        maintainHintSize: false
       ),
     );
   }

@@ -1,34 +1,32 @@
 import 'dart:io';
 
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:isar/isar.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:isar_community/isar.dart';
 
 
 class DbLibreriaIsarService {
-  
+  static const String nomeBoxLibreriaDefault = "boxLibreria";
   final Directory _appDocumentDir;  
   DbLibreriaIsarService(this._appDocumentDir);
 
   Future<Isar> _openBoxLibreria() async {
-    if (Isar.instanceNames.isEmpty || !Isar.instanceNames.contains('boxLibreria')) {
-      if (Isar.getInstance('boxLibreria') != null && Isar.getInstance('boxLibreria')!.isOpen) {
-        Isar.getInstance('boxLibreria')!.close();
+    if (Isar.instanceNames.isEmpty || !Isar.instanceNames.contains(nomeBoxLibreriaDefault)) {
+      if (Isar.getInstance(nomeBoxLibreriaDefault) != null && Isar.getInstance(nomeBoxLibreriaDefault)!.isOpen) {
+        Isar.getInstance(nomeBoxLibreriaDefault)!.close();
       }
-      return await Isar.open(
-        name: 'boxLibreria', 
+      return Isar.openSync(
+        name: nomeBoxLibreriaDefault,
         [LibreriaIsarModelSchema], 
         directory: _appDocumentDir.path
       );
     }
 
-    return Future.value(Isar.getInstance('boxLibreria'));
+    return Future.value(Isar.getInstance(nomeBoxLibreriaDefault));
   }
 
   Future<List<LibreriaIsarModel>> readLstLibreriaFromDb() async {
     Isar isarLibreria = await _openBoxLibreria();
-
     List<LibreriaIsarModel> lstLibreriaSaved = isarLibreria.libreriaIsarModels.where().findAllSync();
-
     await isarLibreria.close();
 
     return lstLibreriaSaved;
@@ -52,38 +50,41 @@ class DbLibreriaIsarService {
     await isarLibreria.close();
   }
 
-  Future<void> addLibriInLibreriaInUso(int siglaLibreria, int nr) async {
+  Future<void> addLibriInLibreriaInUso(int siglaLibreria, int nr, double valore) async {
     Isar isarLibreria = await _openBoxLibreria();
 
     final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(siglaLibreria).findFirst();
     libreria!.nrLibriCaricati += nr;
-        await isarLibreria.writeTxn(() async {
-          await isarLibreria.libreriaIsarModels.put(libreria);
-        });
+    libreria.valoreTot += valore;
+    await isarLibreria.writeTxn(() async {
+      await isarLibreria.libreriaIsarModels.put(libreria);
+    });
     
     await isarLibreria.close();
   }
 
-  Future<void> removeLibroFromLibreriaInUso(int siglaLibreria) async {
+  Future<void> removeLibroFromLibreriaInUso(int siglaLibreria, double valore) async {
     Isar isarLibreria = await _openBoxLibreria();
 
     final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(siglaLibreria).findFirst();
     libreria!.nrLibriCaricati--;
-        await isarLibreria.writeTxn(() async {
-          await isarLibreria.libreriaIsarModels.put(libreria);
-        });
+    libreria.valoreTot -= valore;
+    await isarLibreria.writeTxn(() async {
+      await isarLibreria.libreriaIsarModels.put(libreria);
+    });
     
     await isarLibreria.close();
   }
 
-  Future<void> setNrLibriInLibreriaInUso(int siglaLibreria, int nr) async {
+  Future<void> azzeraNrLibriInLibreriaInUso(int siglaLibreria) async {
     Isar isarLibreria = await _openBoxLibreria();
 
     final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(siglaLibreria).findFirst();
-    libreria!.nrLibriCaricati = nr;
-        await isarLibreria.writeTxn(() async {
-          await isarLibreria.libreriaIsarModels.put(libreria);
-        });
+    libreria!.nrLibriCaricati = 0;
+    libreria.valoreTot = 0;
+    await isarLibreria.writeTxn(() async {
+      await isarLibreria.libreriaIsarModels.put(libreria);
+    });
     
     await isarLibreria.close();
   }
@@ -104,17 +105,18 @@ class DbLibreriaIsarService {
     await isarLibreria.close();
   }
 
-  Future<void> updateLibreria(LibreriaIsarModel libreriaNew) async {
+  Future<void> updateNomeLibreria(int siglaLibreria, String nomelibreriaOld, String nomelibreriaNew) async {
     Isar isarLibreria = await _openBoxLibreria();
 
-    final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(libreriaNew.sigla).findFirst();
+    final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(siglaLibreria).findFirst();
     if (libreria == null) {
       await isarLibreria.close();
-      throw 'Libreria ${libreriaNew.nome} già presente!';
-    }  
-    
+      throw "Libreria da modificare '$nomelibreriaOld' non trovata!";
+    }
+    libreria.nome = nomelibreriaNew;
     await isarLibreria.writeTxn(() async {
-      await isarLibreria.libreriaIsarModels.put(libreriaNew);
+      // isarLibreria.libreriaIsarModels.
+      await isarLibreria.libreriaIsarModels.put(libreria);
     });
 
     await isarLibreria.close();

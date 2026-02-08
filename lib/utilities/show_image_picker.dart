@@ -1,46 +1,54 @@
-import 'package:edge_detection/edge_detection.dart';
+import 'dart:io';
+
+import 'package:book/config/com_area.dart';
+import 'package:book/config/constant.dart';
+import 'package:book/utilities/utils.dart';
+import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-
 import 'package:permission_handler/permission_handler.dart';
 
 class ShowImagePickerUtil {
   final picker = ImagePicker();
+  final String isbn;
+  final String folderImage;
+  final String folderLibInUsoCompatto;
+
+  factory ShowImagePickerUtil(String isbn) {
+    String root = p.join(ComArea.appDocumentDir.path, Constant.books);
+    String folderImage = p.join(root, Constant.imageFilesPath);
+
+    String nomeLibInUsoCompatto = Utils.stringConcat(ComArea.libreriaInUso!.nome);
+    String folderLibInUsoCompatto = p.join(folderImage, nomeLibInUsoCompatto);
+
+    return ShowImagePickerUtil._internal(isbn, folderImage, folderLibInUsoCompatto);
+  }
+
+  // Costruttore privato
+  ShowImagePickerUtil._internal(this.isbn, this.folderImage, this.folderLibInUsoCompatto);
   
-  _cropImage(File imgFile, Function fn) async {
-    final croppedFile = await ImageCropper().cropImage(
-        sourcePath: imgFile.path,
-        aspectRatioPresets: Platform.isAndroid
-            ? [
-          CropAspectRatioPreset.square,
-          CropAspectRatioPreset.ratio3x2,
-          CropAspectRatioPreset.original,
-          CropAspectRatioPreset.ratio4x3,
-          CropAspectRatioPreset.ratio16x9
-        ] : [
-          CropAspectRatioPreset.original,
-          CropAspectRatioPreset.square,
-          CropAspectRatioPreset.ratio3x2,
-          CropAspectRatioPreset.ratio4x3,
-          CropAspectRatioPreset.ratio5x3,
-          CropAspectRatioPreset.ratio5x4,
-          CropAspectRatioPreset.ratio7x5,
-          CropAspectRatioPreset.ratio16x9
-        ],
-        uiSettings: [AndroidUiSettings(
-            toolbarTitle: "Image Cropper",
-            toolbarColor: Colors.deepOrange,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false),
-          IOSUiSettings(
-            title: "Image Cropper",
-          )
-        ]);
+  Future<void> _cropImage(File imgFile, Function fn) async {
+    CroppedFile? croppedFile;
+    if (Platform.isAndroid || Platform.isIOS) {
+      croppedFile = await ImageCropper().cropImage(
+          sourcePath: imgFile.path,
+          uiSettings: [AndroidUiSettings(
+              toolbarTitle: "Image Cropper",
+              toolbarColor: Colors.deepOrange,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: false),
+            IOSUiSettings(
+              title: "Image Cropper",
+            )
+          ]
+      );
+    } else {
+      croppedFile = CroppedFile(imgFile.path);
+    }
 
     if (croppedFile != null) {
       imageCache.clear();
@@ -52,11 +60,11 @@ class ShowImagePickerUtil {
     }
   }
 
-  _imgFromGallery(Function fn) async {
+  Future<void> _imgFromGallery(Function fn) async {
     await picker.pickImage(
         source: ImageSource.gallery, imageQuality: 50
-    ).then((value){
-      if(value != null){
+    ).then((value) {
+      if (value != null){
         _cropImage(File(value.path), fn);
       }
     });
@@ -71,51 +79,69 @@ class ShowImagePickerUtil {
   //   });
   // }
 
-  Future<void> _getImageFromCamera(Function fn) async {
+  Future<void> _initDirectory() async {
+    Directory dirRoot = Directory(p.join(ComArea.appDocumentDir.path, Constant.books));
+    if (!await dirRoot.exists()) {
+      await dirRoot.create();
+    }
+
+    Directory dirImage = Directory(folderImage);
+    if (!await dirImage.exists()) {
+      await dirImage.create();
+    }
+
+    Directory dirLibInUsoCompatto = Directory(folderLibInUsoCompatto);
+    if (!await dirLibInUsoCompatto.exists()) {
+      await dirLibInUsoCompatto.create();
+    }
+  }
+
+  Future<File?> _getImageFromCamera() async {  // Function fn
+    await _initDirectory();
     bool isCameraGranted = await Permission.camera.request().isGranted;
     if (!isCameraGranted) {
       isCameraGranted =
           await Permission.camera.request() == PermissionStatus.granted;
     }
-
     if (!isCameraGranted) {
       // Have not permission to camera
-      return;
+      return null;
     }
-
-    // Generate filepath for saving
-    String imagePath = join((await getApplicationSupportDirectory()).path,
-        "${(DateTime.now().millisecondsSinceEpoch / 1000).round()}.jpeg");
       
     bool success = false;
-
+    List<String> scannedImages = [];
     try {
-      //Make sure to await the call to detectEdge.
-      success = await EdgeDetection.detectEdge(
-        imagePath,
-        canUseGallery: true,
-        androidScanTitle: 'Scanning', // use custom localizations for android
-        androidCropTitle: 'Crop',
-        androidCropBlackWhiteTitle: 'Black White',
-        androidCropReset: 'Reset',
-      );
+      // Mostra l'interfaccia scanner e attende il risultato
+      scannedImages = await CunningDocumentScanner.getPictures(
+        iosScannerOptions: IosScannerOptions(
+          imageFormat: IosImageFormat.jpg,
+          jpgCompressionQuality: 0.9,
+        ),
+      ) ?? [];
+
+      success = scannedImages.isNotEmpty;
       debugPrint("success: $success");
     } catch (e) {
       debugPrint(e.toString());
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    // if (!mounted) return;
+    if (success && scannedImages.isNotEmpty) {
+      File fileImage = File(scannedImages[0]);
+      String fileNamePhoto = basename(fileImage.path);
 
-    // setState(() {
-    //   if(success){
-    //     _image.add(File(imagePath));
-    //   }
-    // });
+      String nomeFileDestinazione = this.isbn.isNotEmpty ? '${this.isbn}.jpg' : fileNamePhoto;
+      bool okCopy = await Utils.copyFile(pathSorgenteCompleto: fileImage.path, pathFolderDestinazione: folderLibInUsoCompatto, nomeFileDestinazione: nomeFileDestinazione);
+      if (okCopy) {
+        await fileImage.delete();
+        fileImage = File('$folderLibInUsoCompatto/$nomeFileDestinazione');
+        // fn(fileImage);
+      }
+      // image.copy(newPath)
+      // fn(fileImage);
+      return fileImage;
+    }
 
-    fn(File(imagePath));
+    return null;
   }
 
   void showImagePicker(BuildContext context, Function fn) {
@@ -166,8 +192,13 @@ class ShowImagePickerUtil {
                           ),
                           onTap: () async {
                             // _imgFromCamera(fn);
-                            _getImageFromCamera(fn);
-                            Navigator.pop(context);
+                            File? fileImage = await _getImageFromCamera();
+                            if (fileImage != null) {
+                              fn(fileImage);
+                            }
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
                           },
                         ))
                   ],

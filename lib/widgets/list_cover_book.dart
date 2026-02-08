@@ -6,8 +6,13 @@ import 'package:flutter_gallery_3d/gallery3d.dart';
 class ListCoverBook extends StatefulWidget {
   final List<String> _lstCoverBookUrl;
   final Function _fn;
-  
-  const ListCoverBook({super.key, required List<String> lstCoverBookUrl, required Function fn}) : _fn = fn, _lstCoverBookUrl = lstCoverBookUrl;
+
+  const ListCoverBook({
+    super.key,
+    required List<String> lstCoverBookUrl,
+    required Function fn,
+  }) : _fn = fn,
+       _lstCoverBookUrl = lstCoverBookUrl;
 
   @override
   State<ListCoverBook> createState() => _ListCoverBookState();
@@ -25,7 +30,7 @@ class _ListCoverBookState extends State<ListCoverBook> {
       // ellipseHeight: 0,
       // minScale: 0.8
       ellipseHeight: 0,
-      minScale: 0.5
+      minScale: 0.5,
     );
     super.initState();
   }
@@ -41,8 +46,11 @@ class _ListCoverBookState extends State<ListCoverBook> {
         isShowTransformMask: true,
         shadows: [
           const BoxShadow(
-              color: Color(0x90000000), offset: Offset(2, 0), blurRadius: 5)
-        ]
+            color: Color(0x90000000),
+            offset: Offset(2, 0),
+            blurRadius: 5,
+          ),
+        ],
       ),
       width: MediaQuery.of(context).size.width,
       height: (MediaQuery.of(context).size.height * 72 / 100),
@@ -56,15 +64,12 @@ class _ListCoverBookState extends State<ListCoverBook> {
       },
       onClickItem: (index) => {
         //debugPrint("--------------------->${widget.lstCoverBookUrl[index]}"),
-        widget._fn(widget._lstCoverBookUrl[index])
+        widget._fn(widget._lstCoverBookUrl[index]),
         // Navigator.pop(context, widget.lstCoverBookUrl[index])
       },
       itemBuilder: (context, index) {
-        return Image.network(
-          widget._lstCoverBookUrl[index],
-          fit: BoxFit.fill,
-        );
-      }
+        return Image.network(widget._lstCoverBookUrl[index], fit: BoxFit.fill);
+      },
     );
   }
 
@@ -96,37 +101,42 @@ class _ListCoverBookState extends State<ListCoverBook> {
                 ElevatedButton(
                   onPressed: () {
                     // if (currentIndex >= 1) {
-                      _controller.jumpTo(--_currentIndex);
-                    // } 
+                    _controller.jumpTo(--_currentIndex);
+                    // }
                     // else {
                     //   currentIndex = widget.lstCoverBookUrl.length;
                     //   controller.jumpTo(currentIndex - 1);
                     // }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(0, 0, 0, 0).withOpacity(0),
-                    foregroundColor: Colors.greenAccent
+                    backgroundColor: const Color.fromARGB(
+                      0,
+                      0,
+                      0,
+                      0,
+                    ).withValues(alpha: 0),
+                    foregroundColor: Colors.greenAccent,
                   ),
                   child: const Icon(Icons.arrow_back_ios),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     // if (currentIndex <= widget.lstCoverBookUrl.length) {
-                      _controller.animateTo(++_currentIndex);
+                    _controller.animateTo(++_currentIndex);
                     // }
                     // controller.animateTo(currentIndex <= widget.lstCoverBookUrl.length ? ++currentIndex : widget.lstCoverBookUrl.length);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
-                    foregroundColor: Colors.greenAccent
+                    foregroundColor: Colors.greenAccent,
                   ),
                   child: const Icon(
                     Icons.arrow_forward_ios,
-                    color: Colors.greenAccent
+                    color: Colors.greenAccent,
                   ),
-                )
-              ]
-            )
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -136,28 +146,27 @@ class _ListCoverBookState extends State<ListCoverBook> {
 
 class BackgrounBlurView extends StatelessWidget {
   final String _imageUrl;
-  const BackgrounBlurView({super.key, required String imageUrl}) : _imageUrl = imageUrl;
+  const BackgrounBlurView({super.key, required String imageUrl})
+    : _imageUrl = imageUrl;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      SizedBox(
-        height: 200,
-        width: MediaQuery.of(context).size.width,
-        child: InkWell(
-          child: Image.network(
-            _imageUrl,
-            fit: BoxFit.cover,
-          ),
+    return Stack(
+      children: [
+        SizedBox(
+          height: 200,
+          width: MediaQuery.of(context).size.width,
+          child: InkWell(child: Image.network(_imageUrl, fit: BoxFit.cover)),
         ),
-      ),
-      BackdropFilter(
+        BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
           child: Container(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             height: 200,
             width: MediaQuery.of(context).size.width,
-          ))
-    ]);
+          ),
+        ),
+      ],
+    );
   }
 }

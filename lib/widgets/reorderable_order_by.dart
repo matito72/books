@@ -1,14 +1,14 @@
-import 'package:books/config/com_area.dart';
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/features/libro/bloc/libro.bloc.dart';
-import 'package:books/features/libro/bloc/libro_events.bloc.dart';
-import 'package:books/resources/libro_field_selected.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/features/libro/bloc/libro.bloc.dart';
+import 'package:book/features/libro/bloc/libro_events.bloc.dart';
+import 'package:book/resources/libro_field_selected.dart';
 import 'package:flutter/material.dart';
 
 class ReorderableOrderBy extends StatefulWidget {
   final LibroBloc _libroBloc;
   final List<LibreriaIsarModel> _lstLibreriaSel;
-  
+
   const ReorderableOrderBy(this._libroBloc, this._lstLibreriaSel, {super.key});
 
   @override
@@ -21,9 +21,9 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
-    final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
-    
+    final Color oddItemColor = colorScheme.primary.withValues(alpha: 0.05);
+    final Color evenItemColor = colorScheme.primary.withValues(alpha: 0.15);
+
     return Expanded(
       flex: 10,
       child: SizedBox(
@@ -50,11 +50,11 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
                             child: Text(
                               _items[index].label.substring(0, 1),
                               style: const TextStyle(
-                                color: Colors.black, 
+                                color: Colors.black,
                                 fontWeight: FontWeight.bold,
                                 fontStyle: FontStyle.normal,
                                 fontSize: 16,
-                              )
+                              ),
                             ),
                           ),
                         ),
@@ -72,13 +72,13 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
                               Text(
                                 _items[index].label,
                                 style: const TextStyle(
-                                  color: Colors.white, 
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                   fontStyle: FontStyle.normal,
                                   fontSize: 14,
-                                )
-                              )
-                            ]
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         SizedBox(
@@ -91,13 +91,15 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
                                 onChanged: (bool? newValue) {
                                   setState(() {
                                     _items[index].isSelected = newValue!;
-                                    widget._libroBloc.add(LoadLibroEvent(widget._lstLibreriaSel));
+                                    widget._libroBloc.add(
+                                      LoadLibroEvent(widget._lstLibreriaSel),
+                                    );
                                   });
                                 },
-                              )
-                            ]
+                              ),
+                            ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ],
@@ -121,8 +123,7 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
     );
   }
 
-
   // Widget lstOrderBy(BuildContext context) {
-    
+
   // }
 }

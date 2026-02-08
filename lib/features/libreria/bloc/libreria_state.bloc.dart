@@ -1,6 +1,6 @@
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/models/selected_item.module.dart';
-import 'package:books/resources/action_result.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/models/selected_item.module.dart';
+import 'package:book/resources/action_result.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 

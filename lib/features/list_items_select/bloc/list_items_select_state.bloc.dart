@@ -1,4 +1,4 @@
-import 'package:books/resources/action_result.dart';
+import 'package:book/resources/action_result.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 

@@ -1,12 +1,12 @@
-import 'package:books/config/com_area.dart';
-import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/features/list_items_select/bloc/list_items_select.bloc.dart';
-import 'package:books/features/list_items_select/bloc/list_items_select_events.bloc.dart';
-import 'package:books/features/libro/bloc/libro.bloc.dart';
-import 'package:books/models/selected_item.module.dart';
-import 'package:books/utilities/list_items_utils.dart';
-import 'package:books/widgets/icon_check_item.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/config/constant.dart';
+import 'package:book/features/libro/bloc/libro.bloc.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/features/list_items_select/bloc/list_items_select.bloc.dart';
+import 'package:book/features/list_items_select/bloc/list_items_select_events.bloc.dart';
+import 'package:book/models/selected_item.module.dart';
+import 'package:book/utilities/list_items_utils.dart';
+import 'package:book/widgets/icon_check_item.dart';
 import 'package:flutter/material.dart';
 
 class SingleCardBook extends StatefulWidget {
@@ -67,7 +67,7 @@ class _SingleCardBook extends State<SingleCardBook> {
       return MenuAnchor(
         crossAxisUnconstrained: false,
         style: const MenuStyle(
-          backgroundColor: MaterialStatePropertyAll<Color>(Color.fromARGB(224, 88, 136, 182)),
+          backgroundColor: WidgetStatePropertyAll<Color>(Color.fromARGB(224, 88, 136, 182)),
         ),
         clipBehavior: Clip.none,
         builder: (BuildContext context, MenuController controller, Widget? child) {
@@ -88,50 +88,89 @@ class _SingleCardBook extends State<SingleCardBook> {
         },
         menuChildren: <MenuItemButton>[
           MenuItemButton(
-            trailingIcon: Text(
-              "Dettaglio/Modifica",
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Colors.amber[200],
-              ),
+            overflowAxis: Axis.horizontal,
+            trailingIcon: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 100, // larghezza fissa per uniformare
+                  child: Text(
+                    "Dettaglio Modifica",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.amber[200],
+                    ),
+                  ),
+                ),
+              ],
             ),
             onPressed: () => widget._fnViewDettaglioLibro(widget._parentContext, widget._libroBloc, widget._selItem.item, true),
-            child: Icon(Icons.edit, color: Colors.yellowAccent.shade100,),
+            child: SizedBox(
+              width: 24,
+              height: 24,
+              child: Icon(Icons.edit, color: Colors.yellowAccent.shade100),
+            ),
           ),
           MenuItemButton(
-            trailingIcon: Text(
-              "Seleziona",
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Colors.green[100],
-              ),
+            overflowAxis: Axis.horizontal,
+            trailingIcon: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 100,
+                  child: Text(
+                    "Seleziona",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[100],
+                    ),
+                  ),
+                ),
+              ],
             ),
             onPressed: () => setState(() {
               widget._selItem.sel = !widget._selItem.sel;
               widget._listItemsSelectBloc.add(InitListItemsSelectEvent());
               widget._listItemsSelectBloc.add(RefreshListItemsSelectEvent(widget._libroBloc.state.data));
             }),
-            child: Icon(Icons.check_circle, color: Colors.green[200],
-              )            
+            child: SizedBox(
+              width: 24,
+              height: 24,
+              child: Icon(Icons.check_circle, color: Colors.green[200]),
+            ),
           ),
           MenuItemButton(
-            trailingIcon: const Text(
-              "Elimina libro",
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 235, 193, 180)
-              ),
+            overflowAxis: Axis.horizontal,
+            trailingIcon: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 100,
+                  child: Text(
+                    "Elimina libro",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 235, 193, 180),
+                    ),
+                  ),
+                ),
+              ],
             ),
             onPressed: () => widget._fnDeleteLibro(widget._parentContext, widget._libroBloc, widget._selItem.item),
-            child: Icon(Icons.delete, color: Colors.orange.shade800),
+            child: SizedBox(
+              width: 24,
+              height: 24,
+              child: Icon(Icons.delete, color: Colors.orange.shade800),
+            ),
           ),
         ],
+
       );
     }
 
@@ -190,46 +229,88 @@ class _SingleCardBook extends State<SingleCardBook> {
       );
     }
 
-    Widget getPrezzo() {
-      return Text(
-        '€ ${widget._selItem.item.prezzo}',
-        style: Theme.of(context).textTheme.titleSmall!.copyWith(
-          fontStyle: FontStyle.italic,
-          color: Colors.orange[50]
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      );
-    }
+    // Widget getPrezzo() {
+    //   return Text(
+    //     Constant.formatoEuro.format(widget._selItem.item.prezzo),
+    //     style: Theme.of(context).textTheme.titleSmall!.copyWith(
+    //       fontStyle: FontStyle.italic,
+    //       color: Colors.orange[50]
+    //     ),
+    //     maxLines: 1,
+    //     overflow: TextOverflow.ellipsis,
+    //   );
+    // }
+    //
+    // Widget getPagine() {
+    //   return Text(
+    //     'Pagine: ${widget._selItem.item.nrPagine}',
+    //     style: Theme.of(context).textTheme.titleSmall!.copyWith(
+    //         fontStyle: FontStyle.italic,
+    //         color: Colors.orange[50]
+    //     ),
+    //     maxLines: 1,
+    //     overflow: TextOverflow.ellipsis,
+    //   );
+    // }
+    //
+    // Widget getDtInserimentoCounter() {
+    //   return Row(
+    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //     crossAxisAlignment: CrossAxisAlignment.center,
+    //     mainAxisSize: MainAxisSize.min,
+    //     children: [
+    //       Text(
+    //         '${ComArea.mapCodDescLibreria[widget._selItem.item.siglaLibreria]}',
+    //         style: TextStyle(
+    //           fontSize: 12.0,
+    //           fontStyle: FontStyle.normal,
+    //           fontWeight: FontWeight.bold,
+    //           color: Colors.orange[100]
+    //         ),
+    //         textAlign: TextAlign.right,
+    //         maxLines: 1,
+    //         overflow: TextOverflow.ellipsis,
+    //       ),
+    //       const Padding(
+    //         padding: EdgeInsets.only(right: 5)
+    //       ),
+    //       Text(
+    //         '- ${widget._index+1}/${widget.nrTot}',
+    //         style: Theme.of(context).textTheme.labelSmall,
+    //         textAlign: TextAlign.right,
+    //       ),
+    //       const Padding(
+    //         padding: EdgeInsets.only(right: 5)
+    //       ),
+    //     ],
+    //   );
+    // }
 
-    Widget getDtInserimentoCounter() {
+    Widget getPrezzoPagineLibreriaCounter() {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
         children: [
+          // Testo di sinistra: Prezzo e Pagine
+          // Non usiamo Expanded qui così occupa solo lo spazio necessario
           Text(
-            '${ComArea.mapCodDescLibreria[widget._selItem.item.siglaLibreria]}',
+            '${Constant.formatoEuro.format(widget._selItem.item.prezzo)}  Pag. ${widget._selItem.item.nrPagine}',
             style: TextStyle(
-              fontSize: 12.0, 
-              fontStyle: FontStyle.normal,
+              fontSize: 12.0,
               fontWeight: FontWeight.bold,
-              color: Colors.orange[100]
+              color: Colors.orange[100],
             ),
-            textAlign: TextAlign.right,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
-          const Padding(
-            padding: EdgeInsets.only(right: 5)
-          ),
-          Text(
-            '- ${widget._index+1}/${widget.nrTot}',
-            style: Theme.of(context).textTheme.labelSmall,
-            textAlign: TextAlign.right,
-          ),
-          const Padding(
-            padding: EdgeInsets.only(right: 5)
+          const SizedBox(width: 8), // Spazio minimo di sicurezza
+          // Testo di destra: Libreria e Counter
+          // Expanded prenderà tutto lo spazio rimanente e textAlign: End lo sposterà a destra
+          Expanded(
+            child: Text(
+              '${ComArea.mapCodDescLibreria[widget._selItem.item.siglaLibreria]} - ${widget._index + 1}/${widget.nrTot}',
+              style: Theme.of(context).textTheme.labelSmall,
+              textAlign: TextAlign.end, // Forza il testo alla fine della riga
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis, // Se è troppo lungo, mette i puntini
+            ),
           ),
         ],
       );
@@ -239,13 +320,14 @@ class _SingleCardBook extends State<SingleCardBook> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
+        // Rimosso mainAxisSize: MainAxisSize.min perché Expanded richiede uno spazio definito
         children: <Widget>[
           getCoverBook(),
-          SizedBox(
-            width: (MediaQuery.of(context).size.width * 70 / 100),
-            height: cardBookHeight,  
-            child: Padding(
+          // Sostituiamo il SizedBox con larghezza fissa con Expanded
+          Padding(padding: EdgeInsetsGeometry.only(left: 5)),
+          Expanded(
+            child: Container( // Usiamo Container o lasciamo il Padding
+              height: cardBookHeight,
               padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -253,44 +335,42 @@ class _SingleCardBook extends State<SingleCardBook> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 9,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            getTitolo(),
-                            getAutore()
-                          ],
+                      children: <Widget>[
+                        Expanded(
+                          flex: 9,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              getTitolo(),
+                              getAutore()
+                            ],
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: getMenuAnchor()
-                      ),
-                    ]
+                        Expanded(
+                            flex: 1,
+                            child: getMenuAnchor()
+                        ),
+                      ]
                   ),
                   getCategoria(),
                   getCasaEditrice(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      getPrezzo(),
-                      getDtInserimentoCounter()
-                    ],
-                  )
+                  // Spingiamo il prezzo e la data in fondo se necessario
+                  const Spacer(),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     getPrezzo(),
+                  //     getPagine(),
+                  //     getDtInserimentoCounter()
+                  //   ],
+                  // )
+                  getPrezzoPagineLibreriaCounter()
                 ],
-              )
-            )
+              ),
+            ),
           ),
-        ]
+        ],
       );
     }
 

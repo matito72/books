@@ -1,20 +1,19 @@
-import 'package:books/config/com_area.dart';
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/features/libro/bloc/libro.bloc.dart';
-import 'package:books/features/libro/bloc/libro_events.bloc.dart';
-import 'package:books/models/books_search_parameters.module.dart';
-import 'package:books/resources/bisac_codes.dart';
-import 'package:books/utilities/dialog_utils.dart';
-import 'package:books/widgets/bisac_dropdown_menu.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/features/libro/bloc/libro.bloc.dart';
+import 'package:book/features/libro/bloc/libro_events.bloc.dart';
+import 'package:book/models/books_search_parameters.module.dart';
+import 'package:book/resources/bisac_codes.dart';
+import 'package:book/utilities/dialog_utils.dart';
+import 'package:book/widgets/bisac_dropdown_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-
 class RicercaAvanzata extends StatefulWidget {
   final LibroBloc _libroBloc;
   final List<LibreriaIsarModel> _lstLibreriaSel;
-  
+
   const RicercaAvanzata(this._libroBloc, this._lstLibreriaSel, {super.key});
 
   @override
@@ -44,13 +43,12 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
     txtPrezzoMinCtrl.dispose();
     txtPrezzoMaxCtrl.dispose();
     txtCategoriaCtrl.dispose();
-    
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
     if (ComArea.booksSearchParameters.isEmpty()) {
       clearTxtControllerForm();
     }
@@ -63,21 +61,17 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 5),
-          ),
+          const Padding(padding: EdgeInsets.only(top: 5)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            children: [
-              getHeaderText(),
-            ],
+            children: [getHeaderText()],
           ),
           // const Padding(
           //   padding: EdgeInsets.only(top: 5),
           // ),
-          formRicercaLibriLibreria(context)
+          formRicercaLibriLibreria(context),
         ],
       ),
     );
@@ -85,8 +79,8 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
 
   Widget formRicercaLibriLibreria(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
-    final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
+    final Color oddItemColor = colorScheme.primary.withValues(alpha: 0.05);
+    final Color evenItemColor = colorScheme.primary.withValues(alpha: 0.15);
 
     Color getColor(int i) {
       if (i % 2 == 0) {
@@ -113,13 +107,18 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                 textCapitalization: TextCapitalization.none,
                 autofocus: true,
                 keyboardType: TextInputType.text,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.amberAccent[100],
+                ),
                 decoration: InputDecoration(
                   prefixStyle: Theme.of(context).textTheme.titleSmall,
                   labelStyle: Theme.of(context).textTheme.titleSmall,
                   fillColor: getColor(j++),
-                  filled: true, 
-                  hintText: (txtTitoloCtrl.text.isEmpty || txtTitoloCtrl.text == '') ? 'Titolo: ' : '',
+                  filled: true,
+                  hintText:
+                      (txtTitoloCtrl.text.isEmpty || txtTitoloCtrl.text == '')
+                      ? 'Titolo: '
+                      : '',
                   prefixText: txtTitoloCtrl.text.isEmpty ? '' : 'Titolo: ',
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                 ),
@@ -128,7 +127,7 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                   setState(() {
                     txtTitoloCtrl.text = value;
                     updateComAreaBooksSearchParameters();
-                  })
+                  }),
                 },
               ),
               const Padding(padding: EdgeInsets.only(top: 3)),
@@ -137,21 +136,23 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                 textCapitalization: TextCapitalization.words,
                 autofocus: true,
                 keyboardType: TextInputType.name,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.amberAccent[100],
+                ),
                 decoration: InputDecoration(
                   prefixStyle: Theme.of(context).textTheme.titleSmall,
                   labelStyle: Theme.of(context).textTheme.titleSmall,
                   hintText: txtAutoreCtrl.text.isEmpty ? 'Autore: ' : '',
                   prefixText: txtAutoreCtrl.text.isEmpty ? '' : 'Autore: ',
                   fillColor: getColor(j++),
-                  filled: true, 
+                  filled: true,
                 ),
                 controller: txtAutoreCtrl,
                 onChanged: (value) => {
                   setState(() {
                     txtAutoreCtrl.text = value;
                     updateComAreaBooksSearchParameters();
-                  })
+                  }),
                 },
               ),
               const Padding(padding: EdgeInsets.only(top: 1)),
@@ -160,21 +161,23 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                 textCapitalization: TextCapitalization.sentences,
                 autofocus: true,
                 keyboardType: TextInputType.text,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.amberAccent[100],
+                ),
                 decoration: InputDecoration(
                   prefixStyle: Theme.of(context).textTheme.titleSmall,
                   labelStyle: Theme.of(context).textTheme.titleSmall,
                   hintText: txtEditoreCtrl.text.isEmpty ? 'Editore: ' : '',
                   prefixText: txtEditoreCtrl.text.isEmpty ? '' : 'Editore: ',
                   fillColor: getColor(j++),
-                  filled: true, 
+                  filled: true,
                 ),
                 controller: txtEditoreCtrl,
                 onChanged: (value) => {
                   setState(() {
                     txtEditoreCtrl.text = value;
                     updateComAreaBooksSearchParameters();
-                  })
+                  }),
                 },
               ),
               const Padding(padding: EdgeInsets.only(top: 1)),
@@ -183,21 +186,27 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                 textCapitalization: TextCapitalization.sentences,
                 autofocus: true,
                 keyboardType: TextInputType.text,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.amberAccent[100],
+                ),
                 decoration: InputDecoration(
                   prefixStyle: Theme.of(context).textTheme.titleSmall,
                   labelStyle: Theme.of(context).textTheme.titleSmall,
-                  hintText: txtDescrizioneCtrl.text.isEmpty ? 'Descrizione: ' : '',
-                  prefixText: txtDescrizioneCtrl.text.isEmpty ? '' : 'Descrizione: ',
+                  hintText: txtDescrizioneCtrl.text.isEmpty
+                      ? 'Descrizione: '
+                      : '',
+                  prefixText: txtDescrizioneCtrl.text.isEmpty
+                      ? ''
+                      : 'Descrizione: ',
                   fillColor: getColor(j++),
-                  filled: true, 
+                  filled: true,
                 ),
                 controller: txtDescrizioneCtrl,
                 onChanged: (value) => {
                   setState(() {
                     txtDescrizioneCtrl.text = value;
                     updateComAreaBooksSearchParameters();
-                  })
+                  }),
                 },
               ),
               const Padding(padding: EdgeInsets.only(top: 1)),
@@ -245,18 +254,30 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                         autofocus: true,
                         readOnly: true,
                         controller: txtAnnoPubblicazioneDaCtrl,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: Colors.amberAccent[100],
+                        ),
                         decoration: InputDecoration(
                           prefixStyle: Theme.of(context).textTheme.titleSmall,
                           labelStyle: Theme.of(context).textTheme.titleSmall,
-                          hintText: txtAnnoPubblicazioneDaCtrl.text.isEmpty ? 'Dt. Pubb.ne da: ' : '',
-                          prefixText: txtAnnoPubblicazioneDaCtrl.text.isEmpty ? '' : 'Dt. Pubb.ne da: ',
+                          hintText: txtAnnoPubblicazioneDaCtrl.text.isEmpty
+                              ? 'Dt. Pubb.ne da: '
+                              : '',
+                          prefixText: txtAnnoPubblicazioneDaCtrl.text.isEmpty
+                              ? ''
+                              : 'Dt. Pubb.ne da: ',
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           fillColor: evenItemColor,
-                          filled: true, 
+                          filled: true,
                         ),
                         onTap: () async {
-                          String? annoDa = await DialogUtils.getAnno(context, DateTime(DateTime.now().year - 5, 1).year.toString());
+                          String? annoDa = await DialogUtils.getAnno(
+                            context,
+                            DateTime(
+                              DateTime.now().year - 5,
+                              1,
+                            ).year.toString(),
+                          );
                           if (annoDa != null) {
                             setState(() {
                               txtAnnoPubblicazioneDaCtrl.text = annoDa;
@@ -276,17 +297,26 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                         readOnly: true,
                         keyboardType: TextInputType.text,
                         controller: txtAnnoPubblicazioneACtrl,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: Colors.amberAccent[100],
+                        ),
                         decoration: InputDecoration(
                           prefixStyle: Theme.of(context).textTheme.titleSmall,
                           labelStyle: Theme.of(context).textTheme.titleSmall,
-                          hintText: txtAnnoPubblicazioneACtrl.text.isEmpty ? 'Dt. Pubbl.ne a: ' : '',
-                          prefixText: txtAnnoPubblicazioneACtrl.text.isEmpty ? '' : 'Dt. Pubbl.ne a: ',
+                          hintText: txtAnnoPubblicazioneACtrl.text.isEmpty
+                              ? 'Dt. Pubbl.ne a: '
+                              : '',
+                          prefixText: txtAnnoPubblicazioneACtrl.text.isEmpty
+                              ? ''
+                              : 'Dt. Pubbl.ne a: ',
                           fillColor: evenItemColor,
-                          filled: true, 
+                          filled: true,
                         ),
                         onTap: () async {
-                          String? annoDa = await DialogUtils.getAnno(context, DateTime(DateTime.now().year, 1).year.toString());
+                          String? annoDa = await DialogUtils.getAnno(
+                            context,
+                            DateTime(DateTime.now().year, 1).year.toString(),
+                          );
                           if (annoDa != null) {
                             setState(() {
                               txtAnnoPubblicazioneACtrl.text = annoDa;
@@ -310,23 +340,31 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                       maxLines: 1,
                       textCapitalization: TextCapitalization.sentences,
                       autofocus: true,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: Colors.amberAccent[100],
+                      ),
                       decoration: InputDecoration(
                         prefixStyle: Theme.of(context).textTheme.titleSmall,
                         labelStyle: Theme.of(context).textTheme.titleSmall,
-                        hintText: txtPrezzoMinCtrl.text.isEmpty ? 'Prezzo min: ' : '',
-                        prefixText: txtPrezzoMinCtrl.text.isEmpty ? '' : 'Prezzo min: ',
+                        hintText: txtPrezzoMinCtrl.text.isEmpty
+                            ? 'Prezzo min: '
+                            : '',
+                        prefixText: txtPrezzoMinCtrl.text.isEmpty
+                            ? ''
+                            : 'Prezzo min: ',
                         fillColor: getColor(j++),
-                        filled: true, 
+                        filled: true,
                       ),
                       keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.singleLineFormatter],
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.singleLineFormatter,
+                      ],
                       controller: txtPrezzoMinCtrl,
                       onChanged: (value) => {
                         setState(() {
                           txtPrezzoMinCtrl.text = value;
                           updateComAreaBooksSearchParameters();
-                        })
+                        }),
                       },
                     ),
                   ),
@@ -336,31 +374,39 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
                       textCapitalization: TextCapitalization.sentences,
                       autofocus: true,
                       keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.singleLineFormatter],
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.amberAccent[100]),
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.singleLineFormatter,
+                      ],
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: Colors.amberAccent[100],
+                      ),
                       decoration: InputDecoration(
                         prefixStyle: Theme.of(context).textTheme.titleSmall,
                         labelStyle: Theme.of(context).textTheme.titleSmall,
-                        hintText: txtPrezzoMaxCtrl.text.isEmpty ? 'Prezzo max: ' : '',
-                        prefixText: txtPrezzoMaxCtrl.text.isEmpty ? '' : 'Prezzo max: ',
+                        hintText: txtPrezzoMaxCtrl.text.isEmpty
+                            ? 'Prezzo max: '
+                            : '',
+                        prefixText: txtPrezzoMaxCtrl.text.isEmpty
+                            ? ''
+                            : 'Prezzo max: ',
                         fillColor: getColor(j++),
-                        filled: true, 
+                        filled: true,
                       ),
                       controller: txtPrezzoMaxCtrl,
                       onChanged: (value) => {
                         setState(() {
                           txtPrezzoMaxCtrl.text = value;
                           updateComAreaBooksSearchParameters();
-                        })
+                        }),
                       },
                     ),
                   ),
-                ]
+                ],
               ),
             ],
           ),
-        )
-      )
+        ),
+      ),
     );
   }
 
@@ -376,36 +422,31 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
             alignment: PlaceholderAlignment.middle,
             child: IconButton(
               icon: Icon(
-                MdiIcons.eraser, 
+                MdiIcons.eraser,
                 size: 20,
                 // color: const Color.fromARGB(255, 236, 26, 26)
-                color: Colors.deepOrangeAccent
+                color: Colors.deepOrangeAccent,
               ),
               onPressed: () => {
                 setState(() {
-                    clearSearchForm();
-                })
-                
+                  clearSearchForm();
+                }),
               },
             ),
           ),
-          TextSpan(
-            text: '   Ricerca Libri  ',
-            style: linkStyle
-          ),
+          TextSpan(text: '   Ricerca Libri  ', style: linkStyle),
           WidgetSpan(
             alignment: PlaceholderAlignment.middle,
             child: IconButton(
               icon: Icon(
-                MdiIcons.bookSearch, 
+                MdiIcons.bookSearch,
                 size: 20,
                 color: const Color.fromARGB(255, 127, 228, 11),
               ),
               onPressed: () => {
                 setState(() {
-                    widget._libroBloc.add(LoadLibroEvent(widget._lstLibreriaSel));
-                })
-                
+                  widget._libroBloc.add(LoadLibroEvent(widget._lstLibreriaSel));
+                }),
               },
             ),
           ),
@@ -414,17 +455,17 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
     );
   }
 
-  updateComAreaBooksSearchParameters() {
+  void updateComAreaBooksSearchParameters() {
     ComArea.booksSearchParameters = BooksSearchParameters(
-      txtTitolo: txtTitoloCtrl.text, 
-      txtAutore: txtAutoreCtrl.text, 
+      txtTitolo: txtTitoloCtrl.text,
+      txtAutore: txtAutoreCtrl.text,
       txtEditore: txtEditoreCtrl.text,
       txtCategoria: txtCategoriaSel,
-      txtAnnoPubblicazioneDa: txtAnnoPubblicazioneDaCtrl.text, 
+      txtAnnoPubblicazioneDa: txtAnnoPubblicazioneDaCtrl.text,
       txtAnnoPubblicazioneA: txtAnnoPubblicazioneACtrl.text,
       txtPrezzoMin: txtPrezzoMinCtrl.text,
       txtPrezzoMax: txtPrezzoMaxCtrl.text,
-      txtDescrizione: txtDescrizioneCtrl.text
+      txtDescrizione: txtDescrizioneCtrl.text,
     );
     // if (ComArea.booksSearchParameters.isEmpty()) {
     //   ComArea.appBarStateText = true;
@@ -432,13 +473,13 @@ class _RicercaAvanzataState extends State<RicercaAvanzata> {
     // }
   }
 
-  clearSearchForm() {
+  void clearSearchForm() {
     clearTxtControllerForm();
     updateComAreaBooksSearchParameters();
     widget._libroBloc.add(LoadLibroEvent(widget._lstLibreriaSel));
   }
 
-  clearTxtControllerForm() {
+  void clearTxtControllerForm() {
     txtTitoloCtrl.text = '';
     txtAutoreCtrl.text = '';
     txtEditoreCtrl.text = '';

@@ -1,16 +1,94 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:books/config/constant.dart';
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/models/parameter_google_search.module.dart';
-import 'package:books/services/libro_search_service.dart';
+import 'package:book/config/constant.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/models/parameter_google_search.module.dart';
+import 'package:book/services/libro_search_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-// import 'package:flutter/widgets.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Utils {
+
+  static Future<bool> copiaFile({
+    required String pathFolderFileSorgente, required String nomeFileSorgente,
+    required String pathFolderDestinazione, required String nomeFileDestinazione}) async {
+      // 1. Costruisci i percorsi completi
+      final pathSorgenteCompleto = '$pathFolderFileSorgente/$nomeFileSorgente';
+      final pathDestinazioneCompleto = '$pathFolderDestinazione/$nomeFileDestinazione';
+
+      try {
+        final fileSorgente = File(pathSorgenteCompleto);
+
+        // Verifica se il file sorgente esiste
+        if (!await fileSorgente.exists()) {
+          print('ERRORE: File sorgente non trovato: $pathSorgenteCompleto');
+          return false;
+        }
+
+        // 2. Assicurati che la directory di destinazione esista
+        // final directoryDestinazione = Directory(pathFolderDestinazione);
+        // if (!await directoryDestinazione.exists()) {
+        //   // Crea la directory di destinazione (con eventuali directory padre)
+        //   await directoryDestinazione.create(recursive: true);
+        //   print('Creata la directory di destinazione: $pathFolderDestinazione');
+        // }
+
+        // 3. Esegui la copia del file
+        // Il metodo .copy() è efficiente e restituisce un nuovo oggetto File
+        final fileDestinazione = await fileSorgente.copy(pathDestinazioneCompleto);
+
+        print('Copia completata con successo!');
+        print('Destinazione: ${fileDestinazione.path}');
+        return true;
+
+      } on FileSystemException catch (e) {
+        // Gestione di errori specifici del filesystem (es. permessi negati)
+        print('ERRORE di I/O durante la copia: ${e.message}');
+        return false;
+      } catch (e) {
+        // Gestione di altri errori non previsti
+        print('ERRORE inatteso durante la copia: $e');
+        return false;
+      }
+  }
+
+  static Future<bool> copyFile({required String pathSorgenteCompleto, required String pathFolderDestinazione, required String nomeFileDestinazione}) async {
+    final pathDestinazioneCompleto = '$pathFolderDestinazione/$nomeFileDestinazione';
+
+    try {
+      final fileSorgente = File(pathSorgenteCompleto);
+      // Verifica se il file sorgente esiste
+      if (!await fileSorgente.exists()) {
+        print('ERRORE: File sorgente non trovato: $pathSorgenteCompleto');
+        return false;
+      }
+
+      final File fileDestinazioneTest = File(pathDestinazioneCompleto);
+      if (await fileDestinazioneTest.exists()) {
+        // Se il file destinazione esiste lo ca
+        fileDestinazioneTest.deleteSync();
+      }
+
+      // Eseguie la copia del file
+      // Il metodo .copy() è efficiente e restituisce un nuovo oggetto File
+      final File fileDestinazione = await fileSorgente.copy(pathDestinazioneCompleto);
+      // print('Copia completata con successo!');
+      print('Copia completata con successo nell destinazione: ${fileDestinazione.path}');
+      return true;
+
+    } on FileSystemException catch (e) {
+      // Gestione di errori specifici del filesystem (es. permessi negati)
+      print('ERRORE di I/O durante la copia: ${e.message}');
+      return false;
+    } catch (e) {
+      // Gestione di altri errori non previsti
+      print('ERRORE inatteso durante la copia: $e');
+      return false;
+    }
+  }
 
   static Future<Image> getImageFromUrlFile(LibroIsarModel libroViewModel, {double? w, double? h}) async {
     late Image image;
@@ -64,11 +142,11 @@ class Utils {
     } else {
       image = Image.asset(Constant.assetImageDefault,fit: BoxFit.fill);
     }
-    debugPrint('image.hashCode: ${image.hashCode}');
+    // debugPrint('image.hashCode: ${image.hashCode}');
     return image;
   }
   
-  static integrazioneDatiIncompleti(LibroIsarModel libroViewModelDett) async {
+  static Future<void> integrazioneDatiIncompleti(LibroIsarModel libroViewModelDett) async {
     int nrDatiIncompleti = 0;
     nrDatiIncompleti += libroViewModelDett.descrizione.isEmpty ? 1 : 0;
     nrDatiIncompleti += (libroViewModelDett.editore.isEmpty || libroViewModelDett.editore == Constant.editoreDaDefinire) ? 1 : 0;
@@ -177,13 +255,13 @@ class Utils {
     return lstCoverBookUrl;
   }
 
-  static _loadHttpUrl(List<String> lstCoverBookHttpUrl, String url) {
+  static void _loadHttpUrl(List<String> lstCoverBookHttpUrl, String url) {
     if (url.toLowerCase().startsWith('http') && !lstCoverBookHttpUrl.contains(url)) {
       lstCoverBookHttpUrl.add(url);
     }
   }
 
-  static _loadCoverBook(List<String> lstCoverBookUrlLowResolution, List<String> lstCoverBookUrl, List<LibroIsarModel> lstLibri, int nrMax) {
+  static void _loadCoverBook(List<String> lstCoverBookUrlLowResolution, List<String> lstCoverBookUrl, List<LibroIsarModel> lstLibri, int nrMax) {
     if (lstLibri.isNotEmpty) {
       for (LibroIsarModel libroViewModelResult in lstLibri) {
         String immagineCopertina = libroViewModelResult.immagineCopertina;
@@ -279,5 +357,42 @@ class Utils {
       }
     }
     return mapCodDescLibreria;
+  }
+
+  static Future<bool> hasPlatformPermissions() async {
+    if (!Platform.isAndroid && !Platform.isIOS) return true;
+
+    Map<Permission, PermissionStatus> status = await [
+      Permission.manageExternalStorage, Permission.camera,
+    ].request();
+    return status.values.every((s) => s.isGranted);
+  }
+
+  static String stringConcat(String str) {
+    return str.split(" ").map((part) {
+      // Rimuoviamo eventuali spazi residui
+      String trimmed = part.trim();
+
+      if (trimmed.isEmpty || trimmed == "-") return "";
+
+      // Capitalizziamo la prima lettera e uniamo il resto
+      return trimmed[0].toUpperCase() + trimmed.substring(1);
+    }).join('');
+  }
+
+  static String rimuoviAccapo(String testo) {
+    testo = testo.replaceAll("\n", "");
+    testo = testo.replaceAll("\t", "");
+    return testo;
+  }
+
+  static String rimuoviAccenti(String testo) {
+    const conAccento = 'àáâãäåèéêëìíîïòóôõöùúûüñç';
+    const senzaAccento = 'aaaaaaeeeeiiiiooooouuuunc';
+
+    for (int i = 0; i < conAccento.length; i++) {
+      testo = testo.replaceAll(conAccento[i], senzaAccento[i]);
+    }
+    return testo;
   }
 }

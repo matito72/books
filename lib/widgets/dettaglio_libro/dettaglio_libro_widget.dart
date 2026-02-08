@@ -1,18 +1,20 @@
-import 'package:books/config/com_area.dart';
-import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.util.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/features/libro/data/models/link_isar.module.dart';
-import 'package:books/models/widget_desc.module.dart';
-import 'package:books/pages/immagine_copertina.dart';
-import 'package:books/resources/libro_field_selected.dart';
-import 'package:books/utilities/dialog_utils.dart';
-import 'package:books/utilities/utils.dart';
-import 'package:books/widgets/bisac_dropdown_menu.dart';
-import 'package:books/widgets/dettaglio_libro/fields_libro/descrizione_field.dart';
-import 'package:books/widgets/dettaglio_libro/fields_libro/field_dett_libro.dart';
-import 'package:books/widgets/dettaglio_libro/five_stars.dart';
-import 'package:books/widgets/libreria_sel_dropdown.dart';
+import 'dart:io' show Platform;
+
+import 'package:book/config/com_area.dart';
+import 'package:book/config/constant.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.util.dart';
+import 'package:book/features/libro/data/models/link_isar.module.dart';
+import 'package:book/models/widget_desc.module.dart';
+import 'package:book/pages/immagine_copertina.dart';
+import 'package:book/resources/libro_field_selected.dart';
+import 'package:book/utilities/dialog_utils.dart';
+import 'package:book/utilities/utils.dart';
+import 'package:book/widgets/bisac_dropdown_menu.dart';
+import 'package:book/widgets/dettaglio_libro/fields_libro/descrizione_field.dart';
+import 'package:book/widgets/dettaglio_libro/fields_libro/field_dett_libro.dart';
+import 'package:book/widgets/dettaglio_libro/five_stars.dart';
+import 'package:book/widgets/libreria_sel_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -102,97 +104,104 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     );
   }
 
+  // ... (omitted code)
+
   Widget _headerBook(BuildContext context) {
     FieldDettLibro fieldDettLibro = FieldDettLibro(context, widget.libroViewModel);
+    final isSmartPhone = (Platform.isAndroid || Platform.isIOS);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          width: (MediaQuery.of(context).size.width * 35 / 100),
-          height: (MediaQuery.of(context).size.height * 25 / 100),
-          child: InkWell(
-            splashColor: Colors.transparent,
-            onDoubleTap: () {
-              _goToImageview(context, widget.libroViewModel);
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: FutureBuilder<Widget>(
-                future: _getImageNetwork(context, widget.libroViewModel),
-                builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else {
-                    return snapshot.data as Widget;
-                  }
-                }
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          // mainAxisSize: MainAxisSize.min, // Non serve se usi vincoli di larghezza fissa o Expanded
+          children: [
+            // COLONNA IMMAGINE (35% della larghezza)
+            SizedBox(
+              width: isSmartPhone ? (MediaQuery.of(context).size.width * 34 / 100) : 200.00,
+              height: isSmartPhone ? (MediaQuery.of(context).size.height * 25 / 100) : 260.00,
+              child: InkWell(
+                splashColor: Colors.transparent,
+                onDoubleTap: () {
+                  _goToImageview(context, widget.libroViewModel);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: FutureBuilder<Widget>(
+                      future: _getImageNetwork(context, widget.libroViewModel),
+                      builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else {
+                          return snapshot.data as Widget;
+                        }
+                      }
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        SizedBox(
-          width: (MediaQuery.of(context).size.width * 62 / 100),
-          height: (MediaQuery.of(context).size.height * 25 / 100),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  flex: 4,
-                  child: Container(
-                    color: Colors.transparent,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        fieldDettLibro.getField(
-                          Colors.limeAccent[100],
-                          LibroFieldSelected.titolo().label, 5, true, 
-                          fnString: (strDesc) => {
-                            setState(() {
-                              widget.libroViewModel.titolo = strDesc;
-                            })
-                          }
-                        ),
-                        fieldDettLibro.getField(
-                          Colors.lightBlue[50],
-                          LibroFieldSelected.autore().label, 2, true,
-                          fnString: (strDesc) => {
-                            setState(() {
-                              widget.libroViewModel.lstAutori = [];
-                              widget.libroViewModel.lstAutori.add(strDesc);
-                            })
-                          }
-                        ),  
-                      ],
-                    ),
-                  ),
-                )
-              ],
+            // COLONNA TITOLO/AUTORE (62% della larghezza)
+            SizedBox(
+              width: (MediaQuery.of(context).size.width * 62 / 100),
+              height: (MediaQuery.of(context).size.height * 25 / 100),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start, // Modificato da spaceEvenly
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      color: Colors.transparent,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          fieldDettLibro.getField(
+                              Colors.limeAccent[100],
+                              LibroFieldSelected.titolo().label, 5, true,
+                              fnString: (strDesc) => {
+                                setState(() {
+                                  widget.libroViewModel.titolo = strDesc;
+                                })
+                              }
+                          ),
+                          fieldDettLibro.getField(
+                              Colors.lightBlue[50],
+                              LibroFieldSelected.autore().label, 2, true,
+                              fnString: (strDesc) => {
+                                setState(() {
+                                  widget.libroViewModel.lstAutori = [];
+                                  widget.libroViewModel.lstAutori.add(strDesc);
+                                })
+                              }
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        )
     );
   }
+
 
   Widget _headerBook_1(BuildContext context) {
     FieldDettLibro fieldDettLibro = FieldDettLibro(context, widget.libroViewModel);
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      // mainAxisSize: MainAxisSize.min, // Non serve con vincoli di larghezza fissi
       children: [
+        // COLONNA STARS (35% della larghezza)
         SizedBox(
-          width: (MediaQuery.of(context).size.width * 35 / 100),
+          width: (MediaQuery.of(context).size.width * 34 / 100),
           // height: (MediaQuery.of(context).size.height * 25 / 100),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -218,6 +227,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
             ],
           ),
         ),
+        // COLONNA EDITORE (62% della larghezza)
         SizedBox(
           width: (MediaQuery.of(context).size.width * 62 / 100),
           // height: (MediaQuery.of(context).size.height * 25 / 100),
@@ -227,9 +237,8 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Flexible(
-                  flex: 1,
-                  child: fieldDettLibro.getField(
+                // Rimosso 'Flexible' che causava l'errore:
+                fieldDettLibro.getField(
                     Colors.lime[100],
                     LibroFieldSelected.editore().label, 1, true,
                     fnString: (strDesc) => {
@@ -237,7 +246,6 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                         widget.libroViewModel.editore = strDesc;
                       })
                     }
-                  ),
                 ),
               ],
             ),
@@ -247,111 +255,127 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     );
   }
 
+
+  // ... (omitted code)
+
   Widget _dataHeaderBook(BuildContext context) {
     FieldDettLibro fieldDettLibro = FieldDettLibro(context, widget.libroViewModel);
 
     return Padding(
-      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      padding: const EdgeInsets.only(top: 10, bottom: 10, left: 16.0, right: 0.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          fieldDettLibro.getField(
-            Colors.lime[100],
-            LibroFieldSelected.isbn().label, 1, false,
-            fnString: (strDesc) => {
-              setState(() {
-                widget.libroViewModel.isbn = strDesc;
-              })
-            }
+          Expanded(
+            flex: 3,
+            child: fieldDettLibro.getField(
+                Colors.lime[100],
+                LibroFieldSelected.isbn().label, 1, false,
+                fnString: (strDesc) => {
+                  setState(() {
+                    widget.libroViewModel.isbn = strDesc;
+                  })
+                }
+            ),
           ),
-          // getIsbnField(context, widget, (strDesc) => {
-          //   if (strDesc.isNotEmpty) {
-          //     widget.libroViewModel.isbn = strDesc
-          //   },
-          // }),
-          fieldDettLibro.getField(
-            Colors.lime[100],
-            LibroFieldSelected.dtPubblicazione().label, 1, false,
-            fn: () => {
-              _getYear(context, widget.libroViewModel)
-            }
+          // Uso SizedBox per uno spazio fisso tra i campi
+          const SizedBox(width: 15.0),
+          Expanded(
+            flex: 1,
+            child: fieldDettLibro.getField(
+                Colors.lime[100],
+                LibroFieldSelected.dtPubblicazione().label, 1, false,
+                fn: () => {
+                  _getYear(context, widget.libroViewModel)
+                }
+            ),
           ),
-          // getDtPubblicazioneField(context, widget, () => {
-          //     _getYear(context, widget.libroViewModel)
-          // }),
-          fieldDettLibro.getField(
-            Colors.lime[100],
-            LibroFieldSelected.nrPagine().label, 1, false,
-            fnString: (strNr) => {
-              setState(() {
-                int? nr = int.tryParse(strNr);
-                widget.libroViewModel.nrPagine = (nr != null) ? nr : 0;
-              })
-            }
+          // Uso SizedBox per uno spazio fisso tra i campi
+          const SizedBox(width: 15.0),
+          Expanded(
+            flex: 2,
+            child: fieldDettLibro.getField(
+                Colors.lime[100],
+                LibroFieldSelected.nrPagine().label, 1, false,
+                fnString: (strNr) => {
+                  setState(() {
+                    int? nr = int.tryParse(strNr);
+                    widget.libroViewModel.nrPagine = (nr != null) ? nr : 0;
+                  })
+                }
+            ),
           ),
-          // getNrPaginaField(context, widget, (strNr) => {
-          //   setState(() {                                                
-              // int? nr = int.tryParse(strNr);
-              // widget.libroViewModel.nrPagine = (nr != null) ? nr : 0;
-          //   })
-          // }),
-          fieldDettLibro.getField(
-            Colors.lime[100],
-            LibroFieldSelected.prezzo().label, 1, false,
-            fnString: (strNr) => {
-              setState(() {
-                double? nr = double.tryParse(strNr);
-                widget.libroViewModel.prezzo = (nr != null) ? nr : 0;
-              })
-            }
+          Expanded(
+            flex: 2,
+            child: fieldDettLibro.getField(
+                Colors.lime[100],
+                LibroFieldSelected.prezzo().label, 1, false,
+                fnString: (strNr) => {
+                  setState(() {
+                    double? nr = double.tryParse(strNr);
+                    widget.libroViewModel.prezzo = (nr != null) ? nr : 0;
+                  })
+                }
+            ),
           ),
-          // getPrezzoField(context, widget, (strNr) => {
-          //   setState(() {                                                
-              // double? nr = double.tryParse(strNr);
-              // widget.libroViewModel.prezzo = (nr != null) ? nr.toString() : '';
-          //   })
-          // }),
         ],
       ),
     );
   }
 
-  
+// ... (omitted code)
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return SafeArea(
+      // La SafeArea garantisce che il contenuto non sia coperto dalle tacche/barra di stato
       child: Padding(
-        padding: const EdgeInsets.only(left: 5, right: 5),
+        // Applica un bordo (padding) uniforme tutto attorno al widget (es. 8.0)
+        padding: const EdgeInsets.all(0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            _headerBook(context),
-            _headerBook_1(context),
-            _dataHeaderBook(context),
-            // const Padding(
-            //   padding: EdgeInsets.only(top: 5),
-            // ),
-            SizedBox(
-              height: (MediaQuery.of(context).size.height * 50 / 100),
+            Flexible(
+              flex: 0,
               child: SingleChildScrollView(
+                padding: EdgeInsetsGeometry.all(0),
+                child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                            _headerBook(context),
+                            // _headerBook_1(context),
+                            // _dataHeaderBook(context),
+                  ]
+                )
+              )
+            ),
+            Expanded(
+              // height: (MediaQuery.of(context).size.height * 50 / 100),
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(left: 4),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
+                    _headerBook_1(context),
+                    _dataHeaderBook(context),
                     Text(
                       'Libreria',
                       style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.lightBlue.shade100,
-                        fontWeight: FontWeight.bold
-                      ), 
+                          fontSize: 14,
+                          color: Colors.lightBlue.shade100,
+                          fontWeight: FontWeight.bold
+                      ),
                     ),
                     LibreriaSelDropdown(
                       widget.libroViewModel.siglaLibreria != 0
-                        ? widget.libroViewModel.siglaLibreria
-                        : ComArea.libreriaInUso!.sigla,
+                          ? widget.libroViewModel.siglaLibreria
+                          : ComArea.libreriaInUso!.sigla,
                       onPressed: (value) {
                         setState(() {
                           widget.libroViewModel.siglaLibreria = value;
@@ -362,10 +386,10 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                     Text(
                       'Categoria',
                       style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.lightBlue.shade100,
-                        fontWeight: FontWeight.bold
-                      ), 
+                          fontSize: 14,
+                          color: Colors.lightBlue.shade100,
+                          fontWeight: FontWeight.bold
+                      ),
                     ),
                     BisacDropdownMenu(
                       widget.libroViewModel.lstCategoria[0].toUpperCase(),
@@ -384,29 +408,29 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                     const Padding(padding: EdgeInsets.only(top: 20)),
                     // const Padding(padding: EdgeInsets.only(top: 15)),
                     getWidgetLink(
-                      context, 'Google Book preview', '', widget.libroViewModel.previewLink, null, 
-                      () => {
-                        _fnDeleteLink(context, null)
-                      },
-                      null
+                        context, 'Google Book preview', '', widget.libroViewModel.previewLink, null,
+                            () => {
+                          _fnDeleteLink(context, null)
+                        },
+                        null
                     ),
                     Column(
-                      children: widget.lstLinkIsarModule.map((item) {
+                        children: widget.lstLinkIsarModule.map((item) {
                           return getWidgetLink(context, null, null, null, item,
-                            () => {
-                              _fnDeleteLink(context, item)
-                            },
-                            () => {
-                              _fnEditLink(context, item)
-                            }
+                                  () => {
+                                _fnDeleteLink(context, item)
+                              },
+                                  () => {
+                                _fnEditLink(context, item)
+                              }
                           );
                         }).toList()
                     ),
                     Divider(
                       height: 5,
-                      thickness: 1,
-                      indent: 5,
-                      endIndent: 5,
+                      thickness: 0.7,
+                      indent: 50,
+                      endIndent: 50,
                       color: Colors.lime[100],
                     ),
                     Center(
@@ -419,7 +443,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                           if (strDesc != null && strDesc.contains(';') && strDesc.split(';').length == 3) {
                             List<String> lstStr = strDesc.split(';');
                             setState(() {
-                              widget.lstLinkIsarModule.add(LibroIsarModuleUtil.createLinkIsarModule(lstStr[0].trim(), lstStr[2].trim(), descrizione: lstStr[1].trim()));
+                              setLinkState(lstStr, context);
                             });
                           }
                         },
@@ -432,12 +456,161 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
               ),
             ),
           ],
-          ),
+        ),
       ),
     );
   }
+  
+  // @override
+  // Widget build(BuildContext context) {
+  //   return SingleChildScrollView(
+  //     child: Padding(
+  //       padding: const EdgeInsets.only(left: 5, right: 5),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: <Widget>[
+  //           _headerBook(context),
+  //           _headerBook_1(context),
+  //           _dataHeaderBook(context),
+  //           // const Padding(
+  //           //   padding: EdgeInsets.only(top: 5),
+  //           // ),
+  //           SizedBox(
+  //             height: (MediaQuery.of(context).size.height * 50 / 100),
+  //             child: SingleChildScrollView(
+  //               child: Column(
+  //                 mainAxisAlignment: MainAxisAlignment.start,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: <Widget>[
+  //                   Text(
+  //                     'Libreria',
+  //                     style: TextStyle(
+  //                       fontSize: 14,
+  //                       color: Colors.lightBlue.shade100,
+  //                       fontWeight: FontWeight.bold
+  //                     ),
+  //                   ),
+  //                   LibreriaSelDropdown(
+  //                     widget.libroViewModel.siglaLibreria != 0
+  //                       ? widget.libroViewModel.siglaLibreria
+  //                       : ComArea.libreriaInUso!.sigla,
+  //                     onPressed: (value) {
+  //                       setState(() {
+  //                         widget.libroViewModel.siglaLibreria = value;
+  //                       });
+  //                     },
+  //                   ),
+  //                   const Padding(padding: EdgeInsets.only(top: 10)),
+  //                   Text(
+  //                     'Categoria',
+  //                     style: TextStyle(
+  //                       fontSize: 14,
+  //                       color: Colors.lightBlue.shade100,
+  //                       fontWeight: FontWeight.bold
+  //                     ),
+  //                   ),
+  //                   BisacDropdownMenu(
+  //                     widget.libroViewModel.lstCategoria[0].toUpperCase(),
+  //                     onPressed: (value) {
+  //                       setState(() {
+  //                         widget.libroViewModel.lstCategoria = [value];
+  //                       });
+  //                     },
+  //                   ),
+  //                   const Padding(padding: EdgeInsets.only(top: 15)),
+  //                   getDescrizioneField(context, widget, (strDesc) => {
+  //                     setState(() {
+  //                       widget.libroViewModel.descrizione = strDesc;
+  //                     })
+  //                   }),
+  //                   const Padding(padding: EdgeInsets.only(top: 20)),
+  //                   // const Padding(padding: EdgeInsets.only(top: 15)),
+  //                   getWidgetLink(
+  //                     context, 'Google Book preview', '', widget.libroViewModel.previewLink, null,
+  //                     () => {
+  //                       _fnDeleteLink(context, null)
+  //                     },
+  //                     null
+  //                   ),
+  //                   Column(
+  //                     children: widget.lstLinkIsarModule.map((item) {
+  //                         return getWidgetLink(context, null, null, null, item,
+  //                           () => {
+  //                             _fnDeleteLink(context, item)
+  //                           },
+  //                           () => {
+  //                             _fnEditLink(context, item)
+  //                           }
+  //                         );
+  //                       }).toList()
+  //                   ),
+  //                   Divider(
+  //                     height: 5,
+  //                     thickness: 0.7,
+  //                     indent: 50,
+  //                     endIndent: 50,
+  //                     color: Colors.lime[100],
+  //                   ),
+  //                   Center(
+  //                     child: TextButton(
+  //                       style: TextButton.styleFrom(
+  //                         foregroundColor: Colors.blue[400],
+  //                       ),
+  //                       onPressed: () async {
+  //                         String? strDesc = await _addNewLink(context, widget.libroViewModel);
+  //                         if (strDesc != null && strDesc.contains(';') && strDesc.split(';').length == 3) {
+  //                           List<String> lstStr = strDesc.split(';');
+  //                           setState(() {
+  //                             setLinkState(lstStr, context);
+  //                           });
+  //                         }
+  //                       },
+  //                       child: const Text("Aggiungi un nuovo Link"),
+  //                     ),
+  //                   ),
+  //                   const Padding(padding: EdgeInsets.only(top: 15, bottom: 15)),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //         ),
+  //     ),
+  //   );
+  // }
 
-  _fnDeleteLink(BuildContext context, LinkIsarModule? item) async {
+  void setLinkState(List<String> lstStr, BuildContext context) {
+    // String nameLink = lstStr[0].trim();
+    String url = lstStr[2].trim();
+    bool isAlert = false;
+    
+    if (widget.lstLinkIsarModule.isNotEmpty) {
+      if (widget.lstLinkIsarModule.toList().map((e) => e.url).contains(url)) {
+        isAlert = true;
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text("Attenzione:"),
+            content: const Text("URL già esistente!"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+    if (!isAlert) {
+      widget.lstLinkIsarModule.add(LibroIsarModuleUtil.createLinkIsarModule(lstStr[0].trim(), lstStr[2].trim(), descrizione: lstStr[1].trim()));
+    }
+  }
+
+  Future<void> _fnDeleteLink(BuildContext context, LinkIsarModule? item) async {
     bool? isRemoveBook = await DialogUtils.showConfirmationSiNo(context, "Procedo all'eliminazione del link ?");
     if (isRemoveBook == true) {
       setState(() {
@@ -450,14 +623,12 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     }
   }
 
-  _fnEditLink(BuildContext context, LinkIsarModule item) async {
+  Future<void> _fnEditLink(BuildContext context, LinkIsarModule item) async {
     String? strDesc = await _editLink(context, item);
     if (strDesc != null && strDesc.contains(';') && strDesc.split(';').length == 3) {
       List<String> lstStr = strDesc.split(';');
       setState(() {
-        item.name = lstStr[0].trim();
-        item.descrizione = lstStr[1].trim();
-        item.url = lstStr[2].trim();
+        setLinkState(lstStr, context);
       });
     }
   }

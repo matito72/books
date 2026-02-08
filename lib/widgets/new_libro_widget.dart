@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:books/config/com_area.dart';
-import 'package:books/features/libro/bloc/libro.bloc.dart';
-import 'package:books/features/libro/bloc/libro_events.bloc.dart';
-import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/models/libro_isar_to_save.module.dart';
-import 'package:books/models/parameter_google_search.module.dart';
-import 'package:books/pages/search_list_book_page.dart';
-import 'package:books/services/libro_search_service.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/features/libro/bloc/libro.bloc.dart';
+import 'package:book/features/libro/bloc/libro_events.bloc.dart';
+import 'package:book/features/libro/data/models/libro_dettaglio_result.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/models/libro_isar_to_save.module.dart';
+import 'package:book/models/parameter_google_search.module.dart';
+import 'package:book/pages/search_list_book_page.dart';
+import 'package:book/services/libro_search_service.dart';
 import 'package:flutter/material.dart';
 
 
@@ -55,7 +55,7 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
           }
           else {
             if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Errore chiamata al Google !')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Errore chiamata a Google !')));
           }
         }
         
@@ -107,6 +107,7 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
         crossAxisAlignment: CrossAxisAlignment.end,      
         children: <Widget>[
           TextField(
+            autofocus: true,
             decoration: const InputDecoration(labelText: 'Titolo'),
             controller: _titoloController,
             textCapitalization: TextCapitalization.sentences,

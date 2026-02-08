@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/models/parameter_google_search.module.dart';
+
+import 'package:book/config/constant.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/models/parameter_google_search.module.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
@@ -61,7 +62,7 @@ class GooleApisBooksService {
     // final Uri url = Uri.https(Constant.googleapisDominio, percorso, parametri);
     
     try {
-      // print('URL: ${url.toString()}');
+      print('URL: ${url.toString()}');
 
       await http.get(url).then((res) async {
         final resJson = json.decode(res.body);

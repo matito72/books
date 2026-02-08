@@ -1,7 +1,7 @@
 
-import 'package:books/features/list_items_select/bloc/list_items_select_events.bloc.dart';
-import 'package:books/features/list_items_select/bloc/list_items_select_state.bloc.dart';
-import 'package:books/utilities/list_items_utils.dart';
+import 'package:book/features/list_items_select/bloc/list_items_select_events.bloc.dart';
+import 'package:book/features/list_items_select/bloc/list_items_select_state.bloc.dart';
+import 'package:book/utilities/list_items_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ListItemsSelectBloc extends Bloc<ListItemsSelectEvent, ListItemsSelectState> {

@@ -1,9 +1,12 @@
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/models/books_search_parameters.module.dart';
-import 'package:books/resources/libro_field_selected.dart';
+import 'dart:io';
+
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/models/books_search_parameters.module.dart';
+import 'package:book/resources/libro_field_selected.dart';
 
 class ComArea {
   static bool initApp = false;
+  static Directory appDocumentDir = Directory('/storage/emulated/0/Download/');
 
   // LIBRERIA IN USO : DATA
   static List<LibreriaIsarModel> lstLibrerieInUso = [];
@@ -26,5 +29,7 @@ class ComArea {
   static String bookToSearch = '';
   static BooksSearchParameters booksSearchParameters = BooksSearchParameters();
 
-  static bool isBarcode = true;
+  static bool isBarcode = true; // (Platform.isAndroid || Platform.isIOS) ? true : false;
+
+  static bool isLibreriaSelectedAll = false;
 }

@@ -1,14 +1,13 @@
-import 'package:books/features/libro/data/models/link_isar.module.dart';
-import 'package:books/features/libro/data/models/pdf_isar.module.dart';
+import 'package:book/features/libro/data/models/link_isar.module.dart';
+import 'package:book/features/libro/data/models/pdf_isar.module.dart';
 
 class LibroIsarModuleUtil {
-
   LibroIsarModuleUtil._();
 
   static LinkIsarModule createLinkIsarModule(
-    String name, 
+    String name,
     String url, {
-      String descrizione = ''
+    String descrizione = '',
   }) {
     LinkIsarModule link = LinkIsarModule();
     link.name = name;
@@ -19,10 +18,10 @@ class LibroIsarModuleUtil {
   }
 
   static PdfIsarModule createPdfIsarModule(
-    String name, 
+    String name,
     String pathNameFile, {
-      String descrizione = '',
-      String testo = ''
+    String descrizione = '',
+    String testo = '',
   }) {
     PdfIsarModule pdf = PdfIsarModule();
     pdf.name = name;

@@ -1,12 +1,12 @@
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/models/selected_item.module.dart';
-import 'package:books/resources/action_result.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/models/selected_item.module.dart';
+import 'package:book/resources/action_result.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 @immutable
 abstract class LibroState<T> extends Equatable {
-  final T ? data;
+  final T? data;
   final String? msg;
   final ActionResult? actionResult;
 
@@ -18,12 +18,24 @@ abstract class LibroState<T> extends Equatable {
 
 //* SUCCESS
 abstract class LibroSuccessState<T> extends LibroState {
-  const LibroSuccessState({T? super.data, super.msg}) : super(actionResult: ActionResult.success);
+  const LibroSuccessState({T? super.data, super.msg})
+    : super(actionResult: ActionResult.success);
 }
 
 //* WAIT
 class LibroWaitingState extends LibroSuccessState {
   const LibroWaitingState();
+}
+
+//* WAIT for START DOWNLOAD EXCEL
+class LibroStartDownloadExcelState extends LibroSuccessState {
+  const LibroStartDownloadExcelState();
+}
+
+//* STO EXPORT EXCEL
+class LibroStopDownloadExcelState extends LibroSuccessState {
+  // const LibroStopDownloadExcelState();
+  const LibroStopDownloadExcelState(List<SelectedItem<LibroIsarModel>> data, String msg): super(data: data, msg: msg);
 }
 
 //* INIT
@@ -33,7 +45,10 @@ class LibroInitializedState extends LibroSuccessState {
 
 //* LISTA
 class ListaLibroLoadedState<T extends List<SelectedItem<LibroIsarModel>>> extends LibroSuccessState {
-  const ListaLibroLoadedState(List<SelectedItem<LibroIsarModel>> data, String msg) : super(data: data, msg: msg);
+  const ListaLibroLoadedState(
+    List<SelectedItem<LibroIsarModel>> data,
+    String msg,
+  ) : super(data: data, msg: msg);
 }
 
 //* ADDED NEW LIBRO
@@ -42,12 +57,17 @@ class AddedNewLibroState extends LibroSuccessState {
 }
 
 //* EXPORTED FILE
-class ExportedFileState<int> extends LibroSuccessState {
+class ExportedFileState<T extends int> extends LibroSuccessState {
   const ExportedFileState(int data, String msg) : super(data: data, msg: msg);
 }
 
+// //* EXPORTED FILE EXCEL
+// class ExportedFileExcelState<T extends int> extends LibroSuccessState {
+//   const ExportedFileExcelState(int data, String msg) : super(data: data, msg: msg);
+// }
+
 //* IMPORTED FILE
-class ImportedFileState<int> extends LibroSuccessState {
+class ImportedFileState<T extends int> extends LibroSuccessState {
   const ImportedFileState(int data, String msg) : super(data: data, msg: msg);
 }
 
@@ -57,20 +77,27 @@ class EditLibroState extends LibroSuccessState {
 }
 
 //* DELETE LIBRO
-class DeletedLibroState<int> extends LibroSuccessState {
+class DeletedLibroState<T extends int> extends LibroSuccessState {
   const DeletedLibroState(String msg) : super(msg: msg);
 }
 
 //* DELETE ALL
-class DeleteAllLibroState<int> extends LibroSuccessState {
+class DeleteAllLibroState<T extends int> extends LibroSuccessState {
   const DeleteAllLibroState(int data, String msg) : super(data: data, msg: msg);
 }
 
-class DeleteBookSelectedState<int> extends LibroSuccessState {
-  const DeleteBookSelectedState(int data, String msg) : super(data: data, msg: msg);
+class DeleteBookSelectedState<T extends int> extends LibroSuccessState {
+  const DeleteBookSelectedState(int data, String msg)
+    : super(data: data, msg: msg);
+}
+
+class CambiaLibreriaBookSelectedState<T extends int> extends LibroSuccessState {
+  const CambiaLibreriaBookSelectedState(int data, String msg)
+      : super(data: data, msg: msg);
 }
 
 //* ERRORE
 class LibroErrorState extends LibroState {
-  const LibroErrorState(String msg) : super(msg: msg, actionResult: ActionResult.failure);
+  const LibroErrorState(String msg)
+    : super(msg: msg, actionResult: ActionResult.failure);
 }

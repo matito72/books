@@ -1,32 +1,32 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'package:books/config/constant.dart';
-import 'package:books/features/import_export/bloc/import_export.bloc.dart';
-import 'package:books/features/import_export/bloc/import_export_events.bloc.dart';
-import 'package:books/features/import_export/data/models/file_backup.module.dart';
-import 'package:books/features/import_export/data/services/import_export.service.dart';
-import 'package:books/injection_container.dart';
-import 'package:books/utilities/dialog_utils.dart';
-import 'package:books/widgets/file_backup_widget.dart';
+import 'package:book/config/constant.dart';
+import 'package:book/features/import_export/bloc/import_export.bloc.dart';
+import 'package:book/features/import_export/bloc/import_export_events.bloc.dart';
+import 'package:book/features/import_export/data/models/file_backup.module.dart';
+import 'package:book/features/import_export/data/services/import_export.service.dart';
+import 'package:book/injection_container.dart';
+import 'package:book/utilities/dialog_utils.dart';
+import 'package:book/widgets/file_backup_widget.dart';
 import 'package:flutter/material.dart';
 
 ///
 /// Widget
 ///
-class ListaFileBakcup extends StatelessWidget {
+class ListaFileBackup extends StatelessWidget {
   final ImportExportBloc _importExportBloc;
   final List<FileBackupModel> _lstFileBackupModel;
   final num _nrTot;
   
-  const ListaFileBakcup(
+  const ListaFileBackup(
     this._importExportBloc, this._lstFileBackupModel, {super.key}
   ) : _nrTot = _lstFileBackupModel.length;
 
-  _shareFileBackup(BuildContext context, FileBackupModel fileBackupModel) async {
+  Future<void> _shareFileBackup(BuildContext context, FileBackupModel fileBackupModel) async {
     sl<ImportExportService>().shareFileBackup(fileBackupModel);
   }
 
-  _deleteFileBackup(BuildContext context, FileBackupModel fileBackupModel) async {
+  Future<void> _deleteFileBackup(BuildContext context, FileBackupModel fileBackupModel) async {
     bool? isDeleteFileBackup = await DialogUtils.showConfirmationSiNo(
       context, "Vuoi eliminare il file:\n\n '${fileBackupModel.fileName} contente '${fileBackupModel.nrRecord}' libri ?"
     );

@@ -1,4 +1,4 @@
-import 'package:books/models/selected_item.module.dart';
+import 'package:book/models/selected_item.module.dart';
 
 class ListItemsUtils {
   static List<SelectedItem<T>> convertListToSelectedItems<T>(List<T> lstSelectedItem) {

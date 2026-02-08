@@ -1,5 +1,5 @@
-import 'package:books/config/com_area.dart';
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:flutter/material.dart';
 
 
@@ -32,15 +32,21 @@ class LibreriaSelDropdown extends StatelessWidget {
       ),
       menuStyle: MenuStyle(
         // backgroundColor: MaterialStatePropertyAll<Color>(Colors.blueGrey[400]!),
-        backgroundColor: MaterialStatePropertyAll<Color>(Colors.blueGrey[900]!),
+        backgroundColor: WidgetStatePropertyAll<Color>(Colors.blueGrey[900]!),
       ),
       initialSelection: siglaLibreria,
       onSelected: (int? value) {
         onPressed(value!);
       },
-      dropdownMenuEntries: ComArea.lstLibrerieInUso.map<DropdownMenuEntry<int>>((LibreriaIsarModel libreriaModel) {
-        return DropdownMenuEntry<int>(value: libreriaModel.sigla, label: libreriaModel.nome);
-      }).toList(),
+        dropdownMenuEntries: ComArea.mapCodDescLibreria.entries.map<DropdownMenuEntry<int>>((entry) {
+          return DropdownMenuEntry<int>(
+              value: entry.key,
+              label: entry.value
+          );
+        }).toList()
+      // dropdownMenuEntries: ComArea.lstLibrerieInUso.map<DropdownMenuEntry<int>>((LibreriaIsarModel libreriaModel) {
+      //   return DropdownMenuEntry<int>(value: libreriaModel.sigla, label: libreriaModel.nome);
+      // }).toList(),
     );
   }
 }

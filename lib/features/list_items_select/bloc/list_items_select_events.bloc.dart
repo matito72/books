@@ -1,5 +1,5 @@
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/models/selected_item.module.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/models/selected_item.module.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -24,3 +24,4 @@ class RefreshListItemsSelectEvent extends ListItemsSelectEvent {
 
   const RefreshListItemsSelectEvent(this.lstLibroViewModel);
 }
+

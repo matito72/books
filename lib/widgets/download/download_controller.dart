@@ -1,16 +1,16 @@
 
-import 'package:books/config/com_area.dart';
-import 'package:books/features/import_export/data/models/file_backup.module.dart';
-import 'package:books/features/import_export/data/services/import_export.service.dart';
-import 'package:books/features/libreria/data/services/db_libreria.isar.service.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/features/libro/data/services/db_libro_isar.service.dart';
-import 'package:books/injection_container.dart';
-import 'package:books/models/libro_isar_to_save.module.dart';
-import 'package:books/resources/item_exception.dart';
-import 'package:books/utilities/libro_utils.dart';
-import 'package:books/utilities/utils.dart';
-import 'package:books/widgets/download/download_button.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/features/import_export/data/models/file_backup.module.dart';
+import 'package:book/features/import_export/data/services/import_export.service.dart';
+import 'package:book/features/libreria/data/services/db_libreria.isar.service.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/features/libro/data/services/db_libro_isar.service.dart';
+import 'package:book/injection_container.dart';
+import 'package:book/models/libro_isar_to_save.module.dart';
+import 'package:book/resources/item_exception.dart';
+import 'package:book/utilities/libro_utils.dart';
+import 'package:book/utilities/utils.dart';
+import 'package:book/widgets/download/download_button.dart';
 import 'package:flutter/widgets.dart';
 
 abstract class DownloadController implements ChangeNotifier {
@@ -113,6 +113,9 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
       DbLibreriaIsarService dbLibreriaIsarService = sl<DbLibreriaIsarService>();
 
       List downloadProgressStops =  List.generate(nrRecordTot, (i) => (i * 100/nrRecordTot).roundToDouble() / 100);
+      if (downloadProgressStops.isNotEmpty && downloadProgressStops.length == nrRecordTot) {
+        downloadProgressStops[nrRecordTot - 1] = 1.00;
+      }
       int siglaLibreria = ComArea.libreriaInUso!.sigla;
 
       int i = 0;
@@ -121,10 +124,27 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
         libroModelNew.dataInserimento = Utils.getDataNow();
         libroModelNew.dataUltimaModifica = Utils.getDataNow();
 
+        LibroIsarToSaveModel libroIsarToSaveModel = LibroIsarToSaveModel(libroModelNew);
+
         try {
-          await dbLibroService.saveLibroToDb(LibroIsarToSaveModel(libroModelNew), true);
-          await dbLibreriaIsarService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 1);
-          LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla);
+          LibroIsarModel? libroDb =  await dbLibroService.getLibroBySiglaLibreriaAndIsbn(siglaLibreria, libroIsarToSaveModel.libroViewModel.isbn);
+          if (libroDb != null) {
+            _lstLibriGiaPresenti.add(libroModelNew);
+            continue;
+          }
+
+          if (libroModelNew.lstPdfModule.isNotEmpty) {
+            libroIsarToSaveModel.libroViewModel.lstPdfIsarModule.addAll(libroModelNew.lstPdfIsarModule);
+            libroIsarToSaveModel.lstPdfIsarModule = libroModelNew.lstPdfModule;
+          }
+          if (libroModelNew.lstLinkModule.isNotEmpty) {
+            libroIsarToSaveModel.libroViewModel.lstLinkIsarModule.addAll(libroModelNew.lstLinkIsarModule);
+            libroIsarToSaveModel.lstLinkIsarModule = libroModelNew.lstLinkModule;
+          }
+          await dbLibroService.saveLibroToDb(libroIsarToSaveModel, true);
+
+          await dbLibreriaIsarService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 1, libroIsarToSaveModel.libroViewModel.prezzo);
+          LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla, valore: libroIsarToSaveModel.libroViewModel.prezzo);
 
           await Future<void>.delayed(const Duration(milliseconds: 50));
           _nrRecordCaricati++;

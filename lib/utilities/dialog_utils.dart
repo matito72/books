@@ -1,39 +1,43 @@
-import 'package:books/models/widget_desc.module.dart';
+import 'package:book/models/widget_desc.module.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class DialogUtils {
-
-  static Future<String?>  getMultiDescrizione(BuildContext context, List<WidgetDescModel> lstWidgetDescModel) {
+  static Future<String?> getMultiDescrizione(
+    BuildContext context,
+    List<WidgetDescModel> lstWidgetDescModel,
+  ) {
     List<Widget> lstWidget = List.empty(growable: true);
     for (var widgetDescModel in lstWidgetDescModel) {
-      lstWidget.add(TextField(
-        textCapitalization: TextCapitalization.words,
-        maxLines: widgetDescModel.maxLines,
-        autofocus: true,
-        readOnly: widgetDescModel.readOnly,
-        keyboardType: TextInputType.multiline,
-        decoration: InputDecoration(
-          hintText: widgetDescModel.strHintText,
-          // border: OutlineInputBorder(
-          //   borderRadius: BorderRadius.circular(10),
+      lstWidget.add(
+        TextField(
+          textCapitalization: TextCapitalization.words,
+          maxLines: widgetDescModel.maxLines,
+          autofocus: true,
+          readOnly: widgetDescModel.readOnly,
+          keyboardType: TextInputType.multiline,
+          decoration: InputDecoration(
+            hintText: widgetDescModel.strHintText,
+            // border: OutlineInputBorder(
+            //   borderRadius: BorderRadius.circular(10),
+            // ),
+            // fillColor: Colors.brown[200],
+            // filled: widgetDescModel.readOnly
+          ),
+          style: widgetDescModel.readOnly
+              ? TextStyle(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.4),
+                  fontStyle: FontStyle.italic,
+                )
+              : Theme.of(context).textTheme.titleSmall,
           // ),
-          // fillColor: Colors.brown[200],
-          // filled: widgetDescModel.readOnly
+          // style: Theme.of(context).textTheme.titleSmall,
+          controller: widgetDescModel.textController,
         ),
-        style: widgetDescModel.readOnly
-          ? TextStyle(
-              color: Theme.of(context).primaryColor.withOpacity(0.4),
-              fontStyle: FontStyle.italic
-            )
-          :  Theme.of(context).textTheme.titleSmall,
-        // ),
-        // style: Theme.of(context).textTheme.titleSmall,
-        controller: widgetDescModel.textController
-      ));
+      );
       lstWidget.add(const Padding(padding: EdgeInsets.only(top: 30)));
-    }    
+    }
 
     return showDialog<String?>(
       context: context,
@@ -47,20 +51,18 @@ class DialogUtils {
           shadowColor: Colors.blueAccent,
           content: SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            child:  Column(
-              children: lstWidget,
-            )
+            child: Column(children: lstWidget),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel')
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => {
-                Navigator.of(context).pop(lstWidgetDescModel.map((w) => w.textController.text).join('; '))
+                Navigator.of(context).pop(lstWidgetDescModel.map((w) => w.textController.text).join('; '),),
               },
-              child: const Text('OK')
+              child: const Text('OK'),
             ),
           ],
         );
@@ -68,7 +70,10 @@ class DialogUtils {
     );
   }
 
-  static Future<bool?> showConfirmationSiNo(BuildContext parentContext, String strQuestion) async {
+  static Future<bool?> showConfirmationSiNo(
+    BuildContext parentContext,
+    String strQuestion,
+  ) async {
     return showDialog<bool>(
       context: parentContext,
       barrierDismissible: true,
@@ -94,12 +99,15 @@ class DialogUtils {
     );
   }
 
-  static Future<String?> getAnno(BuildContext context, String dataPubblicazione) {
+  static Future<String?> getAnno(
+    BuildContext context,
+    String dataPubblicazione,
+  ) {
     DateTime selectedDate = DateTime.now();
     if (dataPubblicazione.length == 4) {
       selectedDate = DateFormat("yyyy").parse(dataPubblicazione);
     }
-    
+
     return showDialog<String?>(
       context: context,
       builder: (BuildContext context) {
@@ -107,14 +115,14 @@ class DialogUtils {
           title: const Text("Anno di pubblicazione:"),
           titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
             fontStyle: FontStyle.italic,
-            color: Colors.blue.shade200
+            color: Colors.blue.shade200,
           ),
           contentTextStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
             fontStyle: FontStyle.italic,
             backgroundColor: Colors.blueAccent,
           ),
           shadowColor: Colors.blueAccent,
-          content: SizedBox( 
+          content: SizedBox(
             width: 300,
             height: 250,
             child: YearPicker(
@@ -130,15 +138,21 @@ class DialogUtils {
           actions: [
             TextButton(
               onPressed: Navigator.of(context).pop,
-              child: const Text('Cancel')
+              child: const Text('Cancel'),
             ),
           ],
         );
-      }
+      },
     );
   }
 
-  static Future<String?> getDescrizione(BuildContext context, String strHintText, String preValue, {int maxLines = 15}) {
+  static Future<String?> getDescrizione(
+    BuildContext context,
+    String strHintText,
+    String preValue, {
+      int maxLines = 15,
+      bool isCapitalize = false}
+  ) {
     TextEditingController textController = TextEditingController();
     textController.text = preValue;
 
@@ -160,19 +174,18 @@ class DialogUtils {
               keyboardType: TextInputType.multiline,
               decoration: InputDecoration(hintText: strHintText),
               controller: textController,
-              style: Theme.of(context).textTheme.titleSmall
+              style: Theme.of(context).textTheme.titleSmall,
+              textCapitalization: isCapitalize ? TextCapitalization.sentences : TextCapitalization.none,
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel')
+              child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () => {
-                Navigator.of(context).pop(textController.text)
-              },
-              child: const Text('OK')
+              onPressed: () => {Navigator.of(context).pop(textController.text)},
+              child: const Text('OK'),
             ),
           ],
         );
@@ -180,7 +193,12 @@ class DialogUtils {
     );
   }
 
-  static Future<String?> getNumero(BuildContext context, String strHintText, String preValue, bool isDigitOnly) {
+  static Future<String?> getNumero(
+    BuildContext context,
+    String strHintText,
+    String preValue,
+    bool isDigitOnly,
+  ) {
     TextEditingController textController = TextEditingController();
     textController.text = (preValue == "0") ? '' : preValue;
 
@@ -198,16 +216,18 @@ class DialogUtils {
             autofocus: true,
             decoration: InputDecoration(hintText: strHintText),
             keyboardType: TextInputType.number,
-            inputFormatters: isDigitOnly 
-              ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]
-              : <TextInputFormatter>[FilteringTextInputFormatter.singleLineFormatter],
+            inputFormatters: isDigitOnly
+                ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]
+                : <TextInputFormatter>[
+                    FilteringTextInputFormatter.singleLineFormatter,
+                  ],
             controller: textController,
-            style: Theme.of(context).textTheme.titleSmall
+            style: Theme.of(context).textTheme.titleSmall,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel')
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => {
@@ -215,9 +235,9 @@ class DialogUtils {
                 //   int? nr = int.tryParse(textController.text);
                 //   libroViewModel.nrPagine = (nr != null) ? nr : 0;
                 // }),
-                Navigator.of(context).pop(textController.text)
+                Navigator.of(context).pop(textController.text),
               },
-              child: const Text('OK')
+              child: const Text('OK'),
             ),
           ],
         );

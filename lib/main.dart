@@ -1,17 +1,18 @@
-import 'package:books/config/com_area.dart';
-import 'package:books/config/routes.dart';
-import 'package:books/config/theme/books_style.dart';
-import 'package:books/features/libreria/bloc/libreria.bloc.dart';
-import 'package:books/features/libreria/bloc/libreria_events.bloc.dart';
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/features/libreria/data/services/db_libreria.isar.service.dart';
-import 'package:books/screens/home_libreria.dart';
-import 'package:books/screens/home_libri_libreria.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/config/routes.dart';
+import 'package:book/config/theme/books_style.dart';
+import 'package:book/features/libreria/bloc/libreria.bloc.dart';
+import 'package:book/features/libreria/bloc/libreria_events.bloc.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/features/libreria/data/services/db_libreria.isar.service.dart';
+import 'package:book/injection_container.dart';
+import 'package:book/screens/home_libreria.dart';
+import 'package:book/screens/home_libri_libreria.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; 
-import 'injection_container.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,14 +27,21 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
+/// LINUX
+///   Per fissare la dimensione iniziale della finestra:
+///     /home/titol/prj/book_test/linux/runner/my_application.cc   --> circa riga 56
+///     gtk_window_set_default_size(window, 1280, 720);
+///
+///   Per ottenere l'eseguibile:
+///     flutter build linux        =>   /home/titol/prj/book_test/build/linux/x64/release/bundle
 class _MyAppState extends State<MyApp> {
   // --------------------------------------------------
-  // INIT 
+  // INIT
   // --------------------------------------------------
   List<Widget> widgetOptions = <Widget>[];
   late Widget buildPageView;
   int _selectedIndex = 1;
-  
+
   final PageController _pageController = PageController(
     initialPage: 0,
     keepPage: true,
@@ -55,15 +63,16 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  // Inizializza/Apre una libreria 
+  // Inizializza/Apre una libreria
   void _goToHomeLibriLibreria() async {
-    List<LibreriaIsarModel> lstLibreriaSelClone = List.from(ComArea.lstLibrerieInUso);
+    List<LibreriaIsarModel> lstLibreriaSelClone = List.from(
+      ComArea.lstLibrerieInUso,
+    );
     lstLibreriaSelClone.sort((a, b) => a.sigla.compareTo(b.sigla));
 
-    // if (ComArea.libreriaInUso == null || libreriaSel.sigla != ComArea.libreriaInUso!.sigla)   {
-      await sl<DbLibreriaIsarService>().changeLibreriaDefault(lstLibreriaSelClone);
-    //   ComArea.libreriaInUso = libreriaSel;
-    // }
+    await sl<DbLibreriaIsarService>().changeLibreriaDefault(
+      lstLibreriaSelClone,
+    );
 
     setState(() {
       if (widgetOptions.length == 2) {
@@ -72,39 +81,42 @@ class _MyAppState extends State<MyApp> {
 
       ComArea.initApp = true;
       widgetOptions.add(const HomeLibriLibreriaScreen());
-      
+
       _selectedIndex = 1;
       updBottomNavigationBar();
 
-      _pageController.nextPage(duration: const Duration(milliseconds: 200), curve: Curves.ease);
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.ease,
+      );
     });
   }
 
   void updBottomNavigationBar() {
     _bottomNavigationBar = BottomNavigationBar(
       items: <BottomNavigationBarItem>[
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(MdiIcons.bookshelf),
-          label: '',
-        )
+        const BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+        BottomNavigationBarItem(icon: Icon(MdiIcons.bookshelf), label: ''),
       ],
       currentIndex: _selectedIndex,
       selectedItemColor: Colors.amber[800],
-      backgroundColor: BookStyle.bookStyleTheme.scaffoldBackgroundColor, // const Color.fromARGB(255, 75, 64, 64),
+      backgroundColor: BookStyle
+          .bookStyleTheme
+          .scaffoldBackgroundColor, // const Color.fromARGB(255, 75, 64, 64),
       onTap: (index) {
         bottomTapped(index);
       },
     );
   }
-  
+
   void bottomTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      _pageController.animateToPage(index, duration: const Duration(milliseconds: 500), curve: Curves.ease);
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.ease,
+      );
       updBottomNavigationBar();
     });
   }
@@ -115,7 +127,7 @@ class _MyAppState extends State<MyApp> {
       // DEFAULT - PAGE
       widgetOptions.add(HomeLibreriaScreen(fn: _goToHomeLibriLibreria));
     }
-      
+
     void pageChanged(int index) {
       setState(() {
         _selectedIndex = index;
@@ -126,16 +138,16 @@ class _MyAppState extends State<MyApp> {
     Widget buildPageView() {
       return SafeArea(
         child: Scaffold(
-        body: Center(
-          child: PageView(
+          body: Center(
+            child: PageView(
               controller: _pageController,
-              onPageChanged: (index) {
+              onPageChanged: (index) async {
                 pageChanged(index);
               },
               children: widgetOptions,
-            )
-        ),
-        bottomNavigationBar: _bottomNavigationBar,
+            ),
+          ),
+          bottomNavigationBar: _bottomNavigationBar,
         ),
       );
     }
@@ -146,13 +158,14 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         theme: BookStyle.bookStyleTheme,
         onGenerateRoute: AppRoutes.onGenerateRoutes,
-        home: buildPageView()
+        home: buildPageView(),
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          FlutterQuillLocalizations.delegate,
+        ]
       ),
     );
-
   }
-
 }
-
-
-  

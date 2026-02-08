@@ -1,12 +1,12 @@
-import 'package:books/config/com_area.dart';
-import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/features/list_items_select/bloc/list_items_select.bloc.dart';
-import 'package:books/features/libro/bloc/libro.bloc.dart';
-import 'package:books/models/selected_item.module.dart';
-import 'package:books/resources/row_item_image.dart';
-import 'package:books/utilities/ordinamento_libri_utils.dart';
-import 'package:books/widgets/single_card_book.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/config/constant.dart';
+import 'package:book/features/libro/bloc/libro.bloc.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/features/list_items_select/bloc/list_items_select.bloc.dart';
+import 'package:book/models/selected_item.module.dart';
+import 'package:book/resources/row_item_image.dart';
+import 'package:book/utilities/ordinamento_libri_utils.dart';
+import 'package:book/widgets/single_card_book.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 

@@ -13,36 +13,47 @@ class BackdropAppbarDefault extends StatelessWidget implements PreferredSizeWidg
   final Widget? _appBarContent;
   final BuildContext _context;
 
-  @override 
+  @override
   late final Size preferredSize;
-  
+
   BackdropAppbarDefault({
-      super.key, 
-      required BuildContext context,
-      num percHeight = 4,
-      // this.primaryColor = Colors.blue,
-      // this.secondaryColor = Colors.pink,
-      // this.primaryColor = const Color.fromARGB(0, 38, 50, 56),
-      // this.secondaryColor = const Color.fromARGB(0, 33, 149, 243),
-      bool showIconSx = true,
-      IconButton? iconSx,
-      String? txtLabel,
-      Widget? appBarContent, 
-      IconButton? iconDx,
-      PopupMenuButton<dynamic>? popupMenuButton,
-      List<Widget> lstWidgetDx = const []
-  }) : _context = context, _appBarContent = appBarContent, _lstWidgetDx = lstWidgetDx, _popupMenuButton = popupMenuButton, _txtLabel = txtLabel, _iconDx = iconDx, _iconSx = iconSx, _showIconSx = showIconSx, _percHeight = percHeight {
-    preferredSize = Size.fromHeight((MediaQuery.of(_context).size.height * _percHeight / 100));
-  }
+    super.key,
+    required BuildContext context,
+    num percHeight = 4,
+    // this.primaryColor = Colors.blue,
+    // this.secondaryColor = Colors.pink,
+    // this.primaryColor = const Color.fromARGB(0, 38, 50, 56),
+    // this.secondaryColor = const Color.fromARGB(0, 33, 149, 243),
+    bool showIconSx = true,
+    IconButton? iconSx,
+    String? txtLabel,
+    Widget? appBarContent,
+    IconButton? iconDx,
+    PopupMenuButton<dynamic>? popupMenuButton,
+    List<Widget> lstWidgetDx = const [],
+  }) : _context = context,
+       _appBarContent = appBarContent,
+       _lstWidgetDx = lstWidgetDx,
+       _popupMenuButton = popupMenuButton,
+       _txtLabel = txtLabel,
+       _iconDx = iconDx,
+       _iconSx = iconSx,
+       _showIconSx = showIconSx,
+       _percHeight = percHeight {
+          preferredSize = Size.fromHeight(
+            (MediaQuery.of(_context).size.height * _percHeight / 100),
+          );
+       }
 
   @override
   Widget build(BuildContext context) {
     return PreferredSize(
       preferredSize: Size(
-        MediaQuery.of(context).size.width, 
-        (MediaQuery.of(context).size.height * 5 / 100)
+        MediaQuery.of(context).size.width,
+        (MediaQuery.of(context).size.height * 5 / 100),
       ),
       child: Container(
+        padding: EdgeInsets.all(0.0),
         // height: MediaQuery.of(context).size.height * percHeight / 100,
         alignment: const Alignment(-0.9, 0.0),
         // decoration: BoxDecoration(
@@ -55,43 +66,37 @@ class BackdropAppbarDefault extends StatelessWidget implements PreferredSizeWidg
         // ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Aiuta a distribuire gli estremi
           children: [
+            // 1. ICONA SINISTRA (Rimosso Expanded)
             _showIconSx
-              ? _iconSx ?? IconButton(
+                ? (_iconSx ?? IconButton(
                   padding: EdgeInsets.zero,
                   icon: const Icon(Icons.arrow_back_ios_new),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                )
-              : const Text('\t\t\t'),
+                  onPressed: () => Navigator.pop(context),
+                ))
+                : const SizedBox(width: 0.0), // Larghezza fissa per mantenere simmetria
+            // 2. CONTENUTO CENTRALE (La tua barra di ricerca)
             Expanded(
-              child: Container(
-                child: (_txtLabel != null && _appBarContent == null)
-                  ? Text(
-                    _txtLabel!,
-                    overflow: TextOverflow.ellipsis,
-                  )
-                  : (_appBarContent != null)
-                    ? _appBarContent!
-                    : const Text('')
+              child: Padding(
+                padding: const EdgeInsets.only(left: 5),
+                child: (_appBarContent != null)
+                    ? _appBarContent // Qui dentro c'è già un Expanded, va bene così
+                    : Text(_txtLabel ?? '', overflow: TextOverflow.ellipsis),
               ),
             ),
-            _iconDx ?? const Text(''),
-            _popupMenuButton ?? const Text(''),
-            _lstWidgetDx.isNotEmpty 
-              ? Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _lstWidgetDx,
-              ) 
-              : const Text(''),
-          ]
-        ),
-      )
+            // 3. WIDGET DESTRA
+            Row(
+              mainAxisSize: MainAxisSize.min, // Importante: occupa solo lo spazio necessario
+              children: [
+                if (_iconDx != null) _iconDx,
+                if (_popupMenuButton != null) _popupMenuButton,
+                ..._lstWidgetDx,
+              ],
+            ),
+          ],
+        )
+      ),
     );
   }
-  
-
 }

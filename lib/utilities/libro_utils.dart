@@ -1,12 +1,13 @@
-import 'package:books/config/com_area.dart';
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/features/libro/data/models/libro_dettaglio_result.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/features/libro/data/models/link_isar.module.dart';
-import 'package:books/features/libro/data/models/pdf_isar.module.dart';
-import 'package:books/pages/dettaglio_libro.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/features/libro/data/models/libro_dettaglio_result.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/features/libro/data/models/link_isar.module.dart';
+import 'package:book/features/libro/data/models/pdf_isar.module.dart';
+import 'package:book/pages/dettaglio_libro.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:collection/collection.dart';
 
 abstract class LibroUtils {
 
@@ -39,7 +40,7 @@ abstract class LibroUtils {
     return out;
   }
 
-  static viewDettaglioLibro(BuildContext context, 
+  static Future<LibroDettaglioResult?>? viewDettaglioLibro(BuildContext context, 
       LibreriaIsarModel libreriaIsarDefault, 
       LibroIsarModel libroViewModel, 
       List<LinkIsarModule> lstLinks,
@@ -59,6 +60,32 @@ abstract class LibroUtils {
 
     return ret;
   }
+
+  static List<LinkIsarModule> cloneLstLinkIsarModule(List<LinkIsarModule> original) {
+    return original.map((item) => LinkIsarModule()
+      // ..id = item.id
+      ..name = item.name
+      ..descrizione = item.descrizione
+      ..url = item.url).toList();
+  }
+
+  static List<PdfIsarModule> cloneLstPdfIsarModule(List<PdfIsarModule> original) {
+    return original.map((item) => PdfIsarModule()
+      // ..id = item.id
+      ..name = item.name
+      ..descrizione = item.descrizione
+      ..testo = item.testo
+      ..pathNameFile = item.pathNameFile).toList();
+  }
+
+  LinkIsarModule clonaLink(LinkIsarModule linkIsarModule) {
+    return LinkIsarModule(
+        url: linkIsarModule.url,
+        name: linkIsarModule.name,
+        descrizione: linkIsarModule.descrizione
+    );
+  }
+
 
   // static LibroIsarModel cloneLibroViewModel(LibroIsarModel libroViewModel) {
   //   LibroIsarModel cloneLibroViewModel = LibroIsarModel(
@@ -86,25 +113,30 @@ abstract class LibroUtils {
   //   return cloneLibroViewModel;
   // }
 
-  static addNrLibriCaricatiInCache(int siglaLibreria, {int nrToAdd = 1}) {
+  //
+  static void addNrLibriCaricatiInCache(int siglaLibreria, {int nrToAdd = 1, double valore = 0}) {
     for (LibreriaIsarModel libreriaIsarModel in ComArea.lstLibrerieInUso) {
       if (libreriaIsarModel.sigla == siglaLibreria) {
         libreriaIsarModel.nrLibriCaricati += nrToAdd;
+        libreriaIsarModel.valoreTot += valore;
         break;
       }
     }
   }
 
-static removeNrLibriCaricatiInCache(int siglaLibreria) {
+  //
+  static void removeNrLibriCaricatiInCache(int siglaLibreria, double valore) {
     for (LibreriaIsarModel libreriaIsarModel in ComArea.lstLibrerieInUso) {
       if (libreriaIsarModel.sigla == siglaLibreria) {
         libreriaIsarModel.nrLibriCaricati--;
+        libreriaIsarModel.valoreTot -= valore;
         break;
       }
     }
   }
 
-static clearNrLibriCaricatiInCache(int siglaLibreria) {
+  //
+  static void clearNrLibriCaricatiInCache(int siglaLibreria) {
     for (LibreriaIsarModel libreriaIsarModel in ComArea.lstLibrerieInUso) {
       if (libreriaIsarModel.sigla == siglaLibreria) {
         libreriaIsarModel.nrLibriCaricati = 0;
@@ -112,4 +144,16 @@ static clearNrLibriCaricatiInCache(int siglaLibreria) {
       }
     }
   }
+
+  static bool areLinkIsarModuleListsEqual(List<LinkIsarModule> list1,
+      List<LinkIsarModule> list2) {
+    final equality = SetEquality<LinkIsarModule>();
+    return equality.equals(list1.toSet(), list2.toSet());
+  }
+
+  static bool arePdfIsarModuleListsEqual(List<PdfIsarModule> list1, List<PdfIsarModule> list2) {
+    final equality = SetEquality<PdfIsarModule>();
+    return equality.equals(list1.toSet(), list2.toSet());
+  }
+
 }

@@ -1,14 +1,15 @@
 import 'dart:io';
-import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/utilities/dialog_utils.dart';
-import 'package:books/utilities/show_image_picker.dart';
-import 'package:books/utilities/utils.dart';
-import 'package:books/widgets/appbar/appbar_default.dart';
-import 'package:books/widgets/list_cover_book.dart';
+
+import 'package:book/config/constant.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/utilities/dialog_utils.dart';
+import 'package:book/utilities/show_image_picker.dart';
+import 'package:book/utilities/utils.dart';
+import 'package:book/widgets/appbar/appbar_default.dart';
+import 'package:book/widgets/list_cover_book.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 
 
 class ImmagineCopertina extends StatefulWidget {
@@ -35,12 +36,19 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
   bool swMiSentoFortunato = false;
   bool swSearchWeb = false;
   // File? immagineCopertina;
-  ShowImagePickerUtil showImagePickerUtil = ShowImagePickerUtil();
+  late ShowImagePickerUtil showImagePickerUtil; // = ShowImagePickerUtil(widget._libroViewModel.isbn);
 
-  _updateWidget({File? imageFile, String? urlImage, bool? isMiSentoFortunato}) {
+  @override
+  void initState() {
+    super.initState();
+    showImagePickerUtil = ShowImagePickerUtil(widget._libroViewModel.isbn);
+  }
+
+  void _updateWidget({File? imageFile, String? urlImage, bool? isMiSentoFortunato}) {
     if (imageFile != null) {
       setState(() {
         widget._libroViewModel.immagineCopertina = imageFile.path;
+        FileImage(File(imageFile.path)).evict();
       });
     } else if (urlImage != null) {
       setState(() {
@@ -78,11 +86,11 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
     }
   }
 
-  _reloadImage(File? imageFile) {
+  void _reloadImage(File? imageFile) {
     _updateWidget(imageFile: imageFile);
   }
 
-  _selectImage(String urlImage) {
+  void _selectImage(String urlImage) {
     _updateWidget(urlImage: urlImage);
   }
 
@@ -104,7 +112,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
               Expanded(
                 flex: 1,
                 child: Text(
-                  widget._libroViewModel.titolo,
+                  Utils.rimuoviAccapo(widget._libroViewModel.titolo),
                   style: Theme.of(context).textTheme.titleSmall,
                   overflow: TextOverflow.ellipsis,
                 )
@@ -112,7 +120,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
               Expanded(
                 flex: 1,
                 child: Text(
-                  widget._libroViewModel.lstAutori.join(', '), 
+                  Utils.rimuoviAccapo(widget._libroViewModel.lstAutori.join(', ')),
                   style: TextStyle(color: Colors.amber[300]),
                   overflow: TextOverflow.ellipsis,
                 )
@@ -145,10 +153,11 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
             MenuItemButton(
               onPressed: () async {
                 swSearchWeb = false;
-                Map<Permission, PermissionStatus> statuses = await [
-                  Permission.manageExternalStorage, Permission.camera,
-                ].request();
-                if(statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
+                // Map<Permission, PermissionStatus> statuses = await [
+                //   Permission.manageExternalStorage, Permission.camera,
+                // ].request();
+                // if (statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
+                if (await Utils.hasPlatformPermissions()) {
                   if (!context.mounted) return;
                     // _updateWidget(swithSearchPhone: true);
                     showImagePickerUtil.showImagePicker(context, _reloadImage);
@@ -187,29 +196,82 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
       ],
     );
   }
- 
+
+  // Widget _getWidgetImageCopertina() {
+  //   double heightPerc = 75;
+  //
+  //   return SingleChildScrollView(
+  //     scrollDirection: Axis.vertical,
+  //     padding: EdgeInsets.symmetric(horizontal: 0),
+  //     child: SizedBox(
+  //       width: (MediaQuery.of(context).size.width * 98 / 100),
+  //       height: (MediaQuery.of(context).size.height * 98 / 100),
+  //       child: Column(
+  //         mainAxisAlignment: MainAxisAlignment.start,
+  //         crossAxisAlignment: CrossAxisAlignment.center,
+  //         mainAxisSize: MainAxisSize.max,
+  //         // children: lstWidget,
+  //         children: !swSearchWeb
+  //           ? (widget._isImmaginePresent && widget._libroViewModel.immagineCopertina.isNotEmpty)
+  //             ? [_getFutureImage(heightPerc), _widgetMiSentoFortunato()]
+  //             : [_getFutureImage(heightPerc)]
+  //           : [_getGoogleSearchImage()],
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget _getWidgetImageCopertina() {
-    double heightPerc = 75;
-    
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: SizedBox(
-        width: (MediaQuery.of(context).size.width * 95 / 100),
-        height: (MediaQuery.of(context).size.height * 95 / 100),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          // children: lstWidget,
-          children: !swSearchWeb 
-            ? (widget._isImmaginePresent && widget._libroViewModel.immagineCopertina.isNotEmpty) 
-              ? [_getFutureImage(heightPerc), _widgetMiSentoFortunato()] 
-              : [_getFutureImage(heightPerc)]
-            : [_getGoogleSearchImage()],
+    // Rimuovi l'altezza fissa, lascia che InteractiveViewer si espanda
+    double heightPerc = 75; // Non più necessario
+
+    // Rimuovi SingleChildScrollView e il SizedBox con percentuali fisse
+    return Column(
+      // La Column si espanderà verticalmente nel contenitore genitore (presumibilmente uno Scaffold Body)
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      // Usiamo MainAxisSize.max per riempire l'altezza disponibile
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        // InteractiveViewer permette lo zoom e il pan del suo child
+        Expanded(
+          child: InteractiveViewer(
+            // Opzionale: imposta i limiti di zoom
+            minScale: 0.1,
+            maxScale: 4.0,
+            clipBehavior: Clip.none, // Permette al child di uscire dai bordi durante il pan
+
+            // Il child è la parte che contiene l'immagine
+            child: Center(
+              child: !swSearchWeb
+                  ? (widget._isImmaginePresent && widget._libroViewModel.immagineCopertina.isNotEmpty)
+              // Ho avvolto i tuoi widget in un Column per gestirli insieme
+                  ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Il widget dell'immagine
+                  _getFutureImage(heightPerc), // Rimosso heightPerc perché InteractiveViewer lo gestisce
+                  _widgetMiSentoFortunato(),
+                ],
+              )
+                  : _getFutureImage(heightPerc)
+                  : _getGoogleSearchImage(),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
+
+// Nota: Devi modificare la tua funzione _getFutureImage()
+// per non accettare più un'altezza percentuale fissa (heightPerc).
+// Ad esempio:
+/*
+Widget _getFutureImage() {
+  // Prima: _getFutureImage(double heightPerc)
+  // ... restituisce Image.file(..., fit: BoxFit.contain)
+}
+*/
 
   Widget _getGoogleSearchImage() {
     return SingleChildScrollView(
@@ -261,10 +323,11 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
         ),
         Switch(
           value: swMiSentoFortunato,
-          activeColor: Colors.lightBlueAccent,
+          activeThumbColor: Colors.lightBlueAccent,
           onChanged: (bool value) {
             _updateWidget(isMiSentoFortunato: value);
           },
+          padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
         )
       ],
     );
@@ -284,13 +347,14 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
           } else {
             return InteractiveViewer(
               panEnabled: true,
-              boundaryMargin: const EdgeInsets.all(20),
+              boundaryMargin: const EdgeInsets.symmetric(vertical: 0.5),
               minScale: 1,
               maxScale: 5,
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * heightPerc/100,
-                child: snapshot.data!
+                child: snapshot.data!,
+                key: ValueKey(DateTime.now().millisecondsSinceEpoch.toString()),
               ),
             );
           }

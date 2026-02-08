@@ -1,4 +1,4 @@
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 

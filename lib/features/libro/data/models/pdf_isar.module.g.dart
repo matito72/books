@@ -22,22 +22,16 @@ const PdfIsarModuleSchema = CollectionSchema(
       name: r'descrizione',
       type: IsarType.string,
     ),
-    r'name': PropertySchema(
-      id: 1,
-      name: r'name',
-      type: IsarType.string,
-    ),
+    r'hashCode': PropertySchema(id: 1, name: r'hashCode', type: IsarType.long),
+    r'name': PropertySchema(id: 2, name: r'name', type: IsarType.string),
     r'pathNameFile': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'pathNameFile',
       type: IsarType.string,
     ),
-    r'testo': PropertySchema(
-      id: 3,
-      name: r'testo',
-      type: IsarType.string,
-    )
+    r'testo': PropertySchema(id: 4, name: r'testo', type: IsarType.string),
   },
+
   estimateSize: _pdfIsarModuleEstimateSize,
   serialize: _pdfIsarModuleSerialize,
   deserialize: _pdfIsarModuleDeserialize,
@@ -54,7 +48,7 @@ const PdfIsarModuleSchema = CollectionSchema(
           name: r'name',
           type: IndexType.hash,
           caseSensitive: true,
-        )
+        ),
       ],
     ),
     r'pathNameFile': IndexSchema(
@@ -67,16 +61,17 @@ const PdfIsarModuleSchema = CollectionSchema(
           name: r'pathNameFile',
           type: IndexType.hash,
           caseSensitive: true,
-        )
+        ),
       ],
-    )
+    ),
   },
   links: {},
   embeddedSchemas: {},
+
   getId: _pdfIsarModuleGetId,
   getLinks: _pdfIsarModuleGetLinks,
   attach: _pdfIsarModuleAttach,
-  version: '3.1.0+1',
+  version: '3.3.0-dev.3',
 );
 
 int _pdfIsarModuleEstimateSize(
@@ -99,9 +94,10 @@ void _pdfIsarModuleSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.descrizione);
-  writer.writeString(offsets[1], object.name);
-  writer.writeString(offsets[2], object.pathNameFile);
-  writer.writeString(offsets[3], object.testo);
+  writer.writeLong(offsets[1], object.hashCode);
+  writer.writeString(offsets[2], object.name);
+  writer.writeString(offsets[3], object.pathNameFile);
+  writer.writeString(offsets[4], object.testo);
 }
 
 PdfIsarModule _pdfIsarModuleDeserialize(
@@ -110,12 +106,13 @@ PdfIsarModule _pdfIsarModuleDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = PdfIsarModule();
-  object.descrizione = reader.readString(offsets[0]);
+  final object = PdfIsarModule(
+    descrizione: reader.readStringOrNull(offsets[0]) ?? '',
+    name: reader.readStringOrNull(offsets[2]) ?? '',
+    pathNameFile: reader.readStringOrNull(offsets[3]) ?? '',
+    testo: reader.readStringOrNull(offsets[4]) ?? '',
+  );
   object.id = id;
-  object.name = reader.readString(offsets[1]);
-  object.pathNameFile = reader.readString(offsets[2]);
-  object.testo = reader.readString(offsets[3]);
   return object;
 }
 
@@ -127,13 +124,15 @@ P _pdfIsarModuleDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
+    case 4:
+      return (reader.readStringOrNull(offset) ?? '') as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -148,7 +147,10 @@ List<IsarLinkBase<dynamic>> _pdfIsarModuleGetLinks(PdfIsarModule object) {
 }
 
 void _pdfIsarModuleAttach(
-    IsarCollection<dynamic> col, Id id, PdfIsarModule object) {
+  IsarCollection<dynamic> col,
+  Id id,
+  PdfIsarModule object,
+) {
   object.id = id;
 }
 
@@ -170,13 +172,15 @@ extension PdfIsarModuleByIndex on IsarCollection<PdfIsarModule> {
   }
 
   Future<List<PdfIsarModule?>> getAllByPathNameFile(
-      List<String> pathNameFileValues) {
+    List<String> pathNameFileValues,
+  ) {
     final values = pathNameFileValues.map((e) => [e]).toList();
     return getAllByIndex(r'pathNameFile', values);
   }
 
   List<PdfIsarModule?> getAllByPathNameFileSync(
-      List<String> pathNameFileValues) {
+    List<String> pathNameFileValues,
+  ) {
     final values = pathNameFileValues.map((e) => [e]).toList();
     return getAllByIndexSync(r'pathNameFile', values);
   }
@@ -203,8 +207,10 @@ extension PdfIsarModuleByIndex on IsarCollection<PdfIsarModule> {
     return putAllByIndex(r'pathNameFile', objects);
   }
 
-  List<Id> putAllByPathNameFileSync(List<PdfIsarModule> objects,
-      {bool saveLinks = true}) {
+  List<Id> putAllByPathNameFileSync(
+    List<PdfIsarModule> objects, {
+    bool saveLinks = true,
+  }) {
     return putAllByIndexSync(r'pathNameFile', objects, saveLinks: saveLinks);
   }
 }
@@ -221,17 +227,16 @@ extension PdfIsarModuleQueryWhereSort
 extension PdfIsarModuleQueryWhere
     on QueryBuilder<PdfIsarModule, PdfIsarModule, QWhereClause> {
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterWhereClause> idEqualTo(
-      Id id) {
+    Id id,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterWhereClause> idNotEqualTo(
-      Id id) {
+    Id id,
+  ) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -254,8 +259,9 @@ extension PdfIsarModuleQueryWhere
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterWhereClause> idGreaterThan(
-      Id id,
-      {bool include = false}) {
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -264,8 +270,9 @@ extension PdfIsarModuleQueryWhere
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterWhereClause> idLessThan(
-      Id id,
-      {bool include = false}) {
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -280,101 +287,122 @@ extension PdfIsarModuleQueryWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterWhereClause> nameEqualTo(
-      String name) {
+    String name,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'name',
-        value: [name],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'name', value: [name]),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterWhereClause> nameNotEqualTo(
-      String name) {
+    String name,
+  ) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'name',
-              lower: [],
-              upper: [name],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'name',
-              lower: [name],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [],
+                upper: [name],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [name],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'name',
-              lower: [name],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'name',
-              lower: [],
-              upper: [name],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [name],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [],
+                upper: [name],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterWhereClause>
-      pathNameFileEqualTo(String pathNameFile) {
+  pathNameFileEqualTo(String pathNameFile) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'pathNameFile',
-        value: [pathNameFile],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(
+          indexName: r'pathNameFile',
+          value: [pathNameFile],
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterWhereClause>
-      pathNameFileNotEqualTo(String pathNameFile) {
+  pathNameFileNotEqualTo(String pathNameFile) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'pathNameFile',
-              lower: [],
-              upper: [pathNameFile],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'pathNameFile',
-              lower: [pathNameFile],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'pathNameFile',
+                lower: [],
+                upper: [pathNameFile],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'pathNameFile',
+                lower: [pathNameFile],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'pathNameFile',
-              lower: [pathNameFile],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'pathNameFile',
-              lower: [],
-              upper: [pathNameFile],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'pathNameFile',
+                lower: [pathNameFile],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'pathNameFile',
+                lower: [],
+                upper: [pathNameFile],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
@@ -383,53 +411,56 @@ extension PdfIsarModuleQueryWhere
 extension PdfIsarModuleQueryFilter
     on QueryBuilder<PdfIsarModule, PdfIsarModule, QFilterCondition> {
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      descrizioneEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  descrizioneEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'descrizione',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'descrizione',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      descrizioneGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'descrizione',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      descrizioneLessThan(
+  descrizioneGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'descrizione',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'descrizione',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      descrizioneBetween(
+  descrizioneLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'descrizione',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  descrizioneBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -437,108 +468,164 @@ extension PdfIsarModuleQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'descrizione',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'descrizione',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      descrizioneStartsWith(
-    String value, {
-    bool caseSensitive = true,
+  descrizioneStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'descrizione',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  descrizioneEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'descrizione',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  descrizioneContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'descrizione',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  descrizioneMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'descrizione',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  descrizioneIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'descrizione', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  descrizioneIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'descrizione', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  hashCodeEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'hashCode', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  hashCodeGreaterThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'hashCode',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  hashCodeLessThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'hashCode',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'descrizione',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      descrizioneEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'descrizione',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      descrizioneContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'descrizione',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      descrizioneMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'descrizione',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      descrizioneIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'descrizione',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      descrizioneIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'descrizione',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'hashCode',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition> idEqualTo(
-      Id value) {
+    Id value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      idGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
+  idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -547,11 +634,13 @@ extension PdfIsarModuleQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -562,13 +651,15 @@ extension PdfIsarModuleQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
@@ -577,43 +668,49 @@ extension PdfIsarModuleQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      nameGreaterThan(
+  nameGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      nameLessThan(
+  nameLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -625,136 +722,142 @@ extension PdfIsarModuleQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'name',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'name',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      nameStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  nameStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      nameEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  nameEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      nameContains(String value, {bool caseSensitive = true}) {
+  nameContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition> nameMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'name',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      nameIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'name',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      nameIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'name',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      pathNameFileEqualTo(
-    String value, {
+    String pattern, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'pathNameFile',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'name',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      pathNameFileGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+  nameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'pathNameFile',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'name', value: ''),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      pathNameFileLessThan(
+  nameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'name', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  pathNameFileEqualTo(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'pathNameFile',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  pathNameFileGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'pathNameFile',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'pathNameFile',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      pathNameFileBetween(
+  pathNameFileLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'pathNameFile',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  pathNameFileBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -762,135 +865,140 @@ extension PdfIsarModuleQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'pathNameFile',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'pathNameFile',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      pathNameFileStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  pathNameFileStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'pathNameFile',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'pathNameFile',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      pathNameFileEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  pathNameFileEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'pathNameFile',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'pathNameFile',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      pathNameFileContains(String value, {bool caseSensitive = true}) {
+  pathNameFileContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'pathNameFile',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'pathNameFile',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      pathNameFileMatches(String pattern, {bool caseSensitive = true}) {
+  pathNameFileMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'pathNameFile',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'pathNameFile',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      pathNameFileIsEmpty() {
+  pathNameFileIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'pathNameFile',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'pathNameFile', value: ''),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      pathNameFileIsNotEmpty() {
+  pathNameFileIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'pathNameFile',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'pathNameFile', value: ''),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      testoEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  testoEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'testo',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'testo',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      testoGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'testo',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      testoLessThan(
+  testoGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'testo',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'testo',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      testoBetween(
+  testoLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'testo',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
+  testoBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -898,84 +1006,86 @@ extension PdfIsarModuleQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'testo',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'testo',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      testoStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  testoStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'testo',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'testo',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      testoEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  testoEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'testo',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'testo',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      testoContains(String value, {bool caseSensitive = true}) {
+  testoContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'testo',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'testo',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      testoMatches(String pattern, {bool caseSensitive = true}) {
+  testoMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'testo',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'testo',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      testoIsEmpty() {
+  testoIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'testo',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'testo', value: ''),
+      );
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterFilterCondition>
-      testoIsNotEmpty() {
+  testoIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'testo',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'testo', value: ''),
+      );
     });
   }
 }
@@ -995,9 +1105,22 @@ extension PdfIsarModuleQuerySortBy
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterSortBy>
-      sortByDescrizioneDesc() {
+  sortByDescrizioneDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'descrizione', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterSortBy> sortByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterSortBy>
+  sortByHashCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.desc);
     });
   }
 
@@ -1014,14 +1137,14 @@ extension PdfIsarModuleQuerySortBy
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterSortBy>
-      sortByPathNameFile() {
+  sortByPathNameFile() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'pathNameFile', Sort.asc);
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterSortBy>
-      sortByPathNameFileDesc() {
+  sortByPathNameFileDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'pathNameFile', Sort.desc);
     });
@@ -1049,9 +1172,22 @@ extension PdfIsarModuleQuerySortThenBy
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterSortBy>
-      thenByDescrizioneDesc() {
+  thenByDescrizioneDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'descrizione', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterSortBy> thenByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterSortBy>
+  thenByHashCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.desc);
     });
   }
 
@@ -1080,14 +1216,14 @@ extension PdfIsarModuleQuerySortThenBy
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterSortBy>
-      thenByPathNameFile() {
+  thenByPathNameFile() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'pathNameFile', Sort.asc);
     });
   }
 
   QueryBuilder<PdfIsarModule, PdfIsarModule, QAfterSortBy>
-      thenByPathNameFileDesc() {
+  thenByPathNameFileDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'pathNameFile', Sort.desc);
     });
@@ -1108,29 +1244,39 @@ extension PdfIsarModuleQuerySortThenBy
 
 extension PdfIsarModuleQueryWhereDistinct
     on QueryBuilder<PdfIsarModule, PdfIsarModule, QDistinct> {
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QDistinct> distinctByDescrizione(
-      {bool caseSensitive = true}) {
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QDistinct> distinctByDescrizione({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'descrizione', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QDistinct> distinctByName(
-      {bool caseSensitive = true}) {
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QDistinct> distinctByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hashCode');
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QDistinct> distinctByName({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QDistinct> distinctByPathNameFile(
-      {bool caseSensitive = true}) {
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QDistinct> distinctByPathNameFile({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'pathNameFile', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<PdfIsarModule, PdfIsarModule, QDistinct> distinctByTesto(
-      {bool caseSensitive = true}) {
+  QueryBuilder<PdfIsarModule, PdfIsarModule, QDistinct> distinctByTesto({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'testo', caseSensitive: caseSensitive);
     });
@@ -1148,6 +1294,12 @@ extension PdfIsarModuleQueryProperty
   QueryBuilder<PdfIsarModule, String, QQueryOperations> descrizioneProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'descrizione');
+    });
+  }
+
+  QueryBuilder<PdfIsarModule, int, QQueryOperations> hashCodeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hashCode');
     });
   }
 

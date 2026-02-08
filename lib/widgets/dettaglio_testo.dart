@@ -1,5 +1,5 @@
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
-import 'package:books/widgets/appbar/appbar_default.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/widgets/appbar/appbar_default.dart';
 import 'package:flutter/material.dart';
 
 class DettaglioTesto extends StatefulWidget {

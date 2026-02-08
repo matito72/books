@@ -1,5 +1,5 @@
-import 'package:books/features/import_export/data/models/file_backup.module.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/features/import_export/data/models/file_backup.module.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 

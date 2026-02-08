@@ -22,17 +22,19 @@ const LibreriaIsarModelSchema = CollectionSchema(
       name: r'isLibreriaDefault',
       type: IsarType.bool,
     ),
-    r'nome': PropertySchema(
-      id: 1,
-      name: r'nome',
-      type: IsarType.string,
-    ),
+    r'nome': PropertySchema(id: 1, name: r'nome', type: IsarType.string),
     r'nrLibriCaricati': PropertySchema(
       id: 2,
       name: r'nrLibriCaricati',
       type: IsarType.long,
-    )
+    ),
+    r'valoreTot': PropertySchema(
+      id: 3,
+      name: r'valoreTot',
+      type: IsarType.double,
+    ),
   },
+
   estimateSize: _libreriaIsarModelEstimateSize,
   serialize: _libreriaIsarModelSerialize,
   deserialize: _libreriaIsarModelDeserialize,
@@ -49,16 +51,17 @@ const LibreriaIsarModelSchema = CollectionSchema(
           name: r'nome',
           type: IndexType.hash,
           caseSensitive: false,
-        )
+        ),
       ],
-    )
+    ),
   },
   links: {},
   embeddedSchemas: {},
+
   getId: _libreriaIsarModelGetId,
   getLinks: _libreriaIsarModelGetLinks,
   attach: _libreriaIsarModelAttach,
-  version: '3.1.0+1',
+  version: '3.3.0-dev.3',
 );
 
 int _libreriaIsarModelEstimateSize(
@@ -80,6 +83,7 @@ void _libreriaIsarModelSerialize(
   writer.writeBool(offsets[0], object.isLibreriaDefault);
   writer.writeString(offsets[1], object.nome);
   writer.writeLong(offsets[2], object.nrLibriCaricati);
+  writer.writeDouble(offsets[3], object.valoreTot);
 }
 
 LibreriaIsarModel _libreriaIsarModelDeserialize(
@@ -92,6 +96,7 @@ LibreriaIsarModel _libreriaIsarModelDeserialize(
     isLibreriaDefault: reader.readBoolOrNull(offsets[0]) ?? false,
     nome: reader.readStringOrNull(offsets[1]) ?? '-',
     nrLibriCaricati: reader.readLongOrNull(offsets[2]) ?? 0,
+    valoreTot: reader.readDoubleOrNull(offsets[3]) ?? 0,
   );
   object.sigla = id;
   return object;
@@ -110,6 +115,8 @@ P _libreriaIsarModelDeserializeProp<P>(
       return (reader.readStringOrNull(offset) ?? '-') as P;
     case 2:
       return (reader.readLongOrNull(offset) ?? 0) as P;
+    case 3:
+      return (reader.readDoubleOrNull(offset) ?? 0) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -120,12 +127,16 @@ Id _libreriaIsarModelGetId(LibreriaIsarModel object) {
 }
 
 List<IsarLinkBase<dynamic>> _libreriaIsarModelGetLinks(
-    LibreriaIsarModel object) {
+  LibreriaIsarModel object,
+) {
   return [];
 }
 
 void _libreriaIsarModelAttach(
-    IsarCollection<dynamic> col, Id id, LibreriaIsarModel object) {
+  IsarCollection<dynamic> col,
+  Id id,
+  LibreriaIsarModel object,
+) {
   object.sigla = id;
 }
 
@@ -178,8 +189,10 @@ extension LibreriaIsarModelByIndex on IsarCollection<LibreriaIsarModel> {
     return putAllByIndex(r'nome', objects);
   }
 
-  List<Id> putAllByNomeSync(List<LibreriaIsarModel> objects,
-      {bool saveLinks = true}) {
+  List<Id> putAllByNomeSync(
+    List<LibreriaIsarModel> objects, {
+    bool saveLinks = true,
+  }) {
     return putAllByIndexSync(r'nome', objects, saveLinks: saveLinks);
   }
 }
@@ -196,17 +209,16 @@ extension LibreriaIsarModelQueryWhereSort
 extension LibreriaIsarModelQueryWhere
     on QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QWhereClause> {
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterWhereClause>
-      siglaEqualTo(Id sigla) {
+  siglaEqualTo(Id sigla) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: sigla,
-        upper: sigla,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(lower: sigla, upper: sigla),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterWhereClause>
-      siglaNotEqualTo(Id sigla) {
+  siglaNotEqualTo(Id sigla) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -229,7 +241,7 @@ extension LibreriaIsarModelQueryWhere
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterWhereClause>
-      siglaGreaterThan(Id sigla, {bool include = false}) {
+  siglaGreaterThan(Id sigla, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: sigla, includeLower: include),
@@ -238,7 +250,7 @@ extension LibreriaIsarModelQueryWhere
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterWhereClause>
-      siglaLessThan(Id sigla, {bool include = false}) {
+  siglaLessThan(Id sigla, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: sigla, includeUpper: include),
@@ -247,63 +259,72 @@ extension LibreriaIsarModelQueryWhere
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterWhereClause>
-      siglaBetween(
+  siglaBetween(
     Id lowerSigla,
     Id upperSigla, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerSigla,
-        includeLower: includeLower,
-        upper: upperSigla,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerSigla,
+          includeLower: includeLower,
+          upper: upperSigla,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterWhereClause>
-      nomeEqualTo(String nome) {
+  nomeEqualTo(String nome) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'nome',
-        value: [nome],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'nome', value: [nome]),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterWhereClause>
-      nomeNotEqualTo(String nome) {
+  nomeNotEqualTo(String nome) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'nome',
-              lower: [],
-              upper: [nome],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'nome',
-              lower: [nome],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'nome',
+                lower: [],
+                upper: [nome],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'nome',
+                lower: [nome],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'nome',
-              lower: [nome],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'nome',
-              lower: [],
-              upper: [nome],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'nome',
+                lower: [nome],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'nome',
+                lower: [],
+                upper: [nome],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
@@ -312,63 +333,65 @@ extension LibreriaIsarModelQueryWhere
 extension LibreriaIsarModelQueryFilter
     on QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QFilterCondition> {
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      isLibreriaDefaultEqualTo(bool value) {
+  isLibreriaDefaultEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isLibreriaDefault',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'isLibreriaDefault', value: value),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nomeEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  nomeEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'nome',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'nome',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nomeGreaterThan(
+  nomeGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'nome',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'nome',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nomeLessThan(
+  nomeLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'nome',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'nome',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nomeBetween(
+  nomeBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -376,196 +399,271 @@ extension LibreriaIsarModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'nome',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'nome',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nomeStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  nomeStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'nome',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'nome',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nomeEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  nomeEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'nome',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'nome',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nomeContains(String value, {bool caseSensitive = true}) {
+  nomeContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'nome',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'nome',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nomeMatches(String pattern, {bool caseSensitive = true}) {
+  nomeMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'nome',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'nome',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nomeIsEmpty() {
+  nomeIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'nome',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'nome', value: ''),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nomeIsNotEmpty() {
+  nomeIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'nome',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'nome', value: ''),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nrLibriCaricatiEqualTo(int value) {
+  nrLibriCaricatiEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'nrLibriCaricati',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'nrLibriCaricati', value: value),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nrLibriCaricatiGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  nrLibriCaricatiGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'nrLibriCaricati',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'nrLibriCaricati',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nrLibriCaricatiLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  nrLibriCaricatiLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'nrLibriCaricati',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'nrLibriCaricati',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      nrLibriCaricatiBetween(
+  nrLibriCaricatiBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'nrLibriCaricati',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'nrLibriCaricati',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      siglaEqualTo(Id value) {
+  siglaEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'sigla',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'sigla', value: value),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      siglaGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
+  siglaGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'sigla',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'sigla',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      siglaLessThan(
-    Id value, {
-    bool include = false,
-  }) {
+  siglaLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'sigla',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'sigla',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
-      siglaBetween(
+  siglaBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'sigla',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'sigla',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  valoreTotEqualTo(double value, {double epsilon = Query.epsilon}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'valoreTot',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  valoreTotGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'valoreTot',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  valoreTotLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'valoreTot',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  valoreTotBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'valoreTot',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 }
@@ -579,44 +677,58 @@ extension LibreriaIsarModelQueryLinks
 extension LibreriaIsarModelQuerySortBy
     on QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QSortBy> {
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      sortByIsLibreriaDefault() {
+  sortByIsLibreriaDefault() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isLibreriaDefault', Sort.asc);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      sortByIsLibreriaDefaultDesc() {
+  sortByIsLibreriaDefaultDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isLibreriaDefault', Sort.desc);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      sortByNome() {
+  sortByNome() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nome', Sort.asc);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      sortByNomeDesc() {
+  sortByNomeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nome', Sort.desc);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      sortByNrLibriCaricati() {
+  sortByNrLibriCaricati() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nrLibriCaricati', Sort.asc);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      sortByNrLibriCaricatiDesc() {
+  sortByNrLibriCaricatiDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nrLibriCaricati', Sort.desc);
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
+  sortByValoreTot() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'valoreTot', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
+  sortByValoreTotDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'valoreTot', Sort.desc);
     });
   }
 }
@@ -624,58 +736,72 @@ extension LibreriaIsarModelQuerySortBy
 extension LibreriaIsarModelQuerySortThenBy
     on QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QSortThenBy> {
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      thenByIsLibreriaDefault() {
+  thenByIsLibreriaDefault() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isLibreriaDefault', Sort.asc);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      thenByIsLibreriaDefaultDesc() {
+  thenByIsLibreriaDefaultDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isLibreriaDefault', Sort.desc);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      thenByNome() {
+  thenByNome() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nome', Sort.asc);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      thenByNomeDesc() {
+  thenByNomeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nome', Sort.desc);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      thenByNrLibriCaricati() {
+  thenByNrLibriCaricati() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nrLibriCaricati', Sort.asc);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      thenByNrLibriCaricatiDesc() {
+  thenByNrLibriCaricatiDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nrLibriCaricati', Sort.desc);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      thenBySigla() {
+  thenBySigla() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'sigla', Sort.asc);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
-      thenBySiglaDesc() {
+  thenBySiglaDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'sigla', Sort.desc);
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
+  thenByValoreTot() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'valoreTot', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
+  thenByValoreTotDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'valoreTot', Sort.desc);
     });
   }
 }
@@ -683,23 +809,31 @@ extension LibreriaIsarModelQuerySortThenBy
 extension LibreriaIsarModelQueryWhereDistinct
     on QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QDistinct> {
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QDistinct>
-      distinctByIsLibreriaDefault() {
+  distinctByIsLibreriaDefault() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'isLibreriaDefault');
     });
   }
 
-  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QDistinct> distinctByNome(
-      {bool caseSensitive = true}) {
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QDistinct> distinctByNome({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'nome', caseSensitive: caseSensitive);
     });
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QDistinct>
-      distinctByNrLibriCaricati() {
+  distinctByNrLibriCaricati() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'nrLibriCaricati');
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QDistinct>
+  distinctByValoreTot() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'valoreTot');
     });
   }
 }
@@ -713,7 +847,7 @@ extension LibreriaIsarModelQueryProperty
   }
 
   QueryBuilder<LibreriaIsarModel, bool, QQueryOperations>
-      isLibreriaDefaultProperty() {
+  isLibreriaDefaultProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isLibreriaDefault');
     });
@@ -726,9 +860,16 @@ extension LibreriaIsarModelQueryProperty
   }
 
   QueryBuilder<LibreriaIsarModel, int, QQueryOperations>
-      nrLibriCaricatiProperty() {
+  nrLibriCaricatiProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'nrLibriCaricati');
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, double, QQueryOperations>
+  valoreTotProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'valoreTot');
     });
   }
 }

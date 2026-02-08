@@ -1,21 +1,24 @@
 import 'dart:convert';
 
-import 'package:books/config/com_area.dart';
-import 'package:books/config/constant.dart';
-import 'package:books/features/libro/data/models/link_isar.module.dart';
-import 'package:books/features/libro/data/models/pdf_isar.module.dart';
-import 'package:books/resources/bisac_codes.dart';
-import 'package:books/utilities/utils.dart';
-import 'package:isar/isar.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/config/constant.dart';
+import 'package:book/features/libro/data/models/link_isar.module.dart';
+import 'package:book/features/libro/data/models/pdf_isar.module.dart';
+import 'package:book/resources/bisac_codes.dart';
+import 'package:book/utilities/utils.dart';
+import 'package:isar_community/isar.dart';
+import 'package:crypto/crypto.dart';
+
+// import 'libro_isar.module.util.dart';
 
 part 'libro_isar.module.g.dart';
 
 /// Modello like-GOOGLE-BOOK
-/// 
+///
 ///** flutter pub run build_runner build */
 
 @Collection()
-class LibroIsarModel  {
+class LibroIsarModel {
   Id id = Isar.autoIncrement;
 
   // Google-Book
@@ -25,7 +28,12 @@ class LibroIsarModel  {
   late String titolo;
   late String editore;
 
-  @Index(composite: [CompositeIndex('titolo', caseSensitive: false), CompositeIndex('editore', caseSensitive: false)])
+  @Index(
+    composite: [
+      CompositeIndex('titolo', caseSensitive: false),
+      CompositeIndex('editore', caseSensitive: false),
+    ],
+  )
   late List<String> lstAutori;
   late String descrizione;
   late String immagineCopertina;
@@ -40,31 +48,56 @@ class LibroIsarModel  {
 
   // view
   late int stars;
-  String? pathImmagineCopertina;  // Campo usato come 'backup' del campo 'immagineCopertina' originale
-  late int siglaLibreria; 
+  String?
+  pathImmagineCopertina; // Campo usato come 'backup' del campo 'immagineCopertina' originale
+  late int siglaLibreria;
   late String note;
   late String dataInserimento;
   late String dataUltimaModifica;
-  
+
   final IsarLinks<LinkIsarModule> lstLinkIsarModule = IsarLinks<LinkIsarModule>();
   final IsarLinks<PdfIsarModule> lstPdfIsarModule = IsarLinks<PdfIsarModule>();
 
-  LibroIsarModel(this.siglaLibreria, this.dataInserimento, this.dataUltimaModifica, 
-    {this.googleBookId='', required this.isbn, this.titolo='', this.lstAutori=const [], this.editore='', this.descrizione='', 
-    this.immagineCopertina='', this.dataPubblicazione='', this.nrPagine=0, this.lstCategoria=const [], this.previewLink='', 
-    this.isEbook=false, this.country='', this.valuta='',  this.prezzo=0, this.stars = 0, this.pathImmagineCopertina, this.note = ''}) {
-        if (lstCategoria.isEmpty) {
-          lstCategoria = [BisacList.nonClassifiable];
-        }
-        if (prezzo < 0) {
-          prezzo = 0;
-        }
+  @ignore
+  final List<PdfIsarModule> lstPdfModule = [];
+  @ignore
+  final List<LinkIsarModule> lstLinkModule = [];
+
+  LibroIsarModel(
+    this.siglaLibreria,
+    this.dataInserimento,
+    this.dataUltimaModifica, {
+    this.googleBookId = '',
+    required this.isbn,
+    this.titolo = '',
+    this.lstAutori = const [],
+    this.editore = '',
+    this.descrizione = '',
+    this.immagineCopertina = '',
+    this.dataPubblicazione = '',
+    this.nrPagine = 0,
+    this.lstCategoria = const [],
+    this.previewLink = '',
+    this.isEbook = false,
+    this.country = '',
+    this.valuta = '',
+    this.prezzo = 0,
+    this.stars = 0,
+    this.pathImmagineCopertina,
+    this.note = '',
+  }) {
+    if (lstCategoria.isEmpty) {
+      lstCategoria = [BisacList.nonClassifiable];
+    }
+    if (prezzo < 0) {
+      prezzo = 0;
+    }
   }
- 
-  Map toJson() => {
+
+  Map<String, dynamic> toJson() => {
     'googleBookId': googleBookId,
     'isbn': isbn.trim().isNotEmpty ? isbn : '',
-    'titolo': titolo, 
+    'titolo': titolo,
     'autori': jsonEncode(lstAutori),
     'editore': editore,
     'descrizione': descrizione,
@@ -74,23 +107,53 @@ class LibroIsarModel  {
     'lstCategoria': jsonEncode(lstCategoria),
     'previewLink': previewLink,
     'isEbook': isEbook,
-    'country': country, 
+    'country': country,
     'valuta': valuta,
-    'prezzo': prezzo, 
-    'stars' : stars,
+    'prezzo': prezzo,
+    'stars': stars,
     'pathImmagineCopertina': pathImmagineCopertina,
     'siglaLibreria': siglaLibreria,
     'note': note,
-    'dataInserimento' : dataInserimento,
-    'ultimaModifica' : dataUltimaModifica
+    'dataInserimento': dataInserimento,
+    'ultimaModifica': dataUltimaModifica,
+    'lstPdfIsarModule': lstPdfIsarModule.map((pdf) => pdf.toJson()).toList(),
+    'lstLinkIsarModule': lstLinkIsarModule.map((link) => link.toJson()).toList(),
   };
-  
-  LibroIsarModel.fromMap(Map<String, dynamic> mappa, {
-      this.stars = 0, 
-      this.siglaLibreria = 0, 
-      this.dataInserimento = Constant.dataDefault, 
-      this.dataUltimaModifica = Constant.dataDefault,
-      this.note = ''}) {
+
+  Map<String, dynamic> toJsonExcel() => {
+    'googleBookId': googleBookId,
+    'isbn': isbn.trim().isNotEmpty ? isbn : '',
+    'titolo': titolo,
+    'autori': jsonEncode(lstAutori),
+    'editore': editore,
+    'descrizione': descrizione,
+    'immagineCopertina': immagineCopertina,
+    'dataPubblicazione': dataPubblicazione,
+    'nrPagine': nrPagine,
+    'lstCategoria': jsonEncode(lstCategoria),
+    'previewLink': previewLink,
+    'isEbook': isEbook,
+    'country': country,
+    'valuta': valuta,
+    'prezzo': prezzo,
+    'stars': stars,
+    'pathImmagineCopertina': pathImmagineCopertina,
+    'siglaLibreria': siglaLibreria,
+    'note': note,
+    'dataInserimento': dataInserimento,
+    'ultimaModifica': dataUltimaModifica,
+    // 'lstPdfIsarModule': lstPdfIsarModule.map((pdf) => pdf.toJson()).toList(),
+    // 'lstLinkIsarModule': lstLinkIsarModule.map((link) => link.toJson()).toList(),
+  };
+
+  LibroIsarModel.fromMap(
+    Map<String, dynamic> mappa, {
+    this.stars = 0,
+    this.siglaLibreria = 0,
+    this.dataInserimento = Constant.dataDefault,
+    this.dataUltimaModifica = Constant.dataDefault,
+    this.note = '',
+  }) {
     isbn = mappa['isbn'];
     titolo = mappa['titolo'];
     lstAutori = List<String>.from(jsonDecode(mappa['autori']));
@@ -104,14 +167,33 @@ class LibroIsarModel  {
     isEbook = mappa['isEbook'];
     country = mappa['country'];
     valuta = mappa['valuta'];
-    prezzo = (mappa['prezzo']  is double)
-      ? mappa['prezzo']
-      : Utils.getPositiveDouble(Utils.getTrimUppercaseParameter(mappa['prezzo']));
+    prezzo = (mappa['prezzo'] is double)
+        ? mappa['prezzo']
+        : Utils.getPositiveDouble(
+            Utils.getTrimUppercaseParameter(mappa['prezzo']),
+          );
     googleBookId = mappa['id'] ?? mappa['googleBookId'];
     stars = mappa['stars'];
     pathImmagineCopertina = mappa['pathImmagineCopertina'];
     siglaLibreria = ComArea.libreriaInUso!.sigla;
     note = mappa['note'] ?? '';
+
+    final List<dynamic>? pdfMaps = mappa['lstPdfIsarModule'];
+    if (pdfMaps != null) {
+      for (final map in pdfMaps) {
+        // Si assume l'esistenza di PdfIsarModule.fromMap
+        PdfIsarModule pdfIsarModule = PdfIsarModule.fromMap(map as Map<String, dynamic>);
+        lstPdfModule.add(pdfIsarModule);
+      }
+    }
+
+    final List<dynamic>? linkMaps = mappa['lstLinkIsarModule'];
+    if (linkMaps != null) {
+      for (final map in linkMaps) {
+        LinkIsarModule linkIsarModule = LinkIsarModule.fromMap(map as Map<String, dynamic>);
+        lstLinkModule.add(linkIsarModule);
+      }
+    }
   }
 
   List<String> _getListaCategoriaFromMap(dynamic lstCategoria) {
@@ -120,7 +202,6 @@ class LibroIsarModel  {
     }
 
     return [BisacList.nonClassifiable];
-    
   }
 
   LibroIsarModel clonaLibro() => LibroIsarModel(
@@ -129,7 +210,7 @@ class LibroIsarModel  {
     dataUltimaModifica,
     note: note,
     googleBookId: googleBookId,
-    isbn: isbn, 
+    isbn: isbn,
     titolo: titolo,
     lstAutori: lstAutori,
     editore: editore,
@@ -144,12 +225,12 @@ class LibroIsarModel  {
     valuta: valuta,
     prezzo: prezzo,
     stars: stars,
-    pathImmagineCopertina: pathImmagineCopertina
+    pathImmagineCopertina: pathImmagineCopertina,
   );
 
   /// Al salvataggio del Libro, dalla lista dei libri cercati:
-  /// 
-  loadDataFromLibroViewModel(LibroIsarModel libroViewModel) {
+  ///
+  void loadDataFromLibroViewModel(LibroIsarModel libroViewModel) {
     googleBookId = libroViewModel.googleBookId;
     isbn = libroViewModel.isbn;
     country = libroViewModel.country;
@@ -168,12 +249,14 @@ class LibroIsarModel  {
     stars = libroViewModel.stars;
   }
 
-  LibroIsarModel.fromGoogleMap(Map<String, dynamic> mappa, {
-      this.stars = 0, 
-      this.siglaLibreria = 0, 
-      this.dataInserimento = Constant.dataDefault, 
-      this.dataUltimaModifica = Constant.dataDefault, 
-      this.note = ''}) {
+  LibroIsarModel.fromGoogleMap(
+    Map<String, dynamic> mappa, {
+    this.stars = 0,
+    this.siglaLibreria = 0,
+    this.dataInserimento = Constant.dataDefault,
+    this.dataUltimaModifica = Constant.dataDefault,
+    this.note = '',
+  }) {
     const String strNullValue = '';
 
     googleBookId = mappa['id'] ?? mappa['googleBookId'];
@@ -181,7 +264,9 @@ class LibroIsarModel  {
     Map<String, dynamic> mapVolumeInfo = mappa['volumeInfo'];
     titolo = mapVolumeInfo['title'];
     if (mapVolumeInfo['authors'] != null) {
-      lstAutori = (mapVolumeInfo['authors'] as List).map((item) => item as String).toList();
+      lstAutori = (mapVolumeInfo['authors'] as List)
+          .map((item) => item as String)
+          .toList();
     } else {
       lstAutori = ['<Autore da definire>'];
     }
@@ -196,48 +281,118 @@ class LibroIsarModel  {
 
     List industryIdentifiers = mapVolumeInfo['industryIdentifiers'] ?? [];
     if (industryIdentifiers.isNotEmpty && industryIdentifiers.length > 1) {
-      isbn = industryIdentifiers.elementAt(industryIdentifiers.length - 1)['identifier'];
+      isbn = industryIdentifiers.elementAt(
+        industryIdentifiers.length - 1,
+      )['identifier'];
     } else {
       isbn = '';
     }
 
     dataPubblicazione = mapVolumeInfo['publishedDate'] ?? strNullValue;
     nrPagine = mapVolumeInfo['pageCount'] ?? 0;
-    
+
     if (mapVolumeInfo['categories'] != null) {
-      lstCategoria = (mapVolumeInfo['categories'] as List).map((item) => item as String).toList();
+      lstCategoria = (mapVolumeInfo['categories'] as List)
+          .map((item) => (item as String).toUpperCase())
+          .toList();
       // if (lstCategoria.length > 1) {
       //   print('==============================================================> ${lstCategoria.toString()} <==========================================');
       // }
     } else {
-      lstCategoria = [BisacList.nonClassifiable]; // mapVolumeInfo['categories'] ?? [];
+      lstCategoria = [
+        BisacList.nonClassifiable,
+      ]; // mapVolumeInfo['categories'] ?? [];
     }
 
     previewLink = mapVolumeInfo['previewLink'] ?? strNullValue;
 
     try {
-      immagineCopertina = mapVolumeInfo['imageLinks']['smallThumbnail'] ?? strNullValue;
-    }
-    catch (errore) {
+      immagineCopertina =
+          mapVolumeInfo['imageLinks']['smallThumbnail'] ?? strNullValue;
+    } catch (errore) {
       immagineCopertina = strNullValue;
     }
 
     Map<String, dynamic> saleInfo = mappa['saleInfo'] ?? {};
     isEbook = saleInfo['isEbook'] ?? false;
     country = saleInfo['country'] ?? strNullValue;
-    
+
     valuta = strNullValue;
     prezzo = 0;
 
     if (isEbook) {
       Map<String, dynamic> mapListPrice = saleInfo['listPrice'] ?? {};
       valuta = mapListPrice['currencyCode'] ?? strNullValue;
-      String strPrezzo = (mapListPrice['amount'] != null) ? mapListPrice['amount'].toString() : "0";
+      String strPrezzo = (mapListPrice['amount'] != null)
+          ? mapListPrice['amount'].toString()
+          : "0";
       if (double.tryParse(strPrezzo) != null) {
         prezzo = double.parse(strPrezzo);
       }
     }
   }
+
+  String calcolaHash() {
+    // Crea una mappa con i campi da considerare per l'hash
+    final mapPerHash = {
+      'googleBookId': googleBookId,
+      'isbn': isbn.trim(),
+      'titolo': titolo,
+      'autori': lstAutori,
+      'editore': editore,
+      'descrizione': descrizione,
+      'immagineCopertina': immagineCopertina,
+      'dataPubblicazione': dataPubblicazione,
+      'nrPagine': nrPagine,
+      'lstCategoria': lstCategoria,
+      'previewLink': previewLink,
+      'isEbook': isEbook,
+      'country': country,
+      'valuta': valuta,
+      'prezzo': prezzo,
+      'stars': stars,
+      'pathImmagineCopertina': pathImmagineCopertina,
+      'siglaLibreria': siglaLibreria,
+      'note': note,
+      // 'dataInserimento': dataInserimento,
+      // 'dataUltimaModifica': dataUltimaModifica,
+    };
+
+    // Serializza in JSON con chiavi ordinate
+    var jsonString = jsonEncode(Map.fromEntries(mapPerHash.entries.toList()..sort((a, b) => a.key.compareTo(b.key))));
+
+    // Calcoli hash SHA256
+    var bytes = utf8.encode(jsonString);
+    var digest = sha256.convert(bytes);
+
+    return digest.toString();
+  }
+
+  String get normalizzaListaAutori {
+    // 1. Applichiamo la normalizzazione a ogni singolo autore della lista
+    List<String> autoriNormalizzati = lstAutori.map((autore) {
+      // Rimuove accenti e minuscolo
+      String pulita = Utils.rimuoviAccenti(autore.toLowerCase());
+
+      // Divide per caratteri non alfanumerici e filtra i vuoti
+      List<String> parti = pulita.split(RegExp(r'[^a-z0-9]'))
+          .where((s) => s.isNotEmpty)
+          .toList();
+
+      // Ordina le parti del nome (es. "mario rossi" -> "mario rossi")
+      parti.sort();
+
+      return parti.join(' ');
+    }).toList();
+
+    // 2. Ordiniamo la lista degli autori stessi
+    // (Fondamentale: così "Dante, Petrarca" e "Petrarca, Dante" diventano uguali)
+    autoriNormalizzati.sort();
+
+    // 3. Uniamo tutti gli autori in un'unica stringa identificativa
+    return autoriNormalizzati.join(', ');
+  }
+
 
   @override
   String toString() {
@@ -246,5 +401,4 @@ class LibroIsarModel  {
         dataPubblicazione: $dataPubblicazione; nrPagine: $nrPagine; lstCategoria: $lstCategoria; previewLink: $previewLink; isEbook: $isEbook; 
         country: $country; valuta: $valuta; prezzo: $prezzo; googleBookId: $googleBookId;''';
   }
-  
 }

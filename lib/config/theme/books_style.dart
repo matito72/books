@@ -36,9 +36,7 @@ class BookStyle {
     // dialogBackgroundColor: Colors.red,
     scaffoldBackgroundColor:  Colors.blueGrey[900]!, // const Color.fromARGB(255, 75, 64, 64),
     colorScheme: ColorScheme(
-      background: Colors.blueGrey[900]!,
       error: Colors.redAccent[100]!,
-      onBackground: Colors.yellow.shade200,
       onError: Colors.red.shade300,
       onPrimary: Colors.blueGrey[700]!,
       onSecondary: Colors.yellow.shade50,

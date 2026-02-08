@@ -1,6 +1,6 @@
-import 'package:books/features/import_export/data/models/file_backup.module.dart';
-import 'package:books/widgets/download/download_controller.dart';
-import 'package:books/widgets/download/download_button.dart';
+import 'package:book/features/import_export/data/models/file_backup.module.dart';
+import 'package:book/widgets/download/download_button.dart';
+import 'package:book/widgets/download/download_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
@@ -35,11 +35,14 @@ class FileBackupWidget extends StatelessWidget {
       return LinearPercentIndicator(
         key: super.key,
         width: (MediaQuery.of(context).size.width * 85 / 100),
-        animation: true,
         lineHeight: 5.0,
         trailing: Text("${ctrl.nrRecordCaricati}/${_item.nrRecord}"),
+        progressBorderColor: Colors.redAccent,
         progressColor: Colors.greenAccent,
-        percent: ctrl.progress
+        percent: ctrl.progress,
+        animation: true,
+        animateFromLastPercent: true,
+        animateToInitialPercent: true,
       );
     }
 
@@ -81,14 +84,16 @@ class FileBackupWidget extends StatelessWidget {
               ],
             ),
             trailing: Wrap(
-              // spacing: 0,
+              alignment: WrapAlignment.start, // Allineamento orizzontale
+              crossAxisAlignment: WrapCrossAlignment.center, // <--- Fondamentale per l'allineamento verticale
+              spacing: 8.0, // Aggiunge spazio tra i widget se necessario
               children: [
                 SizedBox(
+                  // Usare LayoutBuilder o definire altezze fisse è spesso più sicuro di MediaQuery
+                  // per piccoli elementi UI, ma manteniamo la tua logica:
                   width: (MediaQuery.of(context).size.width * 10 / 100),
                   height: (MediaQuery.of(context).size.height * 6 / 100),
                   child: Center(
-                    widthFactor: 1,
-                    heightFactor: 1,
                     child: AnimatedBuilder(
                       animation: downloadController,
                       builder: (context, child) {
@@ -99,21 +104,26 @@ class FileBackupWidget extends StatelessWidget {
                           onCancel: downloadController.stopDownload,
                           onOpen: downloadController.openDownload,
                           lstLibriGiaPresenti: downloadController.lstLibriGiaPresenti,
-                          fileBackupModel: _item
+                          fileBackupModel: _item,
                         );
                       },
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.share, color: Colors.lightGreen[200]), // Color.fromARGB(202, 176, 235, 158),),
-                  onPressed: () => {shareFileBackup(context, _item)},
+                  // Rimuovere il padding extra se vuoi che l'icona sia perfettamente centrata
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: Icon(Icons.share, color: Colors.lightGreen[200]),
+                  onPressed: () => shareFileBackup(context, _item),
                 ),
                 IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                   icon: Icon(Icons.delete, color: Colors.orange.shade800),
-                  onPressed: () => {deleteFileBackup(context, _item)},
+                  onPressed: () => deleteFileBackup(context, _item),
                 ),
-              ], 
+              ],
             ),
           ),
           Visibility(

@@ -1,9 +1,13 @@
-import 'package:books/features/libreria/bloc/libreria_events.bloc.dart';
-import 'package:books/features/libreria/bloc/libreria_state.bloc.dart';
-import 'package:books/features/libreria/data/models/libreria_isar.module.dart';
-import 'package:books/features/libreria/data/services/db_libreria.isar.service.dart';
-import 'package:books/models/selected_item.module.dart';
-import 'package:books/utilities/list_items_utils.dart';
+// import 'dart:nativewrappers/_internal/vm/lib/internal_patch.dart';
+
+import 'package:book/config/com_area.dart';
+import 'package:book/features/libreria/bloc/libreria_events.bloc.dart';
+import 'package:book/features/libreria/bloc/libreria_state.bloc.dart';
+import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
+import 'package:book/features/libreria/data/services/db_libreria.isar.service.dart';
+import 'package:book/models/selected_item.module.dart';
+import 'package:book/utilities/list_items_utils.dart';
+import 'package:book/utilities/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
@@ -26,23 +30,19 @@ class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
     on<LoadLibreriaEvent>((event, emit) async {
       emit(const LibreriaWaitingState());
       try {
-        // while (!_dbLibreriaIsarService.isServiceInitialized() ) {
-        //     await Future.delayed(const Duration(seconds: 1));
-        // }
         List<LibreriaIsarModel> lstLibreriaViewModel = await _dbLibreriaIsarService.readLstLibreriaFromDb();
         List<SelectedItem<LibreriaIsarModel>> lstLibreriaIsarModelSel = ListItemsUtils.convertListToSelectedItems(lstLibreriaViewModel);
         for (SelectedItem<LibreriaIsarModel> selectedItemItem in lstLibreriaIsarModelSel) {
           if (selectedItemItem.item.isLibreriaDefault) {
             selectedItemItem.sel = true;
-            // ComArea.libreriaInUso = selectedItemItem.item;
           }
         }
-        // if (lstLibreriaViewModel.isLibreriaDefault) {
-        //   ComArea.libreriaInUso = libreriaToAdd;
-        // }
-        String msg = lstLibreriaViewModel.isEmpty ? 'Nessuna Libreria presente' : 'Nr. ${lstLibreriaViewModel.length} Librerie caricate correttamente';
+        ComArea.mapCodDescLibreria = Utils.getMapCodDescLibreria(lstLibreriaViewModel);
+
+        String msg = lstLibreriaViewModel.isEmpty ? 'Nessuna Libreria presente' : 'Nr. ${lstLibreriaViewModel.length} Librerie caricate.';
         emit(LibreriaLoadedState(lstLibreriaIsarModelSel, msg));
       } catch (e) {
+        print(e);
         emit(LibreriaErrorState(e.toString()));
       }
     });
@@ -62,8 +62,8 @@ class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
     on<EditLibreriaEvent>((event, emit) async {
       emit(const LibreriaWaitingState());
       try {
-        await _dbLibreriaIsarService.updateLibreria(event.libreriaIsarModelNew);
-        emit(EditLibreriaState('Libreria ${event.libreriaIsarModelOld} modificata in ${event.libreriaIsarModelNew} correttamente.'));
+        await _dbLibreriaIsarService.updateNomeLibreria(event.libreriaIsarModelOld.sigla, event.libreriaIsarModelOld.nome, event.libreriaIsarModelNew.nome);
+        emit(EditLibreriaState('Libreria ${event.libreriaIsarModelOld} modificata in ${event.libreriaIsarModelNew}.'));
       } catch (e) {
         emit(LibreriaErrorState(e.toString()));
       }
@@ -74,7 +74,7 @@ class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
       emit(const LibreriaWaitingState());
       try {
         await _dbLibreriaIsarService.deleteLibreria(event.libreriaIsarModelDelete);
-        emit(DeleteLibreriaState('Libreria ${event.libreriaIsarModelDelete.nome} eliminata correttamente'));
+        emit(DeleteLibreriaState('Libreria ${event.libreriaIsarModelDelete.nome} eliminata.'));
       } catch (e) {
         emit(LibreriaErrorState(e.toString()));
       }

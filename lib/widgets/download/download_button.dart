@@ -1,15 +1,10 @@
-import 'package:books/features/import_export/data/models/file_backup.module.dart';
-import 'package:books/features/libro/data/models/libro_isar.module.dart';
+import 'package:book/features/import_export/data/models/file_backup.module.dart';
+import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-enum DownloadStatus {
-  notDownloaded,
-  fetchingDownload,
-  downloading,
-  downloaded,
-}
+enum DownloadStatus { notDownloaded, fetchingDownload, downloading, downloaded }
 
 @immutable
 class DownloadButton extends StatelessWidget {
@@ -23,7 +18,12 @@ class DownloadButton extends StatelessWidget {
     required FileBackupModel fileBackupModel,
     required List<LibroIsarModel> lstLibriGiaPresenti,
     this.transitionDuration = const Duration(milliseconds: 500),
-  }) : _lstLibriGiaPresenti = lstLibriGiaPresenti, _onOpen = onOpen, _onCancel = onCancel, _onDownload = onDownload, _downloadProgress = downloadProgress, _status = status;
+  }) : _lstLibriGiaPresenti = lstLibriGiaPresenti,
+       _onOpen = onOpen,
+       _onCancel = onCancel,
+       _onDownload = onDownload,
+       _downloadProgress = downloadProgress,
+       _status = status;
 
   final DownloadStatus _status;
   final double _downloadProgress;
@@ -64,7 +64,7 @@ class DownloadButton extends StatelessWidget {
             isDownloaded: _isDownloaded,
             isDownloading: _isDownloading,
             isFetching: _isFetching,
-            lstLibriGiaPresenti: _lstLibriGiaPresenti
+            lstLibriGiaPresenti: _lstLibriGiaPresenti,
           ),
           Positioned.fill(
             child: AnimatedOpacity(
@@ -103,7 +103,7 @@ class ButtonShapeWidget extends StatelessWidget {
     required this.isDownloaded,
     required this.isFetching,
     required this.transitionDuration,
-    required this.lstLibriGiaPresenti
+    required this.lstLibriGiaPresenti,
   });
 
   final bool isDownloading;
@@ -123,12 +123,10 @@ class ButtonShapeWidget extends StatelessWidget {
     if (isDownloading || isFetching) {
       shape = ShapeDecoration(
         shape: const CircleBorder(),
-        color: Colors.white.withOpacity(0),
+        color: Colors.white.withValues(alpha: 0),
         // color: Colors.transparent,
       );
     }
-
-    
 
     return AnimatedContainer(
       duration: transitionDuration,
@@ -139,20 +137,26 @@ class ButtonShapeWidget extends StatelessWidget {
         duration: transitionDuration,
         opacity: isDownloading || isFetching ? 0.0 : 1.0,
         curve: Curves.ease,
-        child: isDownloaded 
-            ? lstLibriGiaPresenti.isEmpty 
-              ? IconButton(
-                icon: const Icon(Icons.check, color: Colors.greenAccent),
-                onPressed: () => {} 
-              )
-              : IconButton(
-                icon: Icon(Icons.view_headline, color: Colors.yellow[700]),
-                onPressed: () => {} 
-              )
+        child: isDownloaded
+            ? lstLibriGiaPresenti.isEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.check, color: Colors.greenAccent),
+                      onPressed: () => {},
+                    )
+                  : IconButton(
+                      icon: Icon(
+                        Icons.view_headline,
+                        color: Colors.yellow[700],
+                      ),
+                      onPressed: () => {},
+                    )
             : IconButton(
-              icon: Icon(MdiIcons.backupRestore, color: Colors.lightGreenAccent[400],),
-              onPressed: () => {} 
-            ) 
+                icon: Icon(
+                  MdiIcons.backupRestore,
+                  color: Colors.lightGreenAccent[400],
+                ),
+                onPressed: () => {},
+              ),
       ),
     );
   }
@@ -182,10 +186,10 @@ class ProgressIndicatorWidget extends StatelessWidget {
           return CircularProgressIndicator(
             backgroundColor: isDownloading
                 ? CupertinoColors.lightBackgroundGray
-                : Colors.white.withOpacity(0),
-            valueColor: AlwaysStoppedAnimation(isFetching
-                ? Colors.blueGrey[50]
-                : Colors.lightBlueAccent),
+                : Colors.white.withValues(alpha: 0),
+            valueColor: AlwaysStoppedAnimation(
+              isFetching ? Colors.blueGrey[50] : Colors.lightBlueAccent,
+            ),
             strokeWidth: 2,
             value: isFetching ? null : progress,
           );

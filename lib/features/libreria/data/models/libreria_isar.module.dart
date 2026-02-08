@@ -1,5 +1,5 @@
-import 'package:isar/isar.dart';
 
+import 'package:isar_community/isar.dart';
 part 'libreria_isar.module.g.dart';
 
 //** flutter pub run build_runner build */
@@ -13,7 +13,8 @@ class LibreriaIsarModel {
 
   int nrLibriCaricati;
   bool isLibreriaDefault;
+  double valoreTot;
 
-  LibreriaIsarModel({this.nome = '-', this.nrLibriCaricati = 0, this.isLibreriaDefault = false});
+  LibreriaIsarModel({this.nome = '-', this.nrLibriCaricati = 0, this.isLibreriaDefault = false, this.valoreTot = 0});
 
 }

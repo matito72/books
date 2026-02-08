@@ -1,5 +1,5 @@
-import 'package:books/config/com_area.dart';
-import 'package:books/resources/libro_field_selected.dart';
+import 'package:book/config/com_area.dart';
+import 'package:book/resources/libro_field_selected.dart';
 import 'package:flutter/material.dart';
 
 // class GroupByMenu extends StatefulWidget {
@@ -39,7 +39,7 @@ class GroupByMenu extends StatelessWidget {
         ),
       ),
       menuStyle: MenuStyle(
-        backgroundColor: MaterialStatePropertyAll<Color>(Colors.blueGrey[400]!),
+        backgroundColor: WidgetStatePropertyAll<Color>(Colors.blueGrey[400]!),
       ),
       initialSelection: _initOrdinamentoLibri.label,
       onSelected: (String? value) {
