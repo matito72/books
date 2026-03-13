@@ -47,7 +47,7 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
       if (googleSearchModel.title != null || googleSearchModel.author != null || googleSearchModel.isbn != null) {
         List<LibroIsarModel> libri = [];
         try {
-          libri = await LibroSearchService.simpleGoogleBooksSearch(googleSearchModel);
+          libri = await LibroSearchService.simpleBooksSearch(googleSearchModel, 0);
         } catch (errore) {
           if (errore is HandshakeException && errore.type == "HandshakeException") {
             if (!context.mounted) return;

@@ -28,8 +28,13 @@ const LibreriaIsarModelSchema = CollectionSchema(
       name: r'nrLibriCaricati',
       type: IsarType.long,
     ),
-    r'valoreTot': PropertySchema(
+    r'pathImmagineLibreria': PropertySchema(
       id: 3,
+      name: r'pathImmagineLibreria',
+      type: IsarType.string,
+    ),
+    r'valoreTot': PropertySchema(
+      id: 4,
       name: r'valoreTot',
       type: IsarType.double,
     ),
@@ -71,6 +76,12 @@ int _libreriaIsarModelEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.nome.length * 3;
+  {
+    final value = object.pathImmagineLibreria;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -83,7 +94,8 @@ void _libreriaIsarModelSerialize(
   writer.writeBool(offsets[0], object.isLibreriaDefault);
   writer.writeString(offsets[1], object.nome);
   writer.writeLong(offsets[2], object.nrLibriCaricati);
-  writer.writeDouble(offsets[3], object.valoreTot);
+  writer.writeString(offsets[3], object.pathImmagineLibreria);
+  writer.writeDouble(offsets[4], object.valoreTot);
 }
 
 LibreriaIsarModel _libreriaIsarModelDeserialize(
@@ -96,7 +108,8 @@ LibreriaIsarModel _libreriaIsarModelDeserialize(
     isLibreriaDefault: reader.readBoolOrNull(offsets[0]) ?? false,
     nome: reader.readStringOrNull(offsets[1]) ?? '-',
     nrLibriCaricati: reader.readLongOrNull(offsets[2]) ?? 0,
-    valoreTot: reader.readDoubleOrNull(offsets[3]) ?? 0,
+    pathImmagineLibreria: reader.readStringOrNull(offsets[3]),
+    valoreTot: reader.readDoubleOrNull(offsets[4]) ?? 0,
   );
   object.sigla = id;
   return object;
@@ -116,6 +129,8 @@ P _libreriaIsarModelDeserializeProp<P>(
     case 2:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
       return (reader.readDoubleOrNull(offset) ?? 0) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -538,6 +553,168 @@ extension LibreriaIsarModelQueryFilter
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  pathImmagineLibreriaIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'pathImmagineLibreria'),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  pathImmagineLibreriaIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'pathImmagineLibreria'),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  pathImmagineLibreriaEqualTo(String? value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'pathImmagineLibreria',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  pathImmagineLibreriaGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'pathImmagineLibreria',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  pathImmagineLibreriaLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'pathImmagineLibreria',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  pathImmagineLibreriaBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'pathImmagineLibreria',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  pathImmagineLibreriaStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'pathImmagineLibreria',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  pathImmagineLibreriaEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'pathImmagineLibreria',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  pathImmagineLibreriaContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'pathImmagineLibreria',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  pathImmagineLibreriaMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'pathImmagineLibreria',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  pathImmagineLibreriaIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'pathImmagineLibreria', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
+  pathImmagineLibreriaIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          property: r'pathImmagineLibreria',
+          value: '',
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterFilterCondition>
   siglaEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -719,6 +896,20 @@ extension LibreriaIsarModelQuerySortBy
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
+  sortByPathImmagineLibreria() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pathImmagineLibreria', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
+  sortByPathImmagineLibreriaDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pathImmagineLibreria', Sort.desc);
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
   sortByValoreTot() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'valoreTot', Sort.asc);
@@ -778,6 +969,20 @@ extension LibreriaIsarModelQuerySortThenBy
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
+  thenByPathImmagineLibreria() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pathImmagineLibreria', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
+  thenByPathImmagineLibreriaDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pathImmagineLibreria', Sort.desc);
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QAfterSortBy>
   thenBySigla() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'sigla', Sort.asc);
@@ -831,6 +1036,16 @@ extension LibreriaIsarModelQueryWhereDistinct
   }
 
   QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QDistinct>
+  distinctByPathImmagineLibreria({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'pathImmagineLibreria',
+        caseSensitive: caseSensitive,
+      );
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, LibreriaIsarModel, QDistinct>
   distinctByValoreTot() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'valoreTot');
@@ -863,6 +1078,13 @@ extension LibreriaIsarModelQueryProperty
   nrLibriCaricatiProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'nrLibriCaricati');
+    });
+  }
+
+  QueryBuilder<LibreriaIsarModel, String?, QQueryOperations>
+  pathImmagineLibreriaProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'pathImmagineLibreria');
     });
   }
 

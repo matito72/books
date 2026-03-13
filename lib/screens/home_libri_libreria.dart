@@ -790,8 +790,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     List<LibroIsarModel> lstLibroViewModel = [];
     if (isSmartPhone) {
       String scannedCode = await LibroSearchService.scanBarcodeNormal(context);
-      lstLibroViewModel =
-      await LibroSearchService.searchBooksByBarcode(scannedCode);
+      lstLibroViewModel = await LibroSearchService.searchBooksByBarcode(scannedCode);
     }
 
     // List<LibroIsarModel> lstLibroViewModel = await LibroSearchService.searchBooksByBarcode( await LibroSearchService.scanBarcodeNormal(context)); //** OK */

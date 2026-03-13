@@ -66,7 +66,7 @@ dependencies:
   percent_indicator: 4.2.5
   permission_handler: 12.0.1
   path: 1.9.1
-  path_provider: ^2.1.5
+  path_provider: 2.1.5
   pdf: 3.11.3
   read_more_text: 0.0.5
   expandable_text: 2.3.0
@@ -89,7 +89,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  isar_community_generator: ^3.3.0-dev.3
+  isar_community_generator: 3.3.0-dev.3
   build_runner: any
   analyzer: 8.3.0
 

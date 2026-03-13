@@ -69,6 +69,29 @@ class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
       }
     });
 
+    // SAVE
+    on<SaveLibreriaEvent>((event, emit) async {
+      emit(const LibreriaWaitingState());
+      try {
+        await _dbLibreriaIsarService.saveLibreria(event.libreriaIsarModelSave);
+
+        List<LibreriaIsarModel> lstLibreriaViewModel = await _dbLibreriaIsarService.readLstLibreriaFromDb();
+        List<SelectedItem<LibreriaIsarModel>> lstLibreriaIsarModelSel = ListItemsUtils.convertListToSelectedItems(lstLibreriaViewModel);
+        for (SelectedItem<LibreriaIsarModel> selectedItemItem in lstLibreriaIsarModelSel) {
+          if (selectedItemItem.item.isLibreriaDefault) {
+            selectedItemItem.sel = true;
+          }
+        }
+        ComArea.mapCodDescLibreria = Utils.getMapCodDescLibreria(lstLibreriaViewModel);
+
+        // emit(SaveLibreriaState('Libreria ${event.libreriaIsarModelSave.nome} aggiornata.'));
+        String msg = lstLibreriaViewModel.isEmpty ? 'Nessuna Libreria presente' : "Libreria '${event.libreriaIsarModelSave.nome}' aggiornata.";
+        emit(LibreriaLoadedState(lstLibreriaIsarModelSel, msg));
+      } catch (e) {
+        emit(LibreriaErrorState(e.toString()));
+      }
+    });
+
     // DELETE
     on<DeleteLibreriaEvent>((event, emit) async {
       emit(const LibreriaWaitingState());
@@ -80,16 +103,7 @@ class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
       }
     });
 
-    // //! RESET -> DELETE-ALL
-    // on<DeleteAllLibreriaEvent>((event, emit) async {
-    //   emit(const LibreriaWaitingState());
-    //   try {
-    //     int nrRecordDeleted = await _dbLibreriaIsarService.deleteAllLibrerie();
-    //     emit(DeleteAllLibreriaState(nrRecordDeleted, 'Nr. $nrRecordDeleted: librerie eliminate.'));
-    //   } catch (e) {
-    //     emit(LibreriaErrorState(e.toString()));
-    //   }
-    // });
+
   }
 
 }

@@ -86,7 +86,12 @@ const LibroIsarModelSchema = CollectionSchema(
     ),
     r'stars': PropertySchema(id: 19, name: r'stars', type: IsarType.long),
     r'titolo': PropertySchema(id: 20, name: r'titolo', type: IsarType.string),
-    r'valuta': PropertySchema(id: 21, name: r'valuta', type: IsarType.string),
+    r'typeBookSearch': PropertySchema(
+      id: 21,
+      name: r'typeBookSearch',
+      type: IsarType.long,
+    ),
+    r'valuta': PropertySchema(id: 22, name: r'valuta', type: IsarType.string),
   },
 
   estimateSize: _libroIsarModelEstimateSize,
@@ -211,7 +216,8 @@ void _libroIsarModelSerialize(
   writer.writeLong(offsets[18], object.siglaLibreria);
   writer.writeLong(offsets[19], object.stars);
   writer.writeString(offsets[20], object.titolo);
-  writer.writeString(offsets[21], object.valuta);
+  writer.writeLong(offsets[21], object.typeBookSearch);
+  writer.writeString(offsets[22], object.valuta);
 }
 
 LibroIsarModel _libroIsarModelDeserialize(
@@ -241,7 +247,8 @@ LibroIsarModel _libroIsarModelDeserialize(
     prezzo: reader.readDoubleOrNull(offsets[17]) ?? 0,
     stars: reader.readLongOrNull(offsets[19]) ?? 0,
     titolo: reader.readStringOrNull(offsets[20]) ?? '',
-    valuta: reader.readStringOrNull(offsets[21]) ?? '',
+    typeBookSearch: reader.readLongOrNull(offsets[21]) ?? 0,
+    valuta: reader.readStringOrNull(offsets[22]) ?? '',
   );
   object.id = id;
   return object;
@@ -297,6 +304,8 @@ P _libroIsarModelDeserializeProp<P>(
     case 20:
       return (reader.readStringOrNull(offset) ?? '') as P;
     case 21:
+      return (reader.readLongOrNull(offset) ?? 0) as P;
+    case 22:
       return (reader.readStringOrNull(offset) ?? '') as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -3284,6 +3293,61 @@ extension LibroIsarModelQueryFilter
   }
 
   QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+  typeBookSearchEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'typeBookSearch', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+  typeBookSearchGreaterThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'typeBookSearch',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+  typeBookSearchLessThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'typeBookSearch',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
+  typeBookSearchBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'typeBookSearch',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterFilterCondition>
   valutaEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -3819,6 +3883,20 @@ extension LibroIsarModelQuerySortBy
     });
   }
 
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterSortBy>
+  sortByTypeBookSearch() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'typeBookSearch', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterSortBy>
+  sortByTypeBookSearchDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'typeBookSearch', Sort.desc);
+    });
+  }
+
   QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterSortBy> sortByValuta() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'valuta', Sort.asc);
@@ -4101,6 +4179,20 @@ extension LibroIsarModelQuerySortThenBy
     });
   }
 
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterSortBy>
+  thenByTypeBookSearch() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'typeBookSearch', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterSortBy>
+  thenByTypeBookSearchDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'typeBookSearch', Sort.desc);
+    });
+  }
+
   QueryBuilder<LibroIsarModel, LibroIsarModel, QAfterSortBy> thenByValuta() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'valuta', Sort.asc);
@@ -4283,6 +4375,13 @@ extension LibroIsarModelQueryWhereDistinct
     });
   }
 
+  QueryBuilder<LibroIsarModel, LibroIsarModel, QDistinct>
+  distinctByTypeBookSearch() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'typeBookSearch');
+    });
+  }
+
   QueryBuilder<LibroIsarModel, LibroIsarModel, QDistinct> distinctByValuta({
     bool caseSensitive = true,
   }) {
@@ -4432,6 +4531,12 @@ extension LibroIsarModelQueryProperty
   QueryBuilder<LibroIsarModel, String, QQueryOperations> titoloProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'titolo');
+    });
+  }
+
+  QueryBuilder<LibroIsarModel, int, QQueryOperations> typeBookSearchProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'typeBookSearch');
     });
   }
 

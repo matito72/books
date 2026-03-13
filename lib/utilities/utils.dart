@@ -163,7 +163,7 @@ class Utils {
         casaEditrice: libroViewModelDett.editore
       );
 
-      List<LibroIsarModel> lstLibri = await LibroSearchService.simpleGoogleBooksSearch(googleSearchModel);
+      List<LibroIsarModel> lstLibri = await LibroSearchService.simpleBooksSearch(googleSearchModel, 0);
       if (lstLibri.isNotEmpty) {
         int nrTentativi = 10;
         for (LibroIsarModel libroViewModelResult in lstLibri) {
@@ -218,7 +218,7 @@ class Utils {
     bool stop = false;
 
     while (!stop) {
-      List<LibroIsarModel> lstLibri = await LibroSearchService.simpleGoogleBooksSearch(googleSearchModel);
+      List<LibroIsarModel> lstLibri = await LibroSearchService.simpleBooksSearch(googleSearchModel, 0);
       if (lstLibri.isNotEmpty) {
         _loadCoverBook(lstCoverBookUrlLowResolution, lstCoverBookUrl, lstLibri, (nrMax - lstCoverBookUrl.length));
       }

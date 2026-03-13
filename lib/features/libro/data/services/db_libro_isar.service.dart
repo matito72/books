@@ -34,14 +34,6 @@ class DbLibroIsarService {
     return Future.value(Isar.getInstance(nomeLibreria));
   }
 
-  // Future<int> countLibri(String? nomeLibreria) async {
-  //   Isar isarLibro = await _openBoxLibro(nomeLibreria ?? ComArea.libreriaInUso!.nome);
-  //   int count = await isarLibro.libroIsarModels.count();
-  //   await isarLibro.close();
-
-  //   return count;
-  // }
-
   Future<int> countLibriLibreria(LibreriaIsarModel libreriaSel) async {
     Isar isarLibro = await _openBoxLibro(libreriaSel.nome);
 
@@ -70,15 +62,8 @@ class DbLibroIsarService {
       for (LibroIsarModel libro in lstLibroViewSaved) {
         libro.lstLinkIsarModule.load();
         libro.lstPdfIsarModule.load();
-    //     await libro.links.load();
-    //     int nr = await libro.links.count();
-    //     if (nr != 0) {
-    //       print('----------------> count: ${libro.titolo} - $nr ');
-    //       print('----------------> URL = "${libro.links.elementAt(0).url}"');
-    //     }
       }
     }
-    // final lst = isarLibro.linkIsarModules.where().findAll();
 
     await isarLibro.close();
     return lstLibroViewSaved;

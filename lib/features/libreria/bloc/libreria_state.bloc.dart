@@ -36,6 +36,11 @@ class AddedNewLibreriaState extends LibreriaSuccessState {
   const AddedNewLibreriaState(String msg) : super(msg: msg);
 }
 
+//* SAVE
+class SaveLibreriaState extends LibreriaSuccessState {
+  const SaveLibreriaState(List<SelectedItem<LibreriaIsarModel>> data, String msg) : super(data: data, msg: msg);
+}
+
 //* DELETE
 class DeleteLibreriaState extends LibreriaSuccessState { 
   const DeleteLibreriaState(String msg) : super(msg: msg);

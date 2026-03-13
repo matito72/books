@@ -68,17 +68,21 @@ class HomeLibreriaScreen extends StatelessWidget {
     if (strDesc != null &&
         strDesc.contains(';') &&
         strDesc.split(';').length == 2) {
-          LibreriaIsarModel libreriaModelNew = LibreriaIsarModel(
-            nome: strDesc.split(';')[0].trim(),
-            nrLibriCaricati: libreria.nrLibriCaricati,
-          );
+      LibreriaIsarModel libreriaModelNew = LibreriaIsarModel(
+        nome: strDesc.split(';')[0].trim(),
+        nrLibriCaricati: libreria.nrLibriCaricati,
+      );
 
-          if (context.mounted) {
-            BlocProvider.of<LibreriaBloc>(
-              context,
-            ).add(EditLibreriaEvent(libreria, libreriaModelNew));
-          }
-        }
+      if (context.mounted) {
+        BlocProvider.of<LibreriaBloc>(context).add(EditLibreriaEvent(libreria, libreriaModelNew));
+      }
+    }
+  }
+
+  Future<void> _saveLibreria(BuildContext context, LibreriaIsarModel libreria) async {
+    if (context.mounted) {
+      BlocProvider.of<LibreriaBloc>(context).add(SaveLibreriaEvent(libreria));
+    }
   }
 
   Future<void> _deleteLibreria(
@@ -129,33 +133,6 @@ class HomeLibreriaScreen extends StatelessWidget {
     );
   }
 
-  // Widget _createFloatingActionButton(BuildContext context) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-  //     child: Row(
-  //       children: [
-  //         GestureDetector(
-  //           onTap: () {},
-  //           behavior: HitTestBehavior.translucent,
-  //           child: FloatingActionButton(
-  //             heroTag: "btnImageAlbum",
-  //             onPressed: () {
-  //               _addNewLibreria(context);
-  //             },
-  //             backgroundColor: Theme.of(context).colorScheme.surface,
-  //             child: Icon(
-  //               Icons.add,
-  //               color: Theme.of(context).colorScheme.onSecondary,
-  //               shadows: const [],
-  //               size: 55,
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   AppBarDefault _buildAppbar(BuildContext context) {
     return AppBarDefault(
       context: context,
@@ -163,41 +140,6 @@ class HomeLibreriaScreen extends StatelessWidget {
       showIconSx: false,
     );
   }
-
-  // Future<void> _test() async {
-  //   debugPrint("TEST........");
-  //   // const TestopenCv(title: 'opencv_4 Demo');
-  // }
-
-  // Future<void> _selezionaTutti() async {
-  //   ComArea.isLibreriaSelectedAll = true;
-  // }
-
-  // Future<void> _deselezionaTutti() async {
-  //   ComArea.isLibreriaSelectedAll = false;
-  // }
-
-  // _test() async {
-  //   // https://drive.google.com/file/d/1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT/view?usp=sharing
-  //   // https://drive.google.com/file/d/1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT/view?usp=sharing
-  //   // https://drive.google.com/uc?export=download&id=1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT
-
-  //   // https://drive.google.com/file/d/1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT/view%3Fusp=sharing
-  //   // debugPrint(await http.read(Uri.https('drive.google.com', '/file/d/1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT/view', { 'usp' : 'sharing' })));
-
-  //   String url = 'https://drive.google.com/uc?export=download&id=1qDwEQfPSyfq8Th_UbG3mPsCk6G2mfuOT';
-  //   var httpClient = HttpClient();
-
-  //   var request = await httpClient.getUrl(Uri.parse(url));
-  //   var response = await request.close();
-
-  //   var bytes = await consolidateHttpClientResponseBytes(response);
-  //   var decoded = utf8.decode(bytes);
-  //   // String dir = (await getApplicationDocumentsDirectory()).path;
-  //   // File file = new File('$dir/$filename');
-  //   // await file.writeAsBytes(bytes);
-  //   debugPrint(decoded);
-  // }
 
   Widget _widgetListaLibrerie(
       BuildContext context,
@@ -252,6 +194,7 @@ class HomeLibreriaScreen extends StatelessWidget {
                   _goToHomeLibriLibreria,
                   _editLibreria,
                   _deleteLibreria,
+                  _saveLibreria
                 );
               }).toList(),
             )

@@ -10,13 +10,13 @@ import 'package:http/http.dart' as http;
 
 class GooleApisBooksService {
 
-  static Future<List<LibroIsarModel>> getLibri(ParameterGoogleSearchModel googleSearchModel, int offset, int limit) async {
+  static Future<List<LibroIsarModel>> getLibri(ParameterGoogleSearchModel googleSearchModel, int offset) async {
     GooleApisBooksService gooleApisBooksService = GooleApisBooksService();
 
-    return gooleApisBooksService.cercaLibri(googleSearchModel, offset);
+    return gooleApisBooksService._cercaLibri(googleSearchModel, offset);
   }
 
-  Future<List<LibroIsarModel>> cercaLibri(ParameterGoogleSearchModel googleSearchModel, int offset) async {
+  Future<List<LibroIsarModel>> _cercaLibri(ParameterGoogleSearchModel googleSearchModel, int offset) async {
     List<LibroIsarModel> libri = [];
     String percorso = Constant.googleapisPercorso;
     

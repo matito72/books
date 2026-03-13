@@ -19,7 +19,7 @@
     <!-- <uses-permission android:name="android.permission.CAMERA" /> -->
 
     <application
-            android:label="book_test"
+            android:label="Books"
             android:name="${applicationName}"
             android:icon="@mipmap/ic_launcher">
         <activity

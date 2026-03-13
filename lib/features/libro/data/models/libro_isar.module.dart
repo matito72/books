@@ -45,11 +45,12 @@ class LibroIsarModel {
   late String country;
   late String valuta;
   late double prezzo;
+  // Valori gestiti: 1=Google, 2=Opne Library
+  late int typeBookSearch;
 
   // view
   late int stars;
-  String?
-  pathImmagineCopertina; // Campo usato come 'backup' del campo 'immagineCopertina' originale
+  String? pathImmagineCopertina; // Campo usato come 'backup' del campo 'immagineCopertina' originale
   late int siglaLibreria;
   late String note;
   late String dataInserimento;
@@ -78,6 +79,7 @@ class LibroIsarModel {
     this.nrPagine = 0,
     this.lstCategoria = const [],
     this.previewLink = '',
+    this.typeBookSearch = 0,
     this.isEbook = false,
     this.country = '',
     this.valuta = '',
@@ -106,6 +108,7 @@ class LibroIsarModel {
     'nrPagine': nrPagine,
     'lstCategoria': jsonEncode(lstCategoria),
     'previewLink': previewLink,
+    'typeBookSearch': typeBookSearch,
     'isEbook': isEbook,
     'country': country,
     'valuta': valuta,
@@ -132,6 +135,7 @@ class LibroIsarModel {
     'nrPagine': nrPagine,
     'lstCategoria': jsonEncode(lstCategoria),
     'previewLink': previewLink,
+    'typeBookSearch': typeBookSearch,
     'isEbook': isEbook,
     'country': country,
     'valuta': valuta,
@@ -141,9 +145,7 @@ class LibroIsarModel {
     'siglaLibreria': siglaLibreria,
     'note': note,
     'dataInserimento': dataInserimento,
-    'ultimaModifica': dataUltimaModifica,
-    // 'lstPdfIsarModule': lstPdfIsarModule.map((pdf) => pdf.toJson()).toList(),
-    // 'lstLinkIsarModule': lstLinkIsarModule.map((link) => link.toJson()).toList(),
+    'ultimaModifica': dataUltimaModifica
   };
 
   LibroIsarModel.fromMap(
@@ -164,6 +166,7 @@ class LibroIsarModel {
     nrPagine = mappa['nrPagine'];
     lstCategoria = _getListaCategoriaFromMap(mappa['lstCategoria']);
     previewLink = mappa['previewLink'];
+    typeBookSearch = mappa['typeBookSearch'] ?? 1;
     isEbook = mappa['isEbook'];
     country = mappa['country'];
     valuta = mappa['valuta'];
@@ -220,6 +223,7 @@ class LibroIsarModel {
     nrPagine: nrPagine,
     lstCategoria: lstCategoria,
     previewLink: previewLink,
+    typeBookSearch: typeBookSearch,
     isEbook: isEbook,
     country: country,
     valuta: valuta,
@@ -240,6 +244,7 @@ class LibroIsarModel {
     immagineCopertina = libroViewModel.immagineCopertina;
     dataPubblicazione = libroViewModel.dataPubblicazione;
     previewLink = libroViewModel.previewLink;
+    typeBookSearch = libroViewModel.typeBookSearch;
     valuta = libroViewModel.valuta;
     prezzo = libroViewModel.prezzo;
     nrPagine = libroViewModel.nrPagine;
@@ -305,10 +310,10 @@ class LibroIsarModel {
     }
 
     previewLink = mapVolumeInfo['previewLink'] ?? strNullValue;
+    typeBookSearch = 1;
 
     try {
-      immagineCopertina =
-          mapVolumeInfo['imageLinks']['smallThumbnail'] ?? strNullValue;
+      immagineCopertina = mapVolumeInfo['imageLinks']['smallThumbnail'] ?? strNullValue;
     } catch (errore) {
       immagineCopertina = strNullValue;
     }
@@ -332,6 +337,100 @@ class LibroIsarModel {
     }
   }
 
+  LibroIsarModel.fromOpenlibraryMap(
+      Map<String, dynamic> mappa, {
+        this.stars = 0,
+        this.siglaLibreria = 0,
+        this.dataInserimento = '2000-01-01', // Esempio costante
+        this.dataUltimaModifica = '2000-01-01',
+        this.note = '',
+      }) {
+    // Open Library Search API usa 'key' (es: /works/OL123W)
+    googleBookId = mappa['key'] ?? '';
+
+    // Prende il primo ISBN disponibile nella lista
+    isbn = (mappa['isbn'] as List?)?.first ?? '';
+
+    titolo = mappa['title'] ?? 'Titolo non disponibile';
+
+    // Editore: prende il primo della lista
+    editore = (mappa['publisher'] as List?)?.first ?? 'Editore sconosciuto';
+
+    // Autori: mappa la lista di stringhe
+    lstAutori = List<String>.from(mappa['author_name'] ?? []);
+
+    descrizione = ""; // La ricerca base non fornisce la descrizione completa (servirebbe un'altra chiamata al work ID)
+
+    // Immagine copertina tramite Cover ID
+    if (mappa['cover_i'] != null) {
+      immagineCopertina = "https://covers.openlibrary.org/b/id/${mappa['cover_i']}-L.jpg";
+    } else {
+      immagineCopertina = "";
+    }
+
+    dataPubblicazione = (mappa['publish_date'] as List?)?.first ?? '';
+    nrPagine = mappa['number_of_pages_median'] ?? 0;
+
+    // -----------------------------------------------------------------------------------
+    // lstCategoria = List<String>.from(mappa['subject'] ?? []);
+    // Recuperiamo i soggetti dall'API
+    List<dynamic>? subjectsFromApi = mappa['subject'];
+
+    // Assegniamo alla tua lista di categorie il valore mappato
+    // Nota: dato che lstCategoria è una List<String>, possiamo mettere il risultato del mapping
+    String categoriaMappata = mapOpenLibraryToBisac(subjectsFromApi);
+
+    lstCategoria = [categoriaMappata];
+    // -----------------------------------------------------------------------------------
+
+    previewLink = mappa['key'] != null ? "https://openlibrary.org${mappa['key']}" : "";
+    typeBookSearch = 2;
+
+    // Campi default/non presenti in questa API
+    isEbook = mappa['has_fulltext'] ?? false;
+    country = "IT";
+    valuta = "EUR";
+    prezzo = 0.0;
+  }
+
+  String mapOpenLibraryToBisac(List<dynamic>? olSubjects) {
+    if (olSubjects == null || olSubjects.isEmpty) return "nonClassifiable";
+
+    // Trasformiamo tutto in minuscolo per un confronto facile
+    final subjects = olSubjects.map((s) => s.toString().toLowerCase()).toList();
+
+    // Definiamo delle parole chiave per il mapping
+    // Puoi espandere questa mappa per coprire più casi
+    Map<String, List<String>> keywordMap = {
+      'COOKING': ['cooking', 'cuisine', 'food', 'gastronomy', 'ricette', 'cucina'],
+      'COMPUTERS': ['computers', 'programming', 'software', 'hardware', 'internet', 'data'],
+      'HISTORY': ['history', 'storia', 'historical', 'ancient'],
+      'FICTION': ['fiction', 'novel', 'romanzo', 'literature'],
+      'ART': ['art', 'painting', 'sculpture', 'fine arts'],
+      'SCIENCE': ['science', 'physics', 'biology', 'chemistry', 'mathematics'],
+      'RELIGION': ['religion', 'theology', 'church', 'spirituality'],
+      'TRAVEL': ['travel', 'guide', 'voyage', 'turismo'],
+    };
+
+    for (var subject in subjects) {
+      for (var entry in keywordMap.entries) {
+        if (entry.value.any((keyword) => subject.contains(keyword))) {
+          return entry.key; // Restituisce il nome esatto della tua lista (es. 'COOKING')
+        }
+      }
+    }
+
+    // Se non trova nulla di specifico, prova a vedere se il subject stesso contiene una parola della tua lista
+    for (var category in BisacList.lstBisacCods) {
+      String catLower = category.toLowerCase();
+      if (subjects.any((s) => s.contains(catLower) || catLower.contains(s))) {
+        return category;
+      }
+    }
+
+    return "nonClassifiable";
+  }
+
   String calcolaHash() {
     // Crea una mappa con i campi da considerare per l'hash
     final mapPerHash = {
@@ -346,6 +445,7 @@ class LibroIsarModel {
       'nrPagine': nrPagine,
       'lstCategoria': lstCategoria,
       'previewLink': previewLink,
+      'typeBookSearch': typeBookSearch,
       'isEbook': isEbook,
       'country': country,
       'valuta': valuta,
@@ -398,7 +498,7 @@ class LibroIsarModel {
   String toString() {
     return '''Libro.(
         isbn: $isbn; titolo: $titolo; autori: $lstAutori.toString(); editore: $editore; descrizione: $descrizione; immagineCopertina: $immagineCopertina;
-        dataPubblicazione: $dataPubblicazione; nrPagine: $nrPagine; lstCategoria: $lstCategoria; previewLink: $previewLink; isEbook: $isEbook; 
+        dataPubblicazione: $dataPubblicazione; nrPagine: $nrPagine; lstCategoria: $lstCategoria; previewLink: $previewLink; typeBookSearch: $typeBookSearch; isEbook: $isEbook; 
         country: $country; valuta: $valuta; prezzo: $prezzo; googleBookId: $googleBookId;''';
   }
 }

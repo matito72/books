@@ -52,10 +52,6 @@ class ShowImagePickerUtil {
 
     if (croppedFile != null) {
       imageCache.clear();
-      // setState(() {
-        // imageFile = File(croppedFile.path);
-      // });
-      // reload();
       fn(File(croppedFile.path));
     }
   }

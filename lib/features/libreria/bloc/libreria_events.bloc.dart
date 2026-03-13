@@ -34,6 +34,13 @@ class EditLibreriaEvent extends LibreriaEvent {
   const EditLibreriaEvent(this.libreriaIsarModelOld, this.libreriaIsarModelNew);
 }
 
+//* SAVE
+class SaveLibreriaEvent extends LibreriaEvent {
+  final LibreriaIsarModel libreriaIsarModelSave;
+
+  const SaveLibreriaEvent(this.libreriaIsarModelSave);
+}
+
 //* DELETE
 class DeleteLibreriaEvent extends LibreriaEvent {
   final LibreriaIsarModel libreriaIsarModelDelete;

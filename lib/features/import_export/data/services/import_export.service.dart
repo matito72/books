@@ -93,8 +93,6 @@ class ImportExportService {
     await file.writeAsString(json.encode(lstLibriLibreria));
 
     return lstLibriLibreria.length;
-    // // TEST
-    // await getListImportExportFile(printDebug: true);
   }
 
   ///
@@ -113,14 +111,23 @@ class ImportExportService {
 
     String jsonFile = await file.readAsString();
     List<dynamic> lstJsonEntities = await json.decode(jsonFile);
+    String nomeLibInUsoCompatto = Utils.stringConcat(ComArea.libreriaInUso!.nome);
+
     for (var json in lstJsonEntities) {
       LibroIsarModel libroToAdd = LibroIsarModel.fromMap(json);
 
-      if (isDesktop && libroToAdd.immagineCopertina.isNotEmpty &&
-          libroToAdd.immagineCopertina.startsWith("/storage/emulated/0/Download")) {
+      if (isDesktop
+          && libroToAdd.immagineCopertina.isNotEmpty
+          && libroToAdd.immagineCopertina.startsWith("/storage/emulated/0/Download")) {
         libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst("/storage/emulated/0/Download", ComArea.appDocumentDir.path);
-      } else if (!isDesktop && libroToAdd.immagineCopertina.isNotEmpty && !libroToAdd.immagineCopertina.startsWith("http") && !libroToAdd.immagineCopertina.startsWith("https") &&
-          !libroToAdd.immagineCopertina.startsWith("/storage/emulated/0/Download")) {
+        if (!libroToAdd.immagineCopertina.contains(nomeLibInUsoCompatto)) {
+          libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst("imageFiles", "imageFiles/${nomeLibInUsoCompatto}");
+        }
+      } else if (!isDesktop
+          && libroToAdd.immagineCopertina.isNotEmpty
+          && !libroToAdd.immagineCopertina.startsWith("http")
+          && !libroToAdd.immagineCopertina.startsWith("https")
+          && !libroToAdd.immagineCopertina.startsWith("/storage/emulated/0/Download")) {
         libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst(ComArea.appDocumentDir.path, "/storage/emulated/0/Download");
       }
       lstLibriLibreria.add(libroToAdd);

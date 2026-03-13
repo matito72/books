@@ -9,7 +9,6 @@ import 'package:book/widgets/appbar/appbar_default.dart';
 import 'package:book/widgets/list_cover_book.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-// import 'package:permission_handler/permission_handler.dart';
 
 
 class ImmagineCopertina extends StatefulWidget {
@@ -104,7 +103,6 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
         appBar: AppBarDefault(
           context: context,
           percHeight: 7,
-          // secondaryColor: const Color.fromARGB(115, 0, 143, 88),
           appBarContent: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -153,13 +151,8 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
             MenuItemButton(
               onPressed: () async {
                 swSearchWeb = false;
-                // Map<Permission, PermissionStatus> statuses = await [
-                //   Permission.manageExternalStorage, Permission.camera,
-                // ].request();
-                // if (statuses[Permission.manageExternalStorage]!.isGranted && statuses[Permission.camera]!.isGranted) {
                 if (await Utils.hasPlatformPermissions()) {
                   if (!context.mounted) return;
-                    // _updateWidget(swithSearchPhone: true);
                     showImagePickerUtil.showImagePicker(context, _reloadImage);
                 } else {
                   debugPrint('no permission provided');
@@ -197,30 +190,6 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
     );
   }
 
-  // Widget _getWidgetImageCopertina() {
-  //   double heightPerc = 75;
-  //
-  //   return SingleChildScrollView(
-  //     scrollDirection: Axis.vertical,
-  //     padding: EdgeInsets.symmetric(horizontal: 0),
-  //     child: SizedBox(
-  //       width: (MediaQuery.of(context).size.width * 98 / 100),
-  //       height: (MediaQuery.of(context).size.height * 98 / 100),
-  //       child: Column(
-  //         mainAxisAlignment: MainAxisAlignment.start,
-  //         crossAxisAlignment: CrossAxisAlignment.center,
-  //         mainAxisSize: MainAxisSize.max,
-  //         // children: lstWidget,
-  //         children: !swSearchWeb
-  //           ? (widget._isImmaginePresent && widget._libroViewModel.immagineCopertina.isNotEmpty)
-  //             ? [_getFutureImage(heightPerc), _widgetMiSentoFortunato()]
-  //             : [_getFutureImage(heightPerc)]
-  //           : [_getGoogleSearchImage()],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _getWidgetImageCopertina() {
     // Rimuovi l'altezza fissa, lascia che InteractiveViewer si espanda
     double heightPerc = 75; // Non più necessario
@@ -245,7 +214,6 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
             child: Center(
               child: !swSearchWeb
                   ? (widget._isImmaginePresent && widget._libroViewModel.immagineCopertina.isNotEmpty)
-              // Ho avvolto i tuoi widget in un Column per gestirli insieme
                   ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -262,16 +230,6 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
       ],
     );
   }
-
-// Nota: Devi modificare la tua funzione _getFutureImage()
-// per non accettare più un'altezza percentuale fissa (heightPerc).
-// Ad esempio:
-/*
-Widget _getFutureImage() {
-  // Prima: _getFutureImage(double heightPerc)
-  // ... restituisce Image.file(..., fit: BoxFit.contain)
-}
-*/
 
   Widget _getGoogleSearchImage() {
     return SingleChildScrollView(

@@ -14,7 +14,8 @@ class LibreriaIsarModel {
   int nrLibriCaricati;
   bool isLibreriaDefault;
   double valoreTot;
+  String? pathImmagineLibreria;
 
-  LibreriaIsarModel({this.nome = '-', this.nrLibriCaricati = 0, this.isLibreriaDefault = false, this.valoreTot = 0});
+  LibreriaIsarModel({this.nome = '-', this.nrLibriCaricati = 0, this.isLibreriaDefault = false, this.valoreTot = 0, this.pathImmagineLibreria});
 
 }

@@ -95,7 +95,7 @@ class DbLibreriaIsarService {
     final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(libreriaToAdd.sigla).findFirst();
     if (libreria != null) {
       await isarLibreria.close();
-      throw 'Libreria ${libreriaToAdd.nome} già presente!';
+      throw "Libreria '${libreriaToAdd.nome}' già presente!";
     }
 
     await isarLibreria.writeTxn(() async {
@@ -115,7 +115,23 @@ class DbLibreriaIsarService {
     }
     libreria.nome = nomelibreriaNew;
     await isarLibreria.writeTxn(() async {
-      // isarLibreria.libreriaIsarModels.
+      await isarLibreria.libreriaIsarModels.put(libreria);
+    });
+
+    await isarLibreria.close();
+  }
+
+  Future<void> saveLibreria(LibreriaIsarModel libreriaToSave) async {
+    Isar isarLibreria = await _openBoxLibreria();
+
+    final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(libreriaToSave.sigla).findFirst();
+    if (libreria == null) {
+      await isarLibreria.close();
+      throw "Libreria da aggiornare '${libreriaToSave.nome}' non presente!";
+    }
+
+    libreria.pathImmagineLibreria = libreriaToSave.pathImmagineLibreria;
+    await isarLibreria.writeTxn(() async {
       await isarLibreria.libreriaIsarModels.put(libreria);
     });
 
@@ -128,7 +144,7 @@ class DbLibreriaIsarService {
     final LibreriaIsarModel? libreria = await isarLibreria.libreriaIsarModels.filter().siglaEqualTo(libreriaToDelete.sigla).findFirst();
     if (libreria == null) {
       await isarLibreria.close();
-      throw 'Libreria ${libreriaToDelete.nome} non presente!';
+      throw "Libreria '${libreriaToDelete.nome}' non presente!";
     }
 
     await isarLibreria.writeTxn(() async {

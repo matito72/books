@@ -2,7 +2,7 @@ import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:book/features/libro/data/models/libro_dettaglio_result.dart';
 import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:book/models/parameter_google_search.module.dart';
-import 'package:book/services/goole_apis_books_service.dart';
+// import 'package:book/services/goole_apis_books_service.dart';
 import 'package:book/utilities/dialog_utils.dart';
 import 'package:book/utilities/libro_utils.dart';
 import 'package:book/widgets/appbar/appbar_default.dart';
@@ -11,6 +11,8 @@ import 'package:flutter_pagewise/flutter_pagewise.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../config/constant.dart';
+import '../services/libro_search_service.dart';
+// import '../services/open_library_service.dart';
 
 class SearchListBookPage extends StatelessWidget {
   static const String pagePath = '/HomeLibriLibreria/searchListBook';
@@ -66,11 +68,9 @@ class PagewiseListViewExample extends StatelessWidget {
     return PagewiseListView<LibroIsarModel>(
       pageSize: 10,
       itemBuilder: _itemBuilder,
-      pageFuture: (pageIndex) => GooleApisBooksService.getLibri(
-        googleSearchModel,
-        pageIndex! * 10,
-        10,
-      ),
+      pageFuture: (pageIndex) => LibroSearchService.simpleBooksSearch(googleSearchModel, pageIndex! * 10),
+      // pageFuture: (pageIndex) => GooleApisBooksService.getLibri(googleSearchModel, pageIndex! * 10),
+
       loadingBuilder: (context) {
         return const Text('Loading...');
       },

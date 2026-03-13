@@ -119,9 +119,19 @@ Widget _getDescrizioneDaDefinire(BuildContext context, DettaglioLibroWidget widg
   );
 }
 
-Widget getWidgetLink(BuildContext context, String? linkName, String? linkDescription, String? linkUrl, LinkIsarModule? linkIsarModule, Function() fnDelete, Function()? fnEdit) {
-  bool isGoogleLinkPreview = (linkIsarModule == null);
-  linkName = (linkName == null && linkIsarModule != null) ? linkIsarModule.name : linkName;
+Widget getWidgetLink(BuildContext context, String? linkName, String? linkDescription, String? linkUrl, int typeBookSearch, LinkIsarModule? linkIsarModule, Function() fnDelete, Function()? fnEdit) {
+  // bool isGoogleLinkPreview = (linkIsarModule == null);
+  // linkName = (linkName == null && linkIsarModule != null) ? linkIsarModule.name : linkName;
+  if (linkName == null && linkIsarModule != null) {
+    linkName = linkIsarModule.name;
+  } else {
+    linkName = (typeBookSearch == 1)
+        ? ("Google ${(linkName == null) ? "" : linkName}")
+        : (typeBookSearch == 2)
+          ? ("Open Library ${(linkName == null) ? "" : linkName}")
+          : "";
+  }
+
   linkDescription = (linkDescription == null && linkIsarModule != null) ? linkIsarModule.descrizione : linkDescription;
   linkUrl = (linkUrl == null && linkIsarModule != null) ? linkIsarModule.url : linkUrl;  
   
@@ -129,17 +139,16 @@ Widget getWidgetLink(BuildContext context, String? linkName, String? linkDescrip
     return const Text('');
   }
 
-  return _getWidgetLinkPdf(context, isGoogleLinkPreview, linkName!, linkDescription!, linkUrl: linkUrl, pdfPathFileName:'', fnDelete, fnEdit);
+  return _getWidgetLinkPdf(context, linkName, linkDescription!, linkUrl: linkUrl, pdfPathFileName:'', fnDelete, fnEdit);
 }
 
 Widget getWidgetPdf(BuildContext context, LibroIsarModel libroViewModel, PdfIsarModule pdfIsarModule, Function() fnDelete, Function()? fnEdit) {
-  bool isGoogleLinkPreview = false;
   String testoOcr = pdfIsarModule.testo;
   String linkName = pdfIsarModule.name;
   String linkDescription = pdfIsarModule.descrizione;
   String pdfPathFileName = pdfIsarModule.pathNameFile;  
 
-  return _getWidgetLinkPdf(context, isGoogleLinkPreview, linkName, linkDescription, fnDelete, fnEdit,
+  return _getWidgetLinkPdf(context, linkName, linkDescription, fnDelete, fnEdit,
       linkUrl: '', 
       pdfPathFileName: pdfPathFileName, 
       testoOcr: testoOcr,
@@ -158,7 +167,7 @@ Future<void> _fnView(BuildContext context, LibroIsarModel libroViewModel, String
     });
 }
 
-Widget _getWidgetLinkPdf(BuildContext context, bool isGoogleLinkPreview, String linkName, String linkDescription,
+Widget _getWidgetLinkPdf(BuildContext context, String linkName, String linkDescription,
     Function() fnDelete, Function()? fnEdit, {String linkUrl = '', String pdfPathFileName = '', String testoOcr = '', LibroIsarModel? libroViewModel}) {
   return Center(
     child: Card(

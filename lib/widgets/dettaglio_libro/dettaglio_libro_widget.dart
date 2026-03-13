@@ -408,7 +408,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                     const Padding(padding: EdgeInsets.only(top: 20)),
                     // const Padding(padding: EdgeInsets.only(top: 15)),
                     getWidgetLink(
-                        context, 'Google Book preview', '', widget.libroViewModel.previewLink, null,
+                        context, 'Book preview', '', widget.libroViewModel.previewLink, widget.libroViewModel.typeBookSearch, null,
                             () => {
                           _fnDeleteLink(context, null)
                         },
@@ -416,7 +416,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                     ),
                     Column(
                         children: widget.lstLinkIsarModule.map((item) {
-                          return getWidgetLink(context, null, null, null, item,
+                          return getWidgetLink(context, null, null, null, -1, item,
                                   () => {
                                 _fnDeleteLink(context, item)
                               },
@@ -460,125 +460,6 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
       ),
     );
   }
-  
-  // @override
-  // Widget build(BuildContext context) {
-  //   return SingleChildScrollView(
-  //     child: Padding(
-  //       padding: const EdgeInsets.only(left: 5, right: 5),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: <Widget>[
-  //           _headerBook(context),
-  //           _headerBook_1(context),
-  //           _dataHeaderBook(context),
-  //           // const Padding(
-  //           //   padding: EdgeInsets.only(top: 5),
-  //           // ),
-  //           SizedBox(
-  //             height: (MediaQuery.of(context).size.height * 50 / 100),
-  //             child: SingleChildScrollView(
-  //               child: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.start,
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 mainAxisSize: MainAxisSize.min,
-  //                 children: <Widget>[
-  //                   Text(
-  //                     'Libreria',
-  //                     style: TextStyle(
-  //                       fontSize: 14,
-  //                       color: Colors.lightBlue.shade100,
-  //                       fontWeight: FontWeight.bold
-  //                     ),
-  //                   ),
-  //                   LibreriaSelDropdown(
-  //                     widget.libroViewModel.siglaLibreria != 0
-  //                       ? widget.libroViewModel.siglaLibreria
-  //                       : ComArea.libreriaInUso!.sigla,
-  //                     onPressed: (value) {
-  //                       setState(() {
-  //                         widget.libroViewModel.siglaLibreria = value;
-  //                       });
-  //                     },
-  //                   ),
-  //                   const Padding(padding: EdgeInsets.only(top: 10)),
-  //                   Text(
-  //                     'Categoria',
-  //                     style: TextStyle(
-  //                       fontSize: 14,
-  //                       color: Colors.lightBlue.shade100,
-  //                       fontWeight: FontWeight.bold
-  //                     ),
-  //                   ),
-  //                   BisacDropdownMenu(
-  //                     widget.libroViewModel.lstCategoria[0].toUpperCase(),
-  //                     onPressed: (value) {
-  //                       setState(() {
-  //                         widget.libroViewModel.lstCategoria = [value];
-  //                       });
-  //                     },
-  //                   ),
-  //                   const Padding(padding: EdgeInsets.only(top: 15)),
-  //                   getDescrizioneField(context, widget, (strDesc) => {
-  //                     setState(() {
-  //                       widget.libroViewModel.descrizione = strDesc;
-  //                     })
-  //                   }),
-  //                   const Padding(padding: EdgeInsets.only(top: 20)),
-  //                   // const Padding(padding: EdgeInsets.only(top: 15)),
-  //                   getWidgetLink(
-  //                     context, 'Google Book preview', '', widget.libroViewModel.previewLink, null,
-  //                     () => {
-  //                       _fnDeleteLink(context, null)
-  //                     },
-  //                     null
-  //                   ),
-  //                   Column(
-  //                     children: widget.lstLinkIsarModule.map((item) {
-  //                         return getWidgetLink(context, null, null, null, item,
-  //                           () => {
-  //                             _fnDeleteLink(context, item)
-  //                           },
-  //                           () => {
-  //                             _fnEditLink(context, item)
-  //                           }
-  //                         );
-  //                       }).toList()
-  //                   ),
-  //                   Divider(
-  //                     height: 5,
-  //                     thickness: 0.7,
-  //                     indent: 50,
-  //                     endIndent: 50,
-  //                     color: Colors.lime[100],
-  //                   ),
-  //                   Center(
-  //                     child: TextButton(
-  //                       style: TextButton.styleFrom(
-  //                         foregroundColor: Colors.blue[400],
-  //                       ),
-  //                       onPressed: () async {
-  //                         String? strDesc = await _addNewLink(context, widget.libroViewModel);
-  //                         if (strDesc != null && strDesc.contains(';') && strDesc.split(';').length == 3) {
-  //                           List<String> lstStr = strDesc.split(';');
-  //                           setState(() {
-  //                             setLinkState(lstStr, context);
-  //                           });
-  //                         }
-  //                       },
-  //                       child: const Text("Aggiungi un nuovo Link"),
-  //                     ),
-  //                   ),
-  //                   const Padding(padding: EdgeInsets.only(top: 15, bottom: 15)),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //         ),
-  //     ),
-  //   );
-  // }
 
   void setLinkState(List<String> lstStr, BuildContext context) {
     // String nameLink = lstStr[0].trim();
