@@ -156,11 +156,6 @@ Widget getWidgetPdf(BuildContext context, LibroIsarModel libroViewModel, PdfIsar
 }
 
 Future<void> _fnView(BuildContext context, LibroIsarModel libroViewModel, String testoOcr) async {
-    // List<WidgetDescModel> lstWidgetDescModel = [
-    //   WidgetDescModel('Test estratto:', testoOcr, maxLines: 10),
-    // ];
-    // return await DialogUtils.getMultiDescrizione(context, lstWidgetDescModel);
-
     await Navigator.pushNamed(context, DettaglioTesto.pagePath, arguments: {
       'libroViewModel': libroViewModel,
       'testo': testoOcr

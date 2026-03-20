@@ -19,6 +19,8 @@ import 'package:book/widgets/form_libreria_new.dart';
 import 'package:book/widgets/single_card_libreria.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../widgets/lightbulb.dart';
 // import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 ///
@@ -26,8 +28,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 ///
 class HomeLibreriaScreen extends StatelessWidget {
   final Function()? _fn;
-
-  const HomeLibreriaScreen({Function()? fn, super.key}) : _fn = fn;
+  final Function()? _fnOnOff;
+  final bool? _initShader;
+  const HomeLibreriaScreen({Function()? fn, Function()? fnOnOff, bool? initShader, super.key}) :
+        _fn = fn,
+        _fnOnOff = fnOnOff,
+        _initShader = initShader;
 
   Future<void> _addNewLibreria(BuildContext context) async {
     FormLibreriaNew f = FormLibreriaNew(
@@ -137,7 +143,8 @@ class HomeLibreriaScreen extends StatelessWidget {
     return AppBarDefault(
       context: context,
       txtLabel: '${Constant.titoloApp} - Librerie',
-      showIconSx: false,
+      showIconSx: (_initShader != null) ? _initShader : false,
+      iconDx: Lightbulb(fnOnOff: _fnOnOff, isOn: (_initShader != null) ? _initShader : false,),
     );
   }
 

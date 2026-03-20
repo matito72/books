@@ -6,7 +6,7 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
   final Color? _secondaryColor;
   final bool _showIconSx;
   final IconButton? _iconSx;
-  final IconButton? _iconDx;
+  final Widget? _iconDx;
   final String? _txtLabel;
   final PopupMenuButton? _popupMenuButton;
   final List<Widget> _lstWidgetDx;
@@ -28,7 +28,7 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
     IconButton? iconSx,
     String? txtLabel,
     Widget? appBarContent,
-    IconButton? iconDx,
+    Widget? iconDx,
     PopupMenuButton<dynamic>? popupMenuButton,
     List<Widget> lstWidgetDx = const [],
   }) : _appBarContent = appBarContent,
@@ -41,10 +41,10 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
        _secondaryColor = secondaryColor,
        _primaryColor = primaryColor,
        _percHeight = percHeight {
-    preferredSize = Size.fromHeight(
-      (MediaQuery.of(context).size.height * _percHeight / 100),
-    );
-  }
+          preferredSize = Size.fromHeight(
+            (MediaQuery.of(context).size.height * _percHeight / 100),
+          );
+       }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +76,7 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
                           Navigator.pop(context);
                         },
                       )
-                : const Text('\t\t\t'),
+                : const SizedBox(width: 16),
             Expanded(
               child: Container(
                 child: (_txtLabel != null && _appBarContent == null)
@@ -90,14 +90,23 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
                     : const Text(''),
               ),
             ),
-            _iconDx ?? const Text(''),
-            _popupMenuButton ?? const Text(''),
-            _lstWidgetDx.isNotEmpty
-                ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _lstWidgetDx,
-                  )
-                : const Text(''),
+            // Icona Destra - RIMOSSO CENTER, aggiunto un Padding per respiro
+            if (_iconDx != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: _iconDx!,
+              ),
+
+            // Popup Menu
+            if (_popupMenuButton != null) _popupMenuButton!,
+
+            // Lista Widget Destra
+            if (_lstWidgetDx.isNotEmpty)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center, // Cambiato da start a center
+                children: _lstWidgetDx,
+              ),
           ],
         ),
       ),

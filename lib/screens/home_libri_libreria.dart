@@ -468,19 +468,36 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         barrierDismissible: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Procedo con l'eliminazione di nr.$nrLibriSel libri selezionati ?"),
+            title: Text(
+                "Procedo con l'eliminazione di nr.$nrLibriSel libri selezionati ?",
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.limeAccent,
+                )
+            ),
             actions: <Widget>[
               TextButton(
-                child: const Text('Si'),
+                child: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.amber[200],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: () {
-                  libroBloc.add(DeleteBookSelectedEvent(ListItemsUtils.getSelectedItems(libroBloc.state.data)));
-                  Navigator.pop(context, true);
+                  Navigator.pop(context, false);
                 },
               ),
               TextButton(
-                child: const Text('No'),
+                child: Text(
+                  'OK',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.lightGreenAccent,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: () {
-                  Navigator.pop(context, false);
+                  libroBloc.add(DeleteBookSelectedEvent(ListItemsUtils.getSelectedItems(libroBloc.state.data)));
+                  Navigator.pop(context, true);
                 },
               ),
             ],
@@ -503,8 +520,16 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         builder: (BuildContext context) {
           return AlertDialog(
             title: (nrLibriSel == 1)
-                ? Text("Procedo al cambio di Libreria al libro selezionato ?")
-                : Text("Procedo al cambio di Libreria ai $nrLibriSel libri selezionati ?"),
+            ? Text(
+              "Procedo al cambio di Libreria al libro selezionato ?",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.limeAccent,
+              ))
+            : Text(
+              "Procedo al cambio di Libreria ai $nrLibriSel libri selezionati ?",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.limeAccent,
+              )),
             actions: <Widget>[
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -515,7 +540,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
                     'Libreria',
                     style: TextStyle(
                         fontSize: 14,
-                        color: Colors.lightBlue.shade100,
+                        color: Colors.amberAccent[700],
                         fontWeight: FontWeight.bold
                     ),
                   ),
@@ -530,20 +555,33 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                TextButton(
-                  child: const Text('Si'),
-                  onPressed: () {
-                    libroBloc.add(CambiaLibreriaBookSelectedEvent(ListItemsUtils.getSelectedItems(libroBloc.state.data), siglaLibreriaNew));
-                    Navigator.pop(context, true);
-                  },
-                ),
-                TextButton(
-                  child: const Text('No'),
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  },
-                ),
-              ],)
+                  TextButton(
+                    child: Text(
+                      'Cancel',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: Colors.amber[200],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                  ),
+                  TextButton(
+                    child: Text(
+                        'OK',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: Colors.lightGreenAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () {
+                      libroBloc.add(CambiaLibreriaBookSelectedEvent(ListItemsUtils.getSelectedItems(libroBloc.state.data), siglaLibreriaNew));
+                      Navigator.pop(context, true);
+                    },
+                  ),
+                ],
+              )
             ],
           );
         },
@@ -570,19 +608,37 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         barrierDismissible: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Procedo con l'eliminazione TUTTI i libri della libreria ${ComArea.libreriaInUso!.nome} ?"),
+            title: Text(
+              "Procedo con l'eliminazione TUTTI i libri della libreria ${ComArea.libreriaInUso!.nome} ?",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.limeAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             actions: <Widget>[
               TextButton(
-                child: const Text('Si'),
+                child: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.amber[200],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: () {
-                  libroBloc.add(DeleteAllLibriLibreriaEvent(ComArea.libreriaInUso!));
-                  Navigator.pop(context, true);
+                  Navigator.pop(context, false);
                 },
               ),
               TextButton(
-                child: const Text('No'),
+                child: Text(
+                  'OK',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.lightGreenAccent,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: () {
-                  Navigator.pop(context, false);
+                  libroBloc.add(DeleteAllLibriLibreriaEvent(ComArea.libreriaInUso!));
+                  Navigator.pop(context, true);
                 },
               ),
             ],
@@ -614,19 +670,37 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         barrierDismissible: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Procedo con l'esportazione di nr.${ComArea.nrLibriVisibiliInLista} libri di ${ComArea.libreriaInUso!.nome} ?"),
+            title: Text(
+              "Procedo con l'esportazione di nr.${ComArea.nrLibriVisibiliInLista} libri di ${ComArea.libreriaInUso!.nome} ?",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.limeAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             actions: <Widget>[
               TextButton(
-                child: const Text('Si'),
+                child: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.amber[200],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: () {
-                  libroBloc.add(ExportAllLibriLibreriaEvent(ComArea.libreriaInUso!));
-                  Navigator.pop(context, true);
+                  Navigator.pop(context, false);
                 },
               ),
               TextButton(
-                child: const Text('No'),
+                child: Text(
+                  'OK',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.lightGreenAccent,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: () {
-                  Navigator.pop(context, false);
+                  libroBloc.add(ExportAllLibriLibreriaEvent(ComArea.libreriaInUso!));
+                  Navigator.pop(context, true);
                 },
               ),
             ],
@@ -645,19 +719,36 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         barrierDismissible: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Procedo con l'esportazione in Excel di nr.${ComArea.nrLibriVisibiliInLista} libri ?"),
+            title: Text(
+              "Procedo con l'esportazione in Excel di nr.${ComArea.nrLibriVisibiliInLista} libri ?",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.limeAccent,
+                fontWeight: FontWeight.bold,
+              ),),
             actions: <Widget>[
               TextButton(
-                child: const Text('Si'),
+                child: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.amber[200],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: () {
-                  libroBloc.add(ExportInExcelEvent(ComArea.lstLibrerieInUso));
-                  Navigator.pop(context, true);
+                  Navigator.pop(context, false);
                 },
               ),
               TextButton(
-                child: const Text('No'),
+                child: Text(
+                  'OK',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.lightGreenAccent,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: () {
-                  Navigator.pop(context, false);
+                  libroBloc.add(ExportInExcelEvent(ComArea.lstLibrerieInUso));
+                  Navigator.pop(context, true);
                 },
               ),
             ],

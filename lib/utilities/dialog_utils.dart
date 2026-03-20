@@ -1,4 +1,5 @@
 import 'package:book/models/widget_desc.module.dart';
+import 'package:book/utilities/upper_case_words_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -19,18 +20,20 @@ class DialogUtils {
           keyboardType: TextInputType.multiline,
           decoration: InputDecoration(
             hintText: widgetDescModel.strHintText,
-            // border: OutlineInputBorder(
-            //   borderRadius: BorderRadius.circular(10),
-            // ),
-            // fillColor: Colors.brown[200],
-            // filled: widgetDescModel.readOnly
+            hintStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: Colors.amber[200],
+              // fontWeight: FontWeight.bold,
+            ),
           ),
           style: widgetDescModel.readOnly
               ? TextStyle(
                   color: Theme.of(context).primaryColor.withValues(alpha: 0.4),
                   fontStyle: FontStyle.italic,
                 )
-              : Theme.of(context).textTheme.titleSmall,
+              : Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: Colors.limeAccent,
+            fontWeight: FontWeight.bold,
+          ),
           // ),
           // style: Theme.of(context).textTheme.titleSmall,
           controller: widgetDescModel.textController,
@@ -56,13 +59,25 @@ class DialogUtils {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+                child: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.amber[200],
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
             ),
             TextButton(
               onPressed: () => {
                 Navigator.of(context).pop(lstWidgetDescModel.map((w) => w.textController.text).join('; '),),
               },
-              child: const Text('OK'),
+                child: Text(
+                  'OK',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.lightGreenAccent,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
             ),
           ],
         );
@@ -79,18 +94,35 @@ class DialogUtils {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(strQuestion),
+          title: Text(
+            strQuestion,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: Colors.limeAccent,
+            ),
+          ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Si'),
+              child: Text(
+                'Cancel',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.amber[200],
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               onPressed: () {
-                Navigator.pop(context, true);
+                Navigator.pop(context, false);
               },
             ),
             TextButton(
-              child: const Text('No'),
+              child: Text(
+                'OK',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.lightGreenAccent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               onPressed: () {
-                Navigator.pop(context, false);
+                Navigator.pop(context, true);
               },
             ),
           ],
@@ -112,7 +144,13 @@ class DialogUtils {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Anno di pubblicazione:"),
+          title: Text(
+            "Anno di pubblicazione:",
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: Colors.amber[200],
+              fontWeight: FontWeight.bold,
+            )
+          ),
           titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
             fontStyle: FontStyle.italic,
             color: Colors.blue.shade200,
@@ -138,7 +176,13 @@ class DialogUtils {
           actions: [
             TextButton(
               onPressed: Navigator.of(context).pop,
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.amber[200],
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         );
@@ -172,20 +216,44 @@ class DialogUtils {
               maxLines: maxLines,
               autofocus: true,
               keyboardType: TextInputType.multiline,
-              decoration: InputDecoration(hintText: strHintText),
+              decoration: InputDecoration(
+                  hintText: strHintText,
+                hintStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.amber[200],
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               controller: textController,
-              style: Theme.of(context).textTheme.titleSmall,
-              textCapitalization: isCapitalize ? TextCapitalization.sentences : TextCapitalization.none,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.limeAccent,
+                fontWeight: FontWeight.bold,
+              ),
+              textCapitalization: TextCapitalization.words,
+              inputFormatters: [
+                UpperCaseWordsFormatter(),
+              ],
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.amber[200],
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             TextButton(
               onPressed: () => {Navigator.of(context).pop(textController.text)},
-              child: const Text('OK'),
+              child: Text(
+                'OK',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.lightGreenAccent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         );
@@ -214,7 +282,13 @@ class DialogUtils {
           shadowColor: Colors.blueAccent,
           content: TextField(
             autofocus: true,
-            decoration: InputDecoration(hintText: strHintText),
+            decoration: InputDecoration(
+              hintText: strHintText,
+              hintStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.amber[200],
+                fontWeight: FontWeight.bold,
+              )
+            ),
             keyboardType: TextInputType.number,
             inputFormatters: isDigitOnly
                 ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]
@@ -222,12 +296,21 @@ class DialogUtils {
                     FilteringTextInputFormatter.singleLineFormatter,
                   ],
             controller: textController,
-            style: Theme.of(context).textTheme.titleSmall,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: Colors.limeAccent,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.amber[200],
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             TextButton(
               onPressed: () => {
@@ -237,7 +320,13 @@ class DialogUtils {
                 // }),
                 Navigator.of(context).pop(textController.text),
               },
-              child: const Text('OK'),
+              child: Text(
+                'OK',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.lightGreenAccent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         );

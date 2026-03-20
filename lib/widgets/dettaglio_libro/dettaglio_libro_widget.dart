@@ -65,10 +65,23 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Anno di pubblicazione:"),
-          titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
-            fontStyle: FontStyle.italic,
-            color: Colors.blue.shade200
+          title: Text(
+              "Anno di pubblicazione:",
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Colors.amber[200],
+                fontWeight: FontWeight.bold,
+                fontSize: 20
+              )
+          ),
+          // titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
+          //   fontStyle: FontStyle.italic,
+          //   color: Colors.blue.shade200
+          // ),
+          titleTextStyle:
+            Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: Colors.limeAccent,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic,
           ),
           contentTextStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
             fontStyle: FontStyle.italic,
@@ -96,7 +109,13 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
           actions: [
             TextButton(
               onPressed: Navigator.of(context).pop,
-              child: const Text('Cancel')
+              child: Text(
+                'Cancel',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Colors.amber[200],
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         );
@@ -161,7 +180,7 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           fieldDettLibro.getField(
-                              Colors.limeAccent[100],
+                              Colors.yellowAccent[200],
                               LibroFieldSelected.titolo().label, 5, true,
                               fnString: (strDesc) => {
                                 setState(() {

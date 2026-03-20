@@ -56,7 +56,14 @@ class FieldDettLibro {
     if (label == LibroFieldSelected.nrPagine().label) {
       strDesc = await DialogUtils.getNumero(context, '$label:', fieldValue.toString(), true);
     } else if (label == LibroFieldSelected.prezzo().label) {
-      strDesc = await DialogUtils.getNumero(context, '$label:', fieldValue.toStringAsFixed(2), false);
+      // strDesc = await DialogUtils.getNumero(context, '$label:', fieldValue.toStringAsFixed(2), false);
+      double valoreNumerico = double.tryParse(fieldValue.toString()) ?? 0.0;
+      strDesc = await DialogUtils.getNumero(
+          context,
+          '$label:',
+          valoreNumerico.toStringAsFixed(2),
+          false
+      );
     } else if (label == LibroFieldSelected.dtPubblicazione().label) {
       if (fn != null) {
         fn();
