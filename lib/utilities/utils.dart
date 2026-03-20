@@ -159,11 +159,11 @@ class Utils {
     if (nrDatiIncompleti != 0) {
       ParameterGoogleSearchModel googleSearchModel = ParameterGoogleSearchModel(
         title: libroViewModelDett.titolo, 
-        author: libroViewModelDett.lstAutori.first, 
+        author: libroViewModelDett.lstAutori.isNotEmpty ? libroViewModelDett.lstAutori.first : "",
         casaEditrice: libroViewModelDett.editore
       );
 
-      List<LibroIsarModel> lstLibri = await LibroSearchService.simpleBooksSearch(googleSearchModel, 0);
+      List<LibroIsarModel> lstLibri = await LibroSearchService.simpleBooksSearch(googleSearchModel, 0, true);
       if (lstLibri.isNotEmpty) {
         int nrTentativi = 10;
         for (LibroIsarModel libroViewModelResult in lstLibri) {
@@ -211,14 +211,14 @@ class Utils {
     List<String> lstCoverBookUrlLowResolution = [];
     ParameterGoogleSearchModel googleSearchModel = ParameterGoogleSearchModel(
       title: libroViewModelDett.titolo, 
-      author: libroViewModelDett.lstAutori.first, 
+      author: libroViewModelDett.lstAutori.isNotEmpty ? libroViewModelDett.lstAutori.first : "",
       casaEditrice: libroViewModelDett.editore
     );
 
     bool stop = false;
 
     while (!stop) {
-      List<LibroIsarModel> lstLibri = await LibroSearchService.simpleBooksSearch(googleSearchModel, 0);
+      List<LibroIsarModel> lstLibri = await LibroSearchService.simpleBooksSearch(googleSearchModel, 0, true);
       if (lstLibri.isNotEmpty) {
         _loadCoverBook(lstCoverBookUrlLowResolution, lstCoverBookUrl, lstLibri, (nrMax - lstCoverBookUrl.length));
       }
@@ -232,7 +232,7 @@ class Utils {
           googleSearchModel.author = null;
         } else if (googleSearchModel.title != null) {
           googleSearchModel.title = null;
-          googleSearchModel.author = libroViewModelDett.lstAutori.first;
+          googleSearchModel.author = libroViewModelDett.lstAutori.isNotEmpty ? libroViewModelDett.lstAutori.first : "";
         } else {
           stop = true;
         }
@@ -244,11 +244,12 @@ class Utils {
     }
 
     int i = 0;
-    while (lstCoverBookUrl.length < 3) {
+    while (lstCoverBookUrl.length < 3 && i <= 3) {
       if (lstCoverBookUrlLowResolution.isNotEmpty && lstCoverBookUrlLowResolution.length > i) {
         _loadHttpUrl(lstCoverBookUrl, lstCoverBookUrlLowResolution[i++]);
       } else {
         _loadHttpUrl(lstCoverBookUrl, libroViewModelDett.immagineCopertina);
+        i++;
       }
     }
 

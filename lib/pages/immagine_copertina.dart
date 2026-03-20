@@ -236,7 +236,6 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
       physics: const NeverScrollableScrollPhysics(),
       child: Column(
         children: [
-          // buildItemGoogleSearch("demo01", const Demo01())
           Container(
             width: (MediaQuery.of(context).size.width * 100 / 100),
             height: (MediaQuery.of(context).size.height * 85 / 100),
@@ -247,18 +246,41 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
                 : FutureBuilder<List<String>>(
                   future: Utils.simpleGoogleCoverBookSearch(widget._libroViewModel, 20),
                   builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-                      if (snapshot.data != null) {
-                        lstCoverBookUrl = snapshot.data!;
-                        return ListCoverBook(lstCoverBookUrl: lstCoverBookUrl, fn: _selectImage);
-                      }
-                      return const Text("...");
+                    // 1. Stato di caricamento
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
                     }
-                  }
+
+                    // 2. Errore o Dati nulli/vuoti
+                    if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(
+                        child: Text(
+                          "Nessuna copertina trovata",
+                          style: Theme.of(context).textTheme.headlineMedium,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      );
+                    }
+
+                    // 3. Controllo specifico per la libreria Gallery3D (minimo 3 elementi)
+                    if (snapshot.data!.length < 3) {
+                      // Puoi decidere di mostrarle comunque in una ListView normale
+                      // o dare un messaggio di errore.
+                      return Center(
+                        child: Text(
+                          "Risultati non sufficienti",
+                          style: Theme.of(context).textTheme.headlineMedium,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      );
+                    }
+
+                    // 4. Se tutto è OK, salviamo e mostriamo
+                    lstCoverBookUrl = snapshot.data!;
+
+                    // Usiamo Flexible o un Container con altezza definita per evitare l'overflow
+                    return ListCoverBook(lstCoverBookUrl: lstCoverBookUrl, fn: _selectImage);
+                  },
                 )
               // child: ListCoverBook()
             ),
@@ -311,8 +333,8 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * heightPerc/100,
-                child: snapshot.data!,
                 key: ValueKey(DateTime.now().millisecondsSinceEpoch.toString()),
+                child: snapshot.data!,
               ),
             );
           }

@@ -355,7 +355,7 @@ class DbLibroIsarService {
         // int? siglaLibreriaNew = (libroDbNew == null || libroDbNew.siglaLibreria == 0) ? libroToSaveModel.libroViewModel.siglaLibreria : libroDbNew.siglaLibreria;
         String nomeLibreriaNew = ComArea.mapCodDescLibreria[siglaLibreriaNew]!;
         if (libroToSaveModel.siglaLibreriaOld != libroToSaveModel.libroViewModel.siglaLibreria && libroDbOld.isbn == libroToSaveModel.libroViewModel.isbn) {
-          throw ItemPresentException(ItemType.libro, "Il libro '[${libroToSaveModel.libroViewModel.isbn}] - ${libroToSaveModel.libroViewModel.titolo}' è già presente nella libreria '${nomeLibreriaNew}'!");
+          throw ItemPresentException(ItemType.libro, "Il libro '[${libroToSaveModel.libroViewModel.isbn}] - ${libroToSaveModel.libroViewModel.titolo}' è già presente nella libreria '$nomeLibreriaNew'!");
         }
       }
 

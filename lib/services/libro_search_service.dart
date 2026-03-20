@@ -4,6 +4,7 @@ import 'package:book/services/goole_apis_books_service.dart';
 import 'package:book/widgets/dettaglio_libro/barcode_scanner_screen.dart';
 import 'package:flutter/material.dart';
 
+// import '../config/constant.dart';
 import 'open_library_service.dart';
 // import '../widgets/dettaglio_libro/barcode_scanner_screen.dart';
 
@@ -29,7 +30,7 @@ class LibroSearchService {
     // if (ret.isEmpty) {
     //   ret = await simpleOpenLibraryBooksSearch(ParameterGoogleSearchModel(isbn: isbn));
     // }
-    return simpleBooksSearch(ParameterGoogleSearchModel(isbn: isbn), 0);
+    return simpleBooksSearch(ParameterGoogleSearchModel(isbn: isbn), 0, true);
   }
 
   static Future<List<LibroIsarModel>> _simpleGoogleBooksSearch(ParameterGoogleSearchModel googleSearchModel, int offset) async {
@@ -48,18 +49,19 @@ class LibroSearchService {
         : [];
   }
 
-  static Future<List<LibroIsarModel>> simpleBooksSearch(ParameterGoogleSearchModel query, int offset) async {
+  static Future<List<LibroIsarModel>> simpleBooksSearch(ParameterGoogleSearchModel query, int offset, bool isSearchAll) async {
     // 1. Prova con Google Books
     List<LibroIsarModel> risultatiGoogle = await _simpleGoogleBooksSearch(query, offset);
+    List<LibroIsarModel> risultatiTotale = [];
 
-    // 2. Se Google ha trovato qualcosa, restituisci quelli
     if (risultatiGoogle.isNotEmpty) {
-      return risultatiGoogle;
+      risultatiTotale.addAll(risultatiGoogle);
+    }
+    if (risultatiTotale.isEmpty || isSearchAll) {
+      risultatiTotale.addAll(await _simpleOpenLibraryBooksSearch(query, offset));
     }
 
-    // 3. Se Google è vuoto, prova Open Library
-    debugPrint("Google Books vuoto, provo Open Library...");
-    return await _simpleOpenLibraryBooksSearch(query, offset);
+    return risultatiTotale;
   }
 }
 

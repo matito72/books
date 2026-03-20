@@ -294,9 +294,15 @@ class _SingleCardLibreria extends State<SingleCardLibreria> {
       // shadowColor: const Color.fromARGB(139, 48, 63, 159),
       // surfaceTintColor: selectedItem.sel ? Colors.green.shade100 : Colors.transparent,
       // color: selectedItem.sel ? const Color.fromARGB(103, 0, 131, 143) : const Color.fromARGB(0, 119, 18, 18),
-      shadowColor: const Color.fromARGB(139, 208, 211, 221),
-      surfaceTintColor: selectedItem.sel ? Colors.green.shade100 : Colors.transparent,
-      color: selectedItem.sel ? const Color.fromARGB(103, 0, 131, 143) : const Color.fromARGB(0, 119, 18, 18),
+
+      // shadowColor: const Color.fromARGB(139, 208, 211, 221),
+      // surfaceTintColor: selectedItem.sel ? Colors.green.shade100 : Colors.transparent,
+      // color: selectedItem.sel ? const Color.fromARGB(103, 0, 131, 143) : const Color.fromARGB(0, 119, 18, 18),
+
+        shadowColor: const Color.fromARGB(250, 228, 164, 119),
+        surfaceTintColor: selectedItem.sel ? Colors.green.shade100 : Colors.transparent,
+        color: selectedItem.sel ? const Color.fromARGB(255, 3, 43, 119) : const Color.fromARGB(0, 119, 18, 18),
+
       elevation: 5,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
       child: Stack(

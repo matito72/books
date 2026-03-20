@@ -19,4 +19,15 @@ class Constant {
  static const String dataDefault = '0000000000000000';
  static String now = DateFormat('yyyyMMdd').format(DateTime.now());
  static NumberFormat formatoEuro = NumberFormat.currency(locale: 'it_IT', symbol: '€', customPattern: '¤ #,##0.00');
+
+}
+
+enum TypeBookSearchEngine {
+  googleSearch(code: 1),
+  openLibrary(code: 2)
+  ;
+
+  final int code;
+
+  const TypeBookSearchEngine({required this.code});
 }

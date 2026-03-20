@@ -125,7 +125,7 @@ class ShowImagePickerUtil {
       File fileImage = File(scannedImages[0]);
       String fileNamePhoto = basename(fileImage.path);
 
-      String nomeFileDestinazione = this.isbn.isNotEmpty ? '${this.isbn}.jpg' : fileNamePhoto;
+      String nomeFileDestinazione = isbn.isNotEmpty ? '$isbn.jpg' : fileNamePhoto;
       bool okCopy = await Utils.copyFile(pathSorgenteCompleto: fileImage.path, pathFolderDestinazione: folderLibInUsoCompatto, nomeFileDestinazione: nomeFileDestinazione);
       if (okCopy) {
         await fileImage.delete();

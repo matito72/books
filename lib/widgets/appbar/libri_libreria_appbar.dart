@@ -175,7 +175,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
     //   return '$strNomeLibreriaSel: ${ComArea.nrLibriInLibreriaInUso} libri';
     // }
 
-    return '$strNomeLibreriaSel${spaces} ${ComArea.nrLibriVisibiliInLista}/${ComArea.nrLibriInLibreriaInUso} libri';
+    return '$strNomeLibreriaSel$spaces ${ComArea.nrLibriVisibiliInLista}/${ComArea.nrLibriInLibreriaInUso} libri';
   }
 
   Widget _createTextSearch(BuildContext context, TextEditingController textCtrlSearch) {

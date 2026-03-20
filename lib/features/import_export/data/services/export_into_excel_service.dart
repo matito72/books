@@ -124,10 +124,10 @@ class ExportIntoExcelService {
       // Otteniamo la directory del dispositivo (es. Documenti)
       String dtAttuale = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
       String lstSiglaDescLib = mapSigleDescLibreria.entries.map((e) => '${e.key}.${e.value}').join('_');
-      fileName = "${prefixNomeFileExcel}_${nrLibriEsportati}_${lstSiglaDescLib}_${dtAttuale}.xlsx";
+      fileName = "${prefixNomeFileExcel}_${nrLibriEsportati}_${lstSiglaDescLib}_$dtAttuale.xlsx";
       if (fileName.length >= 255) {
         lstSiglaDescLib = mapSigleDescLibreria.entries.map((e) => '${e.key}').join('_');
-        fileName = "${prefixNomeFileExcel}_${nrLibriEsportati}_${lstSiglaDescLib}_${dtAttuale}.xlsx";
+        fileName = "${prefixNomeFileExcel}_${nrLibriEsportati}_${lstSiglaDescLib}_$dtAttuale.xlsx";
       }
       String filePath = "$excelPathFolder/$fileName";
 

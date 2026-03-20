@@ -51,7 +51,6 @@ enum MenuItemCode {
   switchUserToSearchInsert(40, "Attiva inserimento automatico"),
   cambiaLibreria(45, "Cambia Libreria ai libri selezionati"),
   exportInExcel(50, "Esporta in Excel"),
-  // deleteAllBooksInAllLibrerie(30, "Elimina TUTTI i Libri."),
   ;
 
   final int cd;
@@ -283,7 +282,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       onSelected: (value) {
         if (value == MenuItemCode.deleteAllBooksInLibreria.cd) {
           _fnDeleteAllBooksLibreria(context, libroBloc);
-          // libroBloc.add(DeleteAllLibriLibreriaEvent(ComArea.libreriaInUso!));
         }
         else if (value == MenuItemCode.newBookInLibreria.cd) {
           _fnNewBookInLibreria(context, libroBloc);
@@ -294,15 +292,9 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         else if (value == MenuItemCode.exportInExcel.cd) {
           _exportInExcel(context, libroBloc);
         }
-        // else if(value == MenuItemCode.importaBooksInLibreria.cd) {
-        //   importaLibriInLibreria(context, libroBloc);
-        // }
         else if (value == MenuItemCode.restoreFileBackup.cd) {
           _fnRestoreFileBackup(context, libroBloc);
         }
-        // else if(value == MenuItemCode.deleteAllBooksInAllLibrerie.cd) {
-        //   libroBloc.add(const DeleteAllLibriEvent());
-        // }
         else if (value == MenuItemCode.deleteNrBooksFromList.cd) {
           _fnDeleteNrBooksFromList(context, libroBloc);
         }

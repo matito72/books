@@ -5,6 +5,7 @@ import 'package:book/config/constant.dart';
 import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:book/models/parameter_google_search.module.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 
@@ -57,8 +58,11 @@ class GooleApisBooksService {
       // parametri.putIfAbsent('maxResults', () => 10.toString());
     }
 
+    // BOOKS-API-KEY
+    final String apiKey = dotenv.env['GOOGLE_BOOKS_API_KEY'] ?? '';
+
     Uri url = Uri.https(Constant.googleapisDominio, percorso, parametri);
-    url =  Uri.parse(Uri.decodeComponent(url.toString()));
+    url =  Uri.parse(Uri.decodeComponent("$url&key=$apiKey"));
     // final Uri url = Uri.https(Constant.googleapisDominio, percorso, parametri);
     
     try {

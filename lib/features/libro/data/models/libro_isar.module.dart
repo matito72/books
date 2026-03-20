@@ -45,7 +45,7 @@ class LibroIsarModel {
   late String country;
   late String valuta;
   late double prezzo;
-  // Valori gestiti: 1=Google, 2=Opne Library
+  // Valori gestiti: 1=Google, 2=Open Library
   late int typeBookSearch;
 
   // view
@@ -310,7 +310,7 @@ class LibroIsarModel {
     }
 
     previewLink = mapVolumeInfo['previewLink'] ?? strNullValue;
-    typeBookSearch = 1;
+    typeBookSearch = TypeBookSearchEngine.googleSearch.code;
 
     try {
       immagineCopertina = mapVolumeInfo['imageLinks']['smallThumbnail'] ?? strNullValue;
@@ -384,7 +384,7 @@ class LibroIsarModel {
     // -----------------------------------------------------------------------------------
 
     previewLink = mappa['key'] != null ? "https://openlibrary.org${mappa['key']}" : "";
-    typeBookSearch = 2;
+    typeBookSearch = TypeBookSearchEngine.openLibrary.code;
 
     // Campi default/non presenti in questa API
     isEbook = mappa['has_fulltext'] ?? false;

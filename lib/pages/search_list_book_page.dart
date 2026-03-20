@@ -68,7 +68,7 @@ class PagewiseListViewExample extends StatelessWidget {
     return PagewiseListView<LibroIsarModel>(
       pageSize: 10,
       itemBuilder: _itemBuilder,
-      pageFuture: (pageIndex) => LibroSearchService.simpleBooksSearch(googleSearchModel, pageIndex! * 10),
+      pageFuture: (pageIndex) => LibroSearchService.simpleBooksSearch(googleSearchModel, pageIndex! * 10, false),
       // pageFuture: (pageIndex) => GooleApisBooksService.getLibri(googleSearchModel, pageIndex! * 10),
 
       loadingBuilder: (context) {

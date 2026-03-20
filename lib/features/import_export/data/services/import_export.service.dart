@@ -120,16 +120,24 @@ class ImportExportService {
           && libroToAdd.immagineCopertina.isNotEmpty
           && libroToAdd.immagineCopertina.startsWith("/storage/emulated/0/Download")) {
         libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst("/storage/emulated/0/Download", ComArea.appDocumentDir.path);
-        if (!libroToAdd.immagineCopertina.contains(nomeLibInUsoCompatto)) {
-          libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst("imageFiles", "imageFiles/${nomeLibInUsoCompatto}");
-        }
+        // if (!libroToAdd.immagineCopertina.contains(nomeLibInUsoCompatto)) {
+        //   libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst("imageFiles", "imageFiles/$nomeLibInUsoCompatto");
+        // }
       } else if (!isDesktop
           && libroToAdd.immagineCopertina.isNotEmpty
           && !libroToAdd.immagineCopertina.startsWith("http")
           && !libroToAdd.immagineCopertina.startsWith("https")
           && !libroToAdd.immagineCopertina.startsWith("/storage/emulated/0/Download")) {
         libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst(ComArea.appDocumentDir.path, "/storage/emulated/0/Download");
+        // if (!libroToAdd.immagineCopertina.contains(nomeLibInUsoCompatto)) {
+        //   libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst("imageFiles", "imageFiles/$nomeLibInUsoCompatto");
+        // }
       }
+
+      if (!libroToAdd.immagineCopertina.contains(nomeLibInUsoCompatto)) {
+        libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst("imageFiles", "imageFiles/$nomeLibInUsoCompatto");
+      }
+
       lstLibriLibreria.add(libroToAdd);
     }
 

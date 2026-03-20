@@ -146,7 +146,7 @@ class FileLibreriaDownloadController extends DownloadController with ChangeNotif
           await dbLibreriaIsarService.addLibriInLibreriaInUso(ComArea.libreriaInUso!.sigla, 1, libroIsarToSaveModel.libroViewModel.prezzo);
           LibroUtils.addNrLibriCaricatiInCache(ComArea.libreriaInUso!.sigla, valore: libroIsarToSaveModel.libroViewModel.prezzo);
 
-          int m = (lstLibroViewModel.length > 0 && lstLibroViewModel.length < 50)
+          int m = (lstLibroViewModel.isNotEmpty && lstLibroViewModel.length < 50)
               ? 50
               : (lstLibroViewModel.length > 50 && lstLibroViewModel.length < 150)
                 ? 30

@@ -41,6 +41,7 @@ class OpenLibraryService {
       if (queryParameters.length <= 2) return []; // Solo limit e page presenti
 
       final uri = Uri.https('openlibrary.org', '/search.json', queryParameters);
+      print('URL: ${uri.toString()}');
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {
