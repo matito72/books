@@ -72,14 +72,14 @@ class _MyAppState extends State<MyApp> {
     ComArea.initApp = false;
 
     // Glitch
-    timer = Timer.periodic(const Duration(milliseconds: 990), (_) {
+    timer = Timer.periodic(const Duration(milliseconds: 16), (_) {
       setState(() {
-        shadertime += 0.99;
+        shadertime += 0.016;
       });
     });
-    // timer = Timer.periodic(const Duration(milliseconds: 16), (_) {
+    // timer = Timer.periodic(const Duration(milliseconds: 990), (_) {
     //   setState(() {
-    //     shadertime += 0.016;
+    //     shadertime += 0.99;
     //   });
     // });
   }

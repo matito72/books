@@ -229,63 +229,6 @@ class _SingleCardBook extends State<SingleCardBook> {
       );
     }
 
-    // Widget getPrezzo() {
-    //   return Text(
-    //     Constant.formatoEuro.format(widget._selItem.item.prezzo),
-    //     style: Theme.of(context).textTheme.titleSmall!.copyWith(
-    //       fontStyle: FontStyle.italic,
-    //       color: Colors.orange[50]
-    //     ),
-    //     maxLines: 1,
-    //     overflow: TextOverflow.ellipsis,
-    //   );
-    // }
-    //
-    // Widget getPagine() {
-    //   return Text(
-    //     'Pagine: ${widget._selItem.item.nrPagine}',
-    //     style: Theme.of(context).textTheme.titleSmall!.copyWith(
-    //         fontStyle: FontStyle.italic,
-    //         color: Colors.orange[50]
-    //     ),
-    //     maxLines: 1,
-    //     overflow: TextOverflow.ellipsis,
-    //   );
-    // }
-    //
-    // Widget getDtInserimentoCounter() {
-    //   return Row(
-    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //     crossAxisAlignment: CrossAxisAlignment.center,
-    //     mainAxisSize: MainAxisSize.min,
-    //     children: [
-    //       Text(
-    //         '${ComArea.mapCodDescLibreria[widget._selItem.item.siglaLibreria]}',
-    //         style: TextStyle(
-    //           fontSize: 12.0,
-    //           fontStyle: FontStyle.normal,
-    //           fontWeight: FontWeight.bold,
-    //           color: Colors.orange[100]
-    //         ),
-    //         textAlign: TextAlign.right,
-    //         maxLines: 1,
-    //         overflow: TextOverflow.ellipsis,
-    //       ),
-    //       const Padding(
-    //         padding: EdgeInsets.only(right: 5)
-    //       ),
-    //       Text(
-    //         '- ${widget._index+1}/${widget.nrTot}',
-    //         style: Theme.of(context).textTheme.labelSmall,
-    //         textAlign: TextAlign.right,
-    //       ),
-    //       const Padding(
-    //         padding: EdgeInsets.only(right: 5)
-    //       ),
-    //     ],
-    //   );
-    // }
-
     Widget getPrezzoPagineLibreriaCounter() {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -357,14 +300,6 @@ class _SingleCardBook extends State<SingleCardBook> {
                   getCasaEditrice(),
                   // Spingiamo il prezzo e la data in fondo se necessario
                   const Spacer(),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //     getPrezzo(),
-                  //     getPagine(),
-                  //     getDtInserimentoCounter()
-                  //   ],
-                  // )
                   getPrezzoPagineLibreriaCounter()
                 ],
               ),
