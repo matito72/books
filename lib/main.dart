@@ -46,9 +46,9 @@ class MyApp extends StatefulWidget {
 ///     flutter build apk --target-platform android-arm,android-arm64,android-x64 --split-per-abi
 class _MyAppState extends State<MyApp> {
   // Init Glitch
-  int count = 0; // for the glitched counter
-  double shadertime = 0;
-  Timer? timer;
+  // int count = 0; // for the glitched counter
+  double _shadertime = 0;
+  Timer? _timer;
   bool isShaderOn = false;
 
   // --------------------------------------------------
@@ -72,14 +72,9 @@ class _MyAppState extends State<MyApp> {
     ComArea.initApp = false;
 
     // Glitch
-    timer = Timer.periodic(const Duration(milliseconds: 16), (_) {
-      setState(() {
-        shadertime += 0.016;
-      });
-    });
-    // timer = Timer.periodic(const Duration(milliseconds: 990), (_) {
+    // timer = Timer.periodic(const Duration(milliseconds: 16), (_) {
     //   setState(() {
-    //     shadertime += 0.99;
+    //     shadertime += 0.016;
     //   });
     // });
   }
@@ -87,8 +82,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     _pageController.dispose();
+
     // Glitch
-    timer?.cancel();
+    _timer?.cancel();
 
     super.dispose();
   }
@@ -126,6 +122,19 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       isShaderOn = !isShaderOn;
 
+      // Cancella SEMPRE il timer esistente prima di fare altro
+      _timer?.cancel();
+      _timer = null;
+
+      if (isShaderOn) {
+        _timer = Timer.periodic(const Duration(milliseconds: 16), (t) {
+          setState(() {
+            _shadertime += 0.016;
+          });
+        });
+      } else {
+        _shadertime = 0;
+      }
 
       // 1. Trova l'indice del primo widget di quel tipo
       int index = widgetOptions.indexWhere((w) => w is HomeLibreriaScreen);
@@ -133,6 +142,7 @@ class _MyAppState extends State<MyApp> {
       if (index != -1) {
         // 2. Sostituisci l'elemento all'indice trovato con la nuova istanza
         widgetOptions[index] = HomeLibreriaScreen(fn: _goToHomeLibriLibreria, fnOnOff: _onOffLightBulb, initShader: isShaderOn);
+        // widgetOptions[index] = HomeLibreriaScreen(fn: _goToHomeLibriLibreria, fnOnOff: _onOffLightBulb, initShader: false);
       }
       // else {
       //   // non esiste ...
@@ -204,7 +214,7 @@ class _MyAppState extends State<MyApp> {
             shader
               ..setFloat(0, image.width.toDouble() / devicePixelRatio)
               ..setFloat(1, image.height.toDouble() / devicePixelRatio)
-              ..setFloat(2, shadertime)
+              ..setFloat(2, _shadertime)
               ..setImageSampler(0, image);
 
             canvas.drawRect(
@@ -233,6 +243,24 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  // Widget shaderOn() {
+  //   return BlocProvider<LibreriaBloc>(
+  //     create: (context) => sl()..add(const LoadLibreriaEvent()),
+  //     child: MaterialApp(
+  //         debugShowCheckedModeBanner: false,
+  //         theme: BookStyle.bookStyleTheme,
+  //         onGenerateRoute: AppRoutes.onGenerateRoutes,
+  //         home: buildPageViewWidget(),
+  //         localizationsDelegates: const [
+  //           GlobalMaterialLocalizations.delegate,
+  //           GlobalCupertinoLocalizations.delegate,
+  //           GlobalWidgetsLocalizations.delegate,
+  //           FlutterQuillLocalizations.delegate,
+  //         ]
+  //     ),
+  //   );
+  // }
+
   Widget shaderOff() {
     return BlocProvider<LibreriaBloc>(
       create: (context) => sl()..add(const LoadLibreriaEvent()),
@@ -256,8 +284,10 @@ class _MyAppState extends State<MyApp> {
     if (widgetOptions.isEmpty) {
       // DEFAULT - PAGE
       widgetOptions.add(HomeLibreriaScreen(fn: _goToHomeLibriLibreria, fnOnOff: _onOffLightBulb, initShader: isShaderOn));
+      // widgetOptions.add(HomeLibreriaScreen(fn: _goToHomeLibriLibreria, fnOnOff: _onOffLightBulb, initShader: false));
     }
 
     return isShaderOn ? shaderOn() : shaderOff();
+    // return shaderOff();
   }
 }

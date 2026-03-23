@@ -68,18 +68,22 @@ class _DettaglioTesto extends State<DettaglioTesto> {
             mainAxisSize: MainAxisSize.max,
             children: [
               TextField(
-                maxLines: 30,
-                // maxLines: null, // Set this 
+                textAlign: TextAlign.justify,
+                maxLines: null, // Set this
                 // expands: true, // and this
                 keyboardType: TextInputType.multiline,
                 autofocus: true,
                 // decoration: InputDecoration(hintText: strHintText),
                 controller: _textCtrl,
-                style: Theme.of(context).textTheme.titleSmall
+                style: Theme.of(context).textTheme.titleSmall,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(), // Opzionale: per vedere i bordi
+                    contentPadding: EdgeInsets.all(5.0), // Spazio interno al testo
+                  )
               )
             ],
           ),
-        )
+        ),
       ),
     );
   }

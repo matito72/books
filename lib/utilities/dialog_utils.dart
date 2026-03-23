@@ -1,5 +1,5 @@
 import 'package:book/models/widget_desc.module.dart';
-import 'package:book/utilities/upper_case_words_formatter.dart';
+// import 'package:book/utilities/upper_case_words_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -229,9 +229,9 @@ class DialogUtils {
                 fontWeight: FontWeight.bold,
               ),
               textCapitalization: TextCapitalization.words,
-              inputFormatters: [
-                UpperCaseWordsFormatter(),
-              ],
+              // inputFormatters: [
+              //   UpperCaseWordsFormatter(),
+              // ],
             ),
           ),
           actions: [

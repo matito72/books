@@ -94,11 +94,11 @@ class AppBarDefault extends StatelessWidget implements PreferredSizeWidget {
             if (_iconDx != null)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: _iconDx!,
+                child: _iconDx,
               ),
 
             // Popup Menu
-            if (_popupMenuButton != null) _popupMenuButton!,
+            if (_popupMenuButton != null) _popupMenuButton,
 
             // Lista Widget Destra
             if (_lstWidgetDx.isNotEmpty)
