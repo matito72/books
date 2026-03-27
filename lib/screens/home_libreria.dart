@@ -7,7 +7,6 @@ import 'package:book/features/libreria/bloc/libreria_events.bloc.dart';
 import 'package:book/features/libreria/bloc/libreria_state.bloc.dart';
 import 'package:book/features/libreria/data/models/libreria_isar.module.dart';
 import 'package:book/features/libreria/data/services/db_libreria.isar.service.dart';
-// import 'package:book/features/libro/bloc/libro_state.bloc.dart';
 import 'package:book/injection_container.dart';
 import 'package:book/models/selected_item.module.dart';
 import 'package:book/models/widget_desc.module.dart';
@@ -19,9 +18,9 @@ import 'package:book/widgets/form_libreria_new.dart';
 import 'package:book/widgets/single_card_libreria.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import '../features/import_export/data/services/import_export.service.dart';
 import '../widgets/lightbulb.dart';
-// import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 
 ///
 /// Pagina con la lista delle librerie salvate
@@ -112,7 +111,11 @@ class HomeLibreriaScreen extends StatelessWidget {
         if (libreriaIsarModelSel != null) {
           ComArea.libreriaInUso = libreriaIsarModelSel;
           ComArea.lstLibrerieInUso = ListItemsUtils.getSelectedListItems(libreriaBloc.state.data);
-          // ComArea.mapCodDescLibreria = Utils.getMapCodDescLibreria(ComArea.lstLibrerieInUso);
+
+          // Definita la libreria in uso, definisco i folder di 'json' e 'excel'
+          if (!sl.isRegistered<ImportExportService>()) {
+            sl.registerSingleton<ImportExportService>(ImportExportService(ComArea.appDocumentDir));
+          }
         }
         await _fn();
         if (context.mounted) {

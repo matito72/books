@@ -66,15 +66,6 @@ class ShowImagePickerUtil {
     });
   }
 
-  // _imgFromCamera(Function fn) async {
-  //   await picker.pickImage(source: ImageSource.camera, imageQuality: 50
-  //   ).then((value){
-  //     if (value != null) {
-  //       _cropImage(File(value.path), fn);
-  //     }
-  //   });
-  // }
-
   Future<void> _initDirectory() async {
     Directory dirRoot = Directory(p.join(ComArea.appDocumentDir.path, Constant.books));
     if (!await dirRoot.exists()) {

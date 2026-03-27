@@ -7,22 +7,24 @@ import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart' as p;
+
+// import '../../../../utilities/utils.dart';
 // import 'package:share_plus/share_plus.dart';
 
 class ExportIntoExcelService {
   final String pathFolderRootDefault;
-  final String pathFolderDefault;
+  final String pathFolderExcel;
 
   // Factory constructor che fa i calcoli
   factory ExportIntoExcelService(dynamic appDocumentDir) {
     final root = p.join(appDocumentDir.path, Constant.books);
-    final folder = p.join(root, Constant.excelFilesPath);
+    final folderExcel = p.join(root, Constant.excelFilesPath);
 
-    return ExportIntoExcelService._internal(root, folder);
+    return ExportIntoExcelService._internal(root, folderExcel);
   }
 
   // Costruttore privato
-  ExportIntoExcelService._internal(this.pathFolderRootDefault, this.pathFolderDefault);
+  ExportIntoExcelService._internal(this.pathFolderRootDefault, this.pathFolderExcel);
 
   Future<void> init() async {
     Directory dirRoot = Directory(pathFolderRootDefault);
@@ -30,13 +32,13 @@ class ExportIntoExcelService {
       await dirRoot.create();
     }
 
-    Directory dir = Directory(pathFolderDefault);
+    Directory dir = Directory(pathFolderExcel);
     if (!await dir.exists()) {
       await dir.create();
     }
   }
 
-  String get excelPathFolder => pathFolderDefault;
+  String get excelPathFolder => pathFolderExcel;
 
   Future<int> exportLibriInExcel(String prefixNomeFileExcel, List<LibroIsarModel> lstLibriLibreria) async {
     if (lstLibriLibreria.isEmpty) {
@@ -136,16 +138,6 @@ class ExportIntoExcelService {
         ..writeAsBytesSync(fileBytes);
 
       print("File salvato in: $filePath");
-
-      // final XFile xFile = XFile(exportExcelFile.path);
-      // final params = ShareParams(
-      //   files: [xFile], // Array di XFile
-      //   text: 'Ecco il mio file di libreria.',
-      //   title: fileName
-      // );
-      //
-      // // Chiama il metodo 'share' sulla nuova istanza
-      // final ShareResult result = await SharePlus.instance.share(params);
 
       await OpenFilex.open(exportExcelFile.path);
     }

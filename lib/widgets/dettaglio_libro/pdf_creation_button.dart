@@ -27,17 +27,17 @@ class _PDFCreationButtonState extends State<PDFCreationButton> {
   Future<void>? _pdfCreationFuture;
 
   // 2. Metodo che avvia l'elaborazione
-  Future<void> _startCreationProcess() async {
+  Future<void> _startCreationProcess(BuildContext context) async {
     if (widget.checkNomePdf(context)) {
       setState(() {
         // Inizializza il Future che verrà monitorato dal FutureBuilder
-        _pdfCreationFuture = _processPDF();
+        _pdfCreationFuture = _processPDF(context);
       });
     }
   }
 
   // 3. La tua logica originale trasformata in un metodo privato
-  Future<void> _processPDF() async {
+  Future<void> _processPDF(BuildContext context) async {
     try {
       widget.showHiddenButton(false);
 
@@ -102,7 +102,7 @@ class _PDFCreationButtonState extends State<PDFCreationButton> {
           icon: const Icon(Icons.picture_as_pdf),
           onPressed: () {
             // Avvia l'elaborazione al click
-            _startCreationProcess();
+            _startCreationProcess(context);
           },
           style: ButtonStyle(
             backgroundColor: const WidgetStatePropertyAll<Color>(

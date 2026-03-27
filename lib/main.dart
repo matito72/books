@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:book/config/com_area.dart';
 import 'package:book/config/routes.dart';
@@ -228,6 +229,7 @@ class _MyAppState extends State<MyApp> {
       child: BlocProvider<LibreriaBloc>(
         create: (context) => sl()..add(const LoadLibreriaEvent()),
         child: MaterialApp(
+            scrollBehavior: MyCustomScrollBehavior(),
             debugShowCheckedModeBanner: false,
             theme: BookStyle.bookStyleTheme,
             onGenerateRoute: AppRoutes.onGenerateRoutes,
@@ -290,4 +292,13 @@ class _MyAppState extends State<MyApp> {
     return isShaderOn ? shaderOn() : shaderOff();
     // return shaderOff();
   }
+}
+
+
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse, // Abilita il drag con il mouse
+  };
 }

@@ -64,6 +64,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ScrollController controller = ScrollController();
     List<SelectedItem<LibroIsarModel>> dataPrec = [];
 
     return PopScope(
@@ -79,14 +80,14 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         ],
         child: BlocBuilder<LibroBloc, LibroState>(
           builder: (context, state) {
-            return _getMainScaffold(context, dataPrec);
+            return _getMainScaffold(context, dataPrec, controller);
           }
         )
       ),
     );
   }
 
-  BackdropScaffold _getMainScaffold(BuildContext context, List<SelectedItem<LibroIsarModel>> dataPrec) {
+  BackdropScaffold _getMainScaffold(BuildContext context, List<SelectedItem<LibroIsarModel>> dataPrec, ScrollController controller) {
     LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
 
     return BackdropScaffold(
@@ -126,7 +127,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           ]
         ),
       ),
-      backLayer: _createBackLayer(context),
+      backLayer: _createBackLayer(context, controller),
       frontLayer: _blocBody(context, dataPrec),
       floatingActionButton: _createFloatingActionButtonBloc(context),
       stickyFrontLayer: true,
@@ -200,20 +201,33 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
     }
   }
 
-  SizedBox _createBackLayer(BuildContext context) {
+  SizedBox _createBackLayer(BuildContext context, ScrollController controller) {
     return SizedBox(
-      width: (MediaQuery.of(context).size.width * 100 / 100),
+      // width: (MediaQuery.of(context).size.width * 100 / 100),
+      width: double.infinity,
       height: (MediaQuery.of(context).size.height * 40 / 100),
-      child : ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context,item)=> buildCardHorizontal(context, item+1),
-        separatorBuilder: (context,item)=> const SizedBox(height: 5,),
-        itemCount: 2
+      child: Scrollbar(
+        controller: controller,
+        thumbVisibility: (!Platform.isAndroid && !Platform.isIOS) ? false : true,
+        child: ListView.separated(
+            controller: controller,
+            scrollDirection: Axis.horizontal,
+            // itemBuilder: (context, item) => _buildCardHorizontal(context, item + 1),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                LibroBloc libroBloc = context.read<LibroBloc>();
+                return BackDropListaLibri(libroBloc);
+              }
+              return _createRicercaAvanzataBloc(context);
+            },
+            separatorBuilder: (context,item)=> const SizedBox(height: 5,),
+            itemCount: 2
+        ),
       ),
     );
   }
 
-  Widget buildCardHorizontal(BuildContext context, int nr) {    
+  Widget _buildCardHorizontal(BuildContext context, int nr) {
     LibroBloc libroBloc = context.read<LibroBloc>();
 
     if (nr == 1) {
@@ -995,6 +1009,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 }
 
-  
+
 
 

@@ -17,24 +17,26 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
-// import 'package:share_extend/share_extend.dart';
-// import 'dart:io'; // Necessario per usare File
-// import 'package:path_provider/path_provider.dart' as path_provider;
+
 
 class ImportExportService {
   final String pathFolderRootDefault;
-  final String pathFolderDefault;
+  final String pathFolderJson;
+  final String folderLibInUsoCompatto;
 
   // Factory constructor che fa i calcoli
   factory ImportExportService(dynamic appDocumentDir) {
     final root = p.join(appDocumentDir.path, Constant.books);
-    final folder = p.join(root, Constant.jsonFilesPath);
+    final folderJson  = p.join(root, Constant.jsonFilesPath);
 
-    return ImportExportService._internal(root, folder);
+    String nomeLibInUsoCompatto = Utils.stringConcat(ComArea.libreriaInUso!.nome);
+    String folderLibInUsoCompatto = p.join(folderJson, nomeLibInUsoCompatto);
+
+    return ImportExportService._internal(root, folderJson, folderLibInUsoCompatto);
   }
 
   // Costruttore privato
-  ImportExportService._internal(this.pathFolderRootDefault, this.pathFolderDefault);
+  ImportExportService._internal(this.pathFolderRootDefault, this.pathFolderJson, this.folderLibInUsoCompatto);
 
   Future<void> init() async {
     Directory dirRoot = Directory(pathFolderRootDefault);
@@ -42,19 +44,16 @@ class ImportExportService {
       await dirRoot.create();
     }
 
-    Directory dir = Directory(pathFolderDefault);
+    Directory dir = Directory(pathFolderJson);
     if (!await dir.exists()) {
       await dir.create();
     }
-  }
 
-  // void checkCreateDirectory(String pathFolder) async {
-  //   Directory directory =  Directory(pathFolder);
-  //   if (!await directory.exists()) {
-  //     Directory d = await directory.create(recursive: true);
-  //     print('${d.absolute} : ${d.path}');
-  //   }
-  // }
+    Directory dirLibInUsoCompatto = Directory(folderLibInUsoCompatto);
+    if (!await dirLibInUsoCompatto.exists()) {
+      await dirLibInUsoCompatto.create();
+    }
+  }
 
   Future<List<FileBackupModel>> copiaFile(String pathFolderFileSorgente, String nomeFileSorgente, int siglaLibreria) async {
     List<LibroIsarModel> lstLibroViewModel = await restoreFileBackup(pathFolderFileSorgente, nomeFileSorgente);
@@ -63,7 +62,7 @@ class ImportExportService {
 
     bool ok = await Utils.copiaFile(
         pathFolderFileSorgente: pathFolderFileSorgente, nomeFileSorgente: nomeFileSorgente,
-        pathFolderDestinazione: pathFolderDefault, nomeFileDestinazione: nomeFileDestinazione);
+        pathFolderDestinazione: folderLibInUsoCompatto, nomeFileDestinazione: nomeFileDestinazione);
     List<FileBackupModel> lstFileBackupView = [];
     if (ok) {
       lstFileBackupView = await getListImportExportFile(
@@ -77,7 +76,7 @@ class ImportExportService {
   }
 
   Future<int> exportLibriLibreria(String prefixNomeBackup, String siglaLibreria, List<LibroIsarModel> lstLibriLibreria) async {
-    final String pathFolder = pathFolderDefault;
+    final String pathFolder = folderLibInUsoCompatto;
 
     // Check esistenza folder
     await init();
@@ -104,7 +103,7 @@ class ImportExportService {
   ) async {
     List<LibroIsarModel> lstLibriLibreria = [];
 
-    final String pathFolder = pathFolderFile ?? pathFolderDefault;
+    final String pathFolder = pathFolderFile ?? folderLibInUsoCompatto;
     final File file = File('$pathFolder/$nomeFile');
 
     bool isDesktop = (!Platform.isAndroid && !Platform.isIOS);
@@ -217,7 +216,7 @@ class ImportExportService {
   }
 
   Future<void> shareFileBackup(FileBackupModel fileBackupModel) async {
-    final String pathFolder = pathFolderDefault;
+    final String pathFolder = folderLibInUsoCompatto;
     final File file = File('$pathFolder/${fileBackupModel.fileName}');
 
     // ShareExtend.share(file.path, "file");
@@ -257,7 +256,7 @@ class ImportExportService {
     FileBackupModel fileBackupModelDelete,
   ) async {
     FileSystemEntity? fileSystemEntity;
-    final String pathFolder = pathFolderDefault;
+    final String pathFolder = folderLibInUsoCompatto;
     final File file = File('$pathFolder/${fileBackupModelDelete.fileName}');
     if (await file.exists()) {
       fileSystemEntity = await file.delete();
@@ -273,7 +272,7 @@ class ImportExportService {
   }) async {
     List<FileBackupModel> lstFileBackup = [];
     List<FileSystemEntity> entities = await Directory(
-      pathFolder ?? pathFolderDefault,
+      pathFolder ?? folderLibInUsoCompatto,
     ).list().toList();
 
     if (entities.isNotEmpty) {

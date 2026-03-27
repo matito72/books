@@ -359,7 +359,7 @@ class _SingleCardLibreria extends State<SingleCardLibreria> {
         imageQuality: 80, // Comprimiamo un po' per non appesantire il DB
       );
 
-      if (image != null) {
+      if (image != null && context.mounted) {
         libreriaIsarModel.pathImmagineLibreria = image.path;
         widget._saveLibreria(context, libreriaIsarModel);
       }

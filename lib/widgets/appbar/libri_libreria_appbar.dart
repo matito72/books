@@ -72,11 +72,9 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
               mainAxisSize: MainAxisSize.max,
               spacing: 0.0,
               children: [
-                // Avvolgi il campo di ricerca in un Expanded
                 Expanded(
                   child: _createTextSearch(context, textCtrlSearch),
                 ),
-                // Ora puoi scommentare questa riga senza problemi
                 refreshIconButton(),
               ],
           ),
@@ -107,7 +105,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
               const Icon(Icons.library_books),
               const Padding(padding: EdgeInsets.only(right: 5)),
               Text(
-                getTextAppbar(),
+                _getTextAppbar(),
                 style: const TextStyle(
                   color: Colors.white, fontSize: 16
                 ),
@@ -164,7 +162,7 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
     );
   }
 
-  String getTextAppbar() {
+  String _getTextAppbar() {
     int maxNrChar = (!Platform.isAndroid && !Platform.isIOS) ? 150 : 20;
     String spaces = (!Platform.isAndroid && !Platform.isIOS) ? "           => " : ": ";
     String strNomeLibreriaSel = (ComArea.lstLibrerieInUso.isNotEmpty && ComArea.lstLibrerieInUso.length == 1)
