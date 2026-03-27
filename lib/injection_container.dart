@@ -13,6 +13,8 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
+  ComArea.isMobileApp = (Platform.isAndroid || Platform.isIOS);
+  ComArea.isDesktopApp = (!Platform.isAndroid && !Platform.isIOS);
   final Directory dbAppDocumentDir = await path_provider.getApplicationDocumentsDirectory();
 
   // ** Service HIVE
@@ -20,7 +22,7 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<DbLibroIsarService>(DbLibroIsarService(dbAppDocumentDir));
 
   // ** Service BL
-  final Directory appDocumentDir =  (!Platform.isAndroid && !Platform.isIOS) ? await path_provider.getApplicationDocumentsDirectory() : Directory('/storage/emulated/0/Download/');
+  final Directory appDocumentDir = ComArea.isDesktopApp ? await path_provider.getApplicationDocumentsDirectory() : Directory('/storage/emulated/0/Download/');
   // sl.registerSingleton<ImportExportService>(ImportExportService(appDocumentDir));
   sl.registerSingleton<ExportIntoExcelService>(ExportIntoExcelService(appDocumentDir));
   ComArea.appDocumentDir = appDocumentDir;

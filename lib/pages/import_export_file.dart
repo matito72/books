@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'package:book/widgets/appbar/desktop_bar.dart';
+
 ///
 /// Pagina GESTIONE BACKUP
 ///
@@ -26,25 +28,38 @@ class ImportExportFile extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    DesktopBar desktopBar = DesktopBar();
     int siglaLibreriaSearch = _siglaLibreria ?? ComArea.libreriaInUso!.sigla;
     ImportExportBloc importExportBloc = sl<ImportExportBloc>();
     
     return SafeArea(
-      child: Scaffold(
-        appBar: _buildAppbar(context),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _importFile(context, importExportBloc),
-          child: const Icon(Icons.file_download),
-        ),
-        body: _blocBody(context, importExportBloc, siglaLibreriaSearch),
+      child: Column(
+        children: [
+          // 1. Barra di trascinamento e controlli finestra per Desktop
+          desktopBar.gestureDetector,
+
+          // 2. Il resto dell'app espanso per riempire lo schermo
+          Expanded(
+            child: Scaffold(
+              appBar: _buildAppbar(context),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () => _importFile(context, importExportBloc),
+                child: const Icon(Icons.file_download),
+              ),
+              body: _blocBody(context, importExportBloc, siglaLibreriaSearch),
+            ),
+          ),
+        ],
       ),
     );
   }
-  
+
+  final String msg = 'Restore file backup';
+
   AppBarDefault _buildAppbar(BuildContext context) {
     return AppBarDefault(
       context: context,
-      txtLabel: '${Constant.titoloApp} - Restore file backup'
+      txtLabel: ComArea.isMobileApp ? '${Constant.titoloApp} - $msg' : msg
     );
   }
   

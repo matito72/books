@@ -5,6 +5,9 @@ import 'package:book/models/books_search_parameters.module.dart';
 import 'package:book/resources/libro_field_selected.dart';
 
 class ComArea {
+  static bool isMobileApp = true;
+  static bool isDesktopApp = false;
+
   static bool initApp = false;
   static Directory appDocumentDir = Directory('/storage/emulated/0/Download/');
 
@@ -29,7 +32,7 @@ class ComArea {
   static String bookToSearch = '';
   static BooksSearchParameters booksSearchParameters = BooksSearchParameters();
 
-  static bool isBarcode = true; // (Platform.isAndroid || Platform.isIOS) ? true : false;
+  static bool isBarcode = true;
 
   static bool isLibreriaSelectedAll = false;
 }

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' show Platform;
 
 import 'package:backdrop/backdrop.dart';
 import 'package:book/config/com_area.dart';
@@ -163,7 +162,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
           backgroundColor: const Color.fromARGB(176, 0, 97, 100),
           onPressed: () => _searchBookByBarcode(context),
           child: Icon(
-            (Platform.isAndroid || Platform.isIOS) ? MdiIcons.barcodeScan : MdiIcons.bookSearch,
+            (ComArea.isMobileApp) ? MdiIcons.barcodeScan : MdiIcons.bookSearch,
             color: Theme.of(context).colorScheme.onSecondary,
           ),        
         );
@@ -208,7 +207,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
       height: (MediaQuery.of(context).size.height * 40 / 100),
       child: Scrollbar(
         controller: controller,
-        thumbVisibility: (!Platform.isAndroid && !Platform.isIOS) ? false : true,
+        thumbVisibility: ComArea.isDesktopApp ? false : true,
         child: ListView.separated(
             controller: controller,
             scrollDirection: Axis.horizontal,
@@ -874,11 +873,11 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
   }
 
   Future<void> _searchBookByBarcode(BuildContext context) async {
-    bool isSmartPhone = (Platform.isAndroid || Platform.isIOS);
+    // bool isSmartPhone = (Platform.isAndroid || Platform.isIOS);
     LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
 
     List<LibroIsarModel> lstLibroViewModel = [];
-    if (isSmartPhone) {
+    if (ComArea.isMobileApp) {
       String scannedCode = await LibroSearchService.scanBarcodeNormal(context);
       lstLibroViewModel = await LibroSearchService.searchBooksByBarcode(scannedCode);
     }

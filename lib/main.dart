@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:book/config/com_area.dart';
@@ -12,6 +11,7 @@ import 'package:book/features/libreria/data/services/db_libreria.isar.service.da
 import 'package:book/injection_container.dart';
 import 'package:book/screens/home_libreria.dart';
 import 'package:book/screens/home_libri_libreria.dart';
+import 'package:book/widgets/appbar/desktop_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -27,7 +27,7 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   await initializeDependencies();
 
-  if (!Platform.isAndroid && !Platform.isIOS) {
+  if (ComArea.isDesktopApp) {
     // 1. Ottieni i dati del monitor principale
     Display primaryDisplay = await screenRetriever.getPrimaryDisplay();
     Size screenSize = primaryDisplay.size;
@@ -63,7 +63,7 @@ Future<void> main() async {
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
-  final String assetKey = 'assets/shaders/glitch.glsl';
+  final String assetKey = 'assets/shaders/glitch.frag';
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -226,82 +226,8 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  // Widget buildPageViewWidget() {
-  //   return SafeArea(
-  //     child: Scaffold(
-  //       body: Center(
-  //         child: PageView(
-  //           controller: _pageController,
-  //           onPageChanged: (index) async {
-  //             pageChanged(index);
-  //           },
-  //           children: widgetOptions,
-  //         ),
-  //       ),
-  //       bottomNavigationBar: _bottomNavigationBar,
-  //     ),
-  //   );
-  // }
-
   Widget buildPageViewWidget() {
-    IconButton iconMinimizza = IconButton(
-      constraints: const BoxConstraints(maxWidth: 40),
-      icon: const Icon(Icons.remove, color: Colors.white, size: 18),
-      onPressed: () => windowManager.minimize(),
-      hoverColor: Colors.white12,
-      splashRadius: 20,
-    );
-
-    // IconButton iconMassimizza = IconButton(
-    //   constraints: const BoxConstraints(maxWidth: 40),
-    //   icon: const Icon(Icons.crop_square, color: Colors.white, size: 16),
-    //   onPressed: () async {
-    //     if (await windowManager.isMaximized()) {
-    //       await windowManager.unmaximize();
-    //     } else {
-    //       await windowManager.maximize();
-    //     }
-    //   },
-    //   hoverColor: Colors.white12,
-    //   splashRadius: 20,
-    // );
-
-    IconButton iconClose = IconButton(
-      constraints: const BoxConstraints(maxWidth: 40),
-      icon: const Icon(Icons.close, color: Colors.white, size: 18),
-      onPressed: () => windowManager.close(),
-      hoverColor: Colors.redAccent, // Effetto classico rosso alla chiusura
-      splashRadius: 20,
-    );
-
-    GestureDetector windowsBar = GestureDetector(
-      onPanStart: (_) => windowManager.startDragging(),
-      child: Container(
-        height: 40,
-        color: Colors.black26,
-        child: Row(
-          children: [
-            Padding(
-                padding: EdgeInsets.only(left: 12),
-                // child: Text(" ", style: TextStyle(fontSize: 12)),
-                child: Text(
-                  "BOOKs - Librerie",
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      fontStyle: FontStyle.normal,
-                      color: Colors.yellow.shade50
-                  ),
-                )
-            ),
-            const Spacer(),
-            // Pulsanti Window Manager
-            iconMinimizza,
-            // iconMassimizza,
-            iconClose,
-          ],
-        ),
-      ),
-    );
+    DesktopBar desktopBar = DesktopBar();
 
     Widget content = Expanded(
       child: PageView(
@@ -313,7 +239,7 @@ class _MyAppState extends State<MyApp> {
       ),
     );
 
-    List<Widget> appContent = (!Platform.isAndroid && !Platform.isIOS) ? [windowsBar, content] : [content];
+    List<Widget> appContent = (ComArea.isDesktopApp) ? [desktopBar.gestureDetector, content] : [content];
 
     return SafeArea(
       child: Scaffold(

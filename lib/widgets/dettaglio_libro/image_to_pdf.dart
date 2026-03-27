@@ -220,7 +220,7 @@ class _ImageToPdf extends State<ImageToPdf> {
           }
       ));
 
-      if (Platform.isAndroid || Platform.isIOS) {
+      if (ComArea.isMobileApp) {
         final inputImage = InputImage.fromFile(img);
         final textRecognizer = TextRecognizer(
             script: TextRecognitionScript.latin);

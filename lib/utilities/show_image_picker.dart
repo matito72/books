@@ -32,7 +32,7 @@ class ShowImagePickerUtil {
   
   Future<void> _cropImage(File imgFile, Function fn) async {
     CroppedFile? croppedFile;
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (ComArea.isMobileApp) {
       croppedFile = await ImageCropper().cropImage(
           sourcePath: imgFile.path,
           uiSettings: [AndroidUiSettings(

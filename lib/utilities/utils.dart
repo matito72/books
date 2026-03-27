@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../config/com_area.dart';
+
 class Utils {
 
   static Future<bool> copiaFile({
@@ -361,7 +363,7 @@ class Utils {
   }
 
   static Future<bool> hasPlatformPermissions() async {
-    if (!Platform.isAndroid && !Platform.isIOS) return true;
+    if (ComArea.isDesktopApp) return true;
 
     Map<Permission, PermissionStatus> status = await [
       Permission.manageExternalStorage, Permission.camera,

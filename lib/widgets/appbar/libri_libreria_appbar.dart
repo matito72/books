@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'package:book/config/com_area.dart';
 import 'package:book/features/libro/bloc/libro.bloc.dart';
 import 'package:book/features/libro/bloc/libro_events.bloc.dart';
@@ -163,8 +161,8 @@ class _LibriLibreriaAppbarState extends State<LibriLibreriaAppBar> {
   }
 
   String _getTextAppbar() {
-    int maxNrChar = (!Platform.isAndroid && !Platform.isIOS) ? 150 : 20;
-    String spaces = (!Platform.isAndroid && !Platform.isIOS) ? "           => " : ": ";
+    int maxNrChar = ComArea.isDesktopApp ? 150 : 20;
+    String spaces = ComArea.isDesktopApp ? "           => " : ": ";
     String strNomeLibreriaSel = (ComArea.lstLibrerieInUso.isNotEmpty && ComArea.lstLibrerieInUso.length == 1)
       ? Utils.getFirstSubstring(ComArea.libreriaInUso!.nome, maxNrChar)
       : '';

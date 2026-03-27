@@ -10,6 +10,8 @@ import 'package:book/widgets/list_cover_book.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import 'package:book/widgets/appbar/desktop_bar.dart';
+
 
 class ImmagineCopertina extends StatefulWidget {
   static const String pagePath = '/detailImage';
@@ -96,38 +98,49 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
   @override
   Widget build(BuildContext context) {
     swMiSentoFortunato = widget._libroViewModel.immagineCopertina.contains('zoom=0');
+    DesktopBar desktopBar = DesktopBar();
 
     return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBarDefault(
-          context: context,
-          percHeight: 7,
-          appBarContent: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                flex: 1,
-                child: Text(
-                  Utils.rimuoviAccapo(widget._libroViewModel.titolo),
-                  style: Theme.of(context).textTheme.titleSmall,
-                  overflow: TextOverflow.ellipsis,
-                )
+      child: Column(
+        children: [
+          // 1. La barra superiore trascinabile (fissa in alto)
+          desktopBar.gestureDetector,
+
+          // 2. Il resto dell'interfaccia che occupa lo spazio rimanente
+          Expanded(
+            child: Scaffold(
+              resizeToAvoidBottomInset: true,
+              appBar: AppBarDefault(
+                context: context,
+                percHeight: 7,
+                appBarContent: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Text(
+                        Utils.rimuoviAccapo(widget._libroViewModel.titolo),
+                        style: Theme.of(context).textTheme.titleSmall,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Text(
+                        Utils.rimuoviAccapo(widget._libroViewModel.lstAutori.join(', ')),
+                        style: TextStyle(color: Colors.amber[300]),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )
+                  ],
+                ),
+                lstWidgetDx: [getMenuBar(context)],
               ),
-              Expanded(
-                flex: 1,
-                child: Text(
-                  Utils.rimuoviAccapo(widget._libroViewModel.lstAutori.join(', ')),
-                  style: TextStyle(color: Colors.amber[300]),
-                  overflow: TextOverflow.ellipsis,
-                )
-              )
-            ],
+              body: _getWidgetImageCopertina(),
+            ),
           ),
-          lstWidgetDx: [getMenuBar(context)],
-        ),
-        body: _getWidgetImageCopertina(),
+        ],
       ),
     );
   }

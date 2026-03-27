@@ -11,11 +11,11 @@ import 'package:book/widgets/appbar/appbar_default.dart';
 import 'package:book/widgets/dettaglio_libro/dettaglio_libro_widget.dart';
 import 'package:book/widgets/dettaglio_libro/note_libro.dart';
 import 'package:book/widgets/dettaglio_libro/scansioni.dart';
-// import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 import 'package:flutter/material.dart';
-// import 'package:isar_community/isar.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:book/widgets/appbar/desktop_bar.dart';
+
 
 class DettaglioLibro extends StatelessWidget {
   static const String pagePath = '/HomeLibriLibreria/detailBook';
@@ -204,68 +204,70 @@ class DettaglioLibro extends StatelessWidget {
       ),
     );
 
+    DesktopBar desktopBar = DesktopBar();
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (bool didPop, Object? result) async {
-        if (didPop) {
-          return;
-        }
-        goBack();
-      },
-      child: SafeArea(
-          child: DefaultTabController(
-            length: 3,
-            child: Builder(
-              builder: (BuildContext context) {
-                return Scaffold(
-                  appBar: AppBarDefault(
-                    context: context,
-                    percHeight: 4,
-                    primaryColor: const Color.fromARGB(255, 33, 44, 49),
-                    secondaryColor: Colors.blue,
-                    txtLabel: Utils.rimuoviAccapo(libroViewModel.titolo),
-                    lstWidgetDx: showDelete
-                        ? [iconDeleteLibro, iconCheckAddLibro(context)]
-                        : [iconCheckAddLibro(context)],
-                    iconSx: iconButtonBack,
-                  ),
-                  body: Column(
-                    children: [
-                      PreferredSize(
-                        preferredSize: Size.fromHeight(
-                          (MediaQuery.of(context).size.height * 4 / 100),
-                        ),
-                        child: Material(
+    // Spostiamo il DefaultTabController all'esterno per gestire tutto il contesto
+    return DefaultTabController(
+      length: 3,
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (bool didPop, Object? result) async {
+          if (didPop) return;
+          goBack(); // Assicurati che goBack gestisca correttamente il Navigator
+        },
+        child: Scaffold(
+          // Usiamo il body dello Scaffold per costruire la struttura desktop
+          body: SafeArea(
+            child: Column(
+              children: [
+                // 1. La barra superiore trascinabile
+                desktopBar.gestureDetector,
+
+                // 2. Il contenuto principale (AppBar + TabBarView)
+                Expanded(
+                  child: Scaffold( // Scaffold interno per usare l'appBar e il body
+                    appBar: AppBarDefault(
+                      context: context,
+                      percHeight: 4,
+                      primaryColor: const Color.fromARGB(255, 33, 44, 49),
+                      secondaryColor: Colors.blue,
+                      txtLabel: Utils.rimuoviAccapo(libroViewModel.titolo),
+                      lstWidgetDx: showDelete
+                          ? [iconDeleteLibro, iconCheckAddLibro(context)]
+                          : [iconCheckAddLibro(context)],
+                      iconSx: iconButtonBack,
+                    ),
+                    body: Column(
+                      children: [
+                        // Sezione TabBar
+                        Material(
                           color: const Color.fromARGB(110, 27, 69, 90),
-                          surfaceTintColor: Colors.deepOrange[100],
-                          child: tabBarDettaglioLibro, // Assumendo che questo contenga la tua TabBar
+                          child: tabBarDettaglioLibro,
                         ),
-                      ),
-                      Expanded(
-                        child: TabBarView(
-                          // Rimuovendo 'physics: const NeverScrollableScrollPhysics()'
-                          // si ripristina la funzionalità di swipe predefinita.
-                          viewportFraction: 1,
-                          children: [
-                            DettaglioLibroWidget(
-                              libroViewModel,
-                              !showDelete,
-                              lstLinkIsarModule,
-                              isInsertByUserInterface: isInsertByUserInterface,
-                            ),
-                            NoteLibro(libroViewModel, txtNoteLibroCtrl),
-                            Scansioni(libroViewModel, lstPdfIsarModule),
-                          ],
+                        // Sezione Contenuto Pagine
+                        Expanded(
+                          child: TabBarView(
+                            children: [
+                              DettaglioLibroWidget(
+                                libroViewModel,
+                                !showDelete,
+                                lstLinkIsarModule,
+                                isInsertByUserInterface: isInsertByUserInterface,
+                              ),
+                              NoteLibro(libroViewModel, txtNoteLibroCtrl),
+                              Scansioni(libroViewModel, lstPdfIsarModule),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                );
-              },
+                ),
+              ],
             ),
           ),
-        )
+        ),
+      ),
     );
   }
 }

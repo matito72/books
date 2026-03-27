@@ -4,12 +4,14 @@ import 'dart:typed_data';
 import 'package:pdfx/pdfx.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../config/com_area.dart';
+
 class PdfUtils {
 
 
   // Esegui questa funzione prima di provare ad aprire il file
   static Future<bool> checkAndRequestPermissions() async {
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (ComArea.isMobileApp) {
       Map<Permission, PermissionStatus> statuses = await [Permission.manageExternalStorage].request();
       return statuses[Permission.manageExternalStorage]!.isGranted;
     }

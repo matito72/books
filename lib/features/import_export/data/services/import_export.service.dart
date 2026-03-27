@@ -106,7 +106,7 @@ class ImportExportService {
     final String pathFolder = pathFolderFile ?? folderLibInUsoCompatto;
     final File file = File('$pathFolder/$nomeFile');
 
-    bool isDesktop = (!Platform.isAndroid && !Platform.isIOS);
+    // bool isDesktop = (!Platform.isAndroid && !Platform.isIOS);
 
     String jsonFile = await file.readAsString();
     List<dynamic> lstJsonEntities = await json.decode(jsonFile);
@@ -115,14 +115,14 @@ class ImportExportService {
     for (var json in lstJsonEntities) {
       LibroIsarModel libroToAdd = LibroIsarModel.fromMap(json);
 
-      if (isDesktop
+      if (ComArea.isDesktopApp
           && libroToAdd.immagineCopertina.isNotEmpty
           && libroToAdd.immagineCopertina.startsWith("/storage/emulated/0/Download")) {
         libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst("/storage/emulated/0/Download", ComArea.appDocumentDir.path);
         // if (!libroToAdd.immagineCopertina.contains(nomeLibInUsoCompatto)) {
         //   libroToAdd.immagineCopertina = libroToAdd.immagineCopertina.replaceFirst("imageFiles", "imageFiles/$nomeLibInUsoCompatto");
         // }
-      } else if (!isDesktop
+      } else if (!ComArea.isDesktopApp
           && libroToAdd.immagineCopertina.isNotEmpty
           && !libroToAdd.immagineCopertina.startsWith("http")
           && !libroToAdd.immagineCopertina.startsWith("https")
