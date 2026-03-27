@@ -123,7 +123,7 @@ flutter:
     - .env
 
   shaders:
-    - assets/shaders/glitch.glsl
+    - assets/shaders/glitch.frag
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

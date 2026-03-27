@@ -412,7 +412,7 @@ class _ImageToPdf extends State<ImageToPdf> {
               flex: 3,
               child: _image.isNotEmpty
                   ? ReorderableListView.builder(
-                onReorder: _onReorder,
+                onReorderItem: _onReorder,
                 itemCount: _image.length,
                 itemBuilder: (context, index) {
                   final file = _image[index];
