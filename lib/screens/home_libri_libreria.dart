@@ -212,14 +212,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
         child: ListView.separated(
             controller: controller,
             scrollDirection: Axis.horizontal,
-            // itemBuilder: (context, item) => _buildCardHorizontal(context, item + 1),
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                LibroBloc libroBloc = context.read<LibroBloc>();
-                return BackDropListaLibri(libroBloc);
-              }
-              return _createRicercaAvanzataBloc(context);
-            },
+            itemBuilder: (context, item) => _buildCardHorizontal(context, item + 1),
             separatorBuilder: (context,item)=> const SizedBox(height: 5,),
             itemCount: 2
         ),
