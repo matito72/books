@@ -1,5 +1,7 @@
 // import 'dart:io';
 
+import 'dart:io';
+
 import 'package:book/config/com_area.dart';
 import 'package:book/config/constant.dart';
 import 'package:book/features/libreria/bloc/libreria.bloc.dart';
@@ -143,9 +145,12 @@ class HomeLibreriaScreen extends StatelessWidget {
   }
 
   AppBarDefault _buildAppbar(BuildContext context) {
+    bool isDesktop = (!Platform.isAndroid && !Platform.isIOS);
+
     return AppBarDefault(
       context: context,
-      txtLabel: '${Constant.titoloApp} - Librerie',
+      percHeight: isDesktop ?3 : 4,
+      txtLabel: isDesktop ? '' : '${Constant.titoloApp} - Librerie',
       showIconSx: (_initShader != null) ? _initShader : false,
       iconDx: Lightbulb(fnOnOff: _fnOnOff, isOn: (_initShader != null) ? _initShader : false,),
     );

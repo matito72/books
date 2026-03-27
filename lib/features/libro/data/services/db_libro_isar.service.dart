@@ -363,10 +363,17 @@ class DbLibroIsarService {
         if (libroToSaveModel.libroViewModel.lstLinkIsarModule.isNotEmpty) {
           List<int> lstLinkId = libroToSaveModel.libroViewModel.lstLinkIsarModule.map((e) => e.id).toList();
           await isarLibroNew.linkIsarModules.deleteAll(lstLinkId);
+        } else if (libroDbOld.lstLinkIsarModule.isNotEmpty) {
+          List<int> lstLinkId = libroDbOld.lstLinkIsarModule.map((e) => e.id).toList();
+          await isarLibroNew.linkIsarModules.deleteAll(lstLinkId);
         }
+
         if (libroToSaveModel.libroViewModel.lstPdfIsarModule.isNotEmpty) {
           List<int> lstPdfId = libroToSaveModel.libroViewModel.lstPdfIsarModule.map((e) => e.id).toList();
-          await isarLibroNew.linkIsarModules.deleteAll(lstPdfId);
+          await isarLibroNew.pdfIsarModules.deleteAll(lstPdfId);
+        } else if (libroDbOld.lstPdfIsarModule.isNotEmpty) {
+          List<int> lstLinkId = libroDbOld.lstPdfIsarModule.map((e) => e.id).toList();
+          await isarLibroNew.pdfIsarModules.deleteAll(lstLinkId);
         }
 
         await saveLibroWithInsertLinkAndPdf(libroToSaveModel, isarLibroNew);

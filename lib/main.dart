@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:book/config/com_area.dart';
@@ -18,11 +19,45 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter_shaders/flutter_shaders.dart';
+import 'package:screen_retriever/screen_retriever.dart';
+import 'package:window_manager/window_manager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await initializeDependencies();
+
+  if (!Platform.isAndroid && !Platform.isIOS) {
+    // 1. Ottieni i dati del monitor principale
+    Display primaryDisplay = await screenRetriever.getPrimaryDisplay();
+    Size screenSize = primaryDisplay.size;
+
+    // 2. Calcola le dimensioni basate su percentuali
+    // Esempio: larghezza 40% e altezza 55% dello schermo
+    double width = screenSize.width * 0.25;
+    double height = screenSize.height * 0.80;
+
+    WindowOptions windowOptions = WindowOptions(
+      size: Size(width, height),
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.hidden,
+      windowButtonVisibility: false,
+    );
+
+    // 3. Applica e mostra
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      // Aspettiamo un battito di ciglia per superare il comando nativo C++
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      await windowManager.setSize(Size(width, height)); // Riafferma la tua autorità
+      await windowManager.center();
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
+
   runApp(const MyApp());
 }
 
@@ -45,6 +80,9 @@ class MyApp extends StatefulWidget {
 /// ANDROID
 ///   Compila diverse APK, una per architettura:
 ///     flutter build apk --target-platform android-arm,android-arm64,android-x64 --split-per-abi
+///
+/// WINDOWS
+///     flutter build windows -v
 class _MyAppState extends State<MyApp> {
   // Init Glitch
   // int count = 0; // for the glitched counter
@@ -188,16 +226,100 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  // Widget buildPageViewWidget() {
+  //   return SafeArea(
+  //     child: Scaffold(
+  //       body: Center(
+  //         child: PageView(
+  //           controller: _pageController,
+  //           onPageChanged: (index) async {
+  //             pageChanged(index);
+  //           },
+  //           children: widgetOptions,
+  //         ),
+  //       ),
+  //       bottomNavigationBar: _bottomNavigationBar,
+  //     ),
+  //   );
+  // }
+
   Widget buildPageViewWidget() {
+    IconButton iconMinimizza = IconButton(
+      constraints: const BoxConstraints(maxWidth: 40),
+      icon: const Icon(Icons.remove, color: Colors.white, size: 18),
+      onPressed: () => windowManager.minimize(),
+      hoverColor: Colors.white12,
+      splashRadius: 20,
+    );
+
+    // IconButton iconMassimizza = IconButton(
+    //   constraints: const BoxConstraints(maxWidth: 40),
+    //   icon: const Icon(Icons.crop_square, color: Colors.white, size: 16),
+    //   onPressed: () async {
+    //     if (await windowManager.isMaximized()) {
+    //       await windowManager.unmaximize();
+    //     } else {
+    //       await windowManager.maximize();
+    //     }
+    //   },
+    //   hoverColor: Colors.white12,
+    //   splashRadius: 20,
+    // );
+
+    IconButton iconClose = IconButton(
+      constraints: const BoxConstraints(maxWidth: 40),
+      icon: const Icon(Icons.close, color: Colors.white, size: 18),
+      onPressed: () => windowManager.close(),
+      hoverColor: Colors.redAccent, // Effetto classico rosso alla chiusura
+      splashRadius: 20,
+    );
+
+    GestureDetector windowsBar = GestureDetector(
+      onPanStart: (_) => windowManager.startDragging(),
+      child: Container(
+        height: 40,
+        color: Colors.black26,
+        child: Row(
+          children: [
+            Padding(
+                padding: EdgeInsets.only(left: 12),
+                // child: Text(" ", style: TextStyle(fontSize: 12)),
+                child: Text(
+                  "BOOKs - Librerie",
+                  style: TextStyle(
+                      fontSize: 12.0,
+                      fontStyle: FontStyle.normal,
+                      color: Colors.yellow.shade50
+                  ),
+                )
+            ),
+            const Spacer(),
+            // Pulsanti Window Manager
+            iconMinimizza,
+            // iconMassimizza,
+            iconClose,
+          ],
+        ),
+      ),
+    );
+
+    Widget content = Expanded(
+      child: PageView(
+        controller: _pageController,
+        onPageChanged: (index) async {
+          pageChanged(index);
+        },
+        children: widgetOptions,
+      ),
+    );
+
+    List<Widget> appContent = (!Platform.isAndroid && !Platform.isIOS) ? [windowsBar, content] : [content];
+
     return SafeArea(
       child: Scaffold(
         body: Center(
-          child: PageView(
-            controller: _pageController,
-            onPageChanged: (index) async {
-              pageChanged(index);
-            },
-            children: widgetOptions,
+          child: Column(
+            children: appContent,
           ),
         ),
         bottomNavigationBar: _bottomNavigationBar,
@@ -244,24 +366,6 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-
-  // Widget shaderOn() {
-  //   return BlocProvider<LibreriaBloc>(
-  //     create: (context) => sl()..add(const LoadLibreriaEvent()),
-  //     child: MaterialApp(
-  //         debugShowCheckedModeBanner: false,
-  //         theme: BookStyle.bookStyleTheme,
-  //         onGenerateRoute: AppRoutes.onGenerateRoutes,
-  //         home: buildPageViewWidget(),
-  //         localizationsDelegates: const [
-  //           GlobalMaterialLocalizations.delegate,
-  //           GlobalCupertinoLocalizations.delegate,
-  //           GlobalWidgetsLocalizations.delegate,
-  //           FlutterQuillLocalizations.delegate,
-  //         ]
-  //     ),
-  //   );
-  // }
 
   Widget shaderOff() {
     return BlocProvider<LibreriaBloc>(

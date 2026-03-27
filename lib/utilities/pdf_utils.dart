@@ -9,8 +9,12 @@ class PdfUtils {
 
   // Esegui questa funzione prima di provare ad aprire il file
   static Future<bool> checkAndRequestPermissions() async {
-    Map<Permission, PermissionStatus> statuses = await [Permission.manageExternalStorage].request();
-    return statuses[Permission.manageExternalStorage]!.isGranted;
+    if (Platform.isAndroid || Platform.isIOS) {
+      Map<Permission, PermissionStatus> statuses = await [Permission.manageExternalStorage].request();
+      return statuses[Permission.manageExternalStorage]!.isGranted;
+    }
+
+    return true;
   }
 
   /// Restituisce la thumbnail (immagine) della prima pagina di un PDF.

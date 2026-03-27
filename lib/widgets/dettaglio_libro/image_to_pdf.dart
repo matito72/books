@@ -20,6 +20,8 @@ import 'package:permission_handler/permission_handler.dart';
 // import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:path/path.dart' as p;
 
+import '../../config/com_area.dart';
+
 
 class ImageToPdf extends StatefulWidget {
   static const String pagePath = '/imageToPdf';
@@ -239,10 +241,7 @@ class _ImageToPdf extends State<ImageToPdf> {
     PdfIsarModule? pdfIsarModule;
 
     try {
-      // final Directory appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
-      // final String pathFolderRootDefault = p.join(appDocumentDir.path, Constant.books);
-      // final String pathFolderDefault = p.join(pathFolderRootDefault, Constant.pdfFilesPath);
-      const String appDownloadDir = '/storage/emulated/0/Download/';
+      String appDownloadDir = ComArea.appDocumentDir.path;
       final String pathFolderRootDefault = p.join(appDownloadDir, Constant.books);
       final String pathFolderDefault = p.join(pathFolderRootDefault, Constant.pdfFilesPath);
 
@@ -413,7 +412,7 @@ class _ImageToPdf extends State<ImageToPdf> {
               flex: 3,
               child: _image.isNotEmpty
                   ? ReorderableListView.builder(
-                onReorderItem: _onReorder,
+                onReorder: _onReorder,
                 itemCount: _image.length,
                 itemBuilder: (context, index) {
                   final file = _image[index];

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:book/features/libro/data/models/link_isar.module.dart';
 import 'package:book/features/libro/data/models/pdf_isar.module.dart';
@@ -41,6 +43,7 @@ Widget _getDescrizioneEsistente(BuildContext context, DettaglioLibroWidget widge
         padding: const EdgeInsets.symmetric(horizontal: 8.0), // Puoi cambiare il valore (es. 8.0, 20.0)
         child: ExpandableText(
           widget.libroViewModel.descrizione,
+          expanded: (!Platform.isAndroid && !Platform.isIOS),
           maxLines: 10,
           style: const TextStyle(
             fontSize: 14,

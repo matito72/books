@@ -106,7 +106,7 @@ class _ReorderableOrderByState extends State<ReorderableOrderBy> {
                 ),
               ),
           ],
-          onReorderItem: (int oldIndex, int newIndex) {
+          onReorder: (int oldIndex, int newIndex) {
             setState(() {
               if (oldIndex < newIndex) {
                 newIndex -= 1;
