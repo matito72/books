@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:book/config/com_area.dart';
@@ -42,8 +43,8 @@ Future<void> main() async {
       center: true,
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
-      titleBarStyle: TitleBarStyle.hidden,
-      windowButtonVisibility: false,
+      titleBarStyle: (ComArea.isMobileApp || Platform.isLinux) ? TitleBarStyle.hidden : TitleBarStyle.normal,
+      windowButtonVisibility: (ComArea.isMobileApp || Platform.isLinux) ? false : true,
     );
 
     // 3. Applica e mostra
@@ -51,10 +52,16 @@ Future<void> main() async {
       // Aspettiamo un battito di ciglia per superare il comando nativo C++
       await Future.delayed(const Duration(milliseconds: 100));
 
-      await windowManager.setSize(Size(width, height)); // Riafferma la tua autorità
-      await windowManager.center();
       await windowManager.show();
       await windowManager.focus();
+
+      await windowManager.setSize(Size(width, height)); // Riafferma la tua autorità
+      await windowManager.center();
+
+      if (Platform.isWindows) {
+        // Opzionale: previene alcuni glitch grafici di Windows
+        await windowManager.setHasShadow(true);
+      }
     });
   }
 
@@ -109,13 +116,6 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     sl<LibreriaBloc>().add(InitLibreriaEvent());
     ComArea.initApp = false;
-
-    // Glitch
-    // timer = Timer.periodic(const Duration(milliseconds: 16), (_) {
-    //   setState(() {
-    //     shadertime += 0.016;
-    //   });
-    // });
   }
 
   @override
@@ -181,12 +181,7 @@ class _MyAppState extends State<MyApp> {
       if (index != -1) {
         // 2. Sostituisci l'elemento all'indice trovato con la nuova istanza
         widgetOptions[index] = HomeLibreriaScreen(fn: _goToHomeLibriLibreria, fnOnOff: _onOffLightBulb, initShader: isShaderOn);
-        // widgetOptions[index] = HomeLibreriaScreen(fn: _goToHomeLibriLibreria, fnOnOff: _onOffLightBulb, initShader: false);
       }
-      // else {
-      //   // non esiste ...
-      //   widgetOptions.add(HomeLibreriaScreen());
-      // }
     });
   }
 
@@ -316,11 +311,9 @@ class _MyAppState extends State<MyApp> {
     if (widgetOptions.isEmpty) {
       // DEFAULT - PAGE
       widgetOptions.add(HomeLibreriaScreen(fn: _goToHomeLibriLibreria, fnOnOff: _onOffLightBulb, initShader: isShaderOn));
-      // widgetOptions.add(HomeLibreriaScreen(fn: _goToHomeLibriLibreria, fnOnOff: _onOffLightBulb, initShader: false));
     }
 
     return isShaderOn ? shaderOn() : shaderOff();
-    // return shaderOff();
   }
 }
 

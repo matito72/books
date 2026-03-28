@@ -1,6 +1,7 @@
 
 
-import 'package:flutter/cupertino.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -10,7 +11,7 @@ class DesktopBar  {
   late final IconButton _iconMinimizza;
   // late final IconButton _iconMassimizza;
   late final IconButton _iconClose;
-  late GestureDetector _windowsBarGestureDetector;
+  late Widget _windowsBarGestureDetector;
 
   DesktopBar() {
     _iconMinimizza = IconButton(
@@ -47,7 +48,7 @@ class DesktopBar  {
       onPanStart: (_) => windowManager.startDragging(),
       child: Material( // <--- Aggiungi questo
         color: Colors.black26, // Sposta il colore qui dal Container
-        child: Container(
+        child: SizedBox(
           height: 40,
           // color: Colors.black26, // Rimuovilo da qui o lascialo trasparente
           child: Row(
@@ -74,5 +75,7 @@ class DesktopBar  {
     );;
   }
 
-  GestureDetector get gestureDetector => _windowsBarGestureDetector;
+  Widget get gestureDetector => Platform.isLinux
+      ? _windowsBarGestureDetector
+      : Padding(padding: EdgeInsetsGeometry.all(0));
 }
