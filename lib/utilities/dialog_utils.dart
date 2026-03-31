@@ -228,7 +228,7 @@ class DialogUtils {
                 color: Colors.limeAccent,
                 fontWeight: FontWeight.bold,
               ),
-              textCapitalization: TextCapitalization.words,
+              textCapitalization: isCapitalize ? TextCapitalization.words : TextCapitalization.sentences,
               // inputFormatters: [
               //   UpperCaseWordsFormatter(),
               // ],

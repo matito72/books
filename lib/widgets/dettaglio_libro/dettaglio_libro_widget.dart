@@ -423,7 +423,6 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                       })
                     }),
                     const Padding(padding: EdgeInsets.only(top: 20)),
-                    // const Padding(padding: EdgeInsets.only(top: 15)),
                     getWidgetLink(
                         context, 'Book preview', '', widget.libroViewModel.previewLink, widget.libroViewModel.typeBookSearch, null,
                             () => {

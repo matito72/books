@@ -11,13 +11,13 @@ import 'package:http/http.dart' as http;
 
 class GooleApisBooksService {
 
-  static Future<List<LibroIsarModel>> getLibri(ParameterGoogleSearchModel googleSearchModel, int offset) async {
+  static Future<List<LibroIsarModel>> getLibri(ParameterGoogleSearchModel googleSearchModel, int offset, bool isWithApiKey) async {
     GooleApisBooksService gooleApisBooksService = GooleApisBooksService();
 
-    return gooleApisBooksService._cercaLibri(googleSearchModel, offset);
+    return gooleApisBooksService._cercaLibri(googleSearchModel, offset, isWithApiKey);
   }
 
-  Future<List<LibroIsarModel>> _cercaLibri(ParameterGoogleSearchModel googleSearchModel, int offset) async {
+  Future<List<LibroIsarModel>> _cercaLibri(ParameterGoogleSearchModel googleSearchModel, int offset, bool isWithApiKey) async {
     List<LibroIsarModel> libri = [];
     String percorso = Constant.googleapisPercorso;
     
@@ -62,9 +62,10 @@ class GooleApisBooksService {
     final String apiKey = dotenv.env['GOOGLE_BOOKS_API_KEY'] ?? '';
 
     Uri url = Uri.https(Constant.googleapisDominio, percorso, parametri);
-    url =  Uri.parse(Uri.decodeComponent("$url&key=$apiKey"));
-    // final Uri url = Uri.https(Constant.googleapisDominio, percorso, parametri);
-    
+    if (isWithApiKey) {
+      url = Uri.parse(Uri.decodeComponent("$url&key=$apiKey"));
+    }
+
     try {
       print('URL: ${url.toString()}');
 
@@ -72,7 +73,7 @@ class GooleApisBooksService {
         final resJson = json.decode(res.body);
         final libriMap = resJson['items'] ?? resJson;
         int nrLibriTrovati = resJson['totalItems'] ?? (resJson['volumeInfo'] != null ? 1 : 0);
-        
+
         if (nrLibriTrovati != 0) {
           // if (_totalItems == -1) {
           //   _totalItems = nrLibriTrovati;
@@ -88,20 +89,20 @@ class GooleApisBooksService {
               //await Utils.checkImage(libroViewModel);
               libri.add(libroViewModel);
             }
-            // libri.addAll(libriMap.map<LibroViewModel>((mappa) => LibroViewModel.fromGoogleMap(mappa)).toList()); 
+            // libri.addAll(libriMap.map<LibroViewModel>((mappa) => LibroViewModel.fromGoogleMap(mappa)).toList());
           }
-          
+
           // print('================================================================================================');
           debugPrint('N: ${libri.length}');
           // print('================================================================================================');
           // print(libri);
           // print('================================================================================================');
-        } 
+        }
       });
     } catch (errore) {
       debugPrint("ERRORE: ${errore.toString()}");
       rethrow;
-    }  
+    }
 
     return libri;
   }

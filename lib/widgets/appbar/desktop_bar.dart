@@ -72,7 +72,7 @@ class DesktopBar  {
           ),
         ),
       ),
-    );;
+    );
   }
 
   Widget get gestureDetector => Platform.isLinux

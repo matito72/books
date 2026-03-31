@@ -48,18 +48,19 @@ class _SingleCardBook extends State<SingleCardBook> {
       return SizedBox(
         width: bookWith,
         height: bookHeight,
-        child: FutureBuilder<Widget>(
-          future: widget._fnGetItemImage(widget._index, widget._selItem.item),
-          builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              return snapshot.data as Widget;
-            }
-          }
-        )
+        child: widget._fnGetItemImage(widget._index, widget._selItem.item),
+        // child: FutureBuilder<Widget>(
+        //   future: widget._fnGetItemImage(widget._index, widget._selItem.item),
+        //   builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+        //     if (!snapshot.hasData) {
+        //       return const Center(
+        //         child: CircularProgressIndicator(),
+        //       );
+        //     } else {
+        //       return snapshot.data as Widget;
+        //     }
+        //   }
+        // )
       );
     }
 

@@ -111,14 +111,24 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
             decoration: const InputDecoration(labelText: 'Titolo'),
             controller: _titoloController,
             textCapitalization: TextCapitalization.sentences,
-            style: TextStyle(color: Colors.amber.shade700, fontSize: 16),
+            // style: TextStyle(color: Colors.amber.shade700, fontSize: 16),
+            style: TextStyle(
+              color: Colors.yellow[600],
+              fontSize: 16,
+               fontWeight: FontWeight.bold
+            ),
             onSubmitted: (_) => submitData(context),
           ),
           TextField(
             decoration: const InputDecoration(labelText: 'Autore'),
             controller: _autoreController,
             textCapitalization: TextCapitalization.words,
-            style: TextStyle(color: Colors.deepOrange.shade300, fontSize: 16),
+            // style: TextStyle(color: Colors.deepOrange.shade300, fontSize: 16),
+            style: TextStyle(
+                color: Colors.yellow[700],
+                fontSize: 16,
+                fontWeight: FontWeight.bold
+            ),
             keyboardType: TextInputType.name,
             onSubmitted: (_) => submitData(context),
           ),
@@ -126,7 +136,12 @@ class _NewLibroWidgetState extends State<NewLibroWidget> {
             decoration: const InputDecoration(labelText: 'Casa Editrice'),
             controller: _editoreController,
             textCapitalization: TextCapitalization.words,
-            style: TextStyle(color: Colors.deepOrange.shade400, fontSize: 16),
+            // style: TextStyle(color: Colors.deepOrange.shade400, fontSize: 16),
+            style: TextStyle(
+                color: Colors.yellow[800],
+                fontSize: 16,
+                fontWeight: FontWeight.bold
+            ),
             keyboardType: TextInputType.text,
             onSubmitted: (_) => submitData(context),
           ),

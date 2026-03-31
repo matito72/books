@@ -21,6 +21,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as p;
 
 import '../../config/com_area.dart';
+import '../../utilities/utils.dart';
 
 
 class ImageToPdf extends StatefulWidget {
@@ -243,21 +244,28 @@ class _ImageToPdf extends State<ImageToPdf> {
     try {
       String appDownloadDir = ComArea.appDocumentDir.path;
       final String pathFolderRootDefault = p.join(appDownloadDir, Constant.books);
-      final String pathFolderDefault = p.join(pathFolderRootDefault, Constant.pdfFilesPath);
+      final String folderPdf = p.join(pathFolderRootDefault, Constant.pdfFilesPath);
+      String nomeLibreria = ComArea.mapCodDescLibreria[widget.libroViewModel.siglaLibreria]!;
+      String nomeLibInUsoCompatto = Utils.stringConcat(nomeLibreria);
+      String folderLibInUsoCompatto = p.join(folderPdf, nomeLibInUsoCompatto);
 
       // Directory dirRoot = Directory(pathFolderRootDefault);
       // if (!await dirRoot.exists()) {
       //   await dirRoot.create();
       // }
 
-      Directory dir = Directory(pathFolderDefault);
+      Directory dir = Directory(folderPdf);
       if (! await dir.exists()) {
         await dir.create();
+      }
+      Directory dirLibInUsoCompatto = Directory(folderLibInUsoCompatto);
+      if (!await dirLibInUsoCompatto.exists()) {
+        await dirLibInUsoCompatto.create();
       }
 
       String pdfFileName = (_textCtrlAddSearch.text.trim() != '') ? _textCtrlAddSearch.text.trim() : 'pdfFileName';
 
-      final file = File('$pathFolderDefault/${pdfFileName}_${DateFormat('yyyyMMddHHmmss').format(DateTime.now())}.pdf');
+      final file = File('$folderLibInUsoCompatto/${pdfFileName}_${DateFormat('yyyyMMddHHmmss').format(DateTime.now())}.pdf');
       File filePDF = await file.writeAsBytes(await _pdf.save());
       debugPrint('PDF salvato in ${file.path}');
 

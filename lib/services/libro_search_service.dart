@@ -33,11 +33,11 @@ class LibroSearchService {
     return simpleBooksSearch(ParameterGoogleSearchModel(isbn: isbn), 0, true);
   }
 
-  static Future<List<LibroIsarModel>> _simpleGoogleBooksSearch(ParameterGoogleSearchModel googleSearchModel, int offset) async {
+  static Future<List<LibroIsarModel>> _simpleGoogleBooksSearch(ParameterGoogleSearchModel googleSearchModel, int offset, bool isWithApiKey) async {
     return (googleSearchModel.title != null ||
             googleSearchModel.author != null ||
             (googleSearchModel.isbn != null && googleSearchModel.isbn != "-1"))
-        ? await GooleApisBooksService.getLibri(googleSearchModel, offset)
+        ? await GooleApisBooksService.getLibri(googleSearchModel, offset, isWithApiKey)
         : [];
   }
 
@@ -51,10 +51,12 @@ class LibroSearchService {
 
   static Future<List<LibroIsarModel>> simpleBooksSearch(ParameterGoogleSearchModel query, int offset, bool isSearchAll) async {
     // 1. Prova con Google Books
-    List<LibroIsarModel> risultatiGoogle = await _simpleGoogleBooksSearch(query, offset);
+    List<LibroIsarModel> risultatiGoogle = await _simpleGoogleBooksSearch(query, offset, false);
     List<LibroIsarModel> risultatiTotale = [];
 
-    if (risultatiGoogle.isNotEmpty) {
+    if (risultatiTotale.isEmpty) {
+      risultatiTotale.addAll(await _simpleGoogleBooksSearch(query, offset, true));
+    } else {
       risultatiTotale.addAll(risultatiGoogle);
     }
     if (risultatiTotale.isEmpty || isSearchAll) {

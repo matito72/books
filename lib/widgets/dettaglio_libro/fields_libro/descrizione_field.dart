@@ -60,7 +60,7 @@ Widget _getDescrizioneDaDefinire(BuildContext context, DettaglioLibroWidget widg
   return InkWell(
     splashColor: Colors.transparent,
     onDoubleTap: () async {
-      String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget.libroViewModel.descrizione, isCapitalize: true);
+      String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget.libroViewModel.descrizione, isCapitalize: false);
       if (strDesc != null) {
         fn(strDesc);
       }

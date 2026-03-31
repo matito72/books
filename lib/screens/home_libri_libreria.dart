@@ -202,7 +202,6 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
   SizedBox _createBackLayer(BuildContext context, ScrollController controller) {
     return SizedBox(
-      // width: (MediaQuery.of(context).size.width * 100 / 100),
       width: double.infinity,
       height: (MediaQuery.of(context).size.height * 40 / 100),
       child: Scrollbar(
@@ -810,16 +809,13 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
 
           if (state is ListaLibroLoadedState || isLibroStartDownloadExcelState || state is LibroStopDownloadExcelState) {
             ListItemsSelectBloc listItemsSelectBloc = BlocProvider.of<ListItemsSelectBloc>(context);
-            // listItemsSelectBloc.add(RefreshListItemsSelectEvent(libroBloc.state.data));
 
-            // var listaDati = (state is ListaLibroLoadedState) ? state.data : dataPrec; // libroBloc.state.data;
             if (state is ListaLibroLoadedState) {
-              // ListItemsSelectBloc listItemsSelectBloc = BlocProvider.of<ListItemsSelectBloc>(context);
               listItemsSelectBloc.add(RefreshListItemsSelectEvent(libroBloc.state.data));
               dataPrec.clear();
               dataPrec.addAll(state.data);
             }
-            var listaDati = dataPrec;
+            // var listaDati = dataPrec;
 
             return Stack(
               children: [
@@ -831,7 +827,7 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
                     opacity: isLibroStartDownloadExcelState ? 0.2 : 1.0,
                     duration: const Duration(milliseconds: 300), // Durata dell'animazione
                     curve: Curves.easeInOut, // Tipo di curva di animazione
-                    child: _widgetListaLibriDataBase(context, libroBloc, listItemsSelectBloc, listaDati),
+                    child: _widgetListaLibriDataBase(context, libroBloc, listItemsSelectBloc, dataPrec),
                   ),
                 ),
                 // Mostriamo il caricamento solo se necessario
