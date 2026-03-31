@@ -16,6 +16,7 @@ class SingleCardLibreria extends StatefulWidget {
   final LibreriaBloc _libreriaBloc;
   final SelectedItem<LibreriaIsarModel> _selItem;
   final Function(BuildContext context, LibreriaIsarModel libreriaModelSel) _goToHomeLibriLibreria;
+  final Function(BuildContext context, LibreriaIsarModel libreriaModelSel) _aggiornaLibreriaInUso;
   final Function _editLibreria;
   final Function _deleteLibreria;
   final Function _saveLibreria;
@@ -24,9 +25,10 @@ class SingleCardLibreria extends StatefulWidget {
     this._libreriaBloc,
     this._selItem,
     this._goToHomeLibriLibreria,
+    this._aggiornaLibreriaInUso,
     this._editLibreria,
     this._deleteLibreria,
-      this._saveLibreria,
+    this._saveLibreria,
     {super.key}
   );
 
@@ -154,6 +156,7 @@ class _SingleCardLibreria extends State<SingleCardLibreria> {
           onLongPress: () {
             setState(() {
               selectedItem.sel = !selectedItem.sel;
+              widget._aggiornaLibreriaInUso(context, selectedItem.item);
             });
           },
           onTap: () {

@@ -114,10 +114,34 @@ class HomeLibreriaScreen extends StatelessWidget {
           if (!sl.isRegistered<ImportExportService>()) {
             sl.registerSingleton<ImportExportService>(ImportExportService(ComArea.appDocumentDir));
           }
+        } else {
+          ComArea.libreriaInUso = null;
+          ComArea.lstLibrerieInUso = [];
         }
         await _fn();
         if (context.mounted) {
           BlocProvider.of<LibreriaBloc>(context).add(const LoadLibreriaEvent());
+        }
+      }
+    }
+  }
+
+  void _aggiornaLibreriaInUso(BuildContext context, LibreriaIsarModel? libreriaIsarModelSel) async {
+    if (_fn != null) {
+      LibreriaBloc libreriaBloc = BlocProvider.of<LibreriaBloc>(context);
+
+      if (context.mounted) {
+        if (libreriaIsarModelSel != null) {
+          ComArea.libreriaInUso = libreriaIsarModelSel;
+          ComArea.lstLibrerieInUso = ListItemsUtils.getSelectedListItems(libreriaBloc.state.data);
+
+          // Definita la libreria in uso, definisco i folder di 'json' e 'excel'
+          if (!sl.isRegistered<ImportExportService>()) {
+            sl.registerSingleton<ImportExportService>(ImportExportService(ComArea.appDocumentDir));
+          }
+        } else {
+          ComArea.libreriaInUso = null;
+          ComArea.lstLibrerieInUso = [];
         }
       }
     }
@@ -203,6 +227,7 @@ class HomeLibreriaScreen extends StatelessWidget {
                   libreriaBloc,
                   selectedItem,
                   _goToHomeLibriLibreria,
+                  _aggiornaLibreriaInUso,
                   _editLibreria,
                   _deleteLibreria,
                   _saveLibreria
