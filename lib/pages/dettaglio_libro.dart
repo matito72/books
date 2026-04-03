@@ -46,22 +46,17 @@ class DettaglioLibro extends StatelessWidget {
     String noteInit = libroViewModel.note;
 
     if (noteInit.trim() == '') {
-      // txtNoteLibroCtrl = TextEditingController();
       txtNoteLibroCtrl = QuillController.basic();
     } else {
-      // txtNoteLibroCtrl = QuillController(document: Document.fromJson(jsonDecode(noteInit)),
-      //   selection: const TextSelection.collapsed(offset: 0),
-      // );
       try {
-        // 2. PROVA: È un JSON Delta di Quill? (es. '[{"insert":"Test\\n"}]')
+        // Check: è un JSON Delta di Quill? (es. '[{"insert":"Test\\n"}]')
         final jsonString = noteInit;
         txtNoteLibroCtrl = QuillController(
           document: Document.fromJson(jsonDecode(jsonString)),
           selection: const TextSelection.collapsed(offset: 0),
         );
       } catch (e) {
-        // 3. FALLITO: Allora è testo semplice (es. "Test\n")
-        // Creiamo un documento vuoto e inseriamo il testo manualmente
+        // Check FALLITO: è testo semplice (es. "Test\n")
         final doc = Document()..insert(0, noteInit);
 
         txtNoteLibroCtrl =  QuillController(
@@ -69,13 +64,6 @@ class DettaglioLibro extends StatelessWidget {
           selection: const TextSelection.collapsed(offset: 0),
         );
       }
-
-      // print(jsonDecode(noteInit));
-      // txtNoteLibroCtrl = TextEditingController(text: noteInit);
-      // controller = QuillController(
-      //   document: Document.fromJson(jsonDecode(noteInit)),
-      //   selection: const TextSelection.collapsed(offset: 0),
-      // );
     }
 
     libroViewModelClone = libroViewModel.clonaLibro();
@@ -205,8 +193,72 @@ class DettaglioLibro extends StatelessWidget {
     );
 
     DesktopBar desktopBar = DesktopBar();
+    bool isDesktop = MediaQuery.of(context).size.width > 900;
 
     // Spostiamo il DefaultTabController all'esterno per gestire tutto il contesto
+    // return DefaultTabController(
+    //   length: 3,
+    //   child: PopScope(
+    //     canPop: false,
+    //     onPopInvokedWithResult: (bool didPop, Object? result) async {
+    //       if (didPop) return;
+    //       goBack(); // Assicurati che goBack gestisca correttamente il Navigator
+    //     },
+    //     child: Scaffold(
+    //       // Usiamo il body dello Scaffold per costruire la struttura desktop
+    //       body: SafeArea(
+    //         child: Column(
+    //           children: [
+    //             // 1. La barra superiore trascinabile
+    //             desktopBar.gestureDetector,
+    //
+    //             // 2. Il contenuto principale (AppBar + TabBarView)
+    //             Expanded(
+    //               child: Scaffold( // Scaffold interno per usare l'appBar e il body
+    //                 appBar: AppBarDefault(
+    //                   context: context,
+    //                   percHeight: 4,
+    //                   primaryColor: const Color.fromARGB(255, 33, 44, 49),
+    //                   secondaryColor: Colors.blue,
+    //                   txtLabel: Utils.rimuoviAccapo(libroViewModel.titolo),
+    //                   lstWidgetDx: showDelete
+    //                       ? [iconDeleteLibro, iconCheckAddLibro(context)]
+    //                       : [iconCheckAddLibro(context)],
+    //                   iconSx: iconButtonBack,
+    //                 ),
+    //                 body: Column(
+    //                   children: [
+    //                     // Sezione TabBar
+    //                     Material(
+    //                       color: const Color.fromARGB(110, 27, 69, 90),
+    //                       child: tabBarDettaglioLibro,
+    //                     ),
+    //                     // Sezione Contenuto Pagine
+    //                     Expanded(
+    //                       child: TabBarView(
+    //                         children: [
+    //                           DettaglioLibroWidget(
+    //                             libroViewModel,
+    //                             !showDelete,
+    //                             lstLinkIsarModule,
+    //                             isInsertByUserInterface: isInsertByUserInterface,
+    //                           ),
+    //                           NoteLibro(libroViewModel, txtNoteLibroCtrl),
+    //                           Scansioni(libroViewModel, lstPdfIsarModule),
+    //                         ],
+    //                       ),
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
+
     return DefaultTabController(
       length: 3,
       child: PopScope(
@@ -216,16 +268,12 @@ class DettaglioLibro extends StatelessWidget {
           goBack(); // Assicurati che goBack gestisca correttamente il Navigator
         },
         child: Scaffold(
-          // Usiamo il body dello Scaffold per costruire la struttura desktop
           body: SafeArea(
             child: Column(
               children: [
-                // 1. La barra superiore trascinabile
                 desktopBar.gestureDetector,
-
-                // 2. Il contenuto principale (AppBar + TabBarView)
                 Expanded(
-                  child: Scaffold( // Scaffold interno per usare l'appBar e il body
+                  child: Scaffold(
                     appBar: AppBarDefault(
                       context: context,
                       percHeight: 4,
@@ -239,25 +287,31 @@ class DettaglioLibro extends StatelessWidget {
                     ),
                     body: Column(
                       children: [
-                        // Sezione TabBar
-                        Material(
-                          color: const Color.fromARGB(110, 27, 69, 90),
-                          child: tabBarDettaglioLibro,
-                        ),
+                        !isDesktop
+                          ? Material(
+                            color: const Color.fromARGB(110, 27, 69, 90),
+                            child: tabBarDettaglioLibro,
+                          ) : Padding(padding: EdgeInsetsGeometry.all(0)),
                         // Sezione Contenuto Pagine
                         Expanded(
-                          child: TabBarView(
-                            children: [
-                              DettaglioLibroWidget(
-                                libroViewModel,
-                                !showDelete,
-                                lstLinkIsarModule,
-                                isInsertByUserInterface: isInsertByUserInterface,
-                              ),
-                              NoteLibro(libroViewModel, txtNoteLibroCtrl),
-                              Scansioni(libroViewModel, lstPdfIsarModule),
-                            ],
-                          ),
+                          child: isDesktop
+                              ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(flex: 3, child: DettaglioLibroWidget(libroViewModel, !showDelete, lstLinkIsarModule, isInsertByUserInterface: isInsertByUserInterface)),
+                                    const VerticalDivider(width: 1), // Separatore opzionale
+                                    Expanded(flex: 3, child: NoteLibro(libroViewModel, txtNoteLibroCtrl)),
+                                    const VerticalDivider(width: 1),
+                                    Expanded(flex: 3, child: Scansioni(libroViewModel, lstPdfIsarModule)),
+                                  ],
+                                )
+                              : TabBarView( // VISUALIZZAZIONE MOBILE (Tab classiche)
+                                  children: [
+                                    DettaglioLibroWidget(libroViewModel, !showDelete, lstLinkIsarModule, isInsertByUserInterface: isInsertByUserInterface),
+                                    NoteLibro(libroViewModel, txtNoteLibroCtrl),
+                                    Scansioni(libroViewModel, lstPdfIsarModule),
+                                  ],
+                                ),
                         ),
                       ],
                     ),

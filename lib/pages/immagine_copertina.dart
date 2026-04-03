@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:book/config/com_area.dart';
 import 'package:book/config/constant.dart';
 import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:book/utilities/dialog_utils.dart';
@@ -204,47 +205,45 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
   }
 
   Widget _getWidgetImageCopertina() {
-    // Rimuovi l'altezza fissa, lascia che InteractiveViewer si espanda
-    double heightPerc = 75; // Non più necessario
-
-    // Rimuovi SingleChildScrollView e il SizedBox con percentuali fisse
-    return Column(
-      // La Column si espanderà verticalmente nel contenitore genitore (presumibilmente uno Scaffold Body)
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      // Usiamo MainAxisSize.max per riempire l'altezza disponibile
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        // InteractiveViewer permette lo zoom e il pan del suo child
-        Expanded(
-          child: InteractiveViewer(
-            // Opzionale: imposta i limiti di zoom
-            minScale: 0.1,
-            maxScale: 4.0,
-            clipBehavior: Clip.none, // Permette al child di uscire dai bordi durante il pan
-
-            // Il child è la parte che contiene l'immagine
-            child: Center(
-              child: !swSearchWeb
-                  ? (widget._isImmaginePresent && widget._libroViewModel.immagineCopertina.isNotEmpty)
-                  ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Il widget dell'immagine
-                  _getFutureImage(heightPerc), // Rimosso heightPerc perché InteractiveViewer lo gestisce
-                  _widgetMiSentoFortunato(),
-                ],
-              )
-                  : _getFutureImage(heightPerc)
-                  : _getGoogleSearchImage(),
-            ),
-          ),
+    return Center( // 1. Centra tutto il blocco orizzontalmente
+      child: ConstrainedBox(
+        // 2. Imposta un limite di larghezza massima solo per il desktop
+        constraints: BoxConstraints(
+          maxWidth: ComArea.isMobileApp ? double.infinity : 800.0,
         ),
-      ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: InteractiveViewer(
+                minScale: 0.1,
+                maxScale: 4.0,
+                clipBehavior: Clip.none,
+                child: Center(
+                  child: !swSearchWeb
+                      ? (widget._isImmaginePresent && widget._libroViewModel.immagineCopertina.isNotEmpty)
+                      ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _getFutureImage(75),
+                      _widgetMiSentoFortunato(),
+                    ],
+                  )
+                      : _getFutureImage(75)
+                      : _getGoogleSearchImage(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _getGoogleSearchImage() {
+    bool isNarrow = ComArea.isMobileApp || MediaQuery.of(context).size.width < 900;
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),
       child: Column(
@@ -252,7 +251,7 @@ class _ImmagineCopertinaState extends State<ImmagineCopertina> {
           Container(
             width: (MediaQuery.of(context).size.width * 100 / 100),
             height: (MediaQuery.of(context).size.height * 85 / 100),
-            padding: const EdgeInsets.all(1),
+            padding: isNarrow ? const EdgeInsets.all(1) : EdgeInsets.symmetric(horizontal: 350),
             child: Center(
               child: lstCoverBookUrl.isNotEmpty
                 ? ListCoverBook(lstCoverBookUrl: lstCoverBookUrl, fn: _selectImage)

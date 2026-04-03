@@ -63,22 +63,6 @@ class _NoteLibro extends State<NoteLibro> with AutomaticKeepAliveClientMixin {
                     controller: widget._controller,
                     config: const QuillEditorConfig(),
                   ),
-                  // child: QuillEditor.basic(
-                  //   config: QuillEditorConfig(
-                  //     controller: widget._controller,
-                  //     readOnly: false,
-                  //     sharedConfigurations:  QuillSharedConfigurations(
-                  //       locale: const Locale('it'),
-                  //       dialogTheme: QuillDialogTheme(
-                  //           labelTextStyle: const TextStyle(color: Colors.black),
-                  //           inputTextStyle: TextStyle(color: Colors.yellow[200])
-                  //       ),
-                  //     ),
-                  //     onTapOutside: (event, focusNode) => {
-                  //       widget._libroViewModel.note = jsonEncode(widget._controller.document.toDelta().toJson()),
-                  //     },
-                  //   ),
-                  // )
               ),
             ),
             QuillSimpleToolbar(
@@ -112,17 +96,6 @@ class _NoteLibro extends State<NoteLibro> with AutomaticKeepAliveClientMixin {
                   )
               ),
             ),
-            // QuillToolbar.simple(
-            //   configurations: QuillSimpleToolbarConfigurations(
-            //     controller: widget._controller,
-            //     sharedConfigurations: const QuillSharedConfigurations(
-            //       dialogBarrierColor: Colors.black,
-            //       locale: Locale('it'),
-            //     ),
-            //     color: Colors.amber,
-            //
-            //   ),
-            // ),
           ],
         ),
       ),

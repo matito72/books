@@ -34,8 +34,7 @@ Future<void> main() async {
     Size screenSize = primaryDisplay.size;
 
     // 2. Calcola le dimensioni basate su percentuali
-    // Esempio: larghezza 40% e altezza 55% dello schermo
-    double width = screenSize.width * 0.25;
+    double width = screenSize.width * 0.50; //0.25;
     double height = screenSize.height * 0.80;
 
     WindowOptions windowOptions = WindowOptions(

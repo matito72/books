@@ -50,7 +50,7 @@ Widget getImage(String urlImage) {
       f,
       fit: BoxFit.cover,
       cacheWidth: cacheMaxWidth, // OTTIMIZZAZIONE CHIAVE
-      errorBuilder: (ctx, _, __) => Image.asset(Constant.assetImageDefault),
+      errorBuilder: (ctx, _, _) => Image.asset(Constant.assetImageDefault),
     );
   } else if (urlImage.toLowerCase().startsWith("http")) {
     urlImage = urlImage.replaceFirst("http:", "https:");

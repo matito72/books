@@ -38,6 +38,7 @@ class SingleCardBook extends StatefulWidget {
 }
 
 class _SingleCardBook extends State<SingleCardBook> {
+
   @override
   Widget build(BuildContext context) {
     double bookWith = 90;
@@ -49,18 +50,6 @@ class _SingleCardBook extends State<SingleCardBook> {
         width: bookWith,
         height: bookHeight,
         child: widget._fnGetItemImage(widget._index, widget._selItem.item),
-        // child: FutureBuilder<Widget>(
-        //   future: widget._fnGetItemImage(widget._index, widget._selItem.item),
-        //   builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-        //     if (!snapshot.hasData) {
-        //       return const Center(
-        //         child: CircularProgressIndicator(),
-        //       );
-        //     } else {
-        //       return snapshot.data as Widget;
-        //     }
-        //   }
-        // )
       );
     }
 
@@ -312,8 +301,8 @@ class _SingleCardBook extends State<SingleCardBook> {
 
     Widget getBookCardContent() {
       return SizedBox(
-        width: (MediaQuery.of(context).size.width * 100 / 100),
-        height: cardBookHeight - 5,
+        width: double.infinity, // (MediaQuery.of(context).size.width * 100 / 100),
+        height: cardBookHeight,
         child: InkWell(
           splashColor: Colors.transparent, //Colors.red,
           onDoubleTap: () async {
@@ -341,11 +330,14 @@ class _SingleCardBook extends State<SingleCardBook> {
     }
 
     return Card(
-      elevation: 5,
+      elevation: ComArea.isMobileApp ? 5 : 20,
       color: Theme.of(context).cardColor,
       // color: Theme.of(context).scaffoldBackgroundColor,
       shadowColor: const Color.fromARGB(255, 30, 109, 148),
-      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      // margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      margin: ComArea.isMobileApp
+            ? const EdgeInsets.symmetric(horizontal: 4, vertical: 2)
+            : const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20.0),

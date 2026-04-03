@@ -71,10 +71,6 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                 fontSize: 20
               )
           ),
-          // titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
-          //   fontStyle: FontStyle.italic,
-          //   color: Colors.blue.shade200
-          // ),
           titleTextStyle:
             Theme.of(context).textTheme.titleLarge?.copyWith(
               color: Colors.limeAccent,
@@ -121,148 +117,110 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     );
   }
 
-  // ... (omitted code)
-
   Widget _headerBook(BuildContext context) {
     FieldDettLibro fieldDettLibro = FieldDettLibro(context, widget.libroViewModel);
-    // final isSmartPhone = (Platform.isAndroid || Platform.isIOS);
 
     return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          // mainAxisSize: MainAxisSize.min, // Non serve se usi vincoli di larghezza fissa o Expanded
-          children: [
-            // COLONNA IMMAGINE (35% della larghezza)
-            SizedBox(
-              width: ComArea.isMobileApp ? (MediaQuery.of(context).size.width * 34 / 100) : 200.00,
-              height: ComArea.isMobileApp ? (MediaQuery.of(context).size.height * 25 / 100) : 260.00,
-              child: InkWell(
-                splashColor: Colors.transparent,
-                onDoubleTap: () {
-                  _goToImageview(context, widget.libroViewModel);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: FutureBuilder<Widget>(
-                      future: _getImageNetwork(context, widget.libroViewModel),
-                      builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else {
-                          return snapshot.data as Widget;
-                        }
+      padding: const EdgeInsets.symmetric(horizontal: 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1. L'IMMAGINE: Larghezza fissa o proporzionale, ma controllata
+          SizedBox(
+            width: ComArea.isMobileApp ? (MediaQuery.of(context).size.width * 0.34) : 150.0,
+            // Rimuovi l'altezza fissa basata su MediaQuery se vuoi evitare distorsioni su desktop
+            child: InkWell(
+              onDoubleTap: () => _goToImageview(context, widget.libroViewModel),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: FutureBuilder<Widget>(
+                  future: _getImageNetwork(context, widget.libroViewModel),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                    return snapshot.data!;
+                  },
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 10), // Un piccolo distanziatore
+
+          // 2. IL TESTO: Usiamo Expanded per occupare TUTTO lo spazio rimanente senza sforare
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Rimosso il Container trasparente inutile
+                  fieldDettLibro.getField(
+                      Colors.yellowAccent[200],
+                      LibroFieldSelected.titolo().label, 5, true,
+                      fnString: (strDesc) {
+                        setState(() => widget.libroViewModel.titolo = strDesc);
                       }
                   ),
-                ),
+                  fieldDettLibro.getField(
+                      Colors.lightBlue[50],
+                      LibroFieldSelected.autore().label, 2, true,
+                      fnString: (strDesc) {
+                        setState(() {
+                          widget.libroViewModel.lstAutori = [strDesc];
+                        });
+                      }
+                  ),
+                ],
               ),
             ),
-            // COLONNA TITOLO/AUTORE (62% della larghezza)
-            SizedBox(
-              width: (MediaQuery.of(context).size.width * 62 / 100),
-              height: (MediaQuery.of(context).size.height * 25 / 100),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start, // Modificato da spaceEvenly
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      color: Colors.transparent,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          fieldDettLibro.getField(
-                              Colors.yellowAccent[200],
-                              LibroFieldSelected.titolo().label, 5, true,
-                              fnString: (strDesc) => {
-                                setState(() {
-                                  widget.libroViewModel.titolo = strDesc;
-                                })
-                              }
-                          ),
-                          fieldDettLibro.getField(
-                              Colors.lightBlue[50],
-                              LibroFieldSelected.autore().label, 2, true,
-                              fnString: (strDesc) => {
-                                setState(() {
-                                  widget.libroViewModel.lstAutori = [];
-                                  widget.libroViewModel.lstAutori.add(strDesc);
-                                })
-                              }
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ],
-        )
+          ),
+        ],
+      ),
     );
   }
 
-
   Widget _headerBook_1(BuildContext context) {
     FieldDettLibro fieldDettLibro = FieldDettLibro(context, widget.libroViewModel);
+
+    // Verifichiamo se siamo su mobile o desktop per decidere la larghezza della colonna stelle
+    bool isDesktop = MediaQuery.of(context).size.width > 900;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
-      // mainAxisSize: MainAxisSize.min, // Non serve con vincoli di larghezza fissi
       children: [
-        // COLONNA STARS (35% della larghezza)
+        // 1. COLONNA STARS: Usiamo una larghezza fissa o proporzionale più piccola
         SizedBox(
-          width: (MediaQuery.of(context).size.width * 34 / 100),
-          // height: (MediaQuery.of(context).size.height * 25 / 100),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 10),
-                  child: FiveStars(
-                    value: widget.libroViewModel.stars,
-                    onPressed: (value) {
-                      setState(() {
-                        if (value == widget.libroViewModel.stars) {
-                          widget.libroViewModel.stars = 0;
-                        } else {
-                          widget.libroViewModel.stars = value;
-                        }
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ],
+          // Su mobile 34% va bene, su desktop diamo un valore fisso (es. 150)
+          width: !isDesktop ? (MediaQuery.of(context).size.width * 34 / 100) : 150.0,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 10, left: 10),
+            child: FiveStars(
+              value: widget.libroViewModel.stars,
+              onPressed: (value) {
+                setState(() {
+                  widget.libroViewModel.stars = (value == widget.libroViewModel.stars) ? 0 : value;
+                });
+              },
+            ),
           ),
         ),
-        // COLONNA EDITORE (62% della larghezza)
-        SizedBox(
-          width: (MediaQuery.of(context).size.width * 62 / 100),
-          // height: (MediaQuery.of(context).size.height * 25 / 100),
+
+        // 2. COLONNA EDITORE: Usiamo Expanded!
+        // Si adatterà automaticamente allo spazio rimanente, che sia mobile o desktop.
+        Expanded(
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Rimosso 'Flexible' che causava l'errore:
                 fieldDettLibro.getField(
-                    Colors.lime[100],
-                    LibroFieldSelected.editore().label, 1, true,
-                    fnString: (strDesc) => {
-                      setState(() {
-                        widget.libroViewModel.editore = strDesc;
-                      })
-                    }
+                  Colors.lime[100],
+                  LibroFieldSelected.editore().label, 1, true,
+                  fnString: (strDesc) => setState(() {
+                    widget.libroViewModel.editore = strDesc;
+                  }),
                 ),
               ],
             ),
@@ -272,69 +230,107 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     );
   }
 
-
-  // ... (omitted code)
-
   Widget _dataHeaderBook(BuildContext context) {
     FieldDettLibro fieldDettLibro = FieldDettLibro(context, widget.libroViewModel);
 
     return Padding(
       padding: const EdgeInsets.only(top: 10, bottom: 10, left: 16.0, right: 0.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
+      // child: Row(
+      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //   crossAxisAlignment: CrossAxisAlignment.center,
+      //   mainAxisSize: MainAxisSize.max,
+      child: Wrap( // Sostituito Row con Wrap
+        spacing: 15.0, // Spazio orizzontale tra i widget
+        runSpacing: 10.0, // Spazio verticale se vanno a capo
+        alignment: WrapAlignment.start,
         children: <Widget>[
-          Expanded(
-            flex: 3,
+          // Expanded(
+          //   flex: 3,
+          //   child: fieldDettLibro.getField(
+          //       Colors.lime[100],
+          //       LibroFieldSelected.isbn().label, 1, false,
+          //       fnString: (strDesc) => {
+          //         setState(() {
+          //           widget.libroViewModel.isbn = strDesc;
+          //         })
+          //       }
+          //   ),
+          // ),
+          SizedBox(
+            width: 150, // Larghezza fissa o proporzionale
             child: fieldDettLibro.getField(
-                Colors.lime[100],
-                LibroFieldSelected.isbn().label, 1, false,
-                fnString: (strDesc) => {
-                  setState(() {
-                    widget.libroViewModel.isbn = strDesc;
-                  })
-                }
+              Colors.lime[100],
+              LibroFieldSelected.isbn().label, 1, false,
+              fnString: (strDesc) => setState(() => widget.libroViewModel.isbn = strDesc),
+            ),
+          ),
+          const SizedBox(width: 15.0),
+          // Expanded(
+          //   flex: 1,
+          //   child: fieldDettLibro.getField(
+          //       Colors.lime[100],
+          //       LibroFieldSelected.dtPubblicazione().label, 1, false,
+          //       fn: () => {
+          //         _getYear(context, widget.libroViewModel)
+          //       }
+          //   ),
+          // ),
+          SizedBox(
+            width: 100,
+            child: fieldDettLibro.getField(
+              Colors.lime[100],
+              LibroFieldSelected.dtPubblicazione().label, 1, false,
+              fn: () => _getYear(context, widget.libroViewModel),
             ),
           ),
           // Uso SizedBox per uno spazio fisso tra i campi
           const SizedBox(width: 15.0),
-          Expanded(
-            flex: 1,
+          // Expanded(
+          //   flex: 2,
+          //   child: fieldDettLibro.getField(
+          //       Colors.lime[100],
+          //       LibroFieldSelected.nrPagine().label, 1, false,
+          //       fnString: (strNr) => {
+          //         setState(() {
+          //           int? nr = int.tryParse(strNr);
+          //           widget.libroViewModel.nrPagine = (nr != null) ? nr : 0;
+          //         })
+          //       }
+          //   ),
+          // ),
+          // Expanded(
+          //   flex: 2,
+          //   child: fieldDettLibro.getField(
+          //       Colors.lime[100],
+          //       LibroFieldSelected.prezzo().label, 1, false,
+          //       fnString: (strNr) => {
+          //         setState(() {
+          //           double? nr = double.tryParse(strNr);
+          //           widget.libroViewModel.prezzo = (nr != null) ? nr : 0;
+          //         })
+          //       }
+          //   ),
+          // ),
+          SizedBox(
+            width: 100,
             child: fieldDettLibro.getField(
-                Colors.lime[100],
-                LibroFieldSelected.dtPubblicazione().label, 1, false,
-                fn: () => {
-                  _getYear(context, widget.libroViewModel)
-                }
+              Colors.lime[100],
+              LibroFieldSelected.nrPagine().label, 1, false,
+              fnString: (strNr) {
+                int? nr = int.tryParse(strNr);
+                setState(() => widget.libroViewModel.nrPagine = nr ?? 0);
+              },
             ),
           ),
-          // Uso SizedBox per uno spazio fisso tra i campi
-          const SizedBox(width: 15.0),
-          Expanded(
-            flex: 2,
+          SizedBox(
+            width: 100,
             child: fieldDettLibro.getField(
-                Colors.lime[100],
-                LibroFieldSelected.nrPagine().label, 1, false,
-                fnString: (strNr) => {
-                  setState(() {
-                    int? nr = int.tryParse(strNr);
-                    widget.libroViewModel.nrPagine = (nr != null) ? nr : 0;
-                  })
-                }
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: fieldDettLibro.getField(
-                Colors.lime[100],
-                LibroFieldSelected.prezzo().label, 1, false,
-                fnString: (strNr) => {
-                  setState(() {
-                    double? nr = double.tryParse(strNr);
-                    widget.libroViewModel.prezzo = (nr != null) ? nr : 0;
-                  })
-                }
+              Colors.lime[100],
+              LibroFieldSelected.prezzo().label, 1, false,
+              fnString: (strNr) {
+                double? nr = double.tryParse(strNr);
+                setState(() => widget.libroViewModel.prezzo = nr ?? 0);
+              },
             ),
           ),
         ],
@@ -342,14 +338,10 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
     );
   }
 
-// ... (omitted code)
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      // La SafeArea garantisce che il contenuto non sia coperto dalle tacche/barra di stato
       child: Padding(
-        // Applica un bordo (padding) uniforme tutto attorno al widget (es. 8.0)
         padding: const EdgeInsets.all(0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
