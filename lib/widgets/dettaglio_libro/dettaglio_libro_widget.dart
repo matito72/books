@@ -235,84 +235,33 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
 
     return Padding(
       padding: const EdgeInsets.only(top: 10, bottom: 10, left: 16.0, right: 0.0),
-      // child: Row(
-      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //   crossAxisAlignment: CrossAxisAlignment.center,
-      //   mainAxisSize: MainAxisSize.max,
       child: Wrap( // Sostituito Row con Wrap
-        spacing: 15.0, // Spazio orizzontale tra i widget
+        spacing: 1.0, // Spazio orizzontale tra i widget
         runSpacing: 10.0, // Spazio verticale se vanno a capo
         alignment: WrapAlignment.start,
         children: <Widget>[
-          // Expanded(
-          //   flex: 3,
-          //   child: fieldDettLibro.getField(
-          //       Colors.lime[100],
-          //       LibroFieldSelected.isbn().label, 1, false,
-          //       fnString: (strDesc) => {
-          //         setState(() {
-          //           widget.libroViewModel.isbn = strDesc;
-          //         })
-          //       }
-          //   ),
-          // ),
           SizedBox(
-            width: 150, // Larghezza fissa o proporzionale
+            width: 110,
             child: fieldDettLibro.getField(
               Colors.lime[100],
               LibroFieldSelected.isbn().label, 1, false,
               fnString: (strDesc) => setState(() => widget.libroViewModel.isbn = strDesc),
             ),
           ),
-          const SizedBox(width: 15.0),
-          // Expanded(
-          //   flex: 1,
-          //   child: fieldDettLibro.getField(
-          //       Colors.lime[100],
-          //       LibroFieldSelected.dtPubblicazione().label, 1, false,
-          //       fn: () => {
-          //         _getYear(context, widget.libroViewModel)
-          //       }
-          //   ),
-          // ),
+          const SizedBox(width: 1.0),
           SizedBox(
-            width: 100,
-            child: fieldDettLibro.getField(
-              Colors.lime[100],
-              LibroFieldSelected.dtPubblicazione().label, 1, false,
-              fn: () => _getYear(context, widget.libroViewModel),
+            width: 90,
+            child: Center(
+              child: fieldDettLibro.getField(
+                Colors.lime[100],
+                LibroFieldSelected.dtPubblicazione().label, 1, false,
+                fn: () => _getYear(context, widget.libroViewModel),
+              ),
             ),
           ),
-          // Uso SizedBox per uno spazio fisso tra i campi
-          const SizedBox(width: 15.0),
-          // Expanded(
-          //   flex: 2,
-          //   child: fieldDettLibro.getField(
-          //       Colors.lime[100],
-          //       LibroFieldSelected.nrPagine().label, 1, false,
-          //       fnString: (strNr) => {
-          //         setState(() {
-          //           int? nr = int.tryParse(strNr);
-          //           widget.libroViewModel.nrPagine = (nr != null) ? nr : 0;
-          //         })
-          //       }
-          //   ),
-          // ),
-          // Expanded(
-          //   flex: 2,
-          //   child: fieldDettLibro.getField(
-          //       Colors.lime[100],
-          //       LibroFieldSelected.prezzo().label, 1, false,
-          //       fnString: (strNr) => {
-          //         setState(() {
-          //           double? nr = double.tryParse(strNr);
-          //           widget.libroViewModel.prezzo = (nr != null) ? nr : 0;
-          //         })
-          //       }
-          //   ),
-          // ),
+          // const SizedBox(width: 1.0),
           SizedBox(
-            width: 100,
+            width: 80,
             child: fieldDettLibro.getField(
               Colors.lime[100],
               LibroFieldSelected.nrPagine().label, 1, false,
@@ -323,14 +272,16 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
             ),
           ),
           SizedBox(
-            width: 100,
-            child: fieldDettLibro.getField(
-              Colors.lime[100],
-              LibroFieldSelected.prezzo().label, 1, false,
-              fnString: (strNr) {
-                double? nr = double.tryParse(strNr);
-                setState(() => widget.libroViewModel.prezzo = nr ?? 0);
-              },
+            width: 80,
+            child: Center(
+              child: fieldDettLibro.getField(
+                Colors.lime[100],
+                LibroFieldSelected.prezzo().label, 1, false,
+                fnString: (strNr) {
+                  double? nr = double.tryParse(strNr);
+                  setState(() => widget.libroViewModel.prezzo = nr ?? 0);
+                },
+              ),
             ),
           ),
         ],
@@ -356,14 +307,11 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                             _headerBook(context),
-                            // _headerBook_1(context),
-                            // _dataHeaderBook(context),
                   ]
                 )
               )
             ),
             Expanded(
-              // height: (MediaQuery.of(context).size.height * 50 / 100),
               child: SingleChildScrollView(
                 padding: EdgeInsets.only(left: 4),
                 child: Column(
@@ -373,40 +321,50 @@ class _DettaglioLibroWidget extends State<DettaglioLibroWidget> {
                   children: <Widget>[
                     _headerBook_1(context),
                     _dataHeaderBook(context),
-                    Text(
-                      'Libreria',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.lightBlue.shade100,
-                          fontWeight: FontWeight.bold
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5, bottom: 5, left: 15.0, right: 0.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                            'Libreria',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.lightBlue.shade100,
+                                fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          LibreriaSelDropdown(
+                            widget.libroViewModel.siglaLibreria != 0
+                                ? widget.libroViewModel.siglaLibreria
+                                : ComArea.libreriaInUso!.sigla,
+                            onPressed: (value) {
+                              setState(() {
+                                widget.libroViewModel.siglaLibreria = value;
+                              });
+                            },
+                          ),
+                          const Padding(padding: EdgeInsets.only(top: 10)),
+                          Text(
+                            'Categoria',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.lightBlue.shade100,
+                                fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          BisacDropdownMenu(
+                            widget.libroViewModel.lstCategoria[0].toUpperCase(),
+                            onPressed: (value) {
+                              setState(() {
+                                widget.libroViewModel.lstCategoria = [value];
+                              });
+                            },
+                          ),
+                        ],
                       ),
-                    ),
-                    LibreriaSelDropdown(
-                      widget.libroViewModel.siglaLibreria != 0
-                          ? widget.libroViewModel.siglaLibreria
-                          : ComArea.libreriaInUso!.sigla,
-                      onPressed: (value) {
-                        setState(() {
-                          widget.libroViewModel.siglaLibreria = value;
-                        });
-                      },
-                    ),
-                    const Padding(padding: EdgeInsets.only(top: 10)),
-                    Text(
-                      'Categoria',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.lightBlue.shade100,
-                          fontWeight: FontWeight.bold
-                      ),
-                    ),
-                    BisacDropdownMenu(
-                      widget.libroViewModel.lstCategoria[0].toUpperCase(),
-                      onPressed: (value) {
-                        setState(() {
-                          widget.libroViewModel.lstCategoria = [value];
-                        });
-                      },
                     ),
                     const Padding(padding: EdgeInsets.only(top: 15)),
                     getDescrizioneField(context, widget, (strDesc) => {

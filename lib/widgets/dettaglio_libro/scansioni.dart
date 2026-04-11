@@ -73,7 +73,7 @@ class _Scansioni extends State<Scansioni> {
       // Per ora commentata la ricerca
       // appBar: _createPreferredSize(context), // _createAppBar(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: _createFloatingActionButton(context),
+      floatingActionButton: (widget._libroViewModel.id > 0) ? _createFloatingActionButton(context) : Padding(padding: const EdgeInsets.symmetric(horizontal: 0)),
       body: widget._lstPdfIsarModule.isNotEmpty
           ? SingleChildScrollView(
               scrollDirection: Axis.vertical,
@@ -91,7 +91,6 @@ class _Scansioni extends State<Scansioni> {
             )
           : Center(
               child: Image.asset(Constant.assetImageDefault, fit: BoxFit.cover),
-              // Text('Nessun PDF salvato',style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.blue, fontSize: 24),
             ),
     );
   }
@@ -159,7 +158,6 @@ class _Scansioni extends State<Scansioni> {
                 visible: true,
                 child: Icon(
                   MdiIcons.cameraPlus,
-                  // color: const Color.fromARGB(183, 244, 67, 54),
                   color: Theme.of(context).colorScheme.onSecondary,
                   shadows: const [],
                   size: 55,

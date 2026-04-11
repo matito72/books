@@ -42,7 +42,7 @@ class LibreriaBloc extends Bloc<LibreriaEvent, LibreriaState> {
         String msg = lstLibreriaViewModel.isEmpty ? 'Nessuna Libreria presente' : 'Nr. ${lstLibreriaViewModel.length} Librerie caricate.';
         emit(LibreriaLoadedState(lstLibreriaIsarModelSel, msg));
       } catch (e) {
-        print(e);
+        // print(e);
         emit(LibreriaErrorState(e.toString()));
       }
     });

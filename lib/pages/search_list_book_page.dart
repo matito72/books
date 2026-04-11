@@ -118,14 +118,8 @@ class PagewiseListViewExample extends StatelessWidget {
                   switch (dismissDirection) {
                     case DismissDirection.endToStart:
                       viewDettaglioLibro();
-                      // LibroViewModel? libroDettaglioResult = await LibroUtils.viewDettaglioLibroFromSearch(context, libreriaSel, entry, false);
-                      // // execActionOnLibroDettaglioResult(libroDettaglioResult, entry);
-                      // if (libroDettaglioResult != null) {
-                      //   print(libroDettaglioResult.titolo);
-                      // }
                       return false;
                     case DismissDirection.startToEnd:
-                      // bool isRemoveBook = await LibroUtils.showConfirmationDialog(context, 'rimuovere', entry, false) == true;
                       bool? isRemoveBook =
                           await DialogUtils.showConfirmationSiNo(
                             context,

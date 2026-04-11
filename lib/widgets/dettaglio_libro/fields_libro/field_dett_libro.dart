@@ -97,17 +97,6 @@ class FieldDettLibro {
           expandText: '',
           collapseText: '<<',
         ),
-        // child: ReadMoreText.selectable(
-        //   fieldValue,
-        //   numLines: 1,
-        //   style: const TextStyle(
-        //     fontSize: 14,
-        //     color: Colors.white,
-        //   ),
-        //   readMoreTextStyle: TextStyle(color: Colors.amber.shade200),
-        //   readMoreText: '', 
-        //   readLessText: '', 
-        // ),
       )
     );
   }
@@ -126,7 +115,7 @@ class FieldDettLibro {
                 ? fieldValue.toStringAsFixed(2)
                 : fieldValue.toString(),
             style: TextStyle(
-              fontSize: 14, // (label == LibroFieldSelected.isbn().label) ? 12 : 14,
+              fontSize: (label == LibroFieldSelected.isbn().label) ? 14 : 14,
               color: color,
             ),
           ),

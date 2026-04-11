@@ -382,17 +382,25 @@ class HomeLibriLibreriaScreen extends StatelessWidget {
             )
           ),
       PopupMenuItem<int>(
-        value: MenuItemCode.deleteAllBooksInLibreria.cd, 
+        value: MenuItemCode.deleteAllBooksInLibreria.cd,
         enabled: (ComArea.lstLibrerieInUso.length == 1 && ComArea.nrLibriInLibreriaInUso != 0),
         child: Row(
           children: [
-            const Padding(padding: EdgeInsets.only(right: 10.0), child: Icon(Icons.delete, color: Color.fromARGB(255, 216, 94, 86)),),
-            Text(
-              MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', Utils.getFirstSubstring(ComArea.libreriaInUso!.nome, 10)),
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            )
+            const Padding(
+              padding: EdgeInsets.only(right: 10.0),
+              child: Icon(Icons.delete, color: Color.fromARGB(255, 216, 94, 86)),
+            ),
+            // Avvolgiamo il testo in Flexible per evitare l'overflow
+            Flexible(
+              child: Text(
+                MenuItemCode.deleteAllBooksInLibreria.label.replaceFirst('{0}', Utils.getFirstSubstring(ComArea.libreriaInUso!.nome, 10)),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis, // Aggiunge i puntini sospensivi se il testo è troppo lungo
+                softWrap: false,                // Impedisce al testo di andare a capo (opzionale)
+              ),
+            ),
           ],
-        )
+        ),
       ),
       PopupMenuItem<int>(
         value: MenuItemCode.deleteNrBooksFromList.cd, 

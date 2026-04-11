@@ -109,7 +109,7 @@ Widget _getDescrizioneDaDefinire(BuildContext context, DettaglioLibroWidget widg
             ),
             alignment: Alignment.topRight,
             onPressed: () async {
-              String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget.libroViewModel.descrizione, isCapitalize: true);
+              String? strDesc = await DialogUtils.getDescrizione(context, 'Descrizione:', widget.libroViewModel.descrizione, isCapitalize: false);
               if (strDesc != null) {
                 fn(strDesc);
               }

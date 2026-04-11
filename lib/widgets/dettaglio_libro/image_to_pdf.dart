@@ -1,27 +1,25 @@
 import 'dart:io';
 
 
+import 'package:book/config/com_area.dart';
 import 'package:book/config/constant.dart';
 import 'package:book/features/libro/data/models/libro_isar.module.dart';
 import 'package:book/features/libro/data/models/libro_isar.module.util.dart';
 import 'package:book/features/libro/data/models/pdf_isar.module.dart';
+import 'package:book/utilities/utils.dart';
 import 'package:book/widgets/appbar/appbar_default.dart';
 import 'package:book/widgets/dettaglio_libro/pdf_creation_button.dart';
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
+
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-// import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
-// import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:path/path.dart' as p;
-
-import '../../config/com_area.dart';
-import '../../utilities/utils.dart';
 
 
 class ImageToPdf extends StatefulWidget {
@@ -242,6 +240,18 @@ class _ImageToPdf extends State<ImageToPdf> {
     PdfIsarModule? pdfIsarModule;
 
     try {
+      // if (widget.libroViewModel.id < 0) {
+      //   LibroIsarToSaveModel libroToSaveModel = LibroIsarToSaveModel(
+      //       widget.libroViewModel,
+      //       siglaLibreriaOld: widget.libroViewModel.siglaLibreria,
+      //       isbnLibroOld: widget.libroViewModel.isbn,
+      //       lstLinkIsarModule: widget.libroViewModel.lstLinkModule,
+      //       lstPdfIsarModule: widget.libroViewModel.lstPdfModule
+      //   );
+      //   LibroBloc libroBloc = BlocProvider.of<LibroBloc>(context);
+      //   libroBloc.add(AddLibroEvent(ComArea.libreriaInUso!, libroToSaveModel));
+      // }
+
       String appDownloadDir = ComArea.appDocumentDir.path;
       final String pathFolderRootDefault = p.join(appDownloadDir, Constant.books);
       final String folderPdf = p.join(pathFolderRootDefault, Constant.pdfFilesPath);
@@ -308,11 +318,9 @@ class _ImageToPdf extends State<ImageToPdf> {
                     onPressed: () {
                       _getImageFromGallery();
                     },
-                    // backgroundColor: Colors.transparent,
                     backgroundColor: const Color.fromARGB(176, 0, 97, 100),
                     child: Icon(
                       MdiIcons.imageAlbum,
-                      // color: const Color.fromARGB(183, 244, 67, 54),
                       color: Theme.of(context).colorScheme.onSecondary,
                       shadows: const [],
                       size: 55,
@@ -340,7 +348,6 @@ class _ImageToPdf extends State<ImageToPdf> {
                   backgroundColor: const Color.fromARGB(176, 0, 97, 100),
                   child: Icon(
                     MdiIcons.cameraPlus,
-                    // color: const Color.fromARGB(183, 244, 67, 54),
                     color: Theme.of(context).colorScheme.onSecondary,
                     shadows: const [],
                     size: 55,

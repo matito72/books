@@ -36,7 +36,6 @@ class _PDFCreationButtonState extends State<PDFCreationButton> {
     }
   }
 
-  // 3. La tua logica originale trasformata in un metodo privato
   Future<void> _processPDF(BuildContext context) async {
     try {
       widget.showHiddenButton(false);
